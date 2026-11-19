@@ -122,11 +122,11 @@ def hsl2hex(h, s, l):
     return rgb2hex([r * 255, g * 255, b * 255])
 
 
-def css_tokens(texts):
-    """CSS custom properties from :root blocks (shadcn v3 'H S% L%', hsl() or hex) -> {name: hex}."""
+def css_tokens(texts, selector=r':root'):
+    """CSS custom properties from `selector` blocks (shadcn v3 'H S% L%', hsl() or hex) -> {name: hex}."""
     tok = {}
     for txt in texts:
-        for blk in re.findall(r':root\s*\{([^}]*)\}', txt):
+        for blk in re.findall(selector + r'\s*\{([^}]*)\}', txt):
             for name, val in re.findall(r'--([\w-]+)\s*:\s*([^;]+);', blk):
                 val = val.strip()
                 m = (re.fullmatch(r'(-?[\d.]+)(?:deg)?\s+([\d.]+)%\s+([\d.]+)%', val) or
@@ -146,6 +146,9 @@ READABLE_MAXW = re.compile(r'(?<![\w:-])max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[
 BIG_TEXT = {'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl', 'text-9xl'}
 BOLD = {'font-semibold', 'font-bold', 'font-extrabold', 'font-black'}
 BLOCK = re.compile(r'^(?:section|article|form|dialog|header|main|aside|Card|DialogContent|SheetContent|AlertDialogContent)$')
+BG_NON_COLOR = re.compile(r'(?:auto|cover|contain|fixed|local|scroll|center|top|bottom|left|right|(?:left|right)-(?:top|bottom)|'
+                          r'repeat|no-repeat|repeat-[xy]|repeat-round|repeat-space|none|clip-\w+|origin-\w+|blend-[\w-]+|opacity-\d+)')
+BG_PASSTHROUGH = {'transparent', 'inherit', 'current'}
 TEXT_NON_COLOR = re.compile(r'(?:xs|sm|base|lg|\d?xl|left|right|center|justify|start|end|wrap|nowrap|balance|pretty|ellipsis|clip|\[\d.*\])')
 
 
@@ -191,15 +194,46 @@ def pick(cls, prefix, variant=''):
             val = c[len(prefix) + 1:]
             if prefix == 'text' and TEXT_NON_COLOR.fullmatch(val):
                 continue
+            if prefix == 'bg' and BG_NON_COLOR.fullmatch(val):
+                continue
             found = val
     return found
+
+
+RADIUS = {'rounded-none': 0, 'rounded-sm': 2, 'rounded': 4, 'rounded-md': 6, 'rounded-lg': 8,
+          'rounded-xl': 12, 'rounded-2xl': 16, 'rounded-3xl': 24}
+RADIUS_NAME = {v: k for k, v in RADIUS.items()}
+
+
+def radius_px(cls):
+    r = None
+    for c in cls:
+        if c in RADIUS:
+            r = RADIUS[c]
+        m = re.fullmatch(r'rounded-\[(\d+)px\]', c)
+        if m:
+            r = int(m.group(1))
+    return r
+
+
+def padding_px(cls):
+    """Uniform padding in px from p-N or p-[Npx]; None if absent."""
+    p = None
+    for c in cls:
+        m = re.fullmatch(r'p-(\d+(?:\.\d+)?)', c)
+        if m:
+            p = float(m.group(1)) * 4
+        m = re.fullmatch(r'p-\[(\d+)px\]', c)
+        if m:
+            p = float(m.group(1))
+    return int(p) if p is not None else None
 
 
 def line_of(txt, pos):
     return txt.count('\n', 0, pos) + 1
 
 
-def audit(path, grid, tokens):
+def audit(path, grid, tokens, dark_tokens=None):
     txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
     issues = []
 
@@ -258,30 +292,39 @@ def audit(path, grid, tokens):
 
     # contrast: Tailwind palette, arbitrary hex and shadcn tokens; background inherited from nearest ancestor
     seen = set()
-    for variant, page_bg in (('', tokens.get('background', 'white')), ('dark:', None)):
+    page = 'background' if 'background' in tokens else 'white'
+    passes = [('', '', tokens, page, None), ('dark:', 'dark:', tokens, None, None)]
+    if dark_tokens:  # shadcn .dark theme: same classes re-evaluated with dark token values
+        passes.append(('', '[.dark] ', {**tokens, **dark_tokens}, 'background' if 'background' in dark_tokens else None, dark_tokens))
+    for variant, label, tokens, page_bg, only in passes:
         for tag, attrs, cls, anc, s, e in nodes:
             fg = pick(cls, 'text', variant)
             if not fg:
                 continue
             bg = pick(cls, 'bg', variant)
             for a in reversed(anc):
-                if bg:
+                if bg and bg not in BG_PASSTHROUGH:
                     break
                 bg = pick(a[2], 'bg', variant)
-            bg = bg or page_bg
+            if not bg or bg in BG_PASSTHROUGH:
+                bg = page_bg
             if not bg:
                 continue
+            if only is not None and fg.split('/')[0] not in only and bg.split('/')[0] not in only:
+                continue  # theme-independent pair, already checked in the light pass
             fh, bh = tw_hex(fg, tokens), tw_hex(bg, tokens)
             if not fh or not bh:
                 continue
             r = ratio(fh, bh)
             big = bool(BIG_TEXT & set(cls)) or ('text-xl' in cls and bool(BOLD & set(cls)))
             need = 3.0 if big else 4.5
-            key = (variant, fg, bg, need)
+            key = (label, fg, bg, need)
             if r < need and key not in seen:
                 seen.add(key)
                 add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
-                    f"L{line_of(txt, s)} {variant}text-{fg} on {variant}bg-{bg} = {r:.2f}:1 (need {need:g}, fix -> {fix_color(fh, bh, need)})")
+                    f"L{line_of(txt, s)} {label}{variant}text-{fg} on {variant}bg-{bg} = {r:.2f}:1 (need {need:g}, fix -> {fix_color(fh, bh, need)})")
+
+    tokens = passes[0][2]
 
     # single primary CTA per block: raw buttons with solid bg, and shadcn <Button> default/destructive
     counts = {}
@@ -304,6 +347,17 @@ def audit(path, grid, tokens):
     for lines in counts.values():
         if len(lines) > 1:
             add('WARN', 'single-primary-cta', f"{len(lines)} solid buttons in one block (lines {lines}); keep 1 solid, rest outline/ghost")
+
+    # nested radius: child radius should equal parent radius - parent padding
+    for tag, attrs, cls, anc, s, e in nodes:
+        if not anc:
+            continue
+        cr, (pr, pp) = radius_px(cls), (radius_px(anc[-1][2]), padding_px(anc[-1][2]))
+        if cr is None or pr is None or pp is None or pr <= 0:
+            continue
+        want = max(pr - pp, 0)
+        if cr != want and cr > want:
+            add('INFO', 'nested-radius', f"L{line_of(txt, s)} inner radius {cr}px inside {pr}px with {pp}px padding; use {want}px ({RADIUS_NAME.get(want, f'rounded-[{want}px]')})")
 
     # Miller: nav items
     for tag, attrs, cls, anc, s, e in nodes:
@@ -338,11 +392,14 @@ def audit(path, grid, tokens):
 
 
 def cmd_audit(a):
-    paths = a.files + (a.css or [])
-    tokens = css_tokens(pathlib.Path(p).read_text(encoding='utf-8', errors='ignore') for p in paths)
+    missing = [p for p in a.files + (a.css or []) if not pathlib.Path(p).is_file()]
+    if missing:
+        sys.exit(f"error: file not found: {', '.join(missing)}")
+    texts = [pathlib.Path(p).read_text(encoding='utf-8', errors='ignore') for p in a.files + (a.css or [])]
+    tokens, dark_tokens = css_tokens(texts), css_tokens(texts, r'\.dark')
     total = {'FAIL': 0, 'WARN': 0, 'INFO': 0}
     for p in a.files:
-        iss = audit(p, a.grid, tokens)
+        iss = audit(p, a.grid, tokens, dark_tokens)
         print(f"== {p}: {len(iss)} issue(s)")
         for sev, rule, msg in iss:
             total[sev] += 1
@@ -351,20 +408,25 @@ def cmd_audit(a):
     sys.exit(1 if total['FAIL'] else 0)
 
 
-ap = argparse.ArgumentParser(description='Classic UI design principles toolkit')
-sp = ap.add_subparsers(dest='cmd', required=True)
-c = sp.add_parser('contrast', help='WCAG contrast; accepts hex or Tailwind names (slate-400)')
-c.add_argument('fg'); c.add_argument('bg'); c.add_argument('--target', type=float, default=4.5); c.set_defaults(f=cmd_contrast)
-s = sp.add_parser('scale', help='modular type scale')
-s.add_argument('--base', type=float, default=16); s.add_argument('--ratio', default='major-third'); s.set_defaults(f=cmd_scale)
-r = sp.add_parser('radius', help='nested radius = outer - padding')
-r.add_argument('outer', type=float); r.add_argument('padding', type=float); r.set_defaults(f=cmd_radius)
-n = sp.add_parser('snap', help='round values to grid')
-n.add_argument('values', type=float, nargs='+'); n.add_argument('--grid', type=int, default=8); n.set_defaults(f=cmd_snap)
-d = sp.add_parser('audit', help='scan HTML/JSX/Vue/CSS files for rule violations')
-d.add_argument('files', nargs='+')
-d.add_argument('--grid', type=int, default=8, help='soft grid (default 8); values off the 4px grid are always WARN')
-d.add_argument('--css', nargs='*', help='CSS files with :root tokens, e.g. app/globals.css for shadcn')
-d.set_defaults(f=cmd_audit)
-a = ap.parse_args()
-a.f(a)
+def main(argv=None):
+    ap = argparse.ArgumentParser(description='Classic UI design principles toolkit')
+    sp = ap.add_subparsers(dest='cmd', required=True)
+    c = sp.add_parser('contrast', help='WCAG contrast; accepts hex or Tailwind names (slate-400)')
+    c.add_argument('fg'); c.add_argument('bg'); c.add_argument('--target', type=float, default=4.5); c.set_defaults(f=cmd_contrast)
+    s = sp.add_parser('scale', help='modular type scale')
+    s.add_argument('--base', type=float, default=16); s.add_argument('--ratio', default='major-third'); s.set_defaults(f=cmd_scale)
+    r = sp.add_parser('radius', help='nested radius = outer - padding')
+    r.add_argument('outer', type=float); r.add_argument('padding', type=float); r.set_defaults(f=cmd_radius)
+    n = sp.add_parser('snap', help='round values to grid')
+    n.add_argument('values', type=float, nargs='+'); n.add_argument('--grid', type=int, default=8); n.set_defaults(f=cmd_snap)
+    d = sp.add_parser('audit', help='scan HTML/JSX/Vue/CSS files for rule violations')
+    d.add_argument('files', nargs='+')
+    d.add_argument('--grid', type=int, default=8, help='soft grid (default 8); values off the 4px grid are always WARN')
+    d.add_argument('--css', nargs='*', help='CSS files with :root tokens, e.g. app/globals.css for shadcn')
+    d.set_defaults(f=cmd_audit)
+    a = ap.parse_args(argv)
+    a.f(a)
+
+
+if __name__ == '__main__':
+    main()
