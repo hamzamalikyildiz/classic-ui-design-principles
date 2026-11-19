@@ -34,11 +34,14 @@ def fix_color(fg, bg, target):
     return '#000000' if darker else '#ffffff'
 
 def cmd_contrast(a):
+    name = a.fg
     a.fg = tw_hex(a.fg, {}) or a.fg; a.bg = tw_hex(a.bg, {}) or a.bg
     r = ratio(a.fg, a.bg)
     out = f"{a.fg} on {a.bg}: {r:.2f}:1 | AA text(4.5): {'PASS' if r>=4.5 else 'FAIL'} | AA large/UI(3.0): {'PASS' if r>=3 else 'FAIL'}"
     print(out)
-    if r < a.target: print(f"  fix -> {fix_color(a.fg, a.bg, a.target)} (>= {a.target}:1)")
+    if r < a.target:
+        tw = tw_same_hue(name, a.bg, a.target)
+        print(f"  fix -> {tw + ' / ' if tw else ''}{fix_color(a.fg, a.bg, a.target)} (>= {a.target}:1, same hue)")
 
 RATIOS = {'minor-second':1.067,'major-second':1.125,'minor-third':1.2,'major-third':1.25,
           'perfect-fourth':1.333,'augmented-fourth':1.414,'perfect-fifth':1.5,'golden':1.618}
@@ -52,6 +55,7 @@ def cmd_scale(a):
     for n, s in zip(names, steps):
         px = a.base * rt**s
         px4 = max(4, round(px/ (2 if px < 24 else 4)) * (2 if px < 24 else 4))
+        px4 = max(px4, {'xs': 12, 'sm': 14}.get(n, 0))  # never shrink Tailwind's small sizes below readable floors
         lh = round((px4 * (1.5 if s <= 1 else 1.2)) / 4) * 4
         rows.append((n, px4, lh))
         print(f"  --text-{n}: {px4/16:.4g}rem; --leading-{n}: {lh/16:.4g}rem; /* {px4}px / {lh}px */")
@@ -115,6 +119,88 @@ def tw_hex(name, tokens):
     if m and m.group(1) in TW and m.group(2) in SHADES:
         return '#' + TW[m.group(1)].split()[SHADES.index(m.group(2))]
     return tokens.get(name)
+
+
+NEUTRALS = {'slate', 'gray', 'zinc', 'neutral', 'stone'}
+
+
+def tw_same_hue(name, bg_hex, need):
+    """Nearest shade of the same Tailwind hue that reaches `need` on bg (e.g. pink-400 -> pink-700)."""
+    m = re.fullmatch(r'([a-z]+)-(\d{2,3})', name.split('/')[0])
+    if not m or m.group(1) not in TW or m.group(2) not in SHADES:
+        return None
+    hexes = TW[m.group(1)].split()
+    i = SHADES.index(m.group(2))
+    step = 1 if lum(bg_hex) > 0.18 else -1
+    j = i
+    while 0 <= j < len(SHADES):
+        if ratio('#' + hexes[j], bg_hex) >= need:
+            return f"{m.group(1)}-{SHADES[j]}"
+        j += step
+    return None
+
+
+def alpha_of(name):
+    m = re.search(r'/(\d{1,3})$', name)
+    return min(int(m.group(1)), 100) / 100 if m else 1.0
+
+
+def blend(top, bottom, a):
+    t, b = hex2rgb(top), hex2rgb(bottom)
+    return rgb2hex([a * x + (1 - a) * y for x, y in zip(t, b)])
+
+
+def backdrop(chain, variant, tokens, page_bg):
+    """Effective background behind an element: (hex, label) or None if unknown.
+
+    Walks from the element outward, compositing semi-transparent layers (bg-white/10)
+    until an opaque one. In a variant pass (dark:) a layer without a dark: class keeps its
+    base class. Gradients, images and unresolvable colors make the backdrop unknown.
+    """
+    layers = []
+    for cls in chain:
+        b = (pick(cls, 'bg', variant) if variant else None) or pick(cls, 'bg')
+        grad = any(c.startswith('bg-gradient') or c.startswith('bg-[url') for c in cls if ':' not in c)
+        if variant and pick(cls, 'bg', variant):
+            grad = False  # dark: color overrides a light gradient
+        if grad:
+            return None
+        if not b or b in BG_PASSTHROUGH:
+            continue
+        h = tw_hex(b, tokens)
+        if not h:
+            return None
+        layers.append((h, alpha_of(b), b))
+        if alpha_of(b) >= 1:
+            break
+    else:
+        if not page_bg:
+            return None
+        h = tw_hex(page_bg, tokens)
+        if not h:
+            return None
+        layers.append((h, 1.0, page_bg))
+    color = layers[-1][0]
+    for h, a, _ in reversed(layers[:-1]):
+        color = blend(h, color, a)
+    name = ' over '.join(f"bg-{n}" for _, _, n in layers)
+    return color, name
+
+
+def tw_bg_same_hue(bg_name, fg_hex, need):
+    """For white/black/neutral text on a colored background: the nearest bg shade of the same hue that passes."""
+    m = re.fullmatch(r'([a-z]+)-(\d{2,3})', bg_name.split('/')[0])
+    if not m or m.group(1) not in TW or m.group(1) in NEUTRALS or m.group(2) not in SHADES:
+        return None
+    hexes = TW[m.group(1)].split()
+    i = SHADES.index(m.group(2))
+    step = 1 if lum(fg_hex) > 0.18 else -1  # light text -> darker background
+    j = i
+    while 0 <= j < len(SHADES):
+        if ratio(fg_hex, '#' + hexes[j]) >= need:
+            return f"{m.group(1)}-{SHADES[j]}"
+        j += step
+    return None
 
 
 def hsl2hex(h, s, l):
@@ -229,16 +315,143 @@ def padding_px(cls):
     return int(p) if p is not None else None
 
 
+HUE_CLASS = re.compile(r'(?<![\w-])(?:[a-z]+:)*(?:bg|text|from|via|to|border|fill|stroke|ring)-([a-z]+)-(?:50|[1-9]00|950)(?![\w-])')
+CARD_RADIUS = re.compile(r'^rounded-(?:lg|xl|2xl|3xl|\[\d+px\])$')
+SIZE_CLASS = re.compile(r'^text-(xs|sm|base|lg|\d?xl)$')
+
+
+def height_px(cls):
+    h = None
+    for c in cls:
+        m = re.fullmatch(r'h-(\d+(?:\.\d+)?)', c)
+        if m:
+            h = float(m.group(1)) * 4
+        m = re.fullmatch(r'h-\[(\d+)px\]', c)
+        if m:
+            h = float(m.group(1))
+    return h
+
+
+def is_solid_cta(tag, attrs, cls):
+    if tag in ('button', 'a'):
+        bg = pick(cls, 'bg')
+        return bool(bg) and (bg in ('primary', 'destructive') or
+                             bool(re.fullmatch(r'\[#[0-9a-fA-F]{3,6}\]', bg)) or
+                             bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg))) or any(c.startswith('bg-gradient') for c in cls)
+    if tag == 'Button':
+        var = re.search(r"""variant\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*["']([^"']*)["']\s*\})""", attrs)
+        v = ''.join(g or '' for g in var.groups()) if var else 'default'
+        return v in ('default', 'destructive', 'primary')
+    return False
+
+
+def character_checks(txt, nodes, mood):
+    """Checks for the 'sterile' failure mode: correct but grey, flat and boxed-in."""
+    out = []
+    children = {}
+    for n in nodes:
+        anc = n[3]
+        if anc:
+            children.setdefault(anc[-1][3], []).append(n)
+
+    # primary CTA too small (Fitts)
+    for tag, attrs, cls, anc, s, e in nodes:
+        if is_solid_cta(tag, attrs, cls):
+            h = height_px(cls)
+            if h is not None and h < 40:
+                out.append(('WARN', 'fitts-primary', f"L{line_of(txt, s)} primary CTA is {h:g}px tall; use >=44px (h-11+), hero CTA h-12..h-14"))
+
+    # frame wrappers: rounded padded box whose only child is another rounded surface
+    frames = []
+    for tag, attrs, cls, anc, s, e in nodes:
+        if radius_px(cls) is None or radius_px(cls) < 12:
+            continue
+        p = padding_px(cls)
+        if p is None or p > 16 or not any(c.startswith(('bg-', 'border')) for c in cls):
+            continue
+        kids = children.get(s, [])
+        if len(kids) == 1:
+            k = kids[0][2]
+            if radius_px(k) is not None and any(c.startswith(('bg-', 'border')) for c in k):
+                frames.append(line_of(txt, s))
+    if frames:
+        out.append(('INFO', 'frame-wrapper', f"{len(frames)} box(es) whose only child is another rounded surface (lines {frames[:8]}); merge into one card"))
+
+    # cards: border-heavy without depth
+    cards = [cls for tag, attrs, cls, anc, s, e in nodes
+             if any(CARD_RADIUS.match(c) for c in cls) and (padding_px(cls) or 0) >= 12
+             and any(c.startswith('bg-') or c == 'border' or c.startswith('border-') for c in cls)
+             and tag not in ('button', 'a', 'Button', 'input', 'span')]
+    if len(cards) >= 4:
+        bordered = sum(1 for c in cards if 'border' in c or any(re.fullmatch(r'border-\d', x) for x in c))
+        shadowed = sum(1 for c in cards if any(re.fullmatch(r'shadow(-sm|-md|-lg|-xl|-2xl)?', x) for x in c))
+        if bordered / len(cards) >= 0.7 and shadowed <= 1:
+            out.append(('INFO', 'border-heavy', f"{bordered}/{len(cards)} cards bordered, {shadowed} with shadow; separate with background shift + shadow-sm instead"))
+
+    # flat hierarchy: one text size dominates, or most text is bold
+    sizes, bolds, sized = {}, 0, 0
+    for tag, attrs, cls, anc, s, e in nodes:
+        sz = [c for c in cls if SIZE_CLASS.match(c)]
+        if not sz:
+            continue
+        sized += 1
+        sizes[sz[-1]] = sizes.get(sz[-1], 0) + 1
+        if any(c in ('font-bold', 'font-extrabold', 'font-black') for c in cls):
+            bolds += 1
+    if sized >= 15:
+        top, n = max(sizes.items(), key=lambda kv: kv[1])
+        if bolds / sized > 0.4 and (n / sized > 0.55 or bolds / sized > 0.6):
+            out.append(('INFO', 'flat-hierarchy', f"{bolds}/{sized} sized text elements are bold and {n} use {top}; "
+                                                  "body 400, labels 500, headings 600-700, vary sizes"))
+
+    # grey-only charts: bar fills inside tracks
+    bars = []
+    for tag, attrs, cls, anc, s, e in nodes:
+        if (any(re.fullmatch(r'h-(?:1|1\.5|2|2\.5|3|full)', c) for c in cls) and
+                any(re.fullmatch(r'w-(?:\d+/\d+|\[\d+%\])', c) for c in cls)) or re.search(r'style\s*=\s*["\'][^"\']*width\s*:\s*\d+%', attrs):
+            if 'animate-pulse' in cls or any('animate-pulse' in a[2] for a in anc):
+                continue  # skeleton placeholders, not data
+            bg = pick(cls, 'bg')
+            m = re.fullmatch(r'([a-z]+)-\d+', bg or '')
+            if m:
+                bars.append(m.group(1))
+    if len(bars) >= 3 and len({b for b in bars if b not in NEUTRALS}) <= 1:
+        out.append(('WARN', 'grey-chart', f"{len(bars)} chart bars use {sorted(set(bars))}; give categories distinct hues (indigo, emerald, amber, rose, sky)"))
+
+    # mood: color presence and hero surface
+    if mood in ('playful', 'bold', 'trust'):
+        hues = {h for h in HUE_CLASS.findall(txt) if h in TW and h not in NEUTRALS}
+        need = 3 if mood in ('playful', 'bold') else 1
+        if len(hues) < need:
+            out.append(('INFO', 'low-color', f"{len(hues)} hue(s) {sorted(hues)} for a {mood} mood; aim for >= {need} (accent + supporting hues)"))
+        hero = False
+        for tag, attrs, cls, anc, s, e in nodes:
+            if tag in ('button', 'a', 'Button', 'span'):
+                continue
+            big = (padding_px(cls) or 0) >= 16 or any(re.match(r'p[xy]?-(?:[5-9]|1\d|2\d)$', c) for c in cls)
+            sat = any(c.startswith('bg-gradient') for c in cls) or any(
+                (m := re.fullmatch(r'bg-([a-z]+)-(?:[5-9]00|950)', c)) and m.group(1) in TW and m.group(1) not in NEUTRALS
+                for c in cls)
+            if big and sat:
+                hero = True
+                break
+        if not hero:
+            out.append(('WARN', 'no-hero-surface', f"no saturated or gradient surface for a {mood} mood; give the featured card / hero / CTA band the accent"))
+    return out
+
+
 def line_of(txt, pos):
     return txt.count('\n', 0, pos) + 1
 
 
-def audit(path, grid, tokens, dark_tokens=None):
+def audit(path, grid, tokens, dark_tokens=None, mood=None):
     txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
     issues = []
 
     def add(sev, rule, msg):
         issues.append((sev, rule, msg))
+
+    finetunes = []
 
     def grid_check(label, v):
         v = abs(v)
@@ -247,7 +460,7 @@ def audit(path, grid, tokens, dark_tokens=None):
         if v % 4:
             add('WARN', 'grid', f"{label} = {v:g}px, off the 4px grid")
         elif v % grid:
-            add('INFO', 'grid', f"{label} = {v:g}px, 4px fine-tune; prefer {grid}px multiples")
+            finetunes.append(label.split()[0])
 
     # spacing: CSS
     for m in re.finditer(rf'(?<![\w-]){SPACE_PROPS}\s*:\s*([^;}}"\n]+)', txt):
@@ -262,6 +475,12 @@ def audit(path, grid, tokens, dark_tokens=None):
                 grid_check(f"L{line_of(txt, m.start())} {m.group(0)}", float(px.group(1)))
         else:
             grid_check(f"L{line_of(txt, m.start())} {m.group(0)}", float(val) * 4)
+
+    if finetunes:
+        share = len(finetunes)
+        lines = list(dict.fromkeys(finetunes))
+        add('INFO', 'grid', f"{share} spacing value(s) on the 4px fine-tune grid ({', '.join(lines[:6])}{', ...' if len(lines) > 6 else ''}); "
+                            f"fine inside dense controls, prefer {grid}px multiples for layout spacing")
 
     # fonts
     fams = set()
@@ -290,7 +509,7 @@ def audit(path, grid, tokens, dark_tokens=None):
 
     nodes = list(walk(txt))
 
-    # contrast: Tailwind palette, arbitrary hex and shadcn tokens; background inherited from nearest ancestor
+    # contrast: Tailwind palette, arbitrary hex and shadcn tokens; background composited from ancestors
     seen = set()
     page = 'background' if 'background' in tokens else 'white'
     passes = [('', '', tokens, page, None), ('dark:', 'dark:', tokens, None, None)]
@@ -301,45 +520,36 @@ def audit(path, grid, tokens, dark_tokens=None):
             fg = pick(cls, 'text', variant)
             if not fg:
                 continue
-            bg = pick(cls, 'bg', variant)
-            for a in reversed(anc):
-                if bg and bg not in BG_PASSTHROUGH:
-                    break
-                bg = pick(a[2], 'bg', variant)
-            if not bg or bg in BG_PASSTHROUGH:
-                bg = page_bg
-            if not bg:
-                continue
+            res = backdrop([cls] + [a[2] for a in reversed(anc)], variant, tokens, page_bg)
+            if res is None:
+                continue  # gradient, image or unknown color behind the text
+            bh, bg = res
             if only is not None and fg.split('/')[0] not in only and bg.split('/')[0] not in only:
                 continue  # theme-independent pair, already checked in the light pass
-            fh, bh = tw_hex(fg, tokens), tw_hex(bg, tokens)
-            if not fh or not bh:
+            fh = tw_hex(fg, tokens)
+            if not fh:
                 continue
+            fa = alpha_of(fg)
+            if fa < 1:
+                fh = blend(fh, bh, fa)
             r = ratio(fh, bh)
             big = bool(BIG_TEXT & set(cls)) or ('text-xl' in cls and bool(BOLD & set(cls)))
             need = 3.0 if big else 4.5
             key = (label, fg, bg, need)
             if r < need and key not in seen:
                 seen.add(key)
+                tw = tw_same_hue(fg, bh, need)
+                bg_fix = tw_bg_same_hue(bg.split(' over ')[0][3:], fh, need) if not tw else None
+                fix = f"text-{tw}" if tw else (f"bg-{bg_fix}" if bg_fix else fix_color(fh, bh, need))
                 add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
-                    f"L{line_of(txt, s)} {label}{variant}text-{fg} on {variant}bg-{bg} = {r:.2f}:1 (need {need:g}, fix -> {fix_color(fh, bh, need)})")
+                    f"L{line_of(txt, s)} {label}text-{fg} on {bg} = {r:.2f}:1 (need {need:g}, fix -> {fix}, keep the hue)")
 
     tokens = passes[0][2]
 
     # single primary CTA per block: raw buttons with solid bg, and shadcn <Button> default/destructive
     counts = {}
     for tag, attrs, cls, anc, s, e in nodes:
-        solid = False
-        if tag in ('button', 'a'):
-            bg = pick(cls, 'bg')
-            solid = bool(bg) and (bg in ('primary', 'destructive') or
-                                  bool(re.fullmatch(r'\[#[0-9a-fA-F]{3,6}\]', bg)) or
-                                  bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg)))
-        elif tag == 'Button':
-            var = re.search(r"""variant\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*["']([^"']*)["']\s*\})""", attrs)
-            v = ''.join(g or '' for g in var.groups()) if var else 'default'
-            solid = v in ('default', 'destructive', 'primary')
-        if not solid:
+        if not is_solid_cta(tag, attrs, cls):
             continue
         idx = next((i for i in range(len(anc) - 1, -1, -1) if BLOCK.match(anc[i][0])), None)
         key = anc[idx][3] if idx is not None else -1
@@ -353,17 +563,21 @@ def audit(path, grid, tokens, dark_tokens=None):
         if not anc:
             continue
         cr, (pr, pp) = radius_px(cls), (radius_px(anc[-1][2]), padding_px(anc[-1][2]))
-        if cr is None or pr is None or pp is None or pr <= 0:
-            continue
-        want = max(pr - pp, 0)
+        if cr is None or pr is None or pp is None or pr <= 0 or pp >= pr:
+            continue  # with padding >= outer radius the inner radius is a free choice
+        want = pr - pp
         if cr != want and cr > want:
             add('INFO', 'nested-radius', f"L{line_of(txt, s)} inner radius {cr}px inside {pr}px with {pp}px padding; use {want}px ({RADIUS_NAME.get(want, f'rounded-[{want}px]')})")
+
+    # character / sterility checks
+    issues.extend(character_checks(txt, nodes, mood))
 
     # Miller: nav items
     for tag, attrs, cls, anc, s, e in nodes:
         if tag == 'nav':
             end = txt.find('</nav>', e)
             body = txt[e:end if end != -1 else len(txt)]
+            body = re.sub(r'<details\b.*?</details>', '', body, flags=re.S)  # overflow menu items are disclosed on demand
             n = len(re.findall(r'<(?:a|Link|NavLink)\b', body))
             if n > 7:
                 add('WARN', 'miller-7', f"L{line_of(txt, s)} nav has {n} links (>7); group or move to an overflow menu")
@@ -399,7 +613,7 @@ def cmd_audit(a):
     tokens, dark_tokens = css_tokens(texts), css_tokens(texts, r'\.dark')
     total = {'FAIL': 0, 'WARN': 0, 'INFO': 0}
     for p in a.files:
-        iss = audit(p, a.grid, tokens, dark_tokens)
+        iss = audit(p, a.grid, tokens, dark_tokens, a.mood)
         print(f"== {p}: {len(iss)} issue(s)")
         for sev, rule, msg in iss:
             total[sev] += 1
@@ -423,6 +637,8 @@ def main(argv=None):
     d.add_argument('files', nargs='+')
     d.add_argument('--grid', type=int, default=8, help='soft grid (default 8); values off the 4px grid are always WARN')
     d.add_argument('--css', nargs='*', help='CSS files with :root tokens, e.g. app/globals.css for shadcn')
+    d.add_argument('--mood', choices=['playful', 'trust', 'bold', 'editorial', 'technical'],
+                   help='enable mood checks: color presence and hero surface')
     d.set_defaults(f=cmd_audit)
     a = ap.parse_args(argv)
     a.f(a)
