@@ -18,12 +18,12 @@ SHADCN_CSS = """
 """
 
 
-def run(src, suffix='.tsx', css=None, grid=8):
+def run(src, suffix='.tsx', css=None, grid=8, mood=None):
     with tempfile.TemporaryDirectory() as d:
         f = pathlib.Path(d) / ('x' + suffix)
         f.write_text(src, encoding='utf-8')
         texts = [src] + ([css] if css else [])
-        return ut.audit(str(f), grid, ut.css_tokens(texts), ut.css_tokens(texts, r'\.dark'))
+        return ut.audit(str(f), grid, ut.css_tokens(texts), ut.css_tokens(texts, r'\.dark'), mood)
 
 
 def rules(issues, rule):
@@ -59,6 +59,11 @@ class Spacing(unittest.TestCase):
     def test_4px_finetune_is_info_with_default_grid(self):
         iss = rules(run('<div className="p-3" />'), 'grid')
         self.assertEqual([i[0] for i in iss], ['INFO'])
+
+    def test_finetunes_are_aggregated(self):
+        iss = rules(run('<div className="p-3 gap-3" /><div className="px-5" />'), 'grid')
+        self.assertEqual(len(iss), 1)
+        self.assertIn('3 spacing value(s)', iss[0][2])
 
     def test_8px_values_pass(self):
         self.assertEqual(rules(run('<div className="p-4 gap-6 m-[16px]" />'), 'grid'), [])
@@ -97,6 +102,20 @@ class Contrast(unittest.TestCase):
         self.assertEqual(rules(run('<h1 className="text-3xl text-[#949494]">x</h1>'), 'wcag-aa'), [])
         self.assertTrue(rules(run('<p className="text-[#949494]">x</p>'), 'wcag-aa'))
 
+    def test_translucent_backgrounds_are_composited(self):
+        # indigo-300 on indigo-500/15 over slate-900 passes; white/10 over a gradient is unknown and skipped
+        ok = '<div className="bg-slate-900"><a className="bg-indigo-500/15 text-indigo-300">x</a></div>'
+        grad = '<div className="bg-gradient-to-r from-indigo-600"><div className="bg-white/10"><span className="text-indigo-100">x</span></div></div>'
+        bad = '<div className="bg-white"><a className="bg-indigo-500/15 text-indigo-300">x</a></div>'
+        self.assertEqual(rules(run(ok), 'wcag-aa'), [])
+        self.assertEqual(rules(run(grad), 'wcag-aa'), [])
+        self.assertTrue(rules(run(bad), 'wcag-aa'))
+
+    def test_dark_pass_falls_back_to_base_background(self):
+        src = '<div className="bg-slate-900"><span className="text-slate-900 dark:text-slate-700">x</span></div>'
+        iss = rules(run(src), 'wcag-aa')
+        self.assertTrue(any('dark:text-slate-700' in i[2] for i in iss))
+
     def test_dark_variant_pairs(self):
         iss = rules(run('<div className="dark:bg-white"><span className="dark:text-slate-300">x</span></div>'), 'wcag-aa')
         self.assertIn('dark:text-slate-300', iss[0][2])
@@ -134,6 +153,12 @@ class Structure(unittest.TestCase):
     def test_nested_radius(self):
         self.assertTrue(rules(run('<div className="rounded-3xl p-2"><img className="rounded-3xl" /></div>'), 'nested-radius'))
         self.assertEqual(rules(run('<div className="rounded-3xl p-2"><img className="rounded-2xl" /></div>'), 'nested-radius'), [])
+        # padding >= outer radius: inner radius is a free choice
+        self.assertEqual(rules(run('<div className="rounded-2xl p-6"><div className="rounded-lg" /></div>'), 'nested-radius'), [])
+
+    def test_miller_ignores_overflow_menu(self):
+        nav = '<nav>' + '<a>x</a>' * 6 + '<details><summary>More</summary>' + '<a>y</a>' * 4 + '</details></nav>'
+        self.assertEqual(rules(run(nav, suffix='.html'), 'miller-7'), [])
 
     def test_miller_nav(self):
         nav = '<nav>' + '<a>x</a>' * 8 + '</nav>'
@@ -148,6 +173,67 @@ class Structure(unittest.TestCase):
     def test_skeleton_hint(self):
         self.assertTrue(rules(run('{items.map(i => <li>{i}</li>)}'), 'skeleton-empty'))
         self.assertEqual(rules(run('{loading ? <Skeleton /> : items.map(i => <li>{i}</li>)}'), 'skeleton-empty'), [])
+
+
+class Character(unittest.TestCase):
+    """Sterility checks: correct-but-grey, flat, boxed-in output."""
+
+    def test_same_hue_fix_suggested(self):
+        self.assertEqual(ut.tw_same_hue('pink-400', '#fce7f3', 4.5), 'pink-700')
+        msg = rules(run('<div className="bg-pink-100"><span className="text-pink-400">x</span></div>'), 'wcag-aa')[0][2]
+        self.assertIn('text-pink-700', msg)
+
+    def test_white_text_gets_darker_background_of_same_hue(self):
+        msg = rules(run('<span className="bg-sky-500 text-white">x</span>'), 'wcag-aa')[0][2]
+        self.assertIn('fix -> bg-sky-700', msg)
+
+    def test_scale_floors(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            ut.main(['scale', '--ratio', 'perfect-fourth'])
+        self.assertIn('--text-xs: 0.75rem', out.getvalue())
+        self.assertIn('--text-sm: 0.875rem', out.getvalue())
+
+    def test_small_primary_cta(self):
+        self.assertTrue(rules(run('<button className="h-8 bg-indigo-600">Go</button>'), 'fitts-primary'))
+        self.assertEqual(rules(run('<button className="h-11 bg-indigo-600">Go</button>'), 'fitts-primary'), [])
+        self.assertEqual(rules(run('<button className="h-8 border">Filter</button>'), 'fitts-primary'), [])
+
+    def test_frame_wrapper(self):
+        frame = '<div className="rounded-3xl p-4 bg-slate-50 border"><div className="rounded-lg bg-white p-6">x</div></div>'
+        card = '<div className="rounded-3xl p-6 bg-white shadow-sm"><h3>t</h3><p>x</p></div>'
+        self.assertTrue(rules(run(frame), 'frame-wrapper'))
+        self.assertEqual(rules(run(card), 'frame-wrapper'), [])
+
+    def test_border_heavy(self):
+        bordered = '<div className="rounded-2xl p-4 bg-white border">x</div>' * 5
+        shadowed = '<div className="rounded-2xl p-4 bg-white shadow-sm">x</div>' * 5
+        self.assertTrue(rules(run(bordered), 'border-heavy'))
+        self.assertEqual(rules(run(shadowed), 'border-heavy'), [])
+
+    def test_flat_hierarchy(self):
+        flat = '<span className="text-base font-bold">x</span>' * 20
+        varied = ('<h1 className="text-3xl font-bold">t</h1>' + '<p className="text-base">x</p>' * 10 +
+                  '<span className="text-sm font-medium">l</span>' * 9)
+        self.assertTrue(rules(run(flat), 'flat-hierarchy'))
+        self.assertEqual(rules(run(varied), 'flat-hierarchy'), [])
+
+    def test_grey_chart_ignores_skeletons(self):
+        grey = ''.join(f'<div className="h-2 w-{w} bg-slate-{s}"></div>' for w, s in (('1/2', 600), ('1/3', 500), ('1/4', 400)))
+        color = ''.join(f'<div className="h-2 w-{w} bg-{c}-500"></div>' for w, c in (('1/2', 'indigo'), ('1/3', 'emerald'), ('1/4', 'amber')))
+        skeleton = '<div className="animate-pulse">' + grey + '</div>'
+        self.assertTrue(rules(run(grey), 'grey-chart'))
+        self.assertEqual(rules(run(color), 'grey-chart'), [])
+        self.assertEqual(rules(run(skeleton), 'grey-chart'), [])
+
+    def test_mood_hero_surface_and_color(self):
+        sterile = '<section className="p-8 bg-white"><h1 className="text-slate-900">x</h1><a className="bg-violet-600 h-12">Go</a></section>'
+        lively = '<section className="p-8 bg-gradient-to-br from-violet-500 to-amber-400"><h1>x</h1></section><p className="text-sky-700">y</p>'
+        self.assertTrue(rules(run(sterile, mood='playful'), 'no-hero-surface'))
+        self.assertTrue(rules(run(sterile, mood='playful'), 'low-color'))
+        self.assertEqual(rules(run(lively, mood='playful'), 'no-hero-surface'), [])
+        self.assertEqual(rules(run(lively, mood='playful'), 'low-color'), [])
+        self.assertEqual(rules(run(sterile), 'no-hero-surface'), [])  # mood checks are opt-in
 
 
 class Cli(unittest.TestCase):
