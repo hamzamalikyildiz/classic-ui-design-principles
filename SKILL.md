@@ -76,7 +76,7 @@ python3 scripts/uitools.py snap 13 22 --grid 8                    # round to gri
 python3 scripts/uitools.py audit src/App.tsx --css app/globals.css  # rule violations, exit 1 on FAIL
 ```
 
-`audit` checks per element: spacing off the 4px grid (WARN) or off the 8px grid (INFO), text/background contrast with the background inherited from the nearest ancestor (Tailwind v3 palette, arbitrary hex, shadcn HSL tokens via `--css`, `dark:` pairs), solid buttons per section/card (raw buttons, `bg-primary`, shadcn `<Button>` default/destructive), nav link count, long paragraphs without a readable max-width on themselves or an ancestor, more than 2 fonts (CSS, Google Fonts, `next/font`) and lists without skeleton/empty states.
+`audit` checks per element: spacing off the 4px grid (WARN) or off the 8px grid (INFO), text/background contrast with the background inherited from the nearest ancestor (Tailwind v3 palette, arbitrary hex, `dark:` pairs, shadcn HSL tokens for both `:root` and `.dark` via `--css`; gradients and unknown custom backgrounds are skipped, not guessed), solid buttons per section/card (raw buttons, `bg-primary`, shadcn `<Button>` default/destructive), nested radius against the parent's radius and padding, nav link count, long paragraphs without a readable max-width on themselves or an ancestor, more than 2 fonts (CSS, Google Fonts, `next/font`) and lists without skeleton/empty states.
 
 ## 5. Build & verify
 
