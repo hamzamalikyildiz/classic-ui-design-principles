@@ -69,7 +69,7 @@ The audit exits with code 1 when any FAIL is found, so it can run in CI.
 python3 -m unittest discover -s tests -v
 ```
 
-GitHub Actions runs the suite on Python 3.9 and 3.12 for every push and pull request.
+GitHub Actions runs the suite on Python 3.10 and 3.13 for every push and pull request.
 
 ## License
 
