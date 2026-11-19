@@ -17,9 +17,11 @@ Rules are selected per page type: landing, dashboard, form, content, mobile, e-c
 
 ```
 classic-ui-design-principles/
-├── SKILL.md            # rule matrix, rule reference, workflow
-└── scripts/
-    └── uitools.py      # contrast, scale, radius, snap, audit
+├── SKILL.md              # rule matrix, rule reference, workflow
+├── scripts/
+│   └── uitools.py        # contrast, scale, radius, snap, audit
+└── tests/
+    └── test_uitools.py   # regression tests (unittest, stdlib only)
 ```
 
 ## Install
@@ -50,8 +52,9 @@ python3 scripts/uitools.py audit index.html src/App.tsx --css app/globals.css
 The audit works per element, not per file:
 
 - **Spacing:** values off the 4px grid are WARN, 4px fine-tunes off the 8px grid are INFO
-- **Contrast:** text/background pairs with the background inherited from the nearest ancestor; resolves Tailwind v3 palette names, arbitrary hex, `dark:` variants and shadcn HSL tokens passed with `--css`
+- **Contrast:** text/background pairs with the background inherited from the nearest ancestor; resolves Tailwind v3 palette names, arbitrary hex, `dark:` variants and shadcn HSL tokens from both `:root` and `.dark` passed with `--css`. Background utilities like `bg-cover` are ignored, `bg-transparent` falls through to the parent, gradients and unknown custom colors are skipped rather than guessed
 - **Single primary CTA:** solid buttons per section/card, including `bg-primary` and shadcn `<Button>` default/destructive variants
+- **Nested radius:** child radius vs. parent radius minus parent padding
 - **Line length:** long paragraphs without `max-w-prose` / ≤80ch on themselves or an ancestor
 - **Fonts:** more than two families across CSS, Google Fonts and `next/font`
 - **Miller / states:** navs with more than 7 links, lists without skeleton or empty states
@@ -59,6 +62,14 @@ The audit works per element, not per file:
 Tailwind v4 `oklch` colors and runtime CSS variables are not resolved; check those with `contrast`.
 
 The audit exits with code 1 when any FAIL is found, so it can run in CI.
+
+## Tests
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+GitHub Actions runs the suite on Python 3.9 and 3.12 for every push and pull request.
 
 ## License
 
