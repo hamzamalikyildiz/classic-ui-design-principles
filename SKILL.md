@@ -69,12 +69,14 @@ The user's explicit request wins over the matrix. Report any deliberate deviatio
 `scripts/uitools.py` (Python 3, stdlib only), run from the skill directory:
 
 ```bash
-python3 scripts/uitools.py contrast '#64748b' '#ffffff'        # ratio, AA verdict, fixed color
-python3 scripts/uitools.py scale --base 16 --ratio major-third  # CSS vars + Tailwind fontSize
-python3 scripts/uitools.py radius 24 8                          # inner radius
-python3 scripts/uitools.py snap 13 22 --grid 8                  # round to grid
-python3 scripts/uitools.py audit src/App.tsx index.html         # rule violations, exit 1 on FAIL
+python3 scripts/uitools.py contrast slate-500 white              # hex or Tailwind names; ratio, AA verdict, fixed color
+python3 scripts/uitools.py scale --base 16 --ratio major-third    # CSS vars + Tailwind fontSize
+python3 scripts/uitools.py radius 24 8                            # inner radius
+python3 scripts/uitools.py snap 13 22 --grid 8                    # round to grid
+python3 scripts/uitools.py audit src/App.tsx --css app/globals.css  # rule violations, exit 1 on FAIL
 ```
+
+`audit` checks per element: spacing off the 4px grid (WARN) or off the 8px grid (INFO), text/background contrast with the background inherited from the nearest ancestor (Tailwind v3 palette, arbitrary hex, shadcn HSL tokens via `--css`, `dark:` pairs), solid buttons per section/card (raw buttons, `bg-primary`, shadcn `<Button>` default/destructive), nav link count, long paragraphs without a readable max-width on themselves or an ancestor, more than 2 fonts (CSS, Google Fonts, `next/font`) and lists without skeleton/empty states.
 
 ## 5. Build & verify
 
@@ -83,7 +85,7 @@ python3 scripts/uitools.py audit src/App.tsx index.html         # rule violation
 3. Define tokens in one place (Tailwind `theme.extend` or `:root`); components use tokens only.
 4. Build the UI.
 5. Run `audit` on every created or changed file. Fix until FAIL=0; fix WARNs or justify them; review INFOs.
-6. Manually check what the audit can't measure: 60-30-10 balance, Z/F flow, focus states, responsive breakpoints, contrast of Tailwind palette pairs (measure their hex values with `contrast`).
+6. Manually check what the audit can't measure: 60-30-10 balance, Z/F flow, focus states, responsive breakpoints, contrast of colors the audit can't resolve (Tailwind v4 oklch, custom theme colors, CSS variables set at runtime); measure those with `contrast`.
 7. If a browser/preview is available, take a screenshot and review the hierarchy.
 8. Pre-delivery checklist:
    - [ ] No arbitrary px values (`13px`, `19px`); 4/8px grid respected
