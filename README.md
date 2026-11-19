@@ -37,17 +37,28 @@ git clone https://github.com/hamzamalikyildiz/classic-ui-design-principles ~/.cl
 Python 3, no dependencies.
 
 ```bash
-python3 scripts/uitools.py contrast '#9ca3af' '#ffffff'
-# #9ca3af on #ffffff: 2.54:1 | AA text(4.5): FAIL | AA large/UI(3.0): FAIL
-#   fix -> #6d7787 (>= 4.5:1)
+python3 scripts/uitools.py contrast slate-400 white
+# #94a3b8 on #ffffff: 2.56:1 | AA text(4.5): FAIL | AA large/UI(3.0): FAIL
+#   fix -> #627793 (>= 4.5:1)
 
 python3 scripts/uitools.py scale --base 16 --ratio perfect-fourth
 python3 scripts/uitools.py radius 24 8
 python3 scripts/uitools.py snap 13 22 --grid 8
-python3 scripts/uitools.py audit index.html src/App.tsx
+python3 scripts/uitools.py audit index.html src/App.tsx --css app/globals.css
 ```
 
-The audit flags off-grid spacing, low contrast (CSS and Tailwind arbitrary hex values), more than two font families, multiple solid CTAs per section, navs with more than 7 links, unbounded paragraph width and lists without loading/empty states. It exits with code 1 when any FAIL is found, so it can run in CI.
+The audit works per element, not per file:
+
+- **Spacing:** values off the 4px grid are WARN, 4px fine-tunes off the 8px grid are INFO
+- **Contrast:** text/background pairs with the background inherited from the nearest ancestor; resolves Tailwind v3 palette names, arbitrary hex, `dark:` variants and shadcn HSL tokens passed with `--css`
+- **Single primary CTA:** solid buttons per section/card, including `bg-primary` and shadcn `<Button>` default/destructive variants
+- **Line length:** long paragraphs without `max-w-prose` / ≤80ch on themselves or an ancestor
+- **Fonts:** more than two families across CSS, Google Fonts and `next/font`
+- **Miller / states:** navs with more than 7 links, lists without skeleton or empty states
+
+Tailwind v4 `oklch` colors and runtime CSS variables are not resolved; check those with `contrast`.
+
+The audit exits with code 1 when any FAIL is found, so it can run in CI.
 
 ## License
 
