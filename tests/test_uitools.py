@@ -282,6 +282,14 @@ class MoodSpecific(unittest.TestCase):
         self.assertTrue(rules(iss, 'width-funnel'))
         self.assertTrue(rules(iss, 'editorial-leading'))
 
+    def test_editorial_edge_alignment(self):
+        bad = '<div className="max-w-4xl mx-auto"><h1 className="text-5xl">T</h1></div><div className="max-w-prose mx-auto"><p>x</p></div>'
+        self.assertTrue(rules(run(bad, mood='editorial'), 'edge-align'))
+        ok = '<div className="max-w-4xl mx-auto"><h1 className="text-5xl">T</h1><div className="max-w-prose"><p>x</p></div></div>'
+        self.assertEqual(rules(run(ok, mood='editorial'), 'edge-align'), [])
+        centered = '<div className="max-w-4xl mx-auto text-center"><h1 className="text-5xl">T</h1></div><div className="max-w-prose mx-auto"><p>x</p></div>'
+        self.assertEqual(rules(run(centered, mood='editorial'), 'edge-align'), [])
+
     def test_technical_checks(self):
         src = ''.join('<div className="rounded-3xl p-4 shadow-xl">x</div>' for _ in range(3))
         iss = run(src, mood='technical')
