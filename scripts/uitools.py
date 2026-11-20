@@ -56,7 +56,7 @@ def cmd_scale(a):
         px = a.base * rt**s
         px4 = max(4, round(px/ (2 if px < 24 else 4)) * (2 if px < 24 else 4))
         px4 = max(px4, {'xs': 12, 'sm': 14}.get(n, 0))  # never shrink Tailwind's small sizes below readable floors
-        lh = round((px4 * (1.5 if s <= 1 else 1.2)) / 4) * 4
+        lh = round((px4 * (1.6 if px4 <= 18 else 1.4 if px4 <= 24 else 1.25 if px4 <= 40 else 1.1)) / 4) * 4
         rows.append((n, px4, lh))
         print(f"  --text-{n}: {px4/16:.4g}rem; --leading-{n}: {lh/16:.4g}rem; /* {px4}px / {lh}px */")
     print("}\n/* tailwind.config theme.extend.fontSize */\nfontSize: {")
@@ -332,9 +332,22 @@ def height_px(cls):
     return h
 
 
-def is_solid_cta(tag, attrs, cls):
+DARK_NEUTRAL = re.compile(r'(?:slate|gray|zinc|neutral|stone)-(?:[6-9]00|950)|black')
+
+
+def is_dark_page(txt):
+    """True when the page base is a dark neutral (body/html/main/root wrapper), so dark neutral buttons are surfaces, not CTAs."""
+    for m in re.finditer(r'<(?:body|html|main)\b[^>]*>', txt):
+        if re.search(r'(?<![\w:-])bg-(?:(?:slate|gray|zinc|neutral|stone)-(?:9\d0)|black)(?![\w-])', m.group(0)):
+            return True
+    return bool(re.search(r'(?:body|html)\s*\{[^}]*background(?:-color)?\s*:\s*#(?:0|1)[0-9a-fA-F]{2,5}\b', txt))
+
+
+def is_solid_cta(tag, attrs, cls, dark_page=False):
     if tag in ('button', 'a'):
         bg = pick(cls, 'bg')
+        if dark_page and bg and DARK_NEUTRAL.fullmatch(bg):
+            return False  # dark neutral on a dark page is a secondary surface
         return bool(bg) and (bg in ('primary', 'destructive') or
                              bool(re.fullmatch(r'\[#[0-9a-fA-F]{3,6}\]', bg)) or
                              bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg))) or any(c.startswith('bg-gradient') for c in cls)
@@ -348,6 +361,7 @@ def is_solid_cta(tag, attrs, cls):
 def character_checks(txt, nodes, mood):
     """Checks for the 'sterile' failure mode: correct but grey, flat and boxed-in."""
     out = []
+    dark = is_dark_page(txt)
     children = {}
     for n in nodes:
         anc = n[3]
@@ -356,7 +370,7 @@ def character_checks(txt, nodes, mood):
 
     # primary CTA too small (Fitts)
     for tag, attrs, cls, anc, s, e in nodes:
-        if is_solid_cta(tag, attrs, cls):
+        if is_solid_cta(tag, attrs, cls, dark):
             h = height_px(cls)
             if h is not None and h < 40:
                 out.append(('WARN', 'fitts-primary', f"L{line_of(txt, s)} primary CTA is {h:g}px tall; use >=44px (h-11+), hero CTA h-12..h-14"))
@@ -382,7 +396,7 @@ def character_checks(txt, nodes, mood):
              if any(CARD_RADIUS.match(c) for c in cls) and (padding_px(cls) or 0) >= 12
              and any(c.startswith('bg-') or c == 'border' or c.startswith('border-') for c in cls)
              and tag not in ('button', 'a', 'Button', 'input', 'span')]
-    if len(cards) >= 4:
+    if len(cards) >= 4 and mood not in ('technical', 'editorial'):  # hairlines are the depth language there
         bordered = sum(1 for c in cards if 'border' in c or any(re.fullmatch(r'border-\d', x) for x in c))
         shadowed = sum(1 for c in cards if any(re.fullmatch(r'shadow(-sm|-md|-lg|-xl|-2xl)?', x) for x in c))
         if bordered / len(cards) >= 0.7 and shadowed <= 1:
@@ -437,6 +451,51 @@ def character_checks(txt, nodes, mood):
                 break
         if not hero:
             out.append(('WARN', 'no-hero-surface', f"no saturated or gradient surface for a {mood} mood; give the featured card / hero / CTA band the accent"))
+    out.extend(mood_specific(txt, nodes, mood))
+    return out
+
+
+MAXW = re.compile(r'^max-w-(prose|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|\[[^\]]+\])$')
+NARROW = re.compile(r'^max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[4-7]\d|80)ch\])$')
+DISPLAY_TEXT = re.compile(r'^text-(?:3xl|4xl|5xl|6xl|7xl|8xl|9xl)$')
+
+
+def mood_specific(txt, nodes, mood):
+    out = []
+    if mood == 'editorial':
+        # headline trapped in the reading measure
+        trapped = []
+        for tag, attrs, cls, anc, s, e in nodes:
+            if tag in ('h1', 'h2') and any(DISPLAY_TEXT.match(c) for c in cls):
+                chain = [cls] + [a[2] for a in anc if a[0] not in ('body', 'html')]
+                if any(NARROW.match(c) for cl in chain for c in cl):
+                    trapped.append(line_of(txt, s))
+        if trapped:
+            out.append(('WARN', 'headline-measure', f"{len(trapped)} display headline(s) inside the reading measure (lines {trapped[:6]}); "
+                        "keep body at 65ch but let headlines, figures and pull quotes span the wide frame (max-w-4xl/5xl)"))
+        # too many container widths
+        widths = {c for tag, attrs, cls, anc, s, e in nodes for c in cls if MAXW.match(c) and 'mx-auto' in cls}
+        widths = {('prose' if w == 'max-w-prose' else w) for w in widths}
+        if len(widths) >= 3:
+            out.append(('INFO', 'width-funnel', f"{len(widths)} container widths {sorted(widths)}; use two: one wide frame + one reading column, aligned to the same left edge or centered together"))
+        # cramped leading on long text
+        tight = [line_of(txt, s) for tag, attrs, cls, anc, s, e in nodes
+                 if tag in ('p', 'blockquote', 'li') and any(c in ('leading-none', 'leading-tight', 'leading-snug') for c in cls)
+                 and any(c in ('text-lg', 'text-xl', 'text-2xl', 'text-base') for c in cls)]
+        if tight:
+            out.append(('WARN', 'editorial-leading', f"{len(tight)} long-form text element(s) with tight leading (lines {tight[:6]}); body 1.65-1.8 (leading-relaxed/loose), quotes >= 1.4"))
+        if not re.search(r'font-serif|font-\[|font-family\s*:[^;]*(?:serif|Merriweather|Lora|Playfair|Source Serif|Fraunces)', txt, re.I):
+            out.append(('INFO', 'no-serif', "no serif face found; editorial mood usually pairs a serif display (or body) with a sans"))
+    elif mood == 'technical':
+        soft = [line_of(txt, s) for tag, attrs, cls, anc, s, e in nodes
+                if (radius_px(cls) or 0) > 12 and tag not in ('span', 'img') and not any(c in ('rounded-full',) for c in cls)]
+        if len(soft) >= 3:
+            out.append(('INFO', 'radius-too-soft', f"{len(soft)} elements with radius > 12px (lines {soft[:6]}); technical mood uses 4-8px"))
+        if 'font-mono' not in txt and not re.search(r'font-family\s*:[^;]*(?:mono|Mono|Consolas|Menlo)', txt):
+            out.append(('INFO', 'no-mono', "no monospace face; use mono for labels, numbers, code and IDs"))
+        heavy = sum(1 for tag, attrs, cls, anc, s, e in nodes if any(re.fullmatch(r'shadow-(?:lg|xl|2xl)', c) for c in cls))
+        if heavy >= 3:
+            out.append(('INFO', 'shadow-heavy', f"{heavy} large shadows; technical mood separates layers with 1px borders and bg steps"))
     return out
 
 
@@ -547,9 +606,10 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
     tokens = passes[0][2]
 
     # single primary CTA per block: raw buttons with solid bg, and shadcn <Button> default/destructive
+    dark_page = is_dark_page(txt)
     counts = {}
     for tag, attrs, cls, anc, s, e in nodes:
-        if not is_solid_cta(tag, attrs, cls):
+        if not is_solid_cta(tag, attrs, cls, dark_page):
             continue
         idx = next((i for i in range(len(anc) - 1, -1, -1) if BLOCK.match(anc[i][0])), None)
         key = anc[idx][3] if idx is not None else -1
