@@ -446,7 +446,10 @@ def character_checks(txt, nodes, mood):
             sat = any(c.startswith('bg-gradient') for c in cls) or any(
                 (m := re.fullmatch(r'bg-([a-z]+)-(?:[5-9]00|950)', c)) and m.group(1) in TW and m.group(1) not in NEUTRALS
                 for c in cls)
-            if big and sat:
+            dark_band = (mood == 'bold' and tag in ('section', 'header', 'div') and
+                         any(re.fullmatch(r'bg-(?:(?:slate|gray|zinc|neutral|stone)-(?:900|950)|black)', c) for c in cls) and
+                         any(re.fullmatch(r'p[ty]-(?:1[6-9]|[2-9]\d)', c) for c in cls))
+            if (big and sat) or dark_band:
                 hero = True
                 break
         if not hero:
@@ -528,7 +531,9 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
         v = abs(v)
         if v <= 2:
             return
-        if v % 4:
+        if v % 4 == 2:
+            finetunes.append(label.split()[0])  # Tailwind half-steps (6, 10, 14px) are common; informational
+        elif v % 4:
             add('WARN', 'grid', f"{label} = {v:g}px, off the 4px grid")
         elif v % grid:
             finetunes.append(label.split()[0])
@@ -616,6 +621,41 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
                     f"L{line_of(txt, s)} {label}text-{fg} on {bg} = {r:.2f}:1 (need {need:g}, fix -> {fix}, keep the hue)")
 
     tokens = passes[0][2]
+
+    # contrast on gradients: text must pass against every color stop of the nearest gradient
+    gseen = set()
+    for tag, attrs, cls, anc, s, e in nodes:
+        fg = pick(cls, 'text')
+        if not fg:
+            continue
+        g = None
+        for c in [cls] + [a[2] for a in reversed(anc)]:
+            if any(x.startswith('bg-gradient') for x in c if ':' not in x):
+                g = c
+                break
+            b = pick(c, 'bg')
+            if b and b not in BG_PASSTHROUGH and alpha_of(b) >= 1:
+                break  # an opaque solid layer sits between the text and any gradient
+        if g is None:
+            continue
+        fh = tw_hex(fg, tokens)
+        if not fh or alpha_of(fg) < 1:
+            continue
+        big = bool(BIG_TEXT & set(cls)) or ('text-xl' in cls and bool(BOLD & set(cls)))
+        need = 3.0 if big else 4.5
+        for x in g:
+            m = re.fullmatch(r'(?:from|via|to)-([\w.\[\]#-]+)', x)
+            if not m or alpha_of(m.group(1)) < 1 or m.group(1) in BG_PASSTHROUGH:
+                continue
+            sh = tw_hex(m.group(1), tokens)
+            if not sh:
+                continue
+            r = ratio(fh, sh)
+            key = (fg, m.group(1), need)
+            if r < need and key not in gseen:
+                gseen.add(key)
+                add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
+                    f"L{line_of(txt, s)} text-{fg} on gradient stop {x} = {r:.2f}:1 (need {need:g}); text must pass against every stop, darken that stop within its hue")
 
     # single primary CTA per block: raw buttons with solid bg, and shadcn <Button> default/destructive
     dark_page = is_dark_page(txt)
