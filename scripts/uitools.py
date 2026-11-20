@@ -495,7 +495,7 @@ DISPLAY_TEXT = re.compile(r'^text-(?:3xl|4xl|5xl|6xl|7xl|8xl|9xl)$')
 EXPRESSIVE = ('playful', 'bold')
 # style rules that expressive moods may break on purpose; the accessibility/readability floor
 # (wcag-aa, line-length, reveal-needs-js, ...) stays at full severity
-RELAXED = {'grid', 'miller-7', 'single-primary-cta', 'fitts-primary', 'grey-chart', 'max-2-fonts',
+RELAXED = {'grid', 'miller-7', 'single-primary-cta', 'grey-chart', 'max-2-fonts',
            'no-hero-surface', 'border-heavy', 'no-drawn-mascot', 'card-sameness', 'bold-headline-size', 'bold-font-default'}
 
 
@@ -522,9 +522,10 @@ def character_floor(txt, nodes, mood):
             out.append(('WARN', 'card-sameness', f"{whites} white rounded cards; alternate section treatments "
                         "(color band, tilted sticker, outline shape) so the page is not one repeated card"))
     if mood == 'bold':
+        tw_xl = {'4': 36, '5': 48, '6': 60, '7': 72, '8': 96, '9': 128}
         sizes = []
         for m in re.finditer(r'text-([4-9])xl', txt):
-            sizes.append(int(m.group(1)) * 12 + 12)   # 7xl=96 approx
+            sizes.append(tw_xl[m.group(1)])
         for m in re.finditer(r'text-\[(\d+(?:\.\d+)?)(px|rem)\]', txt):
             sizes.append(_px(float(m.group(1)), m.group(2)))
         for m in re.finditer(r'clamp\([^;{}]*?,\s*(\d+(?:\.\d+)?)(px|rem)\s*\)', txt):
