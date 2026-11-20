@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tracewise</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans: ['Inter','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+    colors: { bg:'#0a0d12', panel:'#11161e', line:'#1f2935', accent:'#22d3ee', good:'#34d399', warn:'#fbbf24', bad:'#f87171' }
+  } }
+};
+</script>
+<style>
+  body { background:#0a0d12; color:#e2e8f0; }
+  .panel { background:#11161e; border:1px solid #1f2935; border-radius:14px; }
+  .log-line { white-space:nowrap; }
+  @keyframes blink { 50% { opacity:.25 } }
+  .pulse { animation: blink 1.6s steps(2) infinite; }
+</style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+<div class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="hidden md:flex w-56 shrink-0 flex-col gap-8 border-r border-line bg-panel p-5">
+    <div class="flex items-center gap-2.5">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+        <rect width="28" height="28" rx="8" fill="#0a0d12" stroke="#1f2935"/>
+        <path d="M6 18 L11 12 L15 16 L22 8" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="22" cy="8" r="2" fill="#22d3ee"/>
+      </svg>
+      <span class="text-lg font-semibold tracking-tight">Tracewise</span>
+    </div>
+    <nav class="flex flex-col gap-1 text-sm">
+      <a class="rounded-lg bg-line/60 px-3 py-2 text-white" href="#">Overview</a>
+      <a class="rounded-lg px-3 py-2 text-slate-400 hover:bg-line/40 hover:text-white" href="#">Traces</a>
+      <a class="rounded-lg px-3 py-2 text-slate-400 hover:bg-line/40 hover:text-white" href="#">Logs</a>
+      <a class="rounded-lg px-3 py-2 text-slate-400 hover:bg-line/40 hover:text-white" href="#">Alerts</a>
+      <a class="rounded-lg px-3 py-2 text-slate-400 hover:bg-line/40 hover:text-white" href="#">Settings</a>
+    </nav>
+    <div class="mt-auto text-xs text-slate-500">
+      <div class="mono">env: production</div>
+      <div class="mt-1 flex items-center gap-1.5"><span class="pulse h-1.5 w-1.5 rounded-full bg-good"></span> Ingest healthy</div>
+    </div>
+  </aside>
+
+  <main class="min-w-0 flex-1 space-y-5 p-4 md:p-6">
+
+    <!-- Header -->
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-semibold tracking-tight">Overview</h1>
+        <p class="text-sm text-slate-400">Last 60 minutes across 5 services</p>
+      </div>
+      <div class="flex gap-2 text-sm">
+        <button class="rounded-lg border border-line px-3 py-1.5 text-slate-300 hover:bg-line/40">1h</button>
+        <button class="rounded-lg bg-accent/15 px-3 py-1.5 text-accent ring-1 ring-accent/40">Live</button>
+      </div>
+    </header>
+
+    <!-- KPIs -->
+    <section class="grid grid-cols-2 gap-4 xl:grid-cols-4">
+      <div class="panel p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-500">Throughput</p>
+        <p class="mono mt-2 text-2xl font-medium">1.84k<span class="text-sm text-slate-500"> req/s</span></p>
+        <p class="mt-1 text-xs text-good">+4.2% vs last hour</p>
+      </div>
+      <div class="panel p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-500">p95 latency</p>
+        <p class="mono mt-2 text-2xl font-medium" id="kpi-p95">--<span class="text-sm text-slate-500"> ms</span></p>
+        <p class="mt-1 text-xs text-slate-400">Target &lt; 300 ms</p>
+      </div>
+      <div class="panel p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-500">Error rate</p>
+        <p class="mono mt-2 text-2xl font-medium text-warn">1.37<span class="text-sm text-slate-500"> %</span></p>
+        <p class="mt-1 text-xs text-bad">+0.4 pts in 15m</p>
+      </div>
+      <div class="panel p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-500">Open alerts</p>
+        <p class="mono mt-2 text-2xl font-medium">2</p>
+        <p class="mt-1 text-xs text-slate-400">1 critical, 1 warning</p>
+      </div>
+    </section>
+
+    <!-- Latency + errors -->
+    <section class="grid gap-4 lg:grid-cols-3">
+      <div class="panel p-5 lg:col-span-2">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-sm font-medium">Latency (p50 / p95)</h2>
+          <div class="flex gap-4 text-xs text-slate-400">
+            <span class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-accent"></span>p95</span>
+            <span class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-slate-500"></span>p50</span>
+          </div>
+        </div>
+        <svg id="latency" viewBox="0 0 600 220" class="h-auto w-full" preserveAspectRatio="none" role="img" aria-label="Latency chart"></svg>
+      </div>
+
+      <div class="panel p-5">
+        <h2 class="mb-3 text-sm font-medium">Error rate (per minute)</h2>
+        <div id="errors" class="flex h-[220px] items-end gap-1"></div>
+        <div class="mt-2 flex justify-between text-[10px] mono text-slate-500"><span>-30m</span><span>now</span></div>
+      </div>
+    </section>
+
+    <!-- Services + logs -->
+    <section class="grid gap-4 lg:grid-cols-3">
+      <div class="panel p-5">
+        <h2 class="mb-3 text-sm font-medium">Services</h2>
+        <ul class="divide-y divide-line text-sm">
+          <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-good"></span>api-gateway</span><span class="mono text-xs text-slate-400">82 ms</span></li>
+          <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-good"></span>auth</span><span class="mono text-xs text-slate-400">41 ms</span></li>
+          <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-warn"></span>checkout</span><span class="mono text-xs text-slate-400">310 ms</span></li>
+          <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-good"></span>ingest-worker</span><span class="mono text-xs text-slate-400">129 ms</span></li>
+          <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-bad"></span>postgres-proxy</span><span class="mono text-xs text-slate-400">744 ms</span></li>
+        </ul>
+      </div>
+
+      <div class="panel p-5 lg:col-span-2">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-sm font-medium">Live log tail</h2>
+          <span class="flex items-center gap-1.5 text-xs text-good"><span class="pulse h-1.5 w-1.5 rounded-full bg-good"></span>streaming</span>
+        </div>
+        <div id="logs" class="mono h-56 overflow-y-auto rounded-lg border border-line bg-bg p-3 text-xs leading-6"></div>
+      </div>
+    </section>
+
+    <!-- SDK install -->
+    <section class="panel p-5">
+      <div class="mb-3 flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-medium">Install the SDK</h2>
+          <p class="text-xs text-slate-400">Instrument a service in under a minute.</p>
+        </div>
+        <button id="copy" class="rounded-lg border border-line px-3 py-1.5 text-xs text-slate-300 hover:bg-line/40">Copy</button>
+      </div>
+<pre id="snippet" class="mono overflow-x-auto rounded-lg border border-line bg-bg p-4 text-xs leading-6 text-slate-300"><span class="text-slate-500"># 1. Install</span>
+npm install @tracewise/sdk
+
+<span class="text-slate-500">// 2. Initialize once at startup</span>
+<span class="text-accent">import</span> { Tracewise } <span class="text-accent">from</span> <span class="text-good">'@tracewise/sdk'</span>;
+
+<span class="text-accent">const</span> tw = Tracewise.<span class="text-warn">init</span>({
+  apiKey: process.env.TRACEWISE_KEY,
+  service: <span class="text-good">'checkout'</span>,
+  environment: <span class="text-good">'production'</span>,
+});
+
+<span class="text-slate-500">// 3. Wrap any operation you want traced</span>
+<span class="text-accent">await</span> tw.<span class="text-warn">trace</span>(<span class="text-good">'charge.create'</span>, <span class="text-accent">async</span> () =&gt; chargeCard(order));</pre>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Seeded pseudo-random so the charts look stable on each load
+  let seed = 7;
+  const rand = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+
+  // ---- Latency chart ----
+  const W = 600, H = 220, P = 28;
+  const p95 = Array.from({ length: 60 }, (_, i) =>
+    180 + 70 * Math.sin(i / 6) + rand() * 60 + (i % 19 === 0 ? 160 : 0));
+  const p50 = p95.map(v => v * 0.45 + rand() * 12);
+  const max = Math.max(...p95) * 1.12;
+  const x = i => P + i * (W - 2 * P) / (p95.length - 1);
+  const y = v => H - P - (v / max) * (H - 2 * P);
+  const line = arr => arr.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+
+  const grid = [0, 0.25, 0.5, 0.75, 1].map(f => {
+    const gy = y(max * f).toFixed(1);
+    return `<line x1="${P}" x2="${W - P}" y1="${gy}" y2="${gy}" stroke="#1f2935" stroke-width="1"/>
+            <text x="4" y="${+gy + 4}" fill="#64748b" font-size="11" font-family="JetBrains Mono, monospace">${Math.round(max * f)}</text>`;
+  }).join('');
+
+  const sorted = [...p95].sort((a, b) => a - b);
+  document.getElementById('kpi-p95').innerHTML =
+    `${Math.round(sorted[Math.floor(sorted.length * 0.95)])}<span class="text-sm text-slate-500"> ms</span>`;
+
+  document.getElementById('latency').innerHTML = `
+    <defs>
+      <linearGradient id="fill" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${grid}
+    <path d="${line(p95)} L${x(59)},${H - P} L${x(0)},${H - P} Z" fill="url(#fill)"/>
+    <path d="${line(p50)}" fill="none" stroke="#64748b" stroke-width="1.5"/>
+    <path d="${line(p95)}" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round"/>`;
+
+  // ---- Error rate bars ----
+  const errors = document.getElementById('errors');
+  errors.innerHTML = Array.from({ length: 30 }, (_, i) => {
+    const v = rand() * 2.2 + (i === 21 ? 4.6 : 0) + (i > 24 ? 1.1 : 0);
+    const color = v > 3 ? 'bg-bad' : v > 1.5 ? 'bg-warn' : 'bg-good/70';
+    return `<div class="${color} flex-1 rounded-sm" style="height:${Math.min(v / 6 * 100, 100).toFixed(0)}%" title="${v.toFixed(2)}%"></div>`;
+  }).join('');
+
+  // ---- Live log tail ----
+  const services = ['api-gateway', 'checkout', 'auth', 'ingest-worker', 'postgres-proxy'];
+  const messages = [
+    ['INFO',  'request completed status=200 route=/v1/orders'],
+    ['INFO',  'token refreshed user_scope=read'],
+    ['DEBUG', 'cache hit key=sku:4821'],
+    ['WARN',  'slow query duration=812ms table=orders'],
+    ['ERROR', 'upstream timeout after 3000ms target=payments'],
+    ['INFO',  'batch flushed events=256 latency=41ms'],
+    ['WARN',  'retry attempt=2 reason=503'],
+    ['ERROR', 'connection reset by peer pool=primary'],
+  ];
+  const levelClass = { INFO: 'text-accent', DEBUG: 'text-slate-500', WARN: 'text-warn', ERROR: 'text-bad' };
+  const logEl = document.getElementById('logs');
+  const stamp = () => new Date().toISOString().slice(11, 23);
+  const addLog = () => {
+    const [lvl, msg] = messages[Math.floor(rand() * messages.length)];
+    const svc = services[Math.floor(rand() * services.length)];
+    const row = document.createElement('div');
+    row.className = 'log-line';
+    row.innerHTML = `<span class="text-slate-500">${stamp()}</span> <span class="${levelClass[lvl]} w-12 inline-block">${lvl}</span> <span class="text-slate-400">[${svc}]</span> <span class="text-slate-200">${msg}</span>`;
+    logEl.appendChild(row);
+    while (logEl.children.length > 80) logEl.removeChild(logEl.firstChild);
+    logEl.scrollTop = logEl.scrollHeight;
+  };
+  for (let i = 0; i < 12; i++) addLog();
+  setInterval(addLog, 1500);
+
+  // ---- Copy snippet ----
+  document.getElementById('copy').addEventListener('click', async (e) => {
+    const text = document.getElementById('snippet').innerText;
+    try {
+      await navigator.clipboard.writeText(text);
+      e.target.textContent = 'Copied';
+    } catch (err) {
+      e.target.textContent = 'Copy failed';
+    }
+    setTimeout(() => (e.target.textContent = 'Copy'), 1500);
+  });
+</script>
+</body>
+</html>

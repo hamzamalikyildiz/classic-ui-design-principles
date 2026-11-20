@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lena Varga - Motion Design</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { ink: '#0B0B0F', panel: '#16161D', bone: '#F3F1EA', mute: '#A8A59B', lime: '#C6FF3D' },
+        fontFamily: { display: ['"Archivo Black"', 'sans-serif'], body: ['Inter', 'system-ui', 'sans-serif'] }
+      }
+    }
+  }
+</script>
+<style>
+  body { background: #0B0B0F; color: #F3F1EA; }
+  .glow { background: radial-gradient(closest-side, rgba(198,255,61,.22), rgba(198,255,61,0) 70%); }
+  .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .rise-2 { animation-delay: .15s; }
+  .rise-3 { animation-delay: .3s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  @keyframes sweep { from { transform: translateX(0); } to { transform: translateX(640px); } }
+  .playhead { animation: sweep 6s linear infinite; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+</style>
+</head>
+<body class="font-body antialiased bg-ink text-bone">
+
+<header class="sticky top-0 z-20 border-b border-white/10 bg-ink/90 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-8">
+    <a href="#top" class="font-display text-lg tracking-tight">LENA VARGA<span class="text-lime">.</span></a>
+    <nav aria-label="Primary" class="hidden gap-8 text-sm text-mute md:flex">
+      <a href="#work" class="hover:text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime">Work</a>
+      <a href="#services" class="hover:text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime">Services</a>
+      <a href="#clients" class="hover:text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime">Clients</a>
+    </nav>
+    <a href="#contact" class="rounded-md bg-lime px-4 py-2.5 text-sm font-semibold text-ink hover:brightness-110 active:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone">Book a project</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="glow pointer-events-none absolute -top-40 right-[-10%] h-[620px] w-[620px]" aria-hidden="true"></div>
+    <div class="mx-auto max-w-6xl px-4 pb-20 pt-16 md:px-8 md:pb-32 md:pt-24">
+      <p class="rise text-sm uppercase tracking-[0.3em] text-lime">Independent motion designer, Berlin</p>
+      <h1 class="rise rise-2 mt-6 font-display text-[3.4rem] leading-[0.92] tracking-tight sm:text-[5.5rem] md:text-[8.5rem]">
+        MOVE<br>
+        <span class="text-transparent [-webkit-text-stroke:2px_#F3F1EA]">THE</span> STORY
+      </h1>
+      <p class="rise rise-3 mt-8 max-w-xl text-lg leading-relaxed text-mute">
+        Brand idents, product explainers and title sequences for studios that need motion to feel precise, warm and a little bit loud.
+      </p>
+      <div class="rise rise-3 mt-10 flex flex-wrap gap-4">
+        <a href="#work" class="rounded-md bg-lime px-6 py-3.5 font-semibold text-ink hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone">See selected work</a>
+        <a href="#contact" class="rounded-md border border-white/30 px-6 py-3.5 font-semibold text-bone hover:border-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime">Start a brief</a>
+      </div>
+
+      <!-- Signature: drawn timeline -->
+      <div class="rise rise-3 mt-16 rounded-2xl border border-white/10 bg-panel p-5 md:p-7" aria-hidden="true">
+        <div class="flex items-center justify-between text-xs text-mute">
+          <span>TIMELINE / 00:00:00:00</span><span>24 FPS</span>
+        </div>
+        <svg viewBox="0 0 680 160" class="mt-4 w-full">
+          <g stroke="#2A2A33" stroke-width="1">
+            <line x1="0" y1="20" x2="680" y2="20"/><line x1="0" y1="60" x2="680" y2="60"/>
+            <line x1="0" y1="100" x2="680" y2="100"/><line x1="0" y1="140" x2="680" y2="140"/>
+          </g>
+          <rect x="30" y="8" width="220" height="24" rx="3" fill="#C6FF3D"/>
+          <rect x="260" y="48" width="180" height="24" rx="3" fill="#F3F1EA"/>
+          <rect x="120" y="88" width="300" height="24" rx="3" fill="#3A3A46"/>
+          <rect x="430" y="128" width="200" height="24" rx="3" fill="#C6FF3D" opacity=".55"/>
+          <path d="M30 150 C 120 120, 180 150, 260 110 S 380 60, 470 96 S 600 40, 660 70" fill="none" stroke="#C6FF3D" stroke-width="2"/>
+          <g class="playhead"><line x1="20" y1="0" x2="20" y2="160" stroke="#F3F1EA" stroke-width="2"/><polygon points="14,0 26,0 20,10" fill="#F3F1EA"/></g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Selected work -->
+  <section id="work" class="border-t border-white/10 bg-panel py-20 lg:py-32">
+    <div class="mx-auto max-w-6xl px-4 md:px-8">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <h2 class="font-display text-4xl tracking-tight md:text-6xl">SELECTED WORK</h2>
+        <p class="max-w-sm text-mute">Five recent projects, from a 6-second logo sting to a 90-second product film.</p>
+      </div>
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <article class="group md:col-span-2 overflow-hidden rounded-2xl bg-ink">
+          <svg viewBox="0 0 640 360" class="h-auto w-full" aria-hidden="true">
+            <rect width="640" height="360" fill="#0B0B0F"/>
+            <circle cx="470" cy="150" r="140" fill="#C6FF3D" opacity=".9"/>
+            <rect x="60" y="210" width="360" height="26" fill="#F3F1EA"/>
+            <rect x="60" y="250" width="240" height="26" fill="#3A3A46"/>
+            <rect x="60" y="290" width="300" height="26" fill="#F3F1EA" opacity=".5"/>
+          </svg>
+          <div class="flex items-center justify-between p-6">
+            <div><h3 class="font-display text-xl">Halden Audio: Launch Ident</h3><p class="text-sm text-mute">Brand identity, 2025</p></div>
+            <span class="text-lime transition group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
+          </div>
+        </article>
+        <article class="group overflow-hidden rounded-2xl bg-ink">
+          <svg viewBox="0 0 400 360" class="h-auto w-full" aria-hidden="true">
+            <rect width="400" height="360" fill="#16161D"/>
+            <rect x="110" y="50" width="180" height="300" rx="22" fill="#F3F1EA"/>
+            <rect x="130" y="90" width="140" height="18" fill="#C6FF3D"/>
+            <rect x="130" y="124" width="100" height="14" fill="#3A3A46"/>
+            <circle cx="200" cy="250" r="34" fill="#C6FF3D"/>
+          </svg>
+          <div class="flex items-center justify-between p-6">
+            <div><h3 class="font-display text-xl">Pocketbook Explainer</h3><p class="text-sm text-mute">Product film, 2025</p></div>
+            <span class="text-lime transition group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
+          </div>
+        </article>
+        <article class="group overflow-hidden rounded-2xl bg-ink">
+          <svg viewBox="0 0 400 300" class="h-auto w-full" aria-hidden="true">
+            <rect width="400" height="300" fill="#0B0B0F"/>
+            <rect x="40" y="40" width="130" height="220" fill="#C6FF3D"/>
+            <rect x="190" y="40" width="170" height="100" fill="#F3F1EA"/>
+            <rect x="190" y="160" width="170" height="100" fill="#3A3A46"/>
+          </svg>
+          <div class="p-6"><h3 class="font-display text-xl">Ferro Coffee</h3><p class="text-sm text-mute">Social cut-downs, 2024</p></div>
+        </article>
+        <article class="group overflow-hidden rounded-2xl bg-ink md:col-span-2">
+          <svg viewBox="0 0 1200 220" class="h-auto w-full" aria-hidden="true">
+            <rect width="1200" height="220" fill="#0B0B0F"/>
+            <g fill="#F3F1EA"><rect x="60" y="60" width="90" height="100"/><rect x="180" y="60" width="90" height="100" fill="#C6FF3D"/><rect x="300" y="60" width="90" height="100"/><rect x="420" y="60" width="90" height="100" fill="#3A3A46"/><rect x="540" y="60" width="90" height="100"/></g>
+          </svg>
+          <div class="flex items-center justify-between p-6"><div><h3 class="font-display text-xl">Meridian Film Festival: Title Sequence</h3><p class="text-sm text-mute">Titles and typography, 2024</p></div><span class="text-lime" aria-hidden="true">&rarr;</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="py-20 lg:py-32">
+    <div class="mx-auto max-w-6xl px-4 md:px-8">
+      <h2 class="font-display text-4xl tracking-tight md:text-6xl">WHAT I DO</h2>
+      <div class="mt-12 grid gap-px overflow-hidden rounded-2xl bg-white/10 md:grid-cols-3">
+        <div class="bg-ink p-8">
+          <span class="font-display text-5xl text-lime">01</span>
+          <h3 class="mt-6 text-xl font-semibold">Brand idents</h3>
+          <p class="mt-3 max-w-prose leading-relaxed text-mute">Logo stings, sonic-matched reveals and motion systems for launches and rebrands.</p>
+        </div>
+        <div class="bg-ink p-8">
+          <span class="font-display text-5xl text-lime">02</span>
+          <h3 class="mt-6 text-xl font-semibold">Product explainers</h3>
+          <p class="mt-3 max-w-prose leading-relaxed text-mute">Sixty to ninety seconds that show how the product works, scripted with your team.</p>
+        </div>
+        <div class="bg-ink p-8">
+          <span class="font-display text-5xl text-lime">03</span>
+          <h3 class="mt-6 text-xl font-semibold">Social and titles</h3>
+          <p class="mt-3 leading-relaxed text-mute">Cut-downs for every platform, plus festival and film title sequences.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quotes and proof -->
+  <section id="clients" class="bg-lime py-20 text-ink lg:py-28">
+    <div class="mx-auto max-w-6xl px-4 md:px-8">
+      <div class="grid gap-10 md:grid-cols-[1fr_1.4fr] md:items-start">
+        <div>
+          <p class="font-display text-7xl md:text-8xl">38</p>
+          <p class="mt-2 font-semibold">projects delivered for 22 studios since 2019</p>
+        </div>
+        <div class="space-y-8">
+          <figure>
+            <blockquote class="max-w-prose text-xl font-medium leading-snug">"Lena turned a dry feature list into a 45-second film our sales team still sends every week."</blockquote>
+            <figcaption class="mt-3 text-sm">Priya Anand, Head of Marketing, Pocketbook</figcaption>
+          </figure>
+          <figure>
+            <blockquote class="max-w-prose text-xl font-medium leading-snug">"Fast, exact on timing, and she sends frame-accurate previews within a day."</blockquote>
+            <figcaption class="mt-3 text-sm">Tom Ellery, Creative Director, Halden Audio</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact CTA -->
+  <section id="contact" class="py-20 lg:py-32">
+    <div class="mx-auto max-w-6xl px-4 md:px-8">
+      <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-panel p-8 md:p-16">
+        <div class="glow pointer-events-none absolute -bottom-32 -left-20 h-[420px] w-[420px]" aria-hidden="true"></div>
+        <h2 class="relative font-display text-4xl leading-none tracking-tight md:text-7xl">HAVE A STORY<br>THAT NEEDS MOTION?</h2>
+        <p class="relative mt-6 max-w-lg text-mute">Send a short brief. I reply within two working days with a timeline and a fixed quote.</p>
+        <a href="mailto:hello@lenavarga.example" class="relative mt-10 inline-block rounded-md bg-lime px-8 py-4 font-semibold text-ink hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone">hello@lenavarga.example</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-white/10 py-8 text-sm text-mute">
+  <div class="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-4 md:px-8">
+    <span>&copy; 2026 Lena Varga</span>
+    <span>Berlin, available from February</span>
+  </div>
+</footer>
+
+</body>
+</html>

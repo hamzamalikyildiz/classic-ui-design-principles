@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CI/CD Pipeline Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0b1020; color: #e2e8f0; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .card { background: #111830; border: 1px solid #1f2a4a; border-radius: 12px; }
+  tr.build { cursor: pointer; border-top: 1px solid #1f2a4a; }
+  tr.build:hover { background: #162045; }
+  tr.build.sel { background: #1d2a57; }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+  <header class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Pipeline Dashboard</h1>
+      <p class="text-sm text-slate-400">web-app · main and feature branches · last 24 hours</p>
+    </div>
+    <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+  </header>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <section class="card lg:col-span-2 overflow-hidden">
+      <div class="px-4 py-3 font-semibold">Recent builds</div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-xs uppercase tracking-wide text-slate-400">
+            <tr>
+              <th class="px-4 py-2 font-medium">Build</th>
+              <th class="px-4 py-2 font-medium">Branch</th>
+              <th class="px-4 py-2 font-medium">Status</th>
+              <th class="px-4 py-2 font-medium">Duration</th>
+              <th class="px-4 py-2 font-medium">Started</th>
+            </tr>
+          </thead>
+          <tbody id="builds"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">Build duration</h2>
+        <span class="text-xs text-slate-400">minutes</span>
+      </div>
+      <div id="chart"></div>
+      <div class="flex gap-4 text-xs text-slate-400 mt-2">
+        <span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-400 mr-1"></i>passed</span>
+        <span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-red-400 mr-1"></i>failed</span>
+        <span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-blue-400 mr-1"></i>running</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <section class="card p-4">
+      <h2 class="font-semibold mb-3">Flaky tests <span class="text-xs font-normal text-slate-400">failure rate, last 50 runs</span></h2>
+      <ul id="flaky" class="space-y-3"></ul>
+    </section>
+
+    <section class="card p-4">
+      <h2 class="font-semibold mb-3">Deploy history</h2>
+      <ol id="deploys" class="space-y-3"></ol>
+    </section>
+  </div>
+
+  <section class="card overflow-hidden">
+    <div class="flex items-center gap-2 px-4 py-2 border-b border-slate-800 bg-slate-900/60">
+      <span class="w-3 h-3 rounded-full bg-red-500"></span>
+      <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+      <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+      <span id="termTitle" class="mono text-xs text-slate-400 ml-2">build log</span>
+    </div>
+    <pre id="term" class="mono text-xs leading-relaxed p-4 bg-black text-emerald-300 h-44 overflow-auto whitespace-pre-wrap"></pre>
+  </section>
+
+</div>
+
+<script>
+const builds = [
+  { id: 1842, branch: 'main', sha: 'a3f9c1e', status: 'passed', dur: 7.4, at: '09:12' },
+  { id: 1841, branch: 'feat/cache', sha: '5be02d7', status: 'failed', dur: 4.1, at: '08:47' },
+  { id: 1840, branch: 'main', sha: '0c7d9aa', status: 'passed', dur: 8.0, at: '08:20' },
+  { id: 1839, branch: 'fix/login', sha: 'e41b6f2', status: 'passed', dur: 6.2, at: '07:55' },
+  { id: 1838, branch: 'main', sha: 'd92a0b4', status: 'running', dur: 3.3, at: '07:31' },
+  { id: 1837, branch: 'feat/search', sha: '77ce1f0', status: 'failed', dur: 5.5, at: '06:58' },
+  { id: 1836, branch: 'main', sha: '2f8e6c3', status: 'passed', dur: 7.9, at: '06:20' },
+  { id: 1835, branch: 'chore/deps', sha: 'b0a4d18', status: 'queued', dur: 0, at: '05:44' },
+];
+const flaky = [
+  { name: 'checkout > applies coupon on retry', rate: 18 },
+  { name: 'auth/session > refreshes expired token', rate: 12 },
+  { name: 'search > paginates filtered results', rate: 9 },
+  { name: 'cart > syncs quantity across tabs', rate: 4 },
+];
+const deploys = [
+  { env: 'production', ver: 'v2.14.3', by: 'build #1842', at: '09:19', state: 'live' },
+  { env: 'staging', ver: 'v2.14.3-rc.1', by: 'build #1842', at: '09:15', state: 'live' },
+  { env: 'production', ver: 'v2.14.2', by: 'build #1834', at: '04:02', state: 'rolled back' },
+  { env: 'production', ver: 'v2.14.1', by: 'build #1829', at: 'yesterday', state: 'superseded' },
+];
+const badgeCls = {
+  passed: 'bg-emerald-500/15 text-emerald-300',
+  failed: 'bg-red-500/15 text-red-300',
+  running: 'bg-blue-500/15 text-blue-300',
+  queued: 'bg-slate-500/20 text-slate-300',
+};
+const barCls = { passed: '#34d399', failed: '#f87171', running: '#60a5fa', queued: '#64748b' };
+let selected = 1841;
+
+const $ = id => document.getElementById(id);
+const badge = s => `<span class="px-2 py-0.5 rounded-full text-xs font-medium ${badgeCls[s]}">${s}</span>`;
+
+function renderStats() {
+  const done = builds.filter(b => b.status === 'passed' || b.status === 'failed');
+  const passRate = Math.round(100 * done.filter(b => b.status === 'passed').length / done.length);
+  const durs = done.map(b => b.dur).sort((a, b) => a - b);
+  const median = durs[Math.floor(durs.length / 2)].toFixed(1);
+  const cards = [
+    ['Builds', builds.length],
+    ['Pass rate', passRate + '%'],
+    ['Median time', median + 'm'],
+    ['Flaky tests', flaky.length],
+  ];
+  $('stats').innerHTML = cards.map(([k, v]) =>
+    `<div class="card px-4 py-2"><div class="text-xs text-slate-400">${k}</div><div class="text-lg font-semibold">${v}</div></div>`).join('');
+}
+
+function renderBuilds() {
+  $('builds').innerHTML = builds.map(b => `
+    <tr class="build ${b.id === selected ? 'sel' : ''}" data-id="${b.id}">
+      <td class="px-4 py-2 mono">#${b.id}</td>
+      <td class="px-4 py-2"><span class="mono text-slate-300">${b.branch}</span> <span class="mono text-xs text-slate-500">${b.sha}</span></td>
+      <td class="px-4 py-2">${badge(b.status)}</td>
+      <td class="px-4 py-2 mono">${b.dur ? b.dur.toFixed(1) + 'm' : '-'}</td>
+      <td class="px-4 py-2 text-slate-400">${b.at}</td>
+    </tr>`).join('');
+}
+
+function renderChart() {
+  const data = [...builds].reverse();
+  const W = 320, H = 180, P = 28, max = 10;
+  const bw = (W - P) / data.length;
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-auto" role="img" aria-label="Build duration bars">`;
+  [0, 5, 10].forEach(v => {
+    const y = H - 20 - (v / max) * (H - 30);
+    s += `<line x1="${P}" x2="${W}" y1="${y}" y2="${y}" stroke="#1f2a4a"/>`;
+    s += `<text x="${P - 6}" y="${y + 4}" fill="#64748b" font-size="10" text-anchor="end">${v}</text>`;
+  });
+  data.forEach((b, i) => {
+    const h = (b.dur / max) * (H - 30);
+    const x = P + i * bw + bw * 0.2;
+    const y = H - 20 - h;
+    const op = b.id === selected ? 1 : 0.7;
+    s += `<rect x="${x}" y="${y}" width="${bw * 0.6}" height="${Math.max(h, 0)}" rx="3" fill="${barCls[b.status]}" opacity="${op}"/>`;
+    s += `<text x="${x + bw * 0.3}" y="${H - 6}" fill="#64748b" font-size="9" text-anchor="middle">${b.id % 1000}</text>`;
+  });
+  $('chart').innerHTML = s + '</svg>';
+}
+
+function renderFlaky() {
+  $('flaky').innerHTML = flaky.map(f => `
+    <li>
+      <div class="flex justify-between text-sm"><span class="mono text-slate-300 truncate pr-3">${f.name}</span><span class="text-slate-400">${f.rate}%</span></div>
+      <div class="h-1.5 mt-1.5 rounded-full bg-slate-800"><div class="h-full rounded-full bg-amber-400" style="width:${f.rate * 4}%"></div></div>
+    </li>`).join('');
+}
+
+function renderDeploys() {
+  const stateCls = { live: 'text-emerald-300', 'rolled back': 'text-red-300', superseded: 'text-slate-400' };
+  $('deploys').innerHTML = deploys.map(d => `
+    <li class="flex items-center justify-between text-sm border-l-2 border-slate-700 pl-3">
+      <div>
+        <div class="font-medium">${d.env} <span class="mono text-slate-400">${d.ver}</span></div>
+        <div class="text-xs text-slate-500">${d.by} · ${d.at}</div>
+      </div>
+      <span class="text-xs font-medium ${stateCls[d.state]}">${d.state}</span>
+    </li>`).join('');
+}
+
+function logFor(b) {
+  const lines = [
+    ['info', `$ git checkout ${b.sha} (${b.branch})`],
+    ['info', '$ npm ci'],
+    ['ok', 'added 1342 packages in 38s'],
+    ['info', '$ npm test -- --ci'],
+  ];
+  if (b.status === 'queued') return [['warn', 'waiting for runner...']];
+  if (b.status === 'running') return [...lines, ['warn', '... tests still running']];
+  if (b.status === 'failed') return [...lines,
+    ['err', 'FAIL src/search/index.test.ts'],
+    ['err', '  Expected 3 results, received 0'],
+    ['err', 'Process exited with code 1']];
+  return [...lines, ['ok', 'Tests: 412 passed, 0 failed'], ['ok', 'Deployed to production'], ['ok', `Build finished in ${b.dur}m`]];
+}
+
+function renderTerm() {
+  const b = builds.find(x => x.id === selected);
+  const col = { info: 'text-slate-300', ok: 'text-emerald-300', warn: 'text-amber-300', err: 'text-red-400' };
+  $('termTitle').textContent = `build #${b.id} · ${b.branch} · ${b.status}`;
+  $('term').innerHTML = logFor(b).map(([lvl, msg], i) =>
+    `<div><span class="text-slate-600">[${String(i).padStart(2, '0')}]</span> <span class="${col[lvl]}">${msg}</span></div>`).join('');
+}
+
+function renderAll() {
+  renderBuilds(); renderChart(); renderTerm();
+}
+
+$('builds').addEventListener('click', e => {
+  const row = e.target.closest('tr.build');
+  if (!row) return;
+  selected = Number(row.dataset.id);
+  renderAll();
+});
+
+renderStats(); renderFlaky(); renderDeploys(); renderAll();
+</script>
+</body>
+</html>

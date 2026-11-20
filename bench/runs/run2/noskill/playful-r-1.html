@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PikoLab - Coding for Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Nunito', sans-serif; background: #FFF8EC; }
+  .display { font-family: 'Fredoka', sans-serif; }
+  .btn-pop { box-shadow: 0 6px 0 #5b3fd9; transition: transform .15s, box-shadow .15s; }
+  .btn-pop:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #5b3fd9; }
+  .btn-pop:active { transform: translateY(4px); box-shadow: 0 2px 0 #5b3fd9; }
+  .float { animation: float 4s ease-in-out infinite; }
+  @keyframes float { 50% { transform: translateY(-12px); } }
+  .cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #2e2a6b; }
+</style>
+</head>
+<body class="text-slate-800 overflow-x-hidden">
+
+<!-- Nav -->
+<header class="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
+  <a href="#" class="display flex items-center gap-2 text-2xl font-bold text-violet-700">
+    <span class="inline-block w-9 h-9 rounded-xl bg-violet-600"></span> PikoLab
+  </a>
+  <nav class="hidden md:flex gap-7 font-semibold text-slate-600">
+    <a href="#features">Features</a><a href="#play">Mini-game</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+  </nav>
+  <a href="#cta" class="btn-pop display bg-violet-600 text-white px-5 py-2 rounded-full font-semibold">Start free</a>
+</header>
+
+<!-- Hero -->
+<section class="max-w-6xl mx-auto px-4 py-12 md:py-20 grid md:grid-cols-2 gap-12 items-center">
+  <div>
+    <span class="inline-block bg-yellow-200 text-yellow-900 font-bold text-sm px-3 py-1 rounded-full">For kids aged 7-12</span>
+    <h1 class="display text-5xl md:text-6xl font-bold leading-tight mt-5 text-slate-900">
+      Learn to code by <span class="text-violet-600">playing!</span>
+    </h1>
+    <p class="text-lg text-slate-600 mt-5 max-w-lg">
+      Snap colorful blocks together, solve tiny puzzles, and watch your ideas come alive. Piko is ready to be your coding buddy.
+    </p>
+    <div class="flex flex-wrap gap-4 mt-8">
+      <a href="#cta" class="btn-pop display bg-violet-600 text-white px-7 py-3 rounded-full text-lg font-semibold">Start coding free</a>
+      <a href="#play" class="display bg-white border-2 border-violet-200 text-violet-700 px-7 py-3 rounded-full text-lg font-semibold">Try a game</a>
+    </div>
+  </div>
+
+  <div class="relative flex justify-center">
+    <div class="absolute w-80 h-80 md:w-96 md:h-96 rounded-full bg-yellow-300 top-4"></div>
+    <svg class="float relative w-72 h-72 md:w-96 md:h-96" viewBox="0 0 300 300" aria-label="Piko the robot mascot">
+      <line x1="150" y1="40" x2="150" y2="82" stroke="#7C5CFF" stroke-width="8"/>
+      <circle cx="150" cy="34" r="14" fill="#FF5C8A"/>
+      <circle cx="52" cy="160" r="16" fill="#FFC93C"/>
+      <circle cx="248" cy="160" r="16" fill="#FFC93C"/>
+      <rect x="60" y="80" width="180" height="160" rx="48" fill="#7C5CFF"/>
+      <rect x="85" y="115" width="130" height="75" rx="26" fill="#1E1B4B"/>
+      <circle cx="125" cy="150" r="12" fill="#4ADE80"/>
+      <circle cx="175" cy="150" r="12" fill="#4ADE80"/>
+      <path d="M130 172 Q150 186 170 172" stroke="#4ADE80" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <rect x="95" y="245" width="110" height="40" rx="16" fill="#22D3EE"/>
+      <path d="M40 60 l6 14 14 6 -14 6 -6 14 -6 -14 -14 -6 14 -6z" fill="#FF5C8A"/>
+      <path d="M262 50 l5 11 11 5 -11 5 -5 11 -5 -11 -11 -5 11 -5z" fill="#22D3EE"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="max-w-6xl mx-auto px-4 py-16">
+  <h2 class="display text-4xl font-bold text-center">Three ways to level up</h2>
+  <div class="grid md:grid-cols-3 gap-6 mt-10">
+    <article class="bg-white rounded-3xl p-7 shadow-lg shadow-teal-100 border-b-8 border-cyan-400">
+      <div class="w-14 h-14 rounded-2xl bg-cyan-100 flex items-center justify-center">
+        <svg viewBox="0 0 40 40" class="w-8 h-8"><rect x="6" y="6" width="28" height="14" rx="5" fill="#22D3EE"/><rect x="14" y="22" width="20" height="12" rx="5" fill="#0891B2"/></svg>
+      </div>
+      <h3 class="display text-2xl font-bold mt-5">Build by block</h3>
+      <p class="text-slate-600 mt-2">Drag and snap blocks together. No scary typing needed to start your first game.</p>
+    </article>
+    <article class="bg-white rounded-3xl p-7 shadow-lg shadow-pink-100 border-b-8 border-pink-400">
+      <div class="w-14 h-14 rounded-2xl bg-pink-100 flex items-center justify-center">
+        <svg viewBox="0 0 40 40" class="w-8 h-8"><circle cx="20" cy="20" r="14" fill="#FF5C8A"/><circle cx="20" cy="20" r="6" fill="#fff"/></svg>
+      </div>
+      <h3 class="display text-2xl font-bold mt-5">Tiny lessons</h3>
+      <p class="text-slate-600 mt-2">Five-minute lessons with quests, badges, and a new surprise every day you log in.</p>
+    </article>
+    <article class="bg-white rounded-3xl p-7 shadow-lg shadow-yellow-100 border-b-8 border-yellow-400">
+      <div class="w-14 h-14 rounded-2xl bg-yellow-100 flex items-center justify-center">
+        <svg viewBox="0 0 40 40" class="w-8 h-8"><path d="M20 4 l4.8 10.4 11.2 1.2 -8.4 7.5 2.4 11 -10-5.7 -10 5.7 2.4-11 -8.4-7.5 11.2-1.2z" fill="#FFC93C"/></svg>
+      </div>
+      <h3 class="display text-2xl font-bold mt-5">Show your work</h3>
+      <p class="text-slate-600 mt-2">Share your creations with family and get cheers from a safe, kid-friendly community.</p>
+    </article>
+  </div>
+</section>
+
+<!-- Mini-game teaser -->
+<section id="play" class="bg-indigo-950 text-white py-16">
+  <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <h2 class="display text-4xl font-bold">Mini-game: Find the star</h2>
+      <p class="text-indigo-200 mt-4 text-lg">Tap the arrows to move Piko across the grid. Each tap is one line of code, so think ahead and reach the star!</p>
+      <p class="mt-6 font-mono text-sm bg-indigo-900 rounded-xl p-4 text-cyan-300">move("right") &rarr; move("right") &rarr; move("down")</p>
+      <p id="msg" class="display text-xl text-yellow-300 mt-5 min-h-[1.75rem]"></p>
+    </div>
+    <div class="max-w-sm mx-auto w-full">
+      <div id="grid" class="grid grid-cols-5 gap-2 p-3 bg-indigo-900 rounded-3xl"></div>
+      <div class="grid grid-cols-3 gap-2 w-40 mx-auto mt-5">
+        <span></span>
+        <button onclick="move(0,-1)" class="btn-pop bg-violet-500 rounded-xl py-2 font-bold text-xl" aria-label="Up">&uarr;</button>
+        <span></span>
+        <button onclick="move(-1,0)" class="btn-pop bg-violet-500 rounded-xl py-2 font-bold text-xl" aria-label="Left">&larr;</button>
+        <button onclick="reset()" class="bg-indigo-800 rounded-xl py-2 text-xs font-bold">RESET</button>
+        <button onclick="move(1,0)" class="btn-pop bg-violet-500 rounded-xl py-2 font-bold text-xl" aria-label="Right">&rarr;</button>
+        <span></span>
+        <button onclick="move(0,1)" class="btn-pop bg-violet-500 rounded-xl py-2 font-bold text-xl" aria-label="Down">&darr;</button>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="max-w-6xl mx-auto px-4 py-16">
+  <h2 class="display text-4xl font-bold text-center">Simple plans for every family</h2>
+  <div class="grid md:grid-cols-3 gap-6 mt-10 items-stretch">
+    <div class="bg-white rounded-3xl p-8 shadow-md flex flex-col">
+      <h3 class="display text-2xl font-bold">Explorer</h3>
+      <p class="display text-5xl font-bold mt-3">Free</p>
+      <ul class="text-slate-600 mt-6 space-y-2 flex-1"><li>5 starter lessons</li><li>Block coding basics</li><li>Mini-games</li></ul>
+      <a href="#cta" class="mt-8 display text-center border-2 border-violet-300 text-violet-700 rounded-full py-3 font-semibold">Get started</a>
+    </div>
+    <div class="bg-violet-600 text-white rounded-3xl p-8 shadow-2xl md:-translate-y-4 flex flex-col">
+      <span class="self-start bg-yellow-300 text-yellow-900 text-sm font-bold px-3 py-1 rounded-full">Most popular</span>
+      <h3 class="display text-2xl font-bold mt-3">Maker</h3>
+      <p class="display text-5xl font-bold mt-3">$12<span class="text-lg font-semibold">/mo</span></p>
+      <ul class="mt-6 space-y-2 flex-1"><li>All 120+ lessons</li><li>Build and share projects</li><li>Progress reports for parents</li></ul>
+      <a href="#cta" class="mt-8 display text-center bg-yellow-300 text-yellow-900 rounded-full py-3 font-bold btn-pop">Choose Maker</a>
+    </div>
+    <div class="bg-white rounded-3xl p-8 shadow-md flex flex-col">
+      <h3 class="display text-2xl font-bold">Family</h3>
+      <p class="display text-5xl font-bold mt-3">$24<span class="text-lg font-semibold">/mo</span></p>
+      <ul class="text-slate-600 mt-6 space-y-2 flex-1"><li>Up to 4 kid profiles</li><li>Everything in Maker</li><li>Live help sessions</li></ul>
+      <a href="#cta" class="mt-8 display text-center border-2 border-violet-300 text-violet-700 rounded-full py-3 font-semibold">Choose Family</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="max-w-3xl mx-auto px-4 py-16">
+  <h2 class="display text-4xl font-bold text-center">Questions parents ask</h2>
+  <div class="mt-10 space-y-4">
+    <details class="bg-white rounded-2xl p-5 shadow-sm"><summary class="display font-semibold text-lg cursor-pointer">Do kids need experience?</summary><p class="text-slate-600 mt-3">Nope. Lessons start with the very basics and grow step by step.</p></details>
+    <details class="bg-white rounded-2xl p-5 shadow-sm"><summary class="display font-semibold text-lg cursor-pointer">Is it safe for my child?</summary><p class="text-slate-600 mt-3">No ads, no public chat with strangers, and all shared projects are reviewed by our team.</p></details>
+    <details class="bg-white rounded-2xl p-5 shadow-sm"><summary class="display font-semibold text-lg cursor-pointer">Can kids learn real text coding later?</summary><p class="text-slate-600 mt-3">Yes. Blocks show the same ideas as real code, so the switch to typing feels natural.</p></details>
+    <details class="bg-white rounded-2xl p-5 shadow-sm"><summary class="display font-semibold text-lg cursor-pointer">Can I cancel any time?</summary><p class="text-slate-600 mt-3">Yes, with one click from your account page. No hidden fees.</p></details>
+  </div>
+</section>
+
+<!-- CTA band -->
+<section id="cta" class="px-4 pb-20">
+  <div class="max-w-5xl mx-auto rounded-[2.5rem] bg-gradient-to-r from-pink-500 to-violet-600 text-white text-center px-6 py-14">
+    <h2 class="display text-4xl md:text-5xl font-bold">Ready to build your first game?</h2>
+    <p class="text-pink-100 mt-4 text-lg">Start free today. Piko is waiting to play.</p>
+    <a href="#" class="btn-pop inline-block mt-8 display bg-yellow-300 text-yellow-900 px-8 py-3 rounded-full text-lg font-bold">Start free</a>
+  </div>
+</section>
+
+<footer class="text-center text-sm text-slate-500 pb-10">&copy; 2026 PikoLab. Coding made for kids.</footer>
+
+<script>
+  const SIZE = 5, goal = { x: 4, y: 4 };
+  let pos = { x: 0, y: 0 };
+  const grid = document.getElementById('grid');
+  const msg = document.getElementById('msg');
+
+  for (let i = 0; i < SIZE * SIZE; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    grid.appendChild(c);
+  }
+
+  function draw() {
+    [...grid.children].forEach((c, i) => {
+      const x = i % SIZE, y = Math.floor(i / SIZE);
+      c.innerHTML = '';
+      if (x === pos.x && y === pos.y) {
+        c.innerHTML = '<span class="block w-8 h-8 rounded-full bg-violet-400"></span>';
+      } else if (x === goal.x && y === goal.y) {
+        c.innerHTML = '<span class="text-3xl text-yellow-300">&#9733;</span>';
+      }
+    });
+  }
+
+  function move(dx, dy) {
+    pos.x = Math.min(SIZE - 1, Math.max(0, pos.x + dx));
+    pos.y = Math.min(SIZE - 1, Math.max(0, pos.y + dy));
+    draw();
+    msg.textContent = (pos.x === goal.x && pos.y === goal.y) ? 'Piko got the star! Nice coding.' : '';
+  }
+
+  function reset() {
+    pos = { x: 0, y: 0 };
+    msg.textContent = '';
+    draw();
+  }
+
+  draw();
+</script>
+</body>
+</html>

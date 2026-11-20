@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbor Street Clinic Appointments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      teal: { DEFAULT: '#0E5C57', 700: '#0B4C48', 50: '#E7F2F0' },
+      mist: { 50: '#F5F8F7', 100: '#E9EFED', 200: '#D5E0DC', 600: '#4F6763', 900: '#14302C' },
+      brass: { DEFAULT: '#8A6417', 100: '#F6EBD2' }
+    },
+    fontFamily: { display: ['Fraunces', 'Georgia', 'serif'], sans: ['Inter', 'system-ui', 'sans-serif'] }
+  } }
+}
+</script>
+<style>
+  body { background: #F5F8F7; color: #14302C; }
+  .fade { animation: fu .6s both; }
+  .d1 { animation-delay: .08s } .d2 { animation-delay: .16s }
+  @keyframes fu { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+  @media (prefers-reduced-motion: reduce) { .fade { animation: none } }
+</style>
+</head>
+<body class="font-sans antialiased">
+
+<header class="border-b border-mist-200 bg-white">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3">
+      <svg class="h-9 w-9" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="10" fill="#0E5C57"/><path d="M9 25V12l9 6 9-6v13" fill="none" stroke="#F6EBD2" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      <div>
+        <h1 class="font-display text-lg font-semibold leading-tight">Harbor Street Clinic</h1>
+        <p class="text-sm text-mist-600">Appointments · Tuesday 21 November</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div role="group" aria-label="Range" class="inline-flex rounded-lg bg-mist-100 p-1 text-sm">
+        <button data-range="day" aria-pressed="true" class="rng rounded-md bg-white px-3 py-2 font-medium shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal">Day</button>
+        <button data-range="week" aria-pressed="false" class="rng rounded-md px-3 py-2 font-medium text-mist-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal">Week</button>
+      </div>
+      <button class="rounded-lg bg-teal px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal">New appointment</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+
+  <div class="fade flex items-start gap-3 rounded-xl bg-brass-100 px-4 py-3 text-sm text-brass-600">
+    <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M10 3l8 14H2L10 3z" stroke-linejoin="round"/><path d="M10 9v3.5M10 14.5v.1"/></svg>
+    <p class="max-w-prose"><span class="font-semibold">Two slots need a decision.</span> Dr. Patel's 10:30 new patient is unconfirmed, and the 11:00 Nurse Shah slot has a same-day request on the waiting list.</p>
+  </div>
+
+  <section aria-label="Key figures" class="fade d1 grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <article class="rounded-2xl bg-teal-700 p-5 text-white shadow-sm">
+      <p class="text-sm text-teal-50">Today's appointments</p>
+      <p class="mt-2 font-display text-4xl font-semibold tabular-nums">38</p>
+      <p class="mt-2 text-sm text-teal-50"><span class="font-semibold text-white">+4</span> vs last Tuesday</p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-mist-200">
+      <p class="text-sm text-mist-600">No-show rate, week</p>
+      <p class="mt-2 font-display text-4xl font-semibold tabular-nums">7.8%</p>
+      <p class="mt-2 text-sm text-mist-600"><span class="font-medium text-emerald-800">-1.2 pts</span> vs 4-week average</p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-mist-200">
+      <p class="text-sm text-mist-600">Waiting list</p>
+      <p class="mt-2 font-display text-4xl font-semibold tabular-nums">11</p>
+      <p class="mt-2 text-sm text-mist-600"><span class="font-medium text-brass-600">+2</span> since yesterday</p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-mist-200">
+      <p class="text-sm text-mist-600">Reminders sent, today</p>
+      <p class="mt-2 font-display text-4xl font-semibold tabular-nums">34</p>
+      <p class="mt-2 text-sm text-mist-600">of 38 booked, 89% reached</p>
+    </article>
+  </section>
+
+  <section class="fade d2 grid gap-6 lg:grid-cols-3">
+    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-mist-200 lg:col-span-2">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="font-display text-xl font-semibold">Bookings and no-shows</h2>
+          <p id="chart-sub" class="text-sm text-mist-600">Today, by hour</p>
+        </div>
+        <ul class="flex flex-wrap gap-4 text-sm text-mist-600">
+          <li class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-teal"></span>Booked</li>
+          <li class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-[#3F7F73]"></span>Attended</li>
+          <li class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-[#B07D1F]"></span>No-show</li>
+        </ul>
+      </div>
+      <svg id="chart" viewBox="0 0 600 240" class="mt-4 h-auto w-full" role="img" aria-label="Line chart of booked, attended and no-show appointments"></svg>
+      <p class="mt-3 max-w-prose rounded-lg bg-mist-50 px-3 py-2 text-sm text-mist-600">Dr. Patel away 12:00 to 13:00. Bookings dip, and the 12:30 walk-in slot was filled from the waiting list.</p>
+    </div>
+
+    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-mist-200">
+      <div class="flex items-center justify-between">
+        <h2 class="font-display text-xl font-semibold">Waiting list</h2>
+        <a href="#" class="inline-flex items-center py-2 text-sm font-medium text-teal hover:underline">View all 11</a>
+      </div>
+      <ol class="mt-4 divide-y divide-mist-100">
+        <li class="flex items-center justify-between gap-3 py-3">
+          <div><p class="font-medium">Maria Lopes</p><p class="text-sm text-mist-600">Follow-up, waiting 3 days</p></div>
+          <span class="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800">Urgent</span>
+        </li>
+        <li class="flex items-center justify-between gap-3 py-3">
+          <div><p class="font-medium">Samuel Okafor</p><p class="text-sm text-mist-600">Physio referral, 2 days</p></div>
+          <span class="rounded-full bg-brass-100 px-2.5 py-1 text-xs font-semibold text-brass-600">Same day</span>
+        </li>
+        <li class="flex items-center justify-between gap-3 py-3">
+          <div><p class="font-medium">Hana Yilmaz</p><p class="text-sm text-mist-600">Blood test review</p></div>
+          <span class="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal">This week</span>
+        </li>
+        <li class="flex items-center justify-between gap-3 py-3">
+          <div><p class="font-medium">Leo Brandt</p><p class="text-sm text-mist-600">New patient, 1 day</p></div>
+          <span class="rounded-full bg-mist-100 px-2.5 py-1 text-xs font-semibold text-mist-600">This week</span>
+        </li>
+        <li class="flex items-center justify-between gap-3 py-3">
+          <div><p class="font-medium">Ines Moreau</p><p class="text-sm text-mist-600">Repeat prescription</p></div>
+          <span class="rounded-full bg-mist-100 px-2.5 py-1 text-xs font-semibold text-mist-600">Next week</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="fade d2 grid gap-6 lg:grid-cols-3">
+    <div class="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-mist-200 lg:col-span-2">
+      <div class="px-6 pt-6"><h2 class="font-display text-xl font-semibold">Today's schedule</h2></div>
+      <table class="mt-4 w-full min-w-[560px] text-left text-sm">
+        <thead class="bg-mist-50 text-mist-600">
+          <tr><th class="px-6 py-3 font-medium">Time</th><th class="px-3 py-3 font-medium">Patient</th><th class="px-3 py-3 font-medium">Clinician</th><th class="px-3 py-3 font-medium">Status</th><th class="px-6 py-3 font-medium">Reminder</th></tr>
+        </thead>
+        <tbody class="divide-y divide-mist-100">
+          <tr><td class="px-6 py-3 tabular-nums">08:30</td><td class="px-3 py-3 font-medium">Eleni Papadopoulos</td><td class="px-3 py-3">Dr. Adeyemi</td><td class="px-3 py-3"><span class="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal">Arrived</span></td><td class="px-6 py-3 text-mist-600">SMS, Mon 18:00</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">09:00</td><td class="px-3 py-3 font-medium">Tomasz Nowak</td><td class="px-3 py-3">Dr. Adeyemi</td><td class="px-3 py-3"><span class="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal">Arrived</span></td><td class="px-6 py-3 text-mist-600">SMS, Mon 18:00</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">09:30</td><td class="px-3 py-3 font-medium">Grace Kim</td><td class="px-3 py-3">Nurse Shah</td><td class="px-3 py-3"><span class="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800">No-show</span></td><td class="px-6 py-3 text-mist-600">SMS, Mon 18:00</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">10:00</td><td class="px-3 py-3 font-medium">Ruth Bennett</td><td class="px-3 py-3">Dr. Patel</td><td class="px-3 py-3"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">Confirmed</span></td><td class="px-6 py-3 text-mist-600">SMS, today 08:00</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">10:30</td><td class="px-3 py-3 font-medium">Aziz Rahman</td><td class="px-3 py-3">Dr. Patel</td><td class="px-3 py-3"><span class="rounded-full bg-brass-100 px-2.5 py-1 text-xs font-semibold text-brass-600">Unconfirmed</span></td><td class="px-6 py-3 text-mist-600">Not sent</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">11:00</td><td class="px-3 py-3 font-medium">Chloe Martin</td><td class="px-3 py-3">Nurse Shah</td><td class="px-3 py-3"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">Confirmed</span></td><td class="px-6 py-3 text-mist-600">Email, Mon</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">11:30</td><td class="px-3 py-3 font-medium">Daniel Osei</td><td class="px-3 py-3">Dr. Adeyemi</td><td class="px-3 py-3"><span class="rounded-full bg-mist-100 px-2.5 py-1 text-xs font-semibold text-mist-600">Waiting</span></td><td class="px-6 py-3 text-mist-600">SMS, today 08:00</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">12:00</td><td class="px-3 py-3 font-medium">Priya Nair</td><td class="px-3 py-3">Dr. Patel</td><td class="px-3 py-3"><span class="rounded-full bg-mist-100 px-2.5 py-1 text-xs font-semibold text-mist-600">Scheduled</span></td><td class="px-6 py-3 text-mist-600">Phone call due</td></tr>
+          <tr><td class="px-6 py-3 tabular-nums">13:30</td><td class="px-3 py-3 font-medium">Felix Hart</td><td class="px-3 py-3">Dr. Adeyemi</td><td class="px-3 py-3"><span class="rounded-full bg-mist-100 px-2.5 py-1 text-xs font-semibold text-mist-600">Scheduled</span></td><td class="px-6 py-3 text-mist-600">SMS, today 08:00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-mist-200">
+      <h2 class="font-display text-xl font-semibold">Reminders this week</h2>
+      <p class="text-sm text-mist-600">312 sent, 268 patients replied</p>
+      <div class="mt-5 space-y-4 text-sm">
+        <div>
+          <div class="flex justify-between"><span class="font-medium">SMS</span><span class="tabular-nums">74%</span></div>
+          <div class="mt-1.5 h-2.5 rounded-full bg-mist-100"><div class="h-2.5 rounded-full bg-teal" style="width:74%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between"><span class="font-medium">Email</span><span class="tabular-nums">18%</span></div>
+          <div class="mt-1.5 h-2.5 rounded-full bg-mist-100"><div class="h-2.5 rounded-full bg-[#3F7F73]" style="width:18%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between"><span class="font-medium">Phone call</span><span class="tabular-nums">8%</span></div>
+          <div class="mt-1.5 h-2.5 rounded-full bg-mist-100"><div class="h-2.5 rounded-full bg-brass" style="width:8%"></div></div>
+        </div>
+      </div>
+      <div class="mt-6 rounded-xl bg-mist-50 p-4 text-sm">
+        <p class="font-semibold">Next run: today 08:00</p>
+        <p class="mt-1 text-mist-600">14 reminders queued for afternoon visits.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const data = {
+  day: { labels: ['08','09','10','11','12','13','14','15','16'], booked: [3,5,6,5,4,6,5,3,1], attended: [3,4,6,4,4,5,5,2,1], noshow: [0,1,0,1,0,1,0,1,0], max: 8, sub: 'Today, by hour' },
+  week: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat'], booked: [38,41,35,44,39,22], attended: [35,38,33,40,36,20], noshow: [3,3,2,4,3,2], max: 50, sub: 'This week, by day' }
+};
+const svg = document.getElementById('chart');
+function draw(key) {
+  const d = data[key], W = 600, H = 240, L = 40, R = 16, T = 12, B = 28;
+  const x = i => L + i * (W - L - R) / (d.labels.length - 1);
+  const y = v => H - B - v / d.max * (H - B - T);
+  let s = '';
+  for (let t = 0; t <= 4; t++) {
+    const v = Math.round(d.max * t / 4), yy = y(v);
+    s += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="#D5E0DC"/><text x="${L - 8}" y="${yy + 4}" text-anchor="end" font-size="12" fill="#4F6763">${v}</text>`;
+  }
+  d.labels.forEach((l, i) => s += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="12" fill="#4F6763">${l}</text>`);
+  [['booked', '#0E5C57', ''], ['attended', '#3F7F73', ''], ['noshow', '#B07D1F', '6 5']].forEach(([k, c, dash]) => {
+    const pts = d[k].map((v, i) => `${x(i)},${y(v)}`).join(' ');
+    s += `<polyline points="${pts}" fill="none" stroke="${c}" stroke-width="3" stroke-linejoin="round" stroke-dasharray="${dash}"/>`;
+    d[k].forEach((v, i) => s += `<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="${c}"/>`);
+  });
+  svg.innerHTML = s;
+}
+document.querySelectorAll('.rng').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.rng').forEach(o => {
+    const on = o === btn;
+    o.setAttribute('aria-pressed', on);
+    o.classList.toggle('bg-white', on);
+    o.classList.toggle('shadow-sm', on);
+    o.classList.toggle('text-mist-600', !on);
+  });
+  draw(btn.dataset.range);
+  document.getElementById('chart-sub').textContent = data[btn.dataset.range].sub;
+}));
+draw('day');
+</script>
+</body>
+</html>

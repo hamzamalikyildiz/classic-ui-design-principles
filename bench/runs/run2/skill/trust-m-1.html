@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbor Street Clinic Appointments</title>
+<meta name="description" content="Daily and weekly appointments, no-show rate, waiting list and reminders for a small clinic.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: {
+    teal: { 50:'#eef6f5', 100:'#d7ebe8', 600:'#1d6b64', 700:'#175751', 800:'#124540', 900:'#0c2f2c' },
+    mist: { 50:'#f6f8f7', 100:'#e9eeec', 200:'#d5ddda', 500:'#5d6f6b', 700:'#33433f', 900:'#172422' },
+    brass: { 100:'#f6ecd2', 800:'#6b4a0f' }
+  },
+  fontFamily: { display: ['Fraunces','Georgia','serif'], sans: ['Inter','system-ui','sans-serif'] }
+}}};
+</script>
+<style>
+  body { background:#f6f8f7; }
+  .rise { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+  .rise-2 { animation-delay:.08s; } .rise-3 { animation-delay:.16s; }
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce) { .rise { animation:none; } }
+  .seg[aria-pressed="true"] { background:#fff; color:#0c2f2c; box-shadow:0 1px 2px rgba(12,47,44,.12); }
+</style>
+</head>
+<body class="font-sans text-mist-900 antialiased">
+<main class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+
+  <header class="rise flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="text-sm font-medium text-teal-700">Harbor Street Family Clinic</p>
+      <h1 class="font-display text-3xl font-semibold text-teal-900 sm:text-4xl">Appointments</h1>
+      <p id="stamp" class="mt-1 text-sm text-mist-500">Saturday 21 November, updated 08:12</p>
+    </div>
+    <div role="group" aria-label="Range" class="inline-flex rounded-xl bg-mist-100 p-1">
+      <button type="button" id="btn-day" class="seg rounded-lg px-4 py-2 text-sm font-medium text-mist-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600" aria-pressed="true">Day</button>
+      <button type="button" id="btn-week" class="seg rounded-lg px-4 py-2 text-sm font-medium text-mist-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600" aria-pressed="false">Week</button>
+    </div>
+  </header>
+
+  <ol class="rise rise-2 grid grid-cols-4 gap-2 sm:gap-3" aria-label="This week">
+    <li class="rounded-xl bg-white px-2 py-3 text-center shadow-sm"><span class="block text-xs text-mist-500">Sun 15</span><span class="tabular-nums font-semibold">31</span></li>
+    <li class="rounded-xl bg-white px-2 py-3 text-center shadow-sm"><span class="block text-xs text-mist-500">Mon 16</span><span class="tabular-nums font-semibold">41</span></li>
+    <li class="rounded-xl bg-white px-2 py-3 text-center shadow-sm"><span class="block text-xs text-mist-500">Tue 17</span><span class="tabular-nums font-semibold">44</span></li>
+    <li class="rounded-xl bg-white px-2 py-3 text-center shadow-sm"><span class="block text-xs text-mist-500">Wed 18</span><span class="tabular-nums font-semibold">39</span></li>
+  </ol>
+
+  <section class="rise rise-2 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-teal-800 p-6 text-white shadow-sm">
+    <div>
+      <p class="text-sm text-teal-100">Next patient</p>
+      <p class="font-display text-2xl font-semibold">Maria Okafor, 09:30, Room 2</p>
+      <p class="text-sm text-teal-100">Blood pressure check with Dr Lind. Two slots still unconfirmed.</p>
+    </div>
+    <a href="#schedule" class="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-teal-900 hover:bg-teal-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">View schedule</a>
+  </section>
+
+  <div role="status" class="rise rise-3 flex items-start gap-3 rounded-xl bg-brass-100 px-4 py-3 text-sm text-brass-800">
+    <span class="mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full bg-brass-800 text-xs font-bold text-white" aria-hidden="true">!</span>
+    <p class="max-w-prose"><strong class="font-semibold">2 reminders failed to send.</strong> Retry is queued for 09:00. Patients in those slots will also get a phone call.</p>
+  </div>
+
+  <section class="rise rise-3 grid grid-cols-2 gap-4 lg:grid-cols-4" id="kpis" aria-label="Key figures"></section>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="min-w-0 space-y-6 lg:col-span-2">
+      <section class="rise rise-3 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="chart-title">
+        <div class="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="chart-title" class="font-display text-xl font-semibold text-teal-900">No-show rate</h2>
+          <p class="text-sm text-mist-500">Dashed line is the 8% target</p>
+        </div>
+        <div id="chart" class="mt-4"></div>
+      </section>
+
+      <section id="schedule" class="rise rise-3 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="sched-title">
+        <h2 id="sched-title" class="font-display text-xl font-semibold text-teal-900">Schedule</h2>
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full min-w-[560px] text-left text-sm">
+            <thead class="border-b border-mist-200 text-xs uppercase tracking-wide text-mist-500">
+              <tr><th class="py-2 pr-4 font-medium" id="col1">Time</th><th class="py-2 pr-4 font-medium" id="col2">Patient</th><th class="py-2 pr-4 font-medium" id="col3">Clinician</th><th class="py-2 pr-4 font-medium" id="col4">Visit</th><th class="py-2 font-medium">Status</th></tr>
+            </thead>
+            <tbody id="rows" class="divide-y divide-mist-100"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="space-y-6">
+      <section class="rise rise-3 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="wait-title">
+        <div class="flex items-baseline justify-between">
+          <h2 id="wait-title" class="font-display text-xl font-semibold text-teal-900">Waiting list</h2>
+          <span class="tabular-nums text-sm text-mist-500">14 total</span>
+        </div>
+        <ol class="mt-4 space-y-3">
+          <li class="flex items-center gap-3"><span class="tabular-nums w-5 text-sm text-mist-500">1</span><div class="flex-1"><p class="font-medium">Jonah Pike</p><p class="text-xs text-mist-500">Physio, 21 days</p></div><a href="#schedule" class="rounded-lg border border-teal-600 px-3 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-50">Offer slot</a></li>
+          <li class="flex items-center gap-3"><span class="tabular-nums w-5 text-sm text-mist-500">2</span><div class="flex-1"><p class="font-medium">Aisha Rahman</p><p class="text-xs text-mist-500">Check-up, 14 days</p></div><a href="#schedule" class="rounded-lg border border-teal-600 px-3 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-50">Offer slot</a></li>
+          <li class="flex items-center gap-3"><span class="tabular-nums w-5 text-sm text-mist-500">3</span><div class="flex-1"><p class="font-medium">Ben Castellano</p><p class="text-xs text-mist-500">Dressing change, 6 days</p></div><a href="#schedule" class="rounded-lg border border-teal-600 px-3 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-50">Offer slot</a></li>
+          <li class="flex items-center gap-3"><span class="tabular-nums w-5 text-sm text-mist-500">4</span><div class="flex-1"><p class="font-medium">Ruth Adeyemi</p><p class="text-xs text-mist-500">Lab review, 4 days</p></div><a href="#schedule" class="rounded-lg border border-teal-600 px-3 py-1.5 text-sm font-medium text-teal-800 hover:bg-teal-50">Offer slot</a></li>
+        </ol>
+      </section>
+
+      <section class="rise rise-3 rounded-2xl bg-white p-6 shadow-sm" aria-labelledby="rem-title">
+        <h2 id="rem-title" class="font-display text-xl font-semibold text-teal-900">Reminders sent</h2>
+        <p class="mt-1 text-sm text-mist-500"><span class="tabular-nums">52</span> today, <span class="tabular-nums">96%</span> delivered</p>
+        <div class="mt-4 space-y-3 text-sm">
+          <div><div class="flex justify-between"><span>SMS</span><span class="tabular-nums">41</span></div><div class="mt-1 h-2 rounded-full bg-mist-100"><div class="h-2 rounded-full bg-teal-600" style="width:79%"></div></div></div>
+          <div><div class="flex justify-between"><span>Email</span><span class="tabular-nums">8</span></div><div class="mt-1 h-2 rounded-full bg-mist-100"><div class="h-2 rounded-full bg-teal-600" style="width:15%"></div></div></div>
+          <div><div class="flex justify-between"><span>Phone call</span><span class="tabular-nums">3</span></div><div class="mt-1 h-2 rounded-full bg-mist-100"><div class="h-2 rounded-full bg-teal-600" style="width:6%"></div></div></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="pb-4 text-xs text-mist-500">Figures refresh every 15 minutes. Patient names are shown for demonstration.</footer>
+</main>
+
+<script>
+const D = {
+  day: {
+    stamp: 'Saturday 21 November, updated 08:12',
+    kpi: [
+      { label: 'Booked today', value: '38', note: 'of 44 slots, 86% full', delta: '+4 vs typical Sat', tone: 'good' },
+      { label: 'No-show rate', value: '6.2%', note: 'target 8% or lower', delta: 'Down 1.8 pts vs last week', tone: 'good' },
+      { label: 'Waiting list', value: '14', note: 'median wait 9 days', delta: 'Up 3 since Monday', tone: 'warn' },
+      { label: 'Reminders sent', value: '52', note: 'SMS, email and calls', delta: '96% delivered', tone: 'good' }
+    ],
+    chart: { labels: ['Sun 15','Mon 16','Tue 17','Wed 18','Thu 19','Fri 20','Sat 21'], values: [9.1,7.4,8.8,6.9,5.2,7.7,6.2], note: 'Sun: flu week closures' },
+    cols: ['Time','Patient','Clinician','Visit'],
+    rows: [
+      ['08:30','Ana Lindqvist','Dr Patel','Check-up','Checked in'],
+      ['09:00','Samir Haddad','Dr Patel','Follow-up','Checked in'],
+      ['09:30','Maria Okafor','Dr Lind','Blood pressure','Confirmed'],
+      ['10:00','Tom Reilly','Dr Lind','New patient','Unconfirmed'],
+      ['10:30','Priya Nair','Nurse Ames','Vaccination','Confirmed'],
+      ['11:00','Eli Brandt','Dr Patel','Physio review','Waiting'],
+      ['11:30','Grace Mensah','Dr Lind','Lab results','Confirmed'],
+      ['12:00','Leo Varga','Dr Lind','Check-up','Confirmed'],
+      ['13:30','Hana Sato','Dr Patel','Check-up','Unconfirmed'],
+      ['14:00','Owen Blake','Nurse Ames','Dressing change','Confirmed']
+    ]
+  },
+  week: {
+    stamp: 'Week 47, 16 to 21 November, updated 08:12',
+    kpi: [
+      { label: 'Booked this week', value: '214', note: 'of 264 slots, 81% full', delta: 'Up 9 vs last week', tone: 'good' },
+      { label: 'No-show rate', value: '7.4%', note: 'target 8% or lower', delta: 'Down 0.6 pts vs last week', tone: 'good' },
+      { label: 'Waiting list', value: '14', note: 'median wait 9 days', delta: 'Up 3 since Monday', tone: 'warn' },
+      { label: 'Reminders sent', value: '318', note: 'SMS, email and calls', delta: '95% delivered', tone: 'good' }
+    ],
+    chart: { labels: ['W42','W43','W44','W45','W46','W47'], values: [9.4,8.1,8.9,7.8,8.3,7.4], note: 'W44: staff training week' },
+    cols: ['Day','Booked','Clinicians','No-show'],
+    rows: [
+      ['Mon 16','41','Dr Patel, Dr Lind','7.1%'],
+      ['Tue 17','44','Dr Patel, Dr Lind, Nurse Ames','8.4%'],
+      ['Wed 18','39','Dr Patel, Dr Lind','6.9%'],
+      ['Thu 19','36','Dr Lind, Nurse Ames','5.2%'],
+      ['Fri 20','38','Dr Patel, Dr Lind','7.7%'],
+      ['Sat 21','38','Dr Patel, Dr Lind, Nurse Ames','6.2%']
+    ]
+  }
+};
+
+const STATUS = {
+  'Checked in': 'bg-teal-100 text-teal-900',
+  'Confirmed': 'bg-mist-100 text-mist-700',
+  'Unconfirmed': 'bg-brass-100 text-brass-800',
+  'Waiting': 'bg-mist-200 text-mist-900'
+};
+
+function renderKpis(list) {
+  document.getElementById('kpis').innerHTML = list.map(k => `
+    <article class="rounded-2xl bg-white p-5 shadow-sm">
+      <p class="text-sm text-mist-500">${k.label}</p>
+      <p class="mt-1 font-display text-3xl font-semibold tabular-nums text-teal-900">${k.value}</p>
+      <p class="mt-1 text-xs text-mist-500">${k.note}</p>
+      <p class="mt-3 text-xs font-medium ${k.tone === 'warn' ? 'text-brass-800' : 'text-teal-800'}">${k.delta}</p>
+    </article>`).join('');
+}
+
+function renderChart(c) {
+  const W = 600, H = 220, P = 28, max = 12, n = c.values.length, bw = (W - P * 2) / n;
+  const y = v => H - P - (v / max) * (H - P * 2);
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="h-auto w-full" role="img" aria-label="No-show rate by period, bars above the 8% target highlighted">`;
+  [0, 4, 8, 12].forEach(g => {
+    s += `<line x1="${P}" x2="${W - P}" y1="${y(g)}" y2="${y(g)}" stroke="#d5ddda" stroke-width="1"/>`;
+    s += `<text x="0" y="${y(g) + 4}" font-size="11" fill="#5d6f6b">${g}%</text>`;
+  });
+  c.values.forEach((v, i) => {
+    const x = P + i * bw + bw * 0.22, w = bw * 0.56, over = v > 8;
+    s += `<rect x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${w.toFixed(1)}" height="${(H - P - y(v)).toFixed(1)}" rx="4" fill="${over ? '#b45309' : '#1d6b64'}"/>`;
+    s += `<text x="${(x + w / 2).toFixed(1)}" y="${(y(v) - 6).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="600" fill="#172422">${v}%</text>`;
+    s += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#33433f">${c.labels[i]}</text>`;
+  });
+  s += `<line x1="${P}" x2="${W - P}" y1="${y(8)}" y2="${y(8)}" stroke="#124540" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  s += `<text x="${W - P}" y="${y(8) - 6}" text-anchor="end" font-size="11" font-weight="600" fill="#124540">Target 8%</text>`;
+  s += `<text x="${P}" y="14" font-size="11" fill="#6b4a0f">${c.note}</text>`;
+  document.getElementById('chart').innerHTML = s + '</svg>';
+}
+
+function renderRows(cols, rows, isWeek) {
+  ['col1','col2','col3','col4'].forEach((id, i) => document.getElementById(id).textContent = cols[i]);
+  document.getElementById('rows').innerHTML = rows.map(r => {
+    const last = isWeek
+      ? `<td class="py-3 tabular-nums">${r[3]}</td>`
+      : `<td class="py-3"><span class="rounded-full px-2.5 py-1 text-xs font-medium ${STATUS[r[4]]}">${r[4]}</span></td>`;
+    const cells = r.slice(0, 4).map((c, i) => `<td class="py-3 pr-4 ${i === 0 ? 'tabular-nums font-medium' : ''}">${c}</td>`).join('');
+    return `<tr>${cells}${last}</tr>`;
+  }).join('');
+}
+
+function show(mode) {
+  const d = D[mode], isWeek = mode === 'week';
+  document.getElementById('stamp').textContent = d.stamp;
+  document.getElementById('btn-day').setAttribute('aria-pressed', String(!isWeek));
+  document.getElementById('btn-week').setAttribute('aria-pressed', String(isWeek));
+  renderKpis(d.kpi);
+  renderChart(d.chart);
+  renderRows(d.cols, d.rows, isWeek);
+}
+
+document.getElementById('btn-day').addEventListener('click', () => show('day'));
+document.getElementById('btn-week').addEventListener('click', () => show('week'));
+show('day');
+</script>
+</body>
+</html>

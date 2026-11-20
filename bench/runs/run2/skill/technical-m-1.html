@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { color-scheme: dark; }
+  body { background:#09090b; color:#e4e4e7; font-family:Inter,system-ui,sans-serif; }
+  .mono { font-family:"JetBrains Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .card { background:#18181b; border:1px solid #27272a; border-radius:8px; }
+  .row { border-bottom:1px solid #27272a; }
+  .row:last-child { border-bottom:0; }
+  .sel { box-shadow:inset 2px 0 0 #22d3ee; background-color:rgba(8,51,68,.45); }
+  .pulse { animation:pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity:.35; } }
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .rise { animation:rise .5s ease both; }
+  @media (prefers-reduced-motion: reduce) { .rise, .pulse { animation:none; } }
+</style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-200">
+<main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+  <!-- Header -->
+  <header class="flex flex-wrap items-center justify-between gap-4 rise">
+    <div class="flex items-center gap-3">
+      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 28 28"><rect x="1" y="1" width="26" height="26" rx="6" fill="#18181b" stroke="#27272a"/><path d="M6 15h4l2-6 3 11 2-5h5" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div>
+        <h1 class="text-base font-semibold">Pipeline Console</h1>
+        <p class="mono text-xs text-zinc-400">org/platform &middot; main &middot; updated 14:52:08 UTC</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="mono text-xs h-9 px-3 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400 active:scale-[.98]">Pause refresh</button>
+      <button class="mono text-xs h-9 px-3 rounded-md bg-cyan-400 text-zinc-950 font-medium hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 active:scale-[.98]">Trigger build</button>
+    </div>
+  </header>
+
+  <!-- KPIs -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Key metrics">
+    <div class="card p-4"><p class="mono text-[11px] uppercase tracking-wider text-zinc-400">Success rate 7d</p><p class="text-2xl font-semibold mt-2 mono">94.2%</p><p class="mono text-xs text-emerald-400 mt-1">&uarr; 1.8 pts</p></div>
+    <div class="card p-4"><p class="mono text-[11px] uppercase tracking-wider text-zinc-400">Median duration</p><p class="text-2xl font-semibold mt-2 mono">7m 18s</p><p class="mono text-xs text-rose-400 mt-1">&uarr; 42s</p></div>
+    <div class="card p-4"><p class="mono text-[11px] uppercase tracking-wider text-zinc-400">Deploys today</p><p class="text-2xl font-semibold mt-2 mono">11</p><p class="mono text-xs text-zinc-400 mt-1">3 rollbacks avoided</p></div>
+    <div class="card p-4"><p class="mono text-[11px] uppercase tracking-wider text-zinc-400">Flaky tests</p><p class="text-2xl font-semibold mt-2 mono">14</p><p class="mono text-xs text-amber-400 mt-1">quarantine 3 pending</p></div>
+  </section>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Recent builds -->
+    <section class="card lg:col-span-2 overflow-hidden" aria-labelledby="builds-h">
+      <div class="flex items-center justify-between px-4 h-11 border-b border-zinc-800">
+        <h2 id="builds-h" class="text-sm font-semibold">Recent builds</h2>
+        <span class="mono text-xs text-zinc-400">last 8</span>
+      </div>
+      <ul id="builds" class="text-sm">
+        <li class="row sel grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2303" tabindex="0"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="mono">#2303 &middot; feat/cache-warmup</span><span class="mono text-xs text-zinc-400">api, web</span><span class="mono text-xs tabular-nums text-zinc-400">6m 41s</span></li>
+        <li class="row grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2302" tabindex="0"><span class="w-2 h-2 rounded-full bg-rose-500"></span><span class="mono">#2302 &middot; fix/ledger-rounding</span><span class="mono text-xs text-zinc-400">worker</span><span class="mono text-xs tabular-nums text-zinc-400">10m 12s</span></li>
+        <li class="row grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2301" tabindex="0"><span class="w-2 h-2 rounded-full bg-amber-400 pulse"></span><span class="mono">#2301 &middot; chore/deps-nov</span><span class="mono text-xs text-zinc-400">all</span><span class="mono text-xs tabular-nums text-zinc-400">running 3m 04s</span></li>
+        <li class="row grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2300" tabindex="0"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="mono">#2300 &middot; main</span><span class="mono text-xs text-zinc-400">web</span><span class="mono text-xs tabular-nums text-zinc-400">3m 37s</span></li>
+        <li class="row grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2299" tabindex="0"><span class="w-2 h-2 rounded-full bg-zinc-500"></span><span class="mono">#2299 &middot; feat/ssr-streaming</span><span class="mono text-xs text-zinc-400">api</span><span class="mono text-xs tabular-nums text-zinc-400">cancelled 1m 50s</span></li>
+        <li class="row grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2298" tabindex="0"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="mono">#2298 &middot; main</span><span class="mono text-xs text-zinc-400">api, worker</span><span class="mono text-xs tabular-nums text-zinc-400">8m 02s</span></li>
+        <li class="row grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2297" tabindex="0"><span class="w-2 h-2 rounded-full bg-rose-500"></span><span class="mono">#2297 &middot; feat/export-csv</span><span class="mono text-xs text-zinc-400">web</span><span class="mono text-xs tabular-nums text-zinc-400">2m 58s</span></li>
+        <li class="row grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-4 h-11 cursor-pointer hover:bg-zinc-800/60" data-id="2296" tabindex="0"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="mono">#2296 &middot; main</span><span class="mono text-xs text-zinc-400">all</span><span class="mono text-xs tabular-nums text-zinc-400">9m 15s</span></li>
+      </ul>
+    </section>
+
+    <!-- Deploy history -->
+    <section class="card overflow-hidden" aria-labelledby="deploy-h">
+      <div class="flex items-center justify-between px-4 h-11 border-b border-zinc-800">
+        <h2 id="deploy-h" class="text-sm font-semibold">Deploy history</h2>
+        <span class="mono text-xs text-zinc-400">prod</span>
+      </div>
+      <ol class="text-sm">
+        <li class="row px-4 py-3"><p class="mono">14:31 &middot; api v4.82.0</p><p class="mono text-xs text-zinc-400 mt-1">eu-west-1 &middot; by ci-bot &middot; <span class="text-emerald-400">live</span></p></li>
+        <li class="row px-4 py-3"><p class="mono">12:08 &middot; web v7.19.3</p><p class="mono text-xs text-zinc-400 mt-1">us-east-1 &middot; by m.okafor &middot; <span class="text-emerald-400">live</span></p></li>
+        <li class="row px-4 py-3"><p class="mono">10:44 &middot; worker v2.6.1</p><p class="mono text-xs text-zinc-400 mt-1">eu-west-1 &middot; by ci-bot &middot; <span class="text-rose-400">rolled back 10:52</span></p></li>
+        <li class="row px-4 py-3"><p class="mono">09:17 &middot; api v4.81.4</p><p class="mono text-xs text-zinc-400 mt-1">eu-west-1 &middot; by s.lindqvist &middot; <span class="text-zinc-400">superseded</span></p></li>
+        <li class="row px-4 py-3"><p class="mono">Yesterday 18:02 &middot; web v7.19.2</p><p class="mono text-xs text-zinc-400 mt-1">us-east-1 &middot; by ci-bot &middot; <span class="text-zinc-400">superseded</span></p></li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Duration chart -->
+    <section class="card p-4 lg:col-span-2" aria-labelledby="chart-h">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="chart-h" class="text-sm font-semibold">Build duration, last 14 builds</h2>
+        <ul class="mono text-xs flex gap-4 text-zinc-400">
+          <li class="flex items-center gap-2"><span class="w-3 h-0.5 bg-cyan-400"></span>api</li>
+          <li class="flex items-center gap-2"><span class="w-3 h-0.5 bg-emerald-400"></span>web</li>
+          <li class="flex items-center gap-2"><span class="w-3 h-0.5 bg-amber-400"></span>worker</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 600 220" class="w-full h-auto mt-4" role="img" aria-label="Line chart of build durations in minutes for api, web and worker over 14 builds">
+        <g class="mono" font-size="11" fill="#71717a">
+          <line x1="40" y1="20" x2="580" y2="20" stroke="#27272a"/>
+          <line x1="40" y1="77" x2="580" y2="77" stroke="#27272a"/>
+          <line x1="40" y1="133" x2="580" y2="133" stroke="#27272a"/>
+          <line x1="40" y1="190" x2="580" y2="190" stroke="#3f3f46"/>
+          <text x="6" y="24">12m</text><text x="6" y="81">8m</text><text x="6" y="137">4m</text><text x="6" y="194">0m</text>
+          <text x="40" y="212">#2290</text><text x="289" y="212" text-anchor="middle">#2296</text><text x="580" y="212" text-anchor="end">#2303</text>
+        </g>
+        <line x1="40" y1="48" x2="580" y2="48" stroke="#f43f5e" stroke-dasharray="4 4"/>
+        <text x="576" y="42" text-anchor="end" font-size="11" fill="#fb7185" class="mono">SLO 10m</text>
+        <polyline fill="none" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round" points="40,102 81,108 123,98 165,89 206,92 248,85 289,94 331,74 372,78 414,89 456,96 497,101 539,105 580,109"/>
+        <polyline fill="none" stroke="#34d399" stroke-width="2" stroke-linejoin="round" points="40,146 81,142 123,148 165,136 206,131 248,133 289,139 331,143 372,146 414,140 456,135 497,138 539,145 580,148"/>
+        <polyline fill="none" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round" points="40,51 81,43 123,55 165,31 206,19 248,36 289,26 331,50 372,46 414,37 456,29 497,40 539,53 580,57"/>
+        <circle cx="206" cy="19" r="3.5" fill="#fbbf24"/>
+        <text x="206" y="12" text-anchor="middle" font-size="11" fill="#fde68a" class="mono">peak 12m 06s</text>
+      </svg>
+    </section>
+
+    <!-- Flaky tests -->
+    <section class="card overflow-hidden" aria-labelledby="flaky-h">
+      <div class="flex items-center justify-between px-4 h-11 border-b border-zinc-800">
+        <h2 id="flaky-h" class="text-sm font-semibold">Flaky tests</h2>
+        <span class="mono text-xs text-zinc-400">failure rate 7d</span>
+      </div>
+      <ul class="text-sm">
+        <li class="row px-4 py-3 flex items-center justify-between gap-3"><span class="mono truncate">checkout.spec > retries on 503</span><span class="mono text-xs tabular-nums text-rose-400">31%</span></li>
+        <li class="row px-4 py-3 flex items-center justify-between gap-3"><span class="mono truncate">ledger.test > rounding half-even</span><span class="mono text-xs tabular-nums text-rose-400">22%</span></li>
+        <li class="row px-4 py-3 flex items-center justify-between gap-3"><span class="mono truncate">ws.reconnect > backoff jitter</span><span class="mono text-xs tabular-nums text-amber-400">14%</span></li>
+        <li class="row px-4 py-3 flex items-center justify-between gap-3"><span class="mono truncate">search.index > eventual sync</span><span class="mono text-xs tabular-nums text-amber-400">11%</span></li>
+        <li class="row px-4 py-3 flex items-center justify-between gap-3"><span class="mono truncate">auth.refresh > clock skew</span><span class="mono text-xs tabular-nums text-zinc-400">6%</span></li>
+        <li class="row px-4 py-3 flex items-center justify-between gap-3"><span class="mono truncate">export.csv > locale dates</span><span class="mono text-xs tabular-nums text-zinc-400">4%</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Terminal log -->
+  <section class="card overflow-hidden" aria-labelledby="log-h">
+    <div class="flex items-center justify-between px-4 h-11 border-b border-zinc-800">
+      <h2 id="log-h" class="text-sm font-semibold">Log &middot; <span id="log-title" class="mono font-normal text-zinc-400">#2303 feat/cache-warmup</span></h2>
+      <span class="mono text-xs text-zinc-400">stdout + stderr</span>
+    </div>
+    <pre id="log" class="mono text-xs leading-6 p-4 h-72 overflow-auto bg-zinc-950 text-zinc-300 whitespace-pre-wrap"></pre>
+  </section>
+
+</main>
+
+<script>
+  const logs = {
+    2303: { title: "#2303 feat/cache-warmup", lines: [
+      ["$", "ci run --pipeline api,web --sha 9f3c1ab"],
+      ["", "[14:44:02] restore cache key=pnpm-7e21 hit"],
+      ["", "[14:44:09] install 1,284 packages in 6.1s"],
+      ["", "[14:44:20] lint    ok  0 errors, 0 warnings"],
+      ["", "[14:45:03] test api  412 passed, 0 failed (42.7s)"],
+      ["", "[14:46:31] test web  198 passed, 0 failed (88.0s)"],
+      ["", "[14:49:55] build web  next build, 3 routes static"],
+      ["ok", "[14:51:10] deploy preview  https://pr-2303.preview.example.dev"],
+      ["ok", "[14:51:12] pipeline finished in 6m 41s"]
+    ]},
+    2302: { title: "#2302 fix/ledger-rounding", lines: [
+      ["$", "ci run --pipeline worker --sha 4b07e5d"],
+      ["", "[13:58:11] restore cache key=go-2c90 miss"],
+      ["", "[14:02:40] test worker  610 passed, 1 failed"],
+      ["err", "FAIL ledger.test > rounding half-even"],
+      ["err", "  expected 1204.50 received 1204.49 (seed=88213)"],
+      ["", "[14:08:22] retry 1/2 ledger.test  passed"],
+      ["err", "[14:08:23] pipeline failed: flaky test retried"]
+    ]},
+    2301: { title: "#2301 chore/deps-nov", lines: [
+      ["$", "ci run --pipeline all --sha 1aa90f2"],
+      ["", "[14:49:01] restore cache key=pnpm-7e21 hit"],
+      ["", "[14:49:08] install 1,301 packages in 5.4s"],
+      ["", "[14:50:14] test api  running..."],
+      ["warn", "[14:51:40] slow test auth.refresh 4.1s (budget 2s)"]
+    ]}
+  };
+  const pre = document.getElementById("log");
+  const colors = { "$": "text-cyan-400", ok: "text-emerald-400", err: "text-rose-400", warn: "text-amber-400", "": "text-zinc-300" };
+  function render(id) {
+    const d = logs[id] || logs[2303];
+    document.getElementById("log-title").textContent = d.title;
+    pre.innerHTML = d.lines.map(([k, t]) => `<span class="${colors[k] || colors[""]}">${k === "$" ? "$ " : ""}${t.replace(/</g, "&lt;")}</span>`).join("\n");
+    pre.scrollTop = 0;
+  }
+  document.querySelectorAll("#builds li").forEach(li => {
+    const pick = () => {
+      document.querySelectorAll("#builds li").forEach(x => x.classList.remove("sel"));
+      li.classList.add("sel");
+      render(li.dataset.id);
+    };
+    li.addEventListener("click", pick);
+    li.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+  render("2303");
+</script>
+</body>
+</html>

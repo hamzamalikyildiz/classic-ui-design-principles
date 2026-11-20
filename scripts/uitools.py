@@ -461,6 +461,17 @@ def character_checks(txt, nodes, mood):
     if len(bars) >= 3 and len({b for b in bars if b not in NEUTRALS}) <= 1:
         out.append(('WARN', 'grey-chart', f"{len(bars)} chart bars use {sorted(set(bars))}; give categories distinct hues (indigo, emerald, amber, rose, sky)"))
 
+    # stock look: default Tailwind accent, no custom palette, only neutral body fonts
+    stock = [h for h in HUE_CLASS.findall(txt) if h in TW and h not in NEUTRALS]
+    if stock:
+        top, n = max(((h, stock.count(h)) for h in set(stock)), key=lambda x: x[1])
+        custom = re.search(r'colors\s*:\s*\{|--color-[\w-]+\s*:|:root\s*\{[^}]*--[\w-]*(?:accent|brand|primary|ink|paper)', txt)
+        fams = {f.replace('+', ' ') for f in re.findall(r'family=([A-Za-z0-9+]+)', txt)}
+        neutral_fonts = not fams or fams <= {'Inter', 'Roboto', 'Open Sans', 'Poppins', 'Lato', 'Montserrat', 'DM Sans', 'Nunito'}
+        if top in ('blue', 'indigo', 'violet', 'purple', 'fuchsia') and not custom and neutral_fonts:
+            out.append(('INFO', 'stock-look', f"accent is stock Tailwind {top} with no custom palette and only neutral fonts; "
+                        "derive the palette from the subject (reference/visual-quality.md) and add a display or serif face"))
+
     # mood: color presence and hero surface
     if mood in ('playful', 'bold', 'trust'):
         hues = {h for h in HUE_CLASS.findall(txt) if h in TW and h not in NEUTRALS}

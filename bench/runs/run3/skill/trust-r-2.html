@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledgerly · Finance dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        forest: { 50: '#eef4ef', 100: '#dbe7de', 500: '#2f6b4f', 600: '#245a41', 700: '#1d4a35', 900: '#12271e' },
+        brass: { 300: '#e3c77f', 500: '#a8832e', 700: '#7a5f1c' },
+        paper: '#f7f6f0',
+        ink: { 500: '#666b60', 700: '#3d4239', 900: '#1b1f19' },
+        alarm: { 50: '#fbeeeb', 700: '#8f2f20' }
+      },
+      fontFamily: {
+        serif: ['Fraunces', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { background: #f7f6f0; }
+  .ruled { background-image: repeating-linear-gradient(to bottom, transparent 0 39px, rgba(47, 107, 79, .05) 39px 40px); }
+  @keyframes rise { from { transform: translateY(12px); } to { transform: none; } }
+  .rise { animation: rise .6s cubic-bezier(.2, .7, .2, 1) both; }
+  .rise-2 { animation-delay: .08s; }
+  .rise-3 { animation-delay: .16s; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body class="ruled font-sans text-ink-900 antialiased">
+<main class="mx-auto max-w-6xl px-4 md:px-8 py-6 md:py-10">
+
+  <header class="flex flex-wrap items-center justify-between gap-4 border-b border-forest-100 pb-6">
+    <div class="flex items-center gap-3">
+      <svg aria-hidden="true" width="36" height="36" viewBox="0 0 36 36">
+        <rect width="36" height="36" rx="9" fill="#245a41"/>
+        <path d="M11 9v18h16" stroke="#e3c77f" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h1 class="font-serif text-2xl font-semibold leading-none text-forest-900">Ledgerly</h1>
+        <p class="mt-1 text-xs text-ink-500">Harbour &amp; Pine Joinery Ltd · books closed to 31 Oct</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="hidden rounded-full bg-white px-3 py-1.5 text-xs font-medium text-ink-700 ring-1 ring-forest-100 sm:inline-flex">Nov 2026 · month to date</span>
+      <button type="button" class="min-h-[44px] rounded-lg bg-white px-4 text-sm font-medium text-forest-700 ring-1 ring-forest-100 hover:bg-forest-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-forest-500">Export</button>
+      <button type="button" class="min-h-[44px] rounded-lg bg-forest-600 px-4 text-sm font-semibold text-white shadow-sm hover:bg-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-forest-500">New invoice</button>
+    </div>
+  </header>
+
+  <section aria-labelledby="alert-title" class="rise mt-6 flex flex-wrap items-center gap-4 rounded-2xl bg-alarm-50 p-4 ring-1 ring-alarm-700/15 md:p-5">
+    <span aria-hidden="true" class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-alarm-700 text-lg font-bold text-white">!</span>
+    <div class="min-w-[200px] flex-1">
+      <h2 id="alert-title" class="font-semibold text-alarm-700">3 invoices are overdue, $18,640 outstanding</h2>
+      <p class="max-w-prose text-sm text-ink-700">Oldest is Harbor Dental Group, 41 days past due. Late receipts are the main reason cash sits near the $150k reserve.</p>
+    </div>
+    <button type="button" class="min-h-[44px] rounded-lg bg-white px-4 text-sm font-medium text-alarm-700 ring-1 ring-alarm-700/30 hover:bg-alarm-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-alarm-700">Review overdue</button>
+  </section>
+
+  <section aria-label="Key figures" class="rise rise-2 mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <article class="rounded-2xl bg-gradient-to-br from-forest-600 to-forest-900 p-5 shadow-sm">
+      <p class="text-sm text-forest-100">Cash on hand</p>
+      <p class="mt-2 font-serif text-3xl font-semibold tabular-nums text-white">$184,220</p>
+      <p class="mt-2 text-sm font-medium text-forest-100">Up 6.4% vs Oct</p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-forest-100">
+      <p class="text-sm text-ink-500">Owed to you</p>
+      <p class="mt-2 font-serif text-3xl font-semibold tabular-nums text-forest-900">$92,470</p>
+      <p class="mt-2 text-sm font-medium text-alarm-700">Up 4.8% vs Oct</p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-forest-100">
+      <p class="text-sm text-ink-500">Bills to pay</p>
+      <p class="mt-2 font-serif text-3xl font-semibold tabular-nums text-forest-900">$41,905</p>
+      <p class="mt-2 text-sm font-medium text-ink-700">Up 12.0% vs Oct</p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-forest-100">
+      <p class="text-sm text-ink-500">Net margin</p>
+      <p class="mt-2 font-serif text-3xl font-semibold tabular-nums text-forest-900">23.8%</p>
+      <p class="mt-2 text-sm font-medium text-forest-600">Up 1.9 pts vs Oct</p>
+    </article>
+  </section>
+
+  <div class="mt-6 grid gap-4 lg:grid-cols-3">
+    <section aria-labelledby="flow-title" class="rise rise-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-forest-100 md:p-6 lg:col-span-2 flex flex-col">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <h2 id="flow-title" class="font-serif text-xl font-semibold text-forest-900">Cash flow, last six months</h2>
+        <ul class="flex flex-wrap gap-4 text-xs text-ink-700">
+          <li class="flex items-center gap-1.5"><span aria-hidden="true" class="h-2.5 w-2.5 rounded-sm bg-forest-500"></span>Cash in</li>
+          <li class="flex items-center gap-1.5"><span aria-hidden="true" class="h-2.5 w-2.5 rounded-sm bg-brass-500"></span>Cash out</li>
+          <li class="flex items-center gap-1.5"><span aria-hidden="true" class="h-0 w-4 border-t-2 border-dashed border-brass-700"></span>Reserve floor</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 640 280" class="mt-4 h-auto w-full" role="img" aria-label="Grouped bars of cash in and cash out from June to November, with a dashed $150k reserve line and monthly net cash flow">
+        <g stroke="#dfe5da" stroke-width="1">
+          <line x1="56" x2="628" y1="30" y2="30"/>
+          <line x1="56" x2="628" y1="130" y2="130"/>
+          <line x1="56" x2="628" y1="180" y2="180"/>
+        </g>
+        <g font-size="11" fill="#666b60" font-family="Inter, sans-serif">
+          <text x="48" y="34" text-anchor="end">200</text>
+          <text x="48" y="134" text-anchor="end">100</text>
+          <text x="48" y="184" text-anchor="end">50</text>
+          <text x="48" y="234" text-anchor="end">0</text>
+        </g>
+        <line x1="56" x2="628" y1="230" y2="230" stroke="#b9c2b4" stroke-width="1.2"/>
+        <g fill="#2f6b4f">
+          <rect x="82" y="112" width="26" height="118" rx="3"/>
+          <rect x="175" y="106" width="26" height="124" rx="3"/>
+          <rect x="268" y="99" width="26" height="131" rx="3"/>
+          <rect x="360" y="103" width="26" height="127" rx="3"/>
+          <rect x="453" y="88" width="26" height="142" rx="3"/>
+          <rect x="545" y="91" width="26" height="139" rx="3"/>
+        </g>
+        <g fill="#a8832e">
+          <rect x="112" y="134" width="26" height="96" rx="3"/>
+          <rect x="205" y="126" width="26" height="104" rx="3"/>
+          <rect x="298" y="118" width="26" height="112" rx="3"/>
+          <rect x="390" y="109" width="26" height="121" rx="3"/>
+          <rect x="483" y="112" width="26" height="118" rx="3"/>
+          <rect x="575" y="104" width="26" height="126" rx="3"/>
+        </g>
+        <line x1="56" x2="628" y1="80" y2="80" stroke="#7a5f1c" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="620" y="72" text-anchor="end" font-size="11" font-weight="600" fill="#7a5f1c" font-family="Inter, sans-serif">Reserve floor $150k</text>
+        <g font-size="12" fill="#3d4239" font-family="Inter, sans-serif" text-anchor="middle">
+          <text x="110" y="250">Jun</text>
+          <text x="203" y="250">Jul</text>
+          <text x="296" y="250">Aug</text>
+          <text x="388" y="250">Sep</text>
+          <text x="481" y="250">Oct</text>
+          <text x="573" y="250">Nov (MTD)</text>
+        </g>
+        <text x="56" y="270" font-size="11" fill="#666b60" font-family="Inter, sans-serif">Net</text>
+        <g font-size="12" font-weight="600" fill="#12271e" font-family="Inter, sans-serif" text-anchor="middle">
+          <text x="110" y="270">+22</text>
+          <text x="203" y="270">+20</text>
+          <text x="296" y="270">+19</text>
+          <text x="388" y="270">+6</text>
+          <text x="481" y="270">+24</text>
+          <text x="573" y="270">+13</text>
+        </g>
+      </svg>
+      <p class="mt-auto max-w-prose rounded-lg bg-paper px-3 py-2.5 text-xs text-ink-700">All figures in $ thousands. September net fell to +6 after a $9k equipment purchase.</p>
+    </section>
+
+    <section aria-labelledby="pay-title" class="rise rise-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-forest-100 md:p-6">
+      <div class="flex items-baseline justify-between">
+        <h2 id="pay-title" class="font-serif text-xl font-semibold text-forest-900">Upcoming payments</h2>
+        <span class="text-xs text-ink-500">Next 30 days</span>
+      </div>
+      <ul class="mt-3 divide-y divide-forest-100">
+        <li class="flex items-center gap-3 py-3">
+          <span class="w-12 shrink-0 rounded-lg bg-forest-50 py-1 text-center"><span class="block text-[11px] font-semibold uppercase text-forest-700">Nov</span><span class="block font-semibold tabular-nums">28</span></span>
+          <span class="flex-1"><span class="block text-sm font-medium">Payroll run</span><span class="block text-xs text-ink-500">Bank transfer</span></span>
+          <span class="text-sm font-semibold tabular-nums">$38,400</span>
+        </li>
+        <li class="flex items-center gap-3 py-3">
+          <span class="w-12 shrink-0 rounded-lg bg-forest-50 py-1 text-center"><span class="block text-[11px] font-semibold uppercase text-forest-700">Dec</span><span class="block font-semibold tabular-nums">01</span></span>
+          <span class="flex-1"><span class="block text-sm font-medium">Workshop lease</span><span class="block text-xs text-ink-500">Direct debit</span></span>
+          <span class="text-sm font-semibold tabular-nums">$6,750</span>
+        </li>
+        <li class="flex items-center gap-3 py-3">
+          <span class="w-12 shrink-0 rounded-lg bg-forest-50 py-1 text-center"><span class="block text-[11px] font-semibold uppercase text-forest-700">Dec</span><span class="block font-semibold tabular-nums">01</span></span>
+          <span class="flex-1"><span class="block text-sm font-medium">Cloud hosting</span><span class="block text-xs text-ink-500">Card on file</span></span>
+          <span class="text-sm font-semibold tabular-nums">$2,184</span>
+        </li>
+        <li class="flex items-center gap-3 py-3">
+          <span class="w-12 shrink-0 rounded-lg bg-forest-50 py-1 text-center"><span class="block text-[11px] font-semibold uppercase text-forest-700">Dec</span><span class="block font-semibold tabular-nums">05</span></span>
+          <span class="flex-1"><span class="block text-sm font-medium">Liability insurance</span><span class="block text-xs text-ink-500">Annual instalment</span></span>
+          <span class="text-sm font-semibold tabular-nums">$1,912</span>
+        </li>
+        <li class="flex items-center gap-3 py-3">
+          <span class="w-12 shrink-0 rounded-lg bg-forest-50 py-1 text-center"><span class="block text-[11px] font-semibold uppercase text-forest-700">Dec</span><span class="block font-semibold tabular-nums">15</span></span>
+          <span class="flex-1"><span class="block text-sm font-medium">Quarterly tax estimate</span><span class="block text-xs text-ink-500">Tax authority</span></span>
+          <span class="text-sm font-semibold tabular-nums">$14,300</span>
+        </li>
+      </ul>
+      <div class="mt-2 flex items-center justify-between rounded-lg bg-paper px-3 py-3 text-sm">
+        <span class="text-ink-700">Total scheduled</span>
+        <span class="font-semibold tabular-nums text-forest-900">$63,546</span>
+      </div>
+    </section>
+  </div>
+
+  <section aria-labelledby="tx-title" class="rise rise-3 mt-4 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-forest-100">
+    <div class="flex items-center justify-between px-5 py-4 md:px-6">
+      <h2 id="tx-title" class="font-serif text-xl font-semibold text-forest-900">Recent transactions</h2>
+      <button type="button" class="min-h-[44px] rounded-lg px-3 text-sm font-medium text-forest-700 hover:bg-forest-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-forest-500">View all</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[640px] text-sm">
+        <thead class="bg-paper text-left text-xs uppercase tracking-wide text-ink-500">
+          <tr>
+            <th scope="col" class="px-5 py-3 font-medium md:px-6">Date</th>
+            <th scope="col" class="px-3 py-3 font-medium">Counterparty</th>
+            <th scope="col" class="px-3 py-3 font-medium">Category</th>
+            <th scope="col" class="px-3 py-3 text-right font-medium">Amount</th>
+            <th scope="col" class="px-5 py-3 font-medium md:px-6">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-forest-100">
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">19 Nov</td><td class="px-3 py-3 font-medium">Northwind Supply Co.</td><td class="px-3 py-3 text-ink-700">Sales receipt</td><td class="px-3 py-3 text-right font-semibold tabular-nums text-forest-700">+$12,400.00</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-forest-50 px-2.5 py-1 text-xs font-medium text-forest-700">Cleared</span></td></tr>
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">18 Nov</td><td class="px-3 py-3 font-medium">Wex Freight Ltd</td><td class="px-3 py-3 text-ink-700">Shipping</td><td class="px-3 py-3 text-right tabular-nums">-$1,864.20</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-forest-50 px-2.5 py-1 text-xs font-medium text-forest-700">Cleared</span></td></tr>
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">18 Nov</td><td class="px-3 py-3 font-medium">Kestrel Architects</td><td class="px-3 py-3 text-ink-700">Sales receipt</td><td class="px-3 py-3 text-right font-semibold tabular-nums text-forest-700">+$8,900.00</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-forest-50 px-2.5 py-1 text-xs font-medium text-forest-700">Cleared</span></td></tr>
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">17 Nov</td><td class="px-3 py-3 font-medium">Contractor pool</td><td class="px-3 py-3 text-ink-700">Labour</td><td class="px-3 py-3 text-right tabular-nums">-$9,120.00</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-brass-300/40 px-2.5 py-1 text-xs font-medium text-brass-700">Pending</span></td></tr>
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">17 Nov</td><td class="px-3 py-3 font-medium">Stationery Hub</td><td class="px-3 py-3 text-ink-700">Office supplies</td><td class="px-3 py-3 text-right tabular-nums">-$412.75</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-forest-50 px-2.5 py-1 text-xs font-medium text-forest-700">Cleared</span></td></tr>
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">16 Nov</td><td class="px-3 py-3 font-medium">Mercer &amp; Vale LLP</td><td class="px-3 py-3 text-ink-700">Legal fees</td><td class="px-3 py-3 text-right tabular-nums">-$2,600.00</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-brass-300/40 px-2.5 py-1 text-xs font-medium text-brass-700">Pending</span></td></tr>
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">15 Nov</td><td class="px-3 py-3 font-medium">Oakridge Retail</td><td class="px-3 py-3 text-ink-700">Sales receipt</td><td class="px-3 py-3 text-right font-semibold tabular-nums text-forest-700">+$6,315.50</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-forest-50 px-2.5 py-1 text-xs font-medium text-forest-700">Cleared</span></td></tr>
+          <tr><td class="px-5 py-3 tabular-nums text-ink-700 md:px-6">14 Nov</td><td class="px-3 py-3 font-medium">Cloudpoint Hosting</td><td class="px-3 py-3 text-ink-700">Software</td><td class="px-3 py-3 text-right tabular-nums">-$286.00</td><td class="px-5 py-3 md:px-6"><span class="rounded-full bg-forest-50 px-2.5 py-1 text-xs font-medium text-forest-700">Cleared</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="mt-6 text-xs text-ink-500">Figures in USD. Last synced 21 Nov 2026, 09:14.</footer>
+</main>
+</body>
+</html>

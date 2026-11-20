@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forge CI Console</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { ink: '#0a0c0f', panel: '#121519', line: '#242933', muted: '#9aa3b2', signal: '#7ee787', warn: '#f0b429', bad: '#ff6b6b' },
+  fontFamily: { mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'], sans: ['Inter', 'system-ui', 'sans-serif'] }
+} } };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { background: #0a0c0f; color: #e6e9ef; font-family: Inter, system-ui, sans-serif; }
+  .grid-bg { background-image: linear-gradient(#141820 1px, transparent 1px), linear-gradient(90deg, #141820 1px, transparent 1px); background-size: 32px 32px; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .5s both; }
+  @keyframes draw { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+  .draw { stroke-dasharray: 1000; animation: draw 1.4s ease-out both; }
+  @keyframes blink { 50% { opacity: .2; } }
+  .blink { animation: blink 1.2s steps(2) infinite; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+</style>
+</head>
+<body class="grid-bg min-h-screen">
+
+<header class="sticky top-0 z-10 border-b border-line bg-ink/90 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3">
+    <h1 class="flex items-center gap-2 font-mono text-sm font-bold"><span class="h-2 w-2 rounded-full bg-signal shadow-[0_0_8px_#7ee787]"></span>forge-ci</h1>
+    <span class="hidden font-mono text-xs text-muted sm:inline">/ acme-platform / main</span>
+    <div class="ml-auto flex items-center gap-2">
+      <select aria-label="Environment" class="h-9 rounded border border-line bg-panel px-2 font-mono text-xs">
+        <option>production</option><option>staging</option>
+      </select>
+      <button class="h-11 rounded bg-signal px-4 text-sm font-semibold text-ink hover:brightness-110 active:scale-[.98]">Trigger build</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl space-y-6 px-4 py-6">
+
+  <div role="status" class="rise flex items-start gap-3 rounded border border-warn/40 bg-warn/10 px-4 py-3 text-sm">
+    <span class="mt-0.5 rounded bg-warn px-1.5 font-mono text-[11px] font-bold text-ink">WARN</span>
+    <p class="max-w-prose">p95 build time over the 10 min SLO on 3 of the last 12 builds. Main cause: retries in <span class="font-mono">search/reindex_partial</span>.</p>
+  </div>
+
+  <section class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Key metrics">
+    <div class="rise rounded-md border border-line bg-panel p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-muted">Success rate 7d</p>
+      <p class="mt-2 text-2xl font-semibold tabular-nums">94.2%</p>
+      <p class="mt-1 font-mono text-xs text-signal">+1.8 pts vs prev week</p>
+    </div>
+    <div class="rise rounded-md border border-line bg-panel p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-muted">Median duration</p>
+      <p class="mt-2 text-2xl font-semibold tabular-nums">6m 42s</p>
+      <p class="mt-1 font-mono text-xs text-signal">-0m 38s vs prev week</p>
+    </div>
+    <div class="rise rounded-md border border-line bg-panel p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-muted">Deploys today</p>
+      <p class="mt-2 text-2xl font-semibold tabular-nums">12</p>
+      <p class="mt-1 font-mono text-xs text-bad">2 rolled back</p>
+    </div>
+    <div class="rise rounded-md border border-line bg-panel p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-muted">Flaky tests</p>
+      <p class="mt-2 text-2xl font-semibold tabular-nums">7</p>
+      <p class="mt-1 font-mono text-xs text-bad">+2 this week</p>
+    </div>
+  </section>
+
+  <section class="grid gap-6 lg:grid-cols-3">
+    <div class="min-w-0 space-y-6 lg:col-span-2">
+
+      <article class="rise min-w-0 rounded-md border border-line bg-panel p-4">
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <h2 class="font-semibold">Build duration, last 12 builds</h2>
+          <ul class="ml-auto flex items-center gap-4 font-mono text-[11px] text-muted">
+            <li class="flex items-center gap-1.5"><i class="h-0.5 w-4 bg-signal"></i>median</li>
+            <li class="flex items-center gap-1.5"><i class="h-0.5 w-4 bg-warn"></i>p95</li>
+            <li class="flex items-center gap-1.5"><i class="w-4 border-t border-dashed border-bad"></i>10 min SLO</li>
+          </ul>
+        </div>
+        <svg viewBox="0 0 640 220" class="mt-4 h-auto w-full font-mono text-[10px] fill-muted" role="img" aria-label="Line chart of median and p95 build durations for builds 4815 to 4826, with a 10 minute SLO line. p95 spikes to 12.9 minutes at build 4822.">
+          <g stroke="#242933" stroke-width="1">
+            <line x1="40" x2="620" y1="35.6" y2="35.6"/><line x1="40" x2="620" y1="87.1" y2="87.1"/>
+            <line x1="40" x2="620" y1="138.6" y2="138.6"/><line x1="40" x2="620" y1="190" y2="190"/>
+          </g>
+          <text x="32" y="193" text-anchor="end">0</text>
+          <text x="32" y="142" text-anchor="end">4</text>
+          <text x="32" y="91" text-anchor="end">8</text>
+          <text x="32" y="39" text-anchor="end">12</text>
+          <line x1="40" x2="620" y1="61.4" y2="61.4" stroke="#ff6b6b" stroke-width="1.2" stroke-dasharray="5 4"/>
+          <polyline fill="none" stroke="#f0b429" stroke-width="2" stroke-linejoin="round" points="40,82 93,75.6 145,84.6 198,53.7 251,73 304,38.3 356,65.3 409,24.1 462,74.3 514,79.4 567,76.9 620,83.3"/>
+          <polyline class="draw" fill="none" stroke="#7ee787" stroke-width="2.5" stroke-linejoin="round" points="40,110.3 93,102.6 145,114.1 198,94.9 251,105.1 304,85.9 356,100 409,69.1 462,101.3 514,109 567,103.9 620,111.6"/>
+          <circle cx="356" cy="100" r="5" fill="#0a0c0f" stroke="#7ee787" stroke-width="2"/>
+          <circle cx="409" cy="24.1" r="3.5" fill="#ff6b6b"/>
+          <text x="420" y="28" class="fill-bad" font-size="11">4822 p95 spike: flaky retry +4m</text>
+          <text x="40" y="208" text-anchor="middle">4815</text><text x="145" y="208" text-anchor="middle">4817</text>
+          <text x="251" y="208" text-anchor="middle">4819</text><text x="356" y="208" text-anchor="middle">4821</text>
+          <text x="462" y="208" text-anchor="middle">4823</text><text x="567" y="208" text-anchor="middle">4825</text>
+        </svg>
+      </article>
+
+      <article class="rise min-w-0 overflow-x-auto rounded-md border border-line bg-panel">
+        <table class="w-full min-w-[640px] text-sm">
+          <caption class="sr-only">Recent builds. Select a build number to load its log.</caption>
+          <thead class="border-b border-line font-mono text-[11px] uppercase tracking-wider text-muted">
+            <tr><th scope="col" class="px-4 py-2 text-left font-normal">Status</th><th scope="col" class="py-2 text-left font-normal">Build</th><th scope="col" class="py-2 text-left font-normal">Branch</th><th scope="col" class="py-2 text-left font-normal">Commit</th><th scope="col" class="py-2 text-right font-normal">Duration</th><th scope="col" class="px-4 py-2 text-right font-normal">Finished</th></tr>
+          </thead>
+          <tbody class="font-mono text-[13px] tabular-nums">
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="blink h-2 w-2 rounded-full bg-warn"></i>running</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4826" aria-pressed="false">#4826</button></td><td>main</td><td>a91c3e2</td><td class="text-right">4m 10s</td><td class="px-4 text-right text-muted">2m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-signal"></i>passed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4825" aria-pressed="false">#4825</button></td><td>main</td><td>7f02b1d</td><td class="text-right">6m 12s</td><td class="px-4 text-right text-muted">9m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-bad"></i>failed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4824" aria-pressed="false">#4824</button></td><td>feat/billing-webhooks</td><td>3be19c0</td><td class="text-right">3m 48s</td><td class="px-4 text-right text-muted">17m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-signal"></i>passed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4823" aria-pressed="false">#4823</button></td><td>main</td><td>c4d7a80</td><td class="text-right">6m 05s</td><td class="px-4 text-right text-muted">31m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-signal"></i>passed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4822" aria-pressed="false">#4822</button></td><td>release/2.14</td><td>e0a5f63</td><td class="text-right">9m 02s</td><td class="px-4 text-right text-muted">44m ago</td></tr>
+            <tr class="row-selected border-b border-line/60 bg-signal/10 shadow-[inset_2px_0_0_#7ee787]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-signal"></i>passed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left font-semibold underline-offset-4 hover:underline" data-id="4821" aria-pressed="true">#4821</button></td><td>main</td><td>5d19e27</td><td class="text-right">7m 00s</td><td class="px-4 text-right text-muted">58m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-warn"></i>flaky</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4820" aria-pressed="false">#4820</button></td><td>feat/search-index</td><td>88c2b10</td><td class="text-right">8m 31s</td><td class="px-4 text-right text-muted">1h 12m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-signal"></i>passed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4819" aria-pressed="false">#4819</button></td><td>main</td><td>1b6f4ce</td><td class="text-right">6m 18s</td><td class="px-4 text-right text-muted">1h 40m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-bad"></i>failed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4818" aria-pressed="false">#4818</button></td><td>fix/auth-cache</td><td>2a7d9e3</td><td class="text-right">2m 56s</td><td class="px-4 text-right text-muted">2h 05m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-signal"></i>passed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4817" aria-pressed="false">#4817</button></td><td>main</td><td>9e40c1a</td><td class="text-right">6m 33s</td><td class="px-4 text-right text-muted">2h 31m ago</td></tr>
+            <tr class="border-b border-line/60 hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-signal"></i>passed</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4816" aria-pressed="false">#4816</button></td><td>main</td><td>f3b82d0</td><td class="text-right">6m 47s</td><td class="px-4 text-right text-muted">3h 02m ago</td></tr>
+            <tr class="hover:bg-white/[.03]"><td class="px-4 py-2.5"><span class="inline-flex items-center gap-2"><i class="h-2 w-2 rounded-full bg-muted"></i>canceled</span></td><td><button class="pick inline-flex min-h-[36px] items-center rounded px-1 text-left underline-offset-4 hover:underline" data-id="4815" aria-pressed="false">#4815</button></td><td>chore/deps-bump</td><td>06c7e18</td><td class="text-right">1m 19s</td><td class="px-4 text-right text-muted">3h 20m ago</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+
+    <aside class="min-w-0 space-y-6">
+      <article id="detail" class="rise rounded-md border border-line bg-panel p-4">
+        <div class="flex items-center justify-between">
+          <h2 class="font-semibold">Build <span id="d-id" class="font-mono">#4821</span></h2>
+          <span id="d-st" class="rounded border border-signal/50 px-2 py-0.5 font-mono text-[11px] text-signal">passed</span>
+        </div>
+        <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-xs">
+          <div><dt class="text-muted">Branch</dt><dd id="d-br" class="mt-0.5">main</dd></div>
+          <div><dt class="text-muted">Commit</dt><dd id="d-sha" class="mt-0.5">5d19e27</dd></div>
+          <div><dt class="text-muted">Duration</dt><dd id="d-dur" class="mt-0.5 tabular-nums">7m 00s</dd></div>
+          <div><dt class="text-muted">Runner</dt><dd class="mt-0.5">linux-07</dd></div>
+          <div class="col-span-2"><dt class="text-muted">Tests</dt><dd class="mt-0.5 tabular-nums">879 passed, 0 failed, 1 retried</dd></div>
+        </dl>
+        <p class="mt-4 font-mono text-[11px] text-muted">Stage time</p>
+        <div class="mt-2 flex h-2 overflow-hidden rounded bg-line" aria-hidden="true">
+          <span class="bg-cyan-700" style="width:6%"></span><span class="bg-teal-600" style="width:3%"></span><span class="bg-sky-700" style="width:11%"></span><span class="bg-amber-700" style="width:14%"></span><span class="bg-signal" style="width:56%"></span><span class="bg-rose-800" style="width:10%"></span>
+        </div>
+        <p class="mt-2 font-mono text-[11px] text-muted">install · lint · unit · build · <span class="text-signal">e2e 3m 56s</span> · deploy</p>
+      </article>
+
+      <article class="rise rounded-md border border-line bg-panel p-4">
+        <div class="flex items-center justify-between">
+          <h2 class="font-semibold">Flaky tests</h2>
+          <span class="font-mono text-xs text-bad">7 this week</span>
+        </div>
+        <ul class="mt-3 divide-y divide-line font-mono text-xs">
+          <li class="py-2.5"><div class="flex justify-between gap-2"><span class="truncate">billing/webhook_retry_test</span><span class="tabular-nums text-bad">31%</span></div><div class="mt-1.5 h-1.5 rounded bg-line"><div class="h-1.5 rounded bg-bad" style="width:31%"></div></div></li>
+          <li class="py-2.5"><div class="flex justify-between gap-2"><span class="truncate">search/reindex_partial</span><span class="tabular-nums text-warn">22%</span></div><div class="mt-1.5 h-1.5 rounded bg-line"><div class="h-1.5 rounded bg-warn" style="width:22%"></div></div></li>
+          <li class="py-2.5"><div class="flex justify-between gap-2"><span class="truncate">auth/session_refresh_race</span><span class="tabular-nums text-warn">16%</span></div><div class="mt-1.5 h-1.5 rounded bg-line"><div class="h-1.5 rounded bg-warn" style="width:16%"></div></div></li>
+          <li class="py-2.5"><div class="flex justify-between gap-2"><span class="truncate">e2e/cart_checkout_mobile</span><span class="tabular-nums text-muted">11%</span></div><div class="mt-1.5 h-1.5 rounded bg-line"><div class="h-1.5 rounded bg-muted" style="width:11%"></div></div></li>
+          <li class="py-2.5"><div class="flex justify-between gap-2"><span class="truncate">api/rate_limit_burst</span><span class="tabular-nums text-muted">9%</span></div><div class="mt-1.5 h-1.5 rounded bg-line"><div class="h-1.5 rounded bg-muted" style="width:9%"></div></div></li>
+        </ul>
+      </article>
+
+      <article class="rise rounded-md border border-line bg-panel p-4">
+        <h2 class="font-semibold">Deploy history</h2>
+        <ol class="mt-3 space-y-3 font-mono text-xs">
+          <li class="flex items-center gap-3"><span class="rounded border border-signal/50 px-1.5 text-[11px] text-signal">prod</span><span class="flex-1">v2.14.3 · #4821</span><span class="text-signal">ok</span><span class="text-muted tabular-nums">09:58</span></li>
+          <li class="flex items-center gap-3"><span class="rounded border border-line px-1.5 text-[11px] text-muted">staging</span><span class="flex-1">v2.14.3 · #4821</span><span class="text-signal">ok</span><span class="text-muted tabular-nums">09:47</span></li>
+          <li class="flex items-center gap-3"><span class="rounded border border-bad/50 px-1.5 text-[11px] text-bad">prod</span><span class="flex-1">v2.14.2 · #4810</span><span class="text-bad">rolled back</span><span class="text-muted tabular-nums">06:12</span></li>
+          <li class="flex items-center gap-3"><span class="rounded border border-signal/50 px-1.5 text-[11px] text-signal">prod</span><span class="flex-1">v2.14.1 · #4799</span><span class="text-signal">ok</span><span class="text-muted tabular-nums">18:30</span></li>
+        </ol>
+      </article>
+    </aside>
+  </section>
+
+  <section class="overflow-hidden rounded-md border border-line bg-[#07090c]" aria-label="Build log">
+    <div class="flex items-center gap-2 border-b border-line px-4 py-2 font-mono text-xs text-muted">
+      <i class="h-2.5 w-2.5 rounded-full bg-bad"></i><i class="h-2.5 w-2.5 rounded-full bg-warn"></i><i class="h-2.5 w-2.5 rounded-full bg-signal"></i>
+      <span class="ml-2" id="log-title">build #4821 · console</span>
+      <span class="ml-auto" id="log-exit">exit 0</span>
+    </div>
+    <pre id="log" tabindex="0" aria-label="Console output for the selected build" class="h-[400px] overflow-auto whitespace-pre p-4 font-mono text-[12.5px] leading-6 text-zinc-300"><span class="text-muted">[09:41:02]</span> <span class="text-muted">INFO</span>  checkout 5d19e27 on main on runner-linux-07 (4 vCPU, 8 GB)
+<span class="text-muted">[09:41:04]</span> <span class="text-muted">INFO</span>  restoring cache key=lock-9f2c31
+<span class="text-muted">[09:41:19]</span> <span class="text-muted">INFO</span>  npm ci       added 1,284 packages in 14s
+<span class="text-muted">[09:41:21]</span> <span class="text-muted">INFO</span>  lint         eslint 0 errors, 3 warnings
+<span class="text-muted">[09:42:08]</span> <span class="text-muted">INFO</span>  unit         842 passed, 0 failed (46s)
+<span class="text-muted">[09:42:09]</span> <span class="text-muted">INFO</span>  build        next build, 214 routes, bundle 412 kB
+<span class="text-muted">[09:44:31]</span> <span class="text-muted">INFO</span>  e2e          shard 1/3, 38 specs passed
+<span class="text-muted">[09:45:02]</span> <span class="text-muted">INFO</span>  e2e          shard 2/3, 41 specs passed
+<span class="text-muted">[09:45:33]</span> <span class="text-warn">WARN</span>  e2e          shard 3/3, search/reindex_partial retry 1/2
+<span class="text-muted">[09:46:10]</span> <span class="text-muted">INFO</span>  e2e          shard 3/3, 41 specs passed after retry
+<span class="text-muted">[09:46:12]</span> <span class="text-muted">INFO</span>  scan         trivy 0 critical, 2 medium
+<span class="text-muted">[09:46:40]</span> <span class="text-muted">INFO</span>  image        pushed registry.acme.io/platform:5d19e27
+<span class="text-muted">[09:47:58]</span> <span class="text-muted">INFO</span>  deploy       staging rollout 100%, healthy
+<span class="text-muted">[09:58:42]</span> <span class="text-muted">INFO</span>  deploy       prod rollout 100%, healthy, p95 412 ms
+<span class="text-muted">[09:58:43]</span> <span class="text-signal">OK</span>    build #4821 passed in 7m 00s</pre>
+  </section>
+
+</main>
+
+<script>
+const B = {
+  4826: { st: 'running', br: 'main', sha: 'a91c3e2', dur: '4m 10s', unit: 842, fail: 0, warn: 0, e2e: 'shard 2/3 running' },
+  4825: { st: 'passed', br: 'main', sha: '7f02b1d', dur: '6m 12s', unit: 842, fail: 0, warn: 2, e2e: '120 specs passed' },
+  4824: { st: 'failed', br: 'feat/billing-webhooks', sha: '3be19c0', dur: '3m 48s', unit: 811, fail: 3, warn: 1, e2e: 'webhook_retry_test failed 2/3' },
+  4823: { st: 'passed', br: 'main', sha: 'c4d7a80', dur: '6m 05s', unit: 840, fail: 0, warn: 3, e2e: '120 specs passed' },
+  4822: { st: 'passed', br: 'release/2.14', sha: 'e0a5f63', dur: '9m 02s', unit: 838, fail: 0, warn: 0, e2e: 'retry after flaky reindex' },
+  4820: { st: 'flaky', br: 'feat/search-index', sha: '88c2b10', dur: '8m 31s', unit: 835, fail: 0, warn: 4, e2e: 'reindex_partial passed on retry 2/2' },
+  4819: { st: 'passed', br: 'main', sha: '1b6f4ce', dur: '6m 18s', unit: 840, fail: 0, warn: 3, e2e: '120 specs passed' },
+  4818: { st: 'failed', br: 'fix/auth-cache', sha: '2a7d9e3', dur: '2m 56s', unit: 402, fail: 6, warn: 0, e2e: 'skipped after unit failures' },
+  4817: { st: 'passed', br: 'main', sha: '9e40c1a', dur: '6m 33s', unit: 839, fail: 0, warn: 2, e2e: '120 specs passed' },
+  4816: { st: 'passed', br: 'main', sha: 'f3b82d0', dur: '6m 47s', unit: 837, fail: 0, warn: 2, e2e: '120 specs passed' },
+  4815: { st: 'canceled', br: 'chore/deps-bump', sha: '06c7e18', dur: '1m 19s', unit: 0, fail: 0, warn: 0, e2e: 'canceled by user' }
+};
+const COLOR = { INFO: 'text-muted', WARN: 'text-warn', ERR: 'text-bad', OK: 'text-signal' };
+const ST = { passed: 'border-signal/50 text-signal', failed: 'border-bad/50 text-bad', running: 'border-warn/50 text-warn', flaky: 'border-warn/50 text-warn', canceled: 'border-line text-muted' };
+const line = (lvl, msg, i) => `<span class="text-muted">[10:${String(22 + i).padStart(2, '0')}:00]</span> <span class="${COLOR[lvl]}">${lvl.padEnd(4)}</span>  ${msg}`;
+
+function select(id) {
+  const b = B[id];
+  document.querySelectorAll('.pick').forEach(btn => {
+    const on = btn.dataset.id == id;
+    btn.setAttribute('aria-pressed', on);
+    btn.closest('tr').classList.toggle('row-selected', on);
+    btn.closest('tr').classList.toggle('bg-signal/10', on);
+    btn.closest('tr').classList.toggle('shadow-[inset_2px_0_0_#7ee787]', on);
+  });
+  document.getElementById('d-id').textContent = '#' + id;
+  const st = document.getElementById('d-st');
+  st.textContent = b.st;
+  st.className = 'rounded border px-2 py-0.5 font-mono text-[11px] ' + ST[b.st];
+  document.getElementById('d-br').textContent = b.br;
+  document.getElementById('d-sha').textContent = b.sha;
+  document.getElementById('d-dur').textContent = b.dur;
+  document.getElementById('log-title').textContent = `build #${id} · console`;
+  document.getElementById('log-exit').textContent = b.st === 'failed' ? 'exit 1' : b.st === 'running' ? 'running' : 'exit 0';
+  const lines = [
+    ['INFO', `checkout ${b.sha} on ${b.br}`],
+    ['INFO', `restoring cache key=lock-${b.sha.slice(0, 6)}`],
+    ['INFO', 'npm ci       added 1,284 packages'],
+    ['INFO', `lint         0 errors, ${b.warn} warnings`],
+    [b.fail ? 'ERR' : 'INFO', `unit         ${b.unit} passed, ${b.fail} failed`],
+    [b.st === 'failed' ? 'ERR' : 'INFO', `e2e          ${b.e2e}`],
+    [b.st === 'failed' ? 'ERR' : b.st === 'flaky' ? 'WARN' : 'OK', `build #${id} ${b.st} in ${b.dur}`]
+  ];
+  document.getElementById('log').innerHTML = lines.map(([l, m], i) => line(l, m, i)).join('\n');
+}
+
+document.querySelectorAll('.pick').forEach(btn =>
+  btn.addEventListener('click', () => select(btn.dataset.id)));
+</script>
+</body>
+</html>

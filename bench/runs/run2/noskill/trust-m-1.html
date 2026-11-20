@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinic Appointments Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } };
+</script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f7fb; }
+</style>
+</head>
+<body class="text-slate-800 antialiased">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+  <!-- Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <p class="text-sm text-slate-500" id="date"></p>
+      <h1 class="text-2xl font-semibold tracking-tight">Riverside Family Clinic</h1>
+    </div>
+    <div class="inline-flex p-1 bg-white rounded-lg border border-slate-200 self-start" role="group" aria-label="Range">
+      <button data-range="day" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md transition">Day</button>
+      <button data-range="week" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md transition">Week</button>
+    </div>
+  </header>
+
+  <!-- KPIs -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="kpis"></section>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Schedule -->
+    <section class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold" id="schedTitle"></h2>
+        <span class="text-xs text-slate-500" id="schedCount"></span>
+      </div>
+      <ul class="divide-y divide-slate-100" id="schedule"></ul>
+    </section>
+
+    <div class="space-y-6">
+      <!-- No-show rate -->
+      <section class="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-5">
+        <svg width="96" height="96" viewBox="0 0 36 36" class="shrink-0 -rotate-90" aria-hidden="true">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" stroke-width="3.5"/>
+          <circle id="ring" cx="18" cy="18" r="15.9" fill="none" stroke="#e11d48" stroke-width="3.5"
+                  stroke-linecap="round" stroke-dasharray="0 100" class="transition-all duration-500"/>
+        </svg>
+        <div>
+          <p class="text-sm text-slate-500">No-show rate</p>
+          <p class="text-3xl font-semibold" id="noshowVal"></p>
+          <p class="text-xs text-slate-500" id="noshowSub"></p>
+        </div>
+      </section>
+
+      <!-- Waiting list -->
+      <section class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold">Waiting list</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full" id="waitCount"></span>
+        </div>
+        <ul class="space-y-3" id="waitlist"></ul>
+      </section>
+    </div>
+  </div>
+
+  <!-- Reminders -->
+  <section class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-semibold" id="remTitle"></h2>
+      <span class="text-xs text-slate-500" id="remTotal"></span>
+    </div>
+    <div class="flex items-end gap-3 h-40" id="bars"></div>
+  </section>
+</div>
+
+<script>
+const DATA = {
+  day: {
+    title: "Today's schedule",
+    kpis: [
+      { label: "Appointments", value: "14", sub: "6 completed so far" },
+      { label: "Checked in", value: "3", sub: "Waiting to be seen" },
+      { label: "Waiting list", value: "3", sub: "2 marked urgent" },
+      { label: "Reminders sent", value: "22", sub: "SMS and email" }
+    ],
+    noshow: { rate: 8, sub: "1 of 13 booked visits so far" },
+    schedule: [
+      { time: "08:30", name: "Maria Lopez", provider: "Dr. Patel", type: "Check-up", status: "done" },
+      { time: "09:00", name: "James Okafor", provider: "Dr. Patel", type: "Blood pressure", status: "done" },
+      { time: "09:30", name: "Aylin Kaya", provider: "Dr. Chen", type: "Follow-up", status: "checkin" },
+      { time: "10:00", name: "Peter Novak", provider: "Dr. Chen", type: "Vaccination", status: "noshow" },
+      { time: "11:00", name: "Sara Haddad", provider: "Dr. Patel", type: "New patient", status: "upcoming" },
+      { time: "11:30", name: "Liam Murphy", provider: "Dr. Chen", type: "Lab review", status: "upcoming" }
+    ],
+    waitlist: [
+      { name: "Tom Becker", reason: "Follow-up", wait: "3 days", urgent: true },
+      { name: "Elena Rossi", reason: "Rash review", wait: "1 day", urgent: true },
+      { name: "Ravi Shah", reason: "Physical", wait: "6 days", urgent: false }
+    ],
+    reminders: { labels: ["8am", "10am", "12pm", "2pm", "4pm"], values: [6, 5, 4, 4, 3] },
+    remTitle: "Reminders sent by hour"
+  },
+  week: {
+    title: "This week",
+    kpis: [
+      { label: "Appointments", value: "71", sub: "Mon to Fri" },
+      { label: "Completed", value: "48", sub: "Up 9% on last week" },
+      { label: "Waiting list", value: "12", sub: "4 marked urgent" },
+      { label: "Reminders sent", value: "104", sub: "SMS and email" }
+    ],
+    noshow: { rate: 11, sub: "8 of 73 booked visits" },
+    schedule: [
+      { time: "Mon 08:30", name: "Maria Lopez", provider: "Dr. Patel", type: "Check-up", status: "done" },
+      { time: "Tue 09:00", name: "Nina Walsh", provider: "Dr. Chen", type: "Vaccination", status: "done" },
+      { time: "Wed 10:00", name: "Peter Novak", provider: "Dr. Chen", type: "Follow-up", status: "noshow" },
+      { time: "Thu 11:00", name: "Sara Haddad", provider: "Dr. Patel", type: "New patient", status: "upcoming" },
+      { time: "Fri 14:00", name: "Hugo Martin", provider: "Dr. Patel", type: "Lab review", status: "upcoming" }
+    ],
+    waitlist: [
+      { name: "Tom Becker", reason: "Follow-up", wait: "9 days", urgent: true },
+      { name: "Elena Rossi", reason: "Rash review", wait: "4 days", urgent: true },
+      { name: "Ravi Shah", reason: "Physical", wait: "11 days", urgent: false }
+    ],
+    reminders: { labels: ["Mon", "Tue", "Wed", "Thu", "Fri"], values: [18, 22, 24, 21, 19] },
+    remTitle: "Reminders sent by day"
+  }
+};
+
+const PILL = {
+  done: ["Completed", "bg-emerald-100 text-emerald-700"],
+  checkin: ["Checked in", "bg-sky-100 text-sky-700"],
+  upcoming: ["Upcoming", "bg-slate-100 text-slate-600"],
+  noshow: ["No-show", "bg-rose-100 text-rose-700"]
+};
+
+const $ = id => document.getElementById(id);
+let range = "day";
+
+function render() {
+  const d = DATA[range];
+
+  $("date").textContent = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+  document.querySelectorAll(".range-btn").forEach(b => {
+    const on = b.dataset.range === range;
+    b.setAttribute("aria-pressed", on);
+    b.className = "range-btn px-4 py-1.5 text-sm font-medium rounded-md transition " +
+      (on ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100");
+  });
+
+  $("kpis").innerHTML = d.kpis.map(k => `
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <p class="text-sm text-slate-500">${k.label}</p>
+      <p class="text-2xl font-semibold mt-1">${k.value}</p>
+      <p class="text-xs text-slate-500 mt-1">${k.sub}</p>
+    </div>`).join("");
+
+  $("schedTitle").textContent = d.title;
+  $("schedCount").textContent = "Showing " + d.schedule.length + " of " + d.kpis[0].value;
+  $("schedule").innerHTML = d.schedule.map(a => `
+    <li class="flex items-center gap-4 py-3">
+      <span class="w-20 shrink-0 text-sm font-medium text-slate-600 tabular-nums">${a.time}</span>
+      <div class="min-w-0 flex-1">
+        <p class="font-medium truncate">${a.name}</p>
+        <p class="text-xs text-slate-500 truncate">${a.type} · ${a.provider}</p>
+      </div>
+      <span class="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${PILL[a.status][1]}">${PILL[a.status][0]}</span>
+    </li>`).join("");
+
+  $("noshowVal").textContent = d.noshow.rate + "%";
+  $("noshowSub").textContent = d.noshow.sub;
+  $("ring").setAttribute("stroke-dasharray", d.noshow.rate + " 100");
+
+  $("waitCount").textContent = d.waitlist.length + " patients";
+  $("waitlist").innerHTML = d.waitlist.map(w => `
+    <li class="flex items-center justify-between gap-3">
+      <div class="min-w-0">
+        <p class="font-medium text-sm truncate">${w.name}</p>
+        <p class="text-xs text-slate-500">${w.reason} · waiting ${w.wait}</p>
+      </div>
+      ${w.urgent ? '<span class="text-[11px] font-semibold text-rose-700 bg-rose-100 px-2 py-0.5 rounded">Urgent</span>' : ""}
+    </li>`).join("");
+
+  const total = d.reminders.values.reduce((a, b) => a + b, 0);
+  const max = Math.max(...d.reminders.values);
+  $("remTitle").textContent = d.remTitle;
+  $("remTotal").textContent = total + " total";
+  $("bars").innerHTML = d.reminders.values.map((v, i) => `
+    <div class="flex-1 max-w-24 h-full flex flex-col justify-end items-center gap-2">
+      <span class="text-xs text-slate-500 tabular-nums">${v}</span>
+      <div class="w-full bg-indigo-500 rounded-t-md transition-all duration-500" style="height:${(v / max) * 80}%"></div>
+      <span class="text-xs text-slate-500">${d.reminders.labels[i]}</span>
+    </div>`).join("");
+}
+
+document.querySelectorAll(".range-btn").forEach(b => {
+  b.addEventListener("click", () => { range = b.dataset.range; render(); });
+});
+
+render();
+</script>
+</body>
+</html>

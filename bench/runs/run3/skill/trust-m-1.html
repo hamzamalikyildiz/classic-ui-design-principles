@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riverside Clinic Appointments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: { 50: '#EEF6F5', 100: '#D5EAE7', 600: '#1F6F6B', 700: '#175753', 800: '#11433F' },
+        ink:   { 900: '#14201F', 700: '#3B4D4B', 500: '#5F716F', 300: '#C9D6D4', 200: '#DCE7E5', 100: '#E8F0EE', 50: '#F5F8F7' }
+      },
+      fontFamily: { serif: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] },
+      boxShadow: { card: '0 1px 2px rgba(20,32,31,0.06), 0 1px 1px rgba(20,32,31,0.04)' }
+    }
+  }
+}
+</script>
+<style>
+  :root { color-scheme: light; }
+  body { background: #F5F8F7; color: #14201F; font-family: Inter, sans-serif; }
+  .font-serif { font-family: Fraunces, serif; }
+  .fade-up { animation: fadeUp 550ms ease-out both; }
+  .fade-up-2 { animation: fadeUp 550ms 120ms ease-out both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade-up, .fade-up-2 { animation: none; } }
+  .seg-on { background: #1F6F6B; color: #fff; }
+  button:focus-visible, a:focus-visible { outline: 2px solid #1F6F6B; outline-offset: 2px; }
+</style>
+</head>
+<body>
+<header class="border-b border-ink-200 bg-white">
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
+    <div class="flex items-center gap-3">
+      <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="9" fill="#1F6F6B"/>
+        <path d="M16 8v16M8 16h16" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <p class="font-serif text-lg font-semibold leading-tight">Riverside Family Clinic</p>
+        <p class="text-xs text-ink-500">Appointments dashboard</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="inline-flex rounded-lg bg-ink-100 p-1" role="group" aria-label="Period">
+        <button id="btn-day" data-period="day" class="seg-on rounded px-3 py-2 text-sm font-medium">Day</button>
+        <button id="btn-week" data-period="week" class="rounded px-3 py-2 text-sm font-medium text-ink-700">Week</button>
+      </div>
+      <button class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-card hover:bg-brand-700 active:bg-brand-800">New appointment</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6">
+
+  <section class="fade-up grid gap-6 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-800 p-6 text-white md:grid-cols-[1.4fr_1fr] md:p-8">
+    <div>
+      <p class="text-sm text-brand-100" id="period-label">Thursday 19 November 2026</p>
+      <h1 class="mt-2 font-serif text-3xl font-semibold leading-tight md:text-4xl">38 patients booked today, 6 likely no-shows</h1>
+      <p class="mt-3 max-w-prose text-brand-100">Two afternoon slots are open. The waiting list has 14 people, and 9 of them can take a 14:00 or 15:30 visit.</p>
+    </div>
+    <div class="flex items-end justify-between gap-4 rounded-xl bg-brand-800/60 p-5">
+      <div>
+        <p class="text-sm text-brand-100">No-show rate</p>
+        <p class="font-serif text-5xl font-semibold tabular-nums" id="kpi-noshow">6.2%</p>
+      </div>
+      <p class="rounded-full bg-white/15 px-3 py-1 text-sm font-medium">-1.4 pts vs last month</p>
+    </div>
+  </section>
+
+  <section class="fade-up-2 grid grid-cols-2 gap-4 lg:grid-cols-4" aria-label="Key figures">
+    <article class="rounded-xl bg-white p-5 shadow-card">
+      <p class="text-sm text-ink-500">Booked</p>
+      <p class="mt-1 text-3xl font-semibold tabular-nums" id="kpi-booked">38</p>
+      <p class="mt-2 text-sm font-medium text-green-700">+4 vs same day last week</p>
+    </article>
+    <article class="rounded-xl bg-white p-5 shadow-card">
+      <p class="text-sm text-ink-500">Waiting list</p>
+      <p class="mt-1 text-3xl font-semibold tabular-nums" id="kpi-waiting">14</p>
+      <p class="mt-2 text-sm font-medium text-amber-800">Oldest request: 9 days</p>
+    </article>
+    <article class="rounded-xl bg-white p-5 shadow-card">
+      <p class="text-sm text-ink-500">Reminders sent</p>
+      <p class="mt-1 text-3xl font-semibold tabular-nums" id="kpi-reminders">46</p>
+      <p class="mt-2 text-sm font-medium text-green-700">Delivered 97%</p>
+    </article>
+    <article class="rounded-xl bg-white p-5 shadow-card">
+      <p class="text-sm text-ink-500">Cancellations</p>
+      <p class="mt-1 text-3xl font-semibold tabular-nums" id="kpi-cancel">3</p>
+      <p class="mt-2 text-sm font-medium text-red-800">1 cancelled under 2 hours</p>
+    </article>
+  </section>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <section class="fade-up-2 rounded-xl bg-white p-5 shadow-card lg:col-span-2" aria-labelledby="chart-title">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="chart-title" class="font-serif text-xl font-semibold" data-chart-title>Appointments by hour</h2>
+        <ul class="flex gap-4 text-sm text-ink-700" aria-label="Legend">
+          <li class="flex items-center gap-2"><span class="h-3 w-3 rounded-sm bg-brand-600"></span>Booked</li>
+          <li class="flex items-center gap-2"><span class="h-3 w-3 rounded-sm bg-brass-500 bg-[#C98B2B]"></span>Attended</li>
+        </ul>
+      </div>
+      <div id="chart" class="mt-4 min-h-[240px]"></div>
+      <p class="mt-2 text-sm text-ink-500">Dashed line: lunch closure, 12:30 to 13:30.</p>
+    </section>
+
+    <section class="fade-up-2 rounded-xl bg-white p-5 shadow-card" aria-labelledby="wait-title">
+      <h2 id="wait-title" class="font-serif text-xl font-semibold">Waiting list</h2>
+      <ol class="mt-4 divide-y divide-ink-100 text-sm">
+        <li class="flex items-center justify-between py-3"><span><span class="font-medium">Amira Yilmaz</span><br><span class="text-ink-500">Physio, first visit</span></span><span class="tabular-nums text-ink-700">9 days</span></li>
+        <li class="flex items-center justify-between py-3"><span><span class="font-medium">Tomas Novak</span><br><span class="text-ink-500">Follow-up, Dr Patel</span></span><span class="tabular-nums text-ink-700">6 days</span></li>
+        <li class="flex items-center justify-between py-3"><span><span class="font-medium">Ellen Brooks</span><br><span class="text-ink-500">Blood test review</span></span><span class="tabular-nums text-ink-700">4 days</span></li>
+        <li class="flex items-center justify-between py-3"><span><span class="font-medium">Kwame Asante</span><br><span class="text-ink-500">Vaccination</span></span><span class="tabular-nums text-ink-700">2 days</span></li>
+      </ol>
+      <button class="mt-3 w-full rounded-lg border border-ink-200 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50">Offer open slots</button>
+    </section>
+  </div>
+
+  <section class="fade-up-2 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900" role="status">
+    <p class="font-semibold">2 slots open at 14:00 and 15:30 with Dr Patel</p>
+    <p class="text-sm">Send an offer to the waiting list before 12:00 to fill them.</p>
+  </section>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <section class="fade-up-2 overflow-hidden rounded-xl bg-white shadow-card lg:col-span-2" aria-labelledby="sched-title">
+      <div class="flex items-center justify-between px-5 py-4">
+        <h2 id="sched-title" class="font-serif text-xl font-semibold">Today's schedule</h2>
+        <span class="text-sm text-ink-500">Dr Patel and Dr Lindqvist</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[560px] text-left text-sm">
+          <thead class="bg-ink-50 text-ink-500">
+            <tr>
+              <th scope="col" class="px-5 py-2 font-medium">Time</th>
+              <th scope="col" class="px-5 py-2 font-medium">Patient</th>
+              <th scope="col" class="px-5 py-2 font-medium">Clinician</th>
+              <th scope="col" class="px-5 py-2 font-medium">Visit</th>
+              <th scope="col" class="px-5 py-2 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink-100">
+            <tr><td class="px-5 py-3 tabular-nums">08:30</td><td class="px-5 py-3">Hana Sato</td><td class="px-5 py-3">Dr Patel</td><td class="px-5 py-3">Check-up</td><td class="px-5 py-3"><span class="rounded-full bg-green-100 px-2.5 py-0.5 text-green-800">Checked in</span></td></tr>
+            <tr><td class="px-5 py-3 tabular-nums">09:00</td><td class="px-5 py-3">Luca Moretti</td><td class="px-5 py-3">Dr Lindqvist</td><td class="px-5 py-3">Asthma review</td><td class="px-5 py-3"><span class="rounded-full bg-green-100 px-2.5 py-0.5 text-green-800">Checked in</span></td></tr>
+            <tr><td class="px-5 py-3 tabular-nums">09:20</td><td class="px-5 py-3">Priya Raman</td><td class="px-5 py-3">Dr Patel</td><td class="px-5 py-3">Prescription</td><td class="px-5 py-3"><span class="rounded-full bg-ink-100 px-2.5 py-0.5 text-ink-700">Confirmed</span></td></tr>
+            <tr><td class="px-5 py-3 tabular-nums">09:40</td><td class="px-5 py-3">Owen Clarke</td><td class="px-5 py-3">Dr Lindqvist</td><td class="px-5 py-3">Dressing change</td><td class="px-5 py-3"><span class="rounded-full bg-red-100 px-2.5 py-0.5 text-red-800">No reply</span></td></tr>
+            <tr><td class="px-5 py-3 tabular-nums">10:10</td><td class="px-5 py-3">Maja Kowal</td><td class="px-5 py-3">Dr Patel</td><td class="px-5 py-3">Vaccination</td><td class="px-5 py-3"><span class="rounded-full bg-green-100 px-2.5 py-0.5 text-green-800">Checked in</span></td></tr>
+            <tr><td class="px-5 py-3 tabular-nums">10:30</td><td class="px-5 py-3">Sam Okafor</td><td class="px-5 py-3">Dr Lindqvist</td><td class="px-5 py-3">Follow-up</td><td class="px-5 py-3"><span class="rounded-full bg-ink-100 px-2.5 py-0.5 text-ink-700">Confirmed</span></td></tr>
+            <tr><td class="px-5 py-3 tabular-nums">11:00</td><td class="px-5 py-3">Grace Liu</td><td class="px-5 py-3">Dr Patel</td><td class="px-5 py-3">Check-up</td><td class="px-5 py-3"><span class="rounded-full bg-ink-100 px-2.5 py-0.5 text-ink-700">Confirmed</span></td></tr>
+            <tr><td class="px-5 py-3 tabular-nums">11:20</td><td class="px-5 py-3">Ravi Mehta</td><td class="px-5 py-3">Dr Lindqvist</td><td class="px-5 py-3">Blood pressure</td><td class="px-5 py-3"><span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-amber-900">Reminder due</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="fade-up-2 rounded-xl bg-white p-5 shadow-card" aria-labelledby="rem-title">
+      <h2 id="rem-title" class="font-serif text-xl font-semibold">Reminders</h2>
+      <dl class="mt-4 space-y-4 text-sm">
+        <div>
+          <dt class="flex justify-between text-ink-700"><span>SMS delivered</span><span class="tabular-nums font-semibold">41 of 42</span></dt>
+          <dd class="mt-1 h-2 rounded-full bg-ink-100"><span class="block h-2 w-[97%] rounded-full bg-brand-600"></span></dd>
+        </div>
+        <div>
+          <dt class="flex justify-between text-ink-700"><span>Email opened</span><span class="tabular-nums font-semibold">28 of 46</span></dt>
+          <dd class="mt-1 h-2 rounded-full bg-ink-100"><span class="block h-2 w-[61%] rounded-full bg-brand-600"></span></dd>
+        </div>
+        <div>
+          <dt class="flex justify-between text-ink-700"><span>Confirmed by patient</span><span class="tabular-nums font-semibold">31 of 46</span></dt>
+          <dd class="mt-1 h-2 rounded-full bg-ink-100"><span class="block h-2 w-[67%] rounded-full bg-[#C98B2B]"></span></dd>
+        </div>
+      </dl>
+      <p class="mt-5 rounded-lg bg-ink-50 p-3 text-sm text-ink-700">Owen Clarke has not replied to two reminders. Call before 09:00.</p>
+      <h3 class="mt-6 text-sm font-semibold text-ink-700">Sent today</h3>
+      <ul class="mt-2 divide-y divide-ink-100 text-sm">
+        <li class="flex justify-between py-2"><span>08:00 batch, 42 SMS</span><span class="tabular-nums text-ink-500">Done</span></li>
+        <li class="flex justify-between py-2"><span>10:00 waiting list offer</span><span class="tabular-nums text-ink-500">3 sent</span></li>
+        <li class="flex justify-between py-2"><span>12:00 email follow-up</span><span class="tabular-nums text-ink-500">Scheduled</span></li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer class="mx-auto max-w-6xl px-4 pb-8 text-xs text-ink-500 sm:px-6">Figures update every 15 minutes. No-show rate counts patients who did not attend or cancel within 2 hours.</footer>
+
+<script>
+const periods = {
+  day: {
+    label: 'Thursday 19 November 2026',
+    title: 'Appointments by hour',
+    kpi: { noshow: '6.2%', booked: '38', waiting: '14', reminders: '46', cancel: '3' },
+    labels: ['08', '09', '10', '11', '12', '13', '14', '15', '16', '17'],
+    booked: [4, 6, 5, 6, 3, 4, 4, 3, 2, 1],
+    attended: [4, 5, 5, 5, 3, 3, 3, 3, 2, 0]
+  },
+  week: {
+    label: 'Week of 16 to 20 November 2026',
+    title: 'Appointments by day',
+    kpi: { noshow: '7.8%', booked: '212', waiting: '14', reminders: '301', cancel: '17' },
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+    booked: [46, 49, 41, 44, 32],
+    attended: [42, 45, 38, 40, 30]
+  }
+};
+
+const chart = document.getElementById('chart');
+
+function drawChart(p) {
+  const W = 640, H = 240, pad = 28, base = H - pad;
+  const max = Math.max(...p.booked) + 2;
+  const step = (W - pad * 2) / p.labels.length;
+  const bw = Math.min(22, step * 0.34);
+  let bars = '';
+  p.labels.forEach((lab, i) => {
+    const x = pad + i * step + step / 2;
+    const hb = (p.booked[i] / max) * (base - 12);
+    const ha = (p.attended[i] / max) * (base - 12);
+    bars += `<rect x="${x - bw - 2}" y="${base - hb}" width="${bw}" height="${hb}" rx="3" fill="#1F6F6B"><title>${lab}: ${p.booked[i]} booked</title></rect>`;
+    bars += `<rect x="${x + 2}" y="${base - ha}" width="${bw}" height="${ha}" rx="3" fill="#C98B2B"><title>${lab}: ${p.attended[i]} attended</title></rect>`;
+    bars += `<text x="${x}" y="${H - 6}" text-anchor="middle" font-size="12" fill="#3B4D4B">${lab}</text>`;
+  });
+  const lunch = p.labels.indexOf('12') + 0.5;
+  const lx = pad + lunch * step;
+  const guide = p.labels[0] === '08'
+    ? `<line x1="${lx}" x2="${lx}" y1="8" y2="${base}" stroke="#5F716F" stroke-dasharray="4 4"/>`
+    : '';
+  chart.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${p.title}">
+    <line x1="${pad}" x2="${W - pad}" y1="${base}" y2="${base}" stroke="#C9D6D4"/>
+    ${guide}${bars}</svg>`;
+}
+
+function setPeriod(key) {
+  const p = periods[key];
+  document.getElementById('period-label').textContent = p.label;
+  document.querySelector('[data-chart-title]').textContent = p.title;
+  document.getElementById('kpi-noshow').textContent = p.kpi.noshow;
+  document.getElementById('kpi-booked').textContent = p.kpi.booked;
+  document.getElementById('kpi-waiting').textContent = p.kpi.waiting;
+  document.getElementById('kpi-reminders').textContent = p.kpi.reminders;
+  document.getElementById('kpi-cancel').textContent = p.kpi.cancel;
+  drawChart(p);
+  document.querySelectorAll('[data-period]').forEach(b => {
+    const on = b.dataset.period === key;
+    b.classList.toggle('seg-on', on);
+    b.classList.toggle('text-ink-700', !on);
+    b.setAttribute('aria-pressed', on);
+  });
+}
+
+document.querySelectorAll('[data-period]').forEach(b =>
+  b.addEventListener('click', () => setPeriod(b.dataset.period)));
+setPeriod('day');
+</script>
+</body>
+</html>

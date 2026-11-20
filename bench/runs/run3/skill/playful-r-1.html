@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PikoLab: Code Adventures for Kids</title>
+<meta name="description" content="PikoLab teaches kids aged 7-12 to code by building games, one block at a time.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { sun: '#FFC93C', sky: '#5BC0EB', coral: '#FF6B4A', mint: '#7BD9A5', ink: '#1D2357', cream: '#FFF8E7' },
+  fontFamily: { display: ['"Baloo 2"', 'system-ui', 'sans-serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+  boxShadow: { pop: '6px 6px 0 #1D2357' }
+}}}
+</script>
+<style>
+  body { background: #FFF8E7; color: #1D2357; font-family: Inter, system-ui, sans-serif; }
+  .rise { animation: rise .6s cubic-bezier(.2,.8,.2,1) both; }
+  .rise-2 { animation-delay: .12s; }
+  .rise-3 { animation-delay: .24s; }
+  @keyframes rise { from { transform: translateY(18px); } to { transform: none; } }
+  .bob { animation: bob 3.6s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-12px) rotate(2deg); } }
+  .blk { min-height: 44px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+  <a href="#" class="inline-flex min-h-[44px] items-center font-display text-2xl font-extrabold">Piko<span class="text-[#C2361A]">Lab</span></a>
+  <nav aria-label="Main" class="hidden gap-6 font-semibold md:flex">
+    <a href="#features" class="hover:underline focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky">Features</a>
+    <a href="#play" class="hover:underline focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky">Mini-game</a>
+    <a href="#pricing" class="hover:underline focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky">Pricing</a>
+    <a href="#faq" class="hover:underline focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky">FAQ</a>
+  </nav>
+  <a href="#pricing" class="blk rounded-full bg-sun px-5 py-2 font-bold shadow-pop transition hover:-translate-y-0.5 active:translate-y-0.5">Get started</a>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="mx-4 rounded-[40px] bg-sky px-6 py-14 sm:mx-auto sm:max-w-6xl sm:px-12 lg:py-20">
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <div>
+        <p class="rise inline-block rounded-full bg-cream px-4 py-1.5 text-sm font-semibold">Coding for ages 7-12</p>
+        <h1 class="rise rise-2 mt-5 font-display text-5xl font-extrabold leading-[1.02] sm:text-7xl">Code games. Level up every day.</h1>
+        <p class="rise rise-2 mt-6 max-w-lg text-lg leading-relaxed">Kids snap together blocks to make Piko dance, jump and race. Real code shows up underneath, one small win at a time.</p>
+        <div class="rise rise-3 mt-8 flex flex-wrap gap-4">
+          <a href="#pricing" class="blk inline-flex items-center rounded-full bg-sun px-7 py-3 text-lg font-bold shadow-pop transition hover:-translate-y-0.5">Start free</a>
+          <a href="#play" class="blk inline-flex items-center rounded-full border-4 border-ink bg-cream px-7 py-3 text-lg font-bold transition hover:-translate-y-0.5">Try the mini-game</a>
+        </div>
+      </div>
+
+      <div class="relative mx-auto w-full max-w-md">
+        <div class="absolute -right-4 -top-4 h-28 w-28 rotate-12 rounded-3xl bg-sun" aria-hidden="true"></div>
+        <div class="absolute -bottom-3 -left-3 h-16 w-16 rounded-full bg-coral" aria-hidden="true"></div>
+        <svg class="bob relative w-full" viewBox="0 0 300 300" role="img" aria-label="Piko, a friendly round robot mascot waving">
+          <line x1="150" y1="62" x2="150" y2="34" stroke="#1D2357" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="150" cy="28" r="13" fill="#FF6B4A" stroke="#1D2357" stroke-width="6"/>
+          <rect x="66" y="62" width="168" height="134" rx="42" fill="#FFFFFF" stroke="#1D2357" stroke-width="6"/>
+          <circle cx="116" cy="120" r="17" fill="#1D2357"/>
+          <circle cx="184" cy="120" r="17" fill="#1D2357"/>
+          <circle cx="122" cy="113" r="5" fill="#FFFFFF"/>
+          <circle cx="190" cy="113" r="5" fill="#FFFFFF"/>
+          <circle cx="98" cy="156" r="10" fill="#FF6B4A" opacity=".55"/>
+          <circle cx="202" cy="156" r="10" fill="#FF6B4A" opacity=".55"/>
+          <path d="M122 162 Q150 186 178 162" fill="none" stroke="#1D2357" stroke-width="6" stroke-linecap="round"/>
+          <rect x="92" y="200" width="116" height="80" rx="26" fill="#FFC93C" stroke="#1D2357" stroke-width="6"/>
+          <rect x="128" y="222" width="44" height="26" rx="8" fill="#1D2357"/>
+          <path d="M66 222 Q40 216 36 186" fill="none" stroke="#1D2357" stroke-width="10" stroke-linecap="round"/>
+          <path d="M234 226 Q262 222 268 196" fill="none" stroke="#1D2357" stroke-width="10" stroke-linecap="round"/>
+          <path d="M262 40 l6 14 14 6 -14 6 -6 14 -6 -14 -14 -6 14 -6z" fill="#FFFFFF" stroke="#1D2357" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M34 60 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z" fill="#FFC93C" stroke="#1D2357" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Three ways to level up</h2>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <article class="rounded-3xl bg-white p-8 shadow-pop md:col-span-2">
+        <p class="font-display text-2xl font-bold text-[#C2361A]">Build real games</p>
+        <h3 class="mt-2 font-display text-3xl font-extrabold">Block by block, then type it yourself</h3>
+        <p class="mt-3 max-w-xl leading-relaxed">Every block maps to real code. Kids start with snapping pieces, then switch to text when they are ready. Their first game ships in one lesson.</p>
+        <pre class="mt-6 overflow-x-auto rounded-2xl bg-ink p-5 text-sm leading-7 text-cream"><code><span class="text-sun">repeat</span> 4 {
+  <span class="text-sky">move</span>(10)
+  <span class="text-mint">if</span> touching(coin) {
+    <span class="text-coral">score</span> += 1
+  }
+}</code></pre>
+      </article>
+      <article class="rounded-3xl bg-mint p-8 shadow-pop">
+        <p class="font-display text-2xl font-bold">Safe by design</p>
+        <p class="mt-3 max-w-prose leading-relaxed">No ads, no chat with strangers, no open web. Every project stays inside a walled garden that parents can trust.</p>
+        <ul class="mt-6 space-y-3 text-sm font-semibold">
+          <li>No ads, ever</li>
+          <li>No public chat</li>
+          <li>Every share reviewed by a human</li>
+        </ul>
+      </article>
+      <article class="rounded-3xl bg-sun p-8 shadow-pop md:col-span-3 md:flex md:items-center md:justify-between md:gap-10">
+        <div>
+          <p class="font-display text-2xl font-bold">Parent view</p>
+          <p class="mt-3 max-w-prose leading-relaxed">See what your kid built this week, with a one-line summary of new skills and a weekly 15-minute goal.</p>
+        </div>
+        <p class="mt-6 font-display text-5xl font-extrabold md:mt-0 md:shrink-0">4.9<span class="text-lg font-semibold"> / 5 from 1,200 parents</span></p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Mini-game teaser -->
+  <section id="play" class="bg-mint py-16 lg:py-20">
+    <div class="mx-auto grid max-w-6xl items-start gap-10 px-4 sm:px-6 lg:grid-cols-2">
+      <div>
+        <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Help Piko cross the track</h2>
+        <p class="mt-4 max-w-md leading-relaxed">Add blocks to the program, then press Run. Piko walks one cell per step, jumps two, or spins in place. Try it in under a minute.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button type="button" data-add="step" class="blk rounded-full bg-white px-5 font-bold shadow-pop transition hover:-translate-y-0.5">+ Step</button>
+          <button type="button" data-add="jump" class="blk rounded-full bg-white px-5 font-bold shadow-pop transition hover:-translate-y-0.5">+ Jump</button>
+          <button type="button" data-add="spin" class="blk rounded-full bg-white px-5 font-bold shadow-pop transition hover:-translate-y-0.5">+ Spin</button>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-cream p-6 shadow-pop">
+        <div id="track" class="grid grid-cols-6 gap-2">
+          <div class="cell flex aspect-square items-end justify-center rounded-xl bg-white pb-1 text-sm font-bold">1</div>
+          <div class="cell flex aspect-square items-end justify-center rounded-xl bg-white pb-1 text-sm font-bold">2</div>
+          <div class="cell flex aspect-square items-end justify-center rounded-xl bg-white pb-1 text-sm font-bold">3</div>
+          <div class="cell flex aspect-square items-end justify-center rounded-xl bg-white pb-1 text-sm font-bold">4</div>
+          <div class="cell flex aspect-square items-end justify-center rounded-xl bg-white pb-1 text-sm font-bold">5</div>
+          <div class="cell flex aspect-square items-end justify-center rounded-xl bg-sun pb-1 text-sm font-bold">Goal</div>
+        </div>
+        <div class="mt-6 rounded-2xl bg-white p-4">
+          <p class="mb-2 text-sm font-semibold">Program</p>
+          <ol id="program" class="flex min-h-12 flex-wrap gap-2">
+            <li data-step="step" class="rounded-lg bg-sky px-3 py-1.5 text-sm font-semibold">Step</li>
+            <li data-step="jump" class="rounded-lg bg-coral px-3 py-1.5 text-sm font-semibold">Jump</li>
+            <li data-step="step" class="rounded-lg bg-sky px-3 py-1.5 text-sm font-semibold">Step</li>
+          </ol>
+        </div>
+        <div class="mt-5 flex gap-3">
+          <button type="button" id="run" class="blk flex-1 rounded-full bg-sun px-5 font-bold shadow-pop transition hover:-translate-y-0.5">Run</button>
+          <button type="button" id="clear" class="blk rounded-full border-4 border-ink px-5 font-bold transition hover:-translate-y-0.5">Clear</button>
+        </div>
+        <p id="status" class="mt-4 text-sm font-semibold" aria-live="polite">Piko is ready on cell 1.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Pick your adventure</h2>
+    <p class="mt-3 max-w-xl">Start free, upgrade when your kid is hooked. Cancel anytime.</p>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <div class="flex flex-col rounded-3xl bg-white p-8 shadow-pop">
+        <p class="font-display text-2xl font-bold">Spark</p>
+        <p class="mt-2 font-display text-5xl font-extrabold">$0</p>
+        <ul class="mt-6 flex-1 space-y-3 text-sm">
+          <li>5 starter games</li>
+          <li>Block coding mode</li>
+          <li>Weekly progress email</li>
+        </ul>
+        <a href="#" class="blk mt-8 rounded-full border-4 border-ink py-3 text-center font-bold">Start free</a>
+      </div>
+      <div class="relative flex flex-col rounded-3xl bg-sun p-8 shadow-pop md:-translate-y-4">
+        <span class="absolute -top-3 right-6 rounded-full bg-coral px-3 py-1 text-xs font-bold">Most loved</span>
+        <p class="font-display text-2xl font-bold">Maker</p>
+        <p class="mt-2 font-display text-5xl font-extrabold">$12<span class="text-base font-semibold">/mo</span></p>
+        <ul class="mt-6 flex-1 space-y-3 text-sm">
+          <li>200+ games and quests</li>
+          <li>Text coding mode unlocked</li>
+          <li>Parent dashboard</li>
+        </ul>
+        <a href="#" class="blk mt-8 rounded-full bg-ink py-3 text-center font-bold text-cream">Choose Maker</a>
+      </div>
+      <div class="flex flex-col rounded-3xl bg-white p-8 shadow-pop">
+        <p class="font-display text-2xl font-bold">Club</p>
+        <p class="mt-2 font-display text-5xl font-extrabold">$29<span class="text-base font-semibold">/mo</span></p>
+        <ul class="mt-6 flex-1 space-y-3 text-sm">
+          <li>Up to 12 kids per class</li>
+          <li>Teacher lesson plans</li>
+          <li>Shared club showcase</li>
+        </ul>
+        <a href="#" class="blk mt-8 rounded-full border-4 border-ink py-3 text-center font-bold">Talk to us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="bg-sky py-16 lg:py-20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+      <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Questions parents ask</h2>
+      <div class="mt-10 space-y-4">
+        <details class="rounded-2xl bg-cream p-5 shadow-pop" open>
+          <summary class="cursor-pointer font-bold">Does my child need any coding experience?</summary>
+          <p class="mt-3 max-w-prose leading-relaxed">No. Lessons start with dragging blocks and reading a picture of what each one does.</p>
+        </details>
+        <details class="rounded-2xl bg-cream p-5 shadow-pop">
+          <summary class="cursor-pointer font-bold">Is PikoLab safe for ages 7 to 12?</summary>
+          <p class="mt-3 max-w-prose leading-relaxed">Yes. There are no ads, no public chat and no outside links. Every project is reviewed by our team before it is shared.</p>
+        </details>
+        <details class="rounded-2xl bg-cream p-5 shadow-pop">
+          <summary class="cursor-pointer font-bold">What do we learn in the first month?</summary>
+          <p class="mt-3 max-w-prose leading-relaxed">Sequences, loops and conditions, plus one finished game the child can show family.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="mx-4 my-16 rounded-[40px] bg-coral px-6 py-14 text-center sm:mx-auto sm:max-w-6xl sm:px-12">
+    <h2 class="font-display text-4xl font-extrabold sm:text-6xl">Your first game is 20 minutes away.</h2>
+    <p class="mx-auto mt-4 max-w-xl text-lg">Bring your kid, a tablet and a little curiosity. Piko handles the rest.</p>
+    <a href="#pricing" class="blk mt-8 inline-flex items-center rounded-full bg-sun px-8 py-4 text-lg font-bold shadow-pop transition hover:-translate-y-0.5">Start my free trial</a>
+  </section>
+</main>
+
+<footer class="mx-auto max-w-6xl px-4 pb-10 text-sm sm:px-6">
+  <p>&copy; 2026 PikoLab. Code adventures for curious kids.</p>
+</footer>
+
+<script>
+  (function () {
+    const program = document.getElementById('program');
+    const status = document.getElementById('status');
+    const cells = [...document.querySelectorAll('#track .cell')];
+    const tok = document.createElement('span');
+    tok.textContent = 'P';
+    tok.className = 'mb-1 mr-1 grid h-8 w-8 place-items-center rounded-full bg-ink font-display text-sm font-extrabold text-cream';
+    tok.setAttribute('aria-hidden', 'true');
+    let pos = 0;
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    const place = i => { pos = i; cells[i].prepend(tok); };
+    place(0);
+
+    const labels = { step: ['Step', 'bg-sky'], jump: ['Jump', 'bg-coral'], spin: ['Spin', 'bg-mint'] };
+    document.querySelectorAll('[data-add]').forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.add;
+      const li = document.createElement('li');
+      li.dataset.step = k;
+      li.className = 'rounded-lg px-3 py-1.5 text-sm font-semibold ' + labels[k][1];
+      li.textContent = labels[k][0];
+      program.appendChild(li);
+    }));
+
+    document.getElementById('clear').addEventListener('click', () => {
+      program.replaceChildren();
+      place(0);
+      status.textContent = 'Program cleared. Piko is back on cell 1.';
+    });
+
+    document.getElementById('run').addEventListener('click', async () => {
+      const steps = [...program.children].map(li => li.dataset.step);
+      if (!steps.length) { status.textContent = 'Add a block first.'; return; }
+      place(0);
+      for (const s of steps) {
+        if (s === 'step') place(Math.min(pos + 1, cells.length - 1));
+        if (s === 'jump') place(Math.min(pos + 2, cells.length - 1));
+        if (s === 'spin') tok.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(360deg)' }], { duration: 500 });
+        await wait(450);
+      }
+      status.textContent = pos === cells.length - 1 ? 'Goal reached! Piko wins.' : 'Piko stopped on cell ' + (pos + 1) + '. Add more blocks.';
+    });
+  })();
+</script>
+</body>
+</html>

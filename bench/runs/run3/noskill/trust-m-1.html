@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinic Appointments Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+<div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+  <!-- Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Appointments</h1>
+      <p class="text-sm text-slate-500">Riverside Family Clinic</p>
+    </div>
+    <div class="inline-flex rounded-lg bg-white border border-slate-200 p-1 shadow-sm self-start" id="rangeToggle">
+      <button data-range="day" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md bg-teal-600 text-white">Day</button>
+      <button data-range="week" class="range-btn px-4 py-1.5 text-sm font-medium rounded-md text-slate-600 hover:text-slate-900">Week</button>
+    </div>
+  </header>
+
+  <!-- KPI cards -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Booked</p>
+      <p class="mt-2 text-3xl font-bold text-slate-900" id="kpiBooked">24</p>
+      <p class="text-xs text-slate-500 mt-1" id="kpiBookedSub">Today</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs font-medium uppercase tracking-wide text-slate-500">No-show rate</p>
+      <p class="mt-2 text-3xl font-bold text-rose-600" id="kpiNoShow">8.3%</p>
+      <div class="mt-2 h-1.5 rounded-full bg-slate-100"><div class="h-1.5 rounded-full bg-rose-500" style="width: 8.3%"></div></div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Waiting list</p>
+      <p class="mt-2 text-3xl font-bold text-slate-900" id="kpiWaiting">12</p>
+      <p class="text-xs text-slate-500 mt-1">Patients waiting for a slot</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Reminders sent</p>
+      <p class="mt-2 text-3xl font-bold text-teal-600" id="kpiReminders">41</p>
+      <p class="text-xs text-slate-500 mt-1" id="kpiRemindersSub">SMS and email</p>
+    </div>
+  </section>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Schedule -->
+    <section class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-semibold text-slate-900" id="scheduleTitle">Today's schedule</h2>
+        <span class="text-xs text-slate-500">Wed, 21 Nov</span>
+      </div>
+      <ul class="divide-y divide-slate-100" id="scheduleList"></ul>
+    </section>
+
+    <!-- Right column -->
+    <div class="space-y-6">
+      <section class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <h2 class="font-semibold text-slate-900 mb-4">Waiting list</h2>
+        <ul class="space-y-3" id="waitList"></ul>
+      </section>
+
+      <section class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <h2 class="font-semibold text-slate-900 mb-4">Reminders</h2>
+        <div class="flex items-center gap-4">
+          <svg viewBox="0 0 36 36" class="w-20 h-20 shrink-0" aria-hidden="true">
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="#0d9488" stroke-width="4" stroke-dasharray="78 100" stroke-dashoffset="25" stroke-linecap="round"/>
+          </svg>
+          <div class="text-sm space-y-2 min-w-0">
+            <p><span class="font-semibold text-slate-900">32</span> <span class="text-slate-500">confirmed</span></p>
+            <p><span class="font-semibold text-slate-900">9</span> <span class="text-slate-500">awaiting reply</span></p>
+            <p><span class="font-semibold text-slate-900">4</span> <span class="text-slate-500">failed to deliver</span></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+  const schedules = {
+    day: [
+      { time: '08:30', patient: 'Amara Okafor', type: 'Check-up', doctor: 'Dr. Lee', status: 'Confirmed' },
+      { time: '09:00', patient: 'Tomás Reyes', type: 'Follow-up', doctor: 'Dr. Lee', status: 'No-show' },
+      { time: '09:30', patient: 'Hana Sato', type: 'Vaccination', doctor: 'Dr. Patel', status: 'Confirmed' },
+      { time: '10:15', patient: 'Liam Brooks', type: 'Consultation', doctor: 'Dr. Patel', status: 'Pending' },
+      { time: '11:00', patient: 'Priya Nair', type: 'Blood test', doctor: 'Dr. Lee', status: 'Confirmed' },
+      { time: '13:30', patient: 'Omar Haddad', type: 'Check-up', doctor: 'Dr. Patel', status: 'Pending' }
+    ],
+    week: [
+      { time: 'Mon 09:00', patient: 'Grace Mensah', type: 'Check-up', doctor: 'Dr. Lee', status: 'Confirmed' },
+      { time: 'Tue 10:15', patient: 'Ivan Petrov', type: 'Consultation', doctor: 'Dr. Patel', status: 'No-show' },
+      { time: 'Wed 08:30', patient: 'Amara Okafor', type: 'Check-up', doctor: 'Dr. Lee', status: 'Confirmed' },
+      { time: 'Thu 14:00', patient: 'Lena Fischer', type: 'Vaccination', doctor: 'Dr. Patel', status: 'Pending' },
+      { time: 'Fri 11:30', patient: 'Diego Ramos', type: 'Follow-up', doctor: 'Dr. Lee', status: 'Confirmed' }
+    ]
+  };
+
+  const waiting = [
+    { name: 'Noah Kim', reason: 'Sports physical', since: '2d' },
+    { name: 'Zara Ali', reason: 'Skin review', since: '4d' },
+    { name: 'Ethan Wright', reason: 'Back pain', since: '5d' }
+  ];
+
+  const statusStyles = {
+    'Confirmed': 'bg-teal-50 text-teal-700 ring-teal-600/20',
+    'Pending': 'bg-amber-50 text-amber-700 ring-amber-600/20',
+    'No-show': 'bg-rose-50 text-rose-700 ring-rose-600/20'
+  };
+
+  function renderSchedule(range) {
+    const list = document.getElementById('scheduleList');
+    const items = schedules[range];
+    list.innerHTML = items.map(a => `
+      <li class="flex items-center gap-4 px-5 py-3">
+        <span class="w-20 shrink-0 text-sm font-medium text-slate-500">${a.time}</span>
+        <div class="min-w-0 flex-1">
+          <p class="font-medium text-slate-900 truncate">${a.patient}</p>
+          <p class="text-xs text-slate-500 truncate">${a.type} · ${a.doctor}</p>
+        </div>
+        <span class="shrink-0 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${statusStyles[a.status]}">${a.status}</span>
+      </li>`).join('');
+    document.getElementById('scheduleTitle').textContent = range === 'day' ? "Today's schedule" : 'This week';
+    document.getElementById('kpiBooked').textContent = range === 'day' ? 24 : 96;
+    document.getElementById('kpiBookedSub').textContent = range === 'day' ? 'Today' : 'This week';
+    document.getElementById('kpiReminders').textContent = range === 'day' ? 41 : 173;
+    document.getElementById('kpiRemindersSub').textContent = range === 'day' ? 'SMS and email' : 'SMS and email, Mon to Fri';
+  }
+
+  function renderWaiting() {
+    document.getElementById('waitList').innerHTML = waiting.map(p => `
+      <li class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-900 truncate">${p.name}</p>
+          <p class="text-xs text-slate-500 truncate">${p.reason}</p>
+        </div>
+        <span class="shrink-0 text-xs text-slate-500">${p.since}</span>
+      </li>`).join('');
+  }
+
+  document.querySelectorAll('.range-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.range-btn').forEach(b => {
+        const active = b === btn;
+        b.classList.toggle('bg-teal-600', active);
+        b.classList.toggle('text-white', active);
+        b.classList.toggle('text-slate-600', !active);
+      });
+      renderSchedule(btn.dataset.range);
+    });
+  });
+
+  renderSchedule('day');
+  renderWaiting();
+</script>
+</body>
+</html>

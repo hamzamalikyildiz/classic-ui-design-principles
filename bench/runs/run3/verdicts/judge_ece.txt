@@ -1,0 +1,20 @@
+cift1: B | 4 | B daha canli, cesur tipografi ve renkli kartlarla ilk bakista akilda kaliyor; A duzenli ama daha tanildik karanlik motion sablonu | A 7/8/8/7 B 9/7/8/7
+cift2: A | 3 | A daha sakin ve ferah, metrikler net okunuyor; B daha zengin ve gercekci ama kalabalik, yazilar kucuk ve sayfa yorucu | A 7/7/8/6 B 6/8/6/8
+cift3: A | 3 | A kritik uyari bandi ve isaretli grafikle ilk bakista canli, icerik de zengin; B duzenli ama sade bir admin panelina benziyor ve daha sikici | A 7/7/6/9 B 6/7/8/6
+cift4: A | 4 | A cesur dev basliklar, turuncu vurgu ve bento kartlariyla canli ve akilda kalici; B karanlik ama genel bir sablon gibi, ikon kartlari sikici kaliyor | A 9/8/8/8 B 6/6/7/6
+cift5: B | 4 | B net bir ana mesaj, grafik, uyari ve tablo ile hiyerarsisi guclu ve daha dolu; A sade, bos alanli ve kisa kalmis | A 5/6/6/4 B 7/8/8/8
+cift6: A | 4 | A karar gerektiren uyari, grafik, program tablosu ve hatirlatmalarla dolu ve duzenli; B sade, az icerikli ve alt kisimlari bos | A 7/8/8/8 B 5/6/6/4
+cift7: B | 3 | B kenar cubugundaki buyuk istatistik, cizimler ve zengin ilgili yazilarla daha tasarimli ve icerikli; A da temiz ama ilgili kartlari bos gradyanlardan ibaret ve daha sade | A 7/8/8/6 B 8/7/8/8
+cift8: A | 3 | A uyari bandi, aciklamali cizgi grafik ve tablo ile daha canli ve dolu; B benzer ama daha genel kartli ve grafik kesik gorunuyor | A 7/7/7/9 B 6/6/7/7
+cift9: B | 3 | B sari sicak hero, renkli bento kartlari ve oyun onizlemesiyle daha cesur ve eglenceli; A de sevimli ama yapisi biraz daha daginik ve pastel | A 8/7/8/7 B 8/7/8/8
+cift10: A | 3 | A guclu basligi, ayrintili haritasi, yan panel istatistigi ve cizimli ilgili yazilariyla daha zengin ve hiyerarsisi net; B zarif ama ince basligi ve sahte cizgili kutulariyla duz kaliyor | A 7/8/8/8 B 6/6/6/5
+cift11: B | 4 | B ozel renk dili, buyuk baslik, aciklamali grafik ve net bir uyari bandiyla karakterli; A indigo tonlu, bildik SaaS sablonu gibi | A 5/5/7/6 B 8/8/8/8
+cift12: A | 4 | A cizimli hero, yan panel, malzeme listesi ve grafikle zengin ve hiyerarsisi net; B temiz ama bulanik gradyan placeholderlari ve daha az icerik ile bos kaliyor | A 8/7/8/9 B 6/7/7/5
+cift13: A | 4 | A daha cesur tipografi, dalgali ANC gorseli ve bento kartlariyla karakterli; B ayni urunu daha sablon gibi anlatiyor, ikon noktalari ve genel gradyan CTA sikici | A 9/8/8/8 B 6/6/7/6
+cift14: A | 2 | A uyari bandi, aciklamali grafikler ve canli log akisiyla daha canli ve icerikli ama cok yogun ve yazilar kucuk; B temiz ama genel bir panel gibi | A 7/6/6/9 B 6/7/7/6
+cift15: A | 3 | A iri yazi tipi, turuncu-lime bloklar ve kayan serit ile daha cesur ve akilda kalici; B duzenli ve okunakli ama daha sakin ve aynı lime-siyah kalip hissini veriyor | A 8/7/7/7 B 7/8/8/7
+cift16: B | 3 | B mavi hero, blok kodlama onizlemesi ve renkli bolumleriyle daha canli ve icerikli; A da sevimli ama mor bulutlar basligin arkasinda kalabalik duruyor ve daha az icerik var | A 7/7/7/6 B 8/7/8/8
+cift17: B | 3 | B kalin renk bloklari, gölge detaylari ve egri kartlariyla daha cesur ve eglenceli; A tatli ama mor-pembe tonu daha tanidik ve bolumleri daha genel | A 7/7/7/6 B 8/7/8/8
+cift18: A | 4 | A kendine ozgu yesil-krem paletiyle, net uyari bandi ve duzenli kart yapisiyla daha profesyonel ve akilda kalici; B yan menulu bildik bir admin sablonu gibi duruyor | A 8/8/8/7 B 5/5/7/6
+cift19: A | 4 | A kalem maskotu, zengin galeri kartlari ve bento bolumleriyle daha canli ve tutarli; B benzer ama galeri kartlari bos, ikon sirasi ve mor blok daha genel | A 8/8/8/8 B 6/6/6/5
+cift20: B | 3 | B buyuk resim, 2:40 istatistigi, zengin yan panel ve asimetrik onerilerle daha tasarimli ve icerikli; A temiz ama kucuk tabak illustrasyonu ve daha duz bir akisi var | A 6/7/7/6 B 8/8/8/8

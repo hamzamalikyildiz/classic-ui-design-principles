@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quiet Return of the Paper Map</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#f6f1e7; --ink:#1d1b18; --muted:#6b6259; --rule:#d9cfbf; --accent:#b4482a; --sea:#2f5d62; --card:#efe8d8; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --paper:#17150f; --ink:#ece6d9; --muted:#a39a8c; --rule:#3a352b; --accent:#e27b57; --sea:#7fb3b8; --card:#221e16; }
+  }
+  :root[data-theme="dark"] { --paper:#17150f; --ink:#ece6d9; --muted:#a39a8c; --rule:#3a352b; --accent:#e27b57; --sea:#7fb3b8; --card:#221e16; }
+  body { background: var(--paper); color: var(--ink); }
+  .serif { font-family: 'Newsreader', Georgia, serif; }
+  .display { font-family: 'Libre Caslon Display', Georgia, serif; }
+  .ui { font-family: 'Inter', system-ui, sans-serif; }
+  .kicker { color: var(--accent); letter-spacing: .14em; text-transform: uppercase; }
+  .rule { border-color: var(--rule); }
+  .dropcap::first-letter { float: left; font-family: 'Libre Caslon Display', Georgia, serif; font-size: 4.9rem; line-height: .82; padding: .4rem .6rem 0 0; color: var(--accent); }
+  .prose p { font-size: 1.15rem; line-height: 1.78; margin-bottom: 1.2rem; }
+  .prose h2 { font-family: 'Libre Caslon Display', Georgia, serif; font-size: 1.7rem; margin: 2.2rem 0 .8rem; }
+  .thumb { background: var(--card); }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- Masthead -->
+<header class="border-b rule">
+  <div class="ui text-[11px] uppercase tracking-[.18em] flex justify-between px-4 sm:px-8 pt-3 pb-2 max-w-6xl mx-auto" style="color:var(--muted)">
+    <span>Vol. 14 &middot; No. 3</span>
+    <span class="hidden sm:inline">Autumn Issue</span>
+    <span>Nov 2026</span>
+  </div>
+  <div class="text-center px-4 pt-2 pb-4">
+    <a href="#" class="display text-4xl sm:text-5xl tracking-tight">The Long Form</a>
+  </div>
+  <nav class="ui border-t rule">
+    <ul class="flex gap-5 sm:gap-8 justify-center overflow-x-auto px-4 py-3 text-sm font-medium whitespace-nowrap max-w-6xl mx-auto">
+      <li><a href="#" class="hover:underline" style="color:var(--accent)">Features</a></li>
+      <li><a href="#" class="hover:underline">Maps</a></li>
+      <li><a href="#" class="hover:underline">Travel</a></li>
+      <li><a href="#" class="hover:underline">Essays</a></li>
+      <li><a href="#" class="hover:underline">Ideas</a></li>
+      <li><a href="#" class="hover:underline">Archive</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6">
+
+  <!-- Article head -->
+  <section class="pt-10 sm:pt-14 text-center">
+    <p class="ui kicker text-xs font-semibold">Feature &middot; Navigation</p>
+    <h1 class="display text-4xl sm:text-6xl leading-[1.05] mt-4">The Quiet Return of the Paper Map</h1>
+    <p class="serif italic text-xl sm:text-2xl leading-snug mt-6" style="color:var(--muted)">Phones promised to make the folded sheet obsolete. Instead, a generation raised on blue dots is buying atlases, pinning survey sheets to kitchen walls and getting lost on purpose.</p>
+    <div class="ui text-sm mt-7 flex flex-wrap justify-center gap-x-3 gap-y-1" style="color:var(--muted)">
+      <span>By <strong style="color:var(--ink)">Elena Marsh</strong></span>
+      <span aria-hidden="true">&middot;</span>
+      <span>Illustrations by the staff</span>
+      <span aria-hidden="true">&middot;</span>
+      <span>14 min read</span>
+    </div>
+  </section>
+
+  <!-- Hero illustration -->
+  <figure class="mt-10">
+    <svg viewBox="0 0 800 480" class="w-full h-auto rounded-sm" role="img" aria-label="Illustration of a folded paper map with contour lines, a dashed route and a compass rose">
+      <rect width="800" height="480" fill="var(--card)"/>
+      <!-- paper sheet -->
+      <rect x="70" y="50" width="660" height="380" fill="#fbf7ee" stroke="#cdbfa6" stroke-width="2"/>
+      <g fill="none" stroke="#c9b99c" stroke-width="1.4">
+        <path d="M70 180 H730"/><path d="M70 300 H730"/><path d="M300 50 V430"/><path d="M520 50 V430"/>
+      </g>
+      <!-- sea and river -->
+      <path d="M70 380 C 200 350, 260 410, 400 380 S 620 340, 730 390 V430 H70 Z" fill="var(--sea)" opacity=".25"/>
+      <path d="M120 60 C 200 150, 180 220, 300 260 S 420 330, 470 430" fill="none" stroke="var(--sea)" stroke-width="7" stroke-linecap="round" opacity=".55"/>
+      <!-- contours -->
+      <g fill="none" stroke="#a88f6a" stroke-width="1.5" opacity=".8">
+        <ellipse cx="590" cy="170" rx="120" ry="70"/>
+        <ellipse cx="590" cy="170" rx="82" ry="46"/>
+        <ellipse cx="590" cy="170" rx="44" ry="22"/>
+        <ellipse cx="200" cy="330" rx="90" ry="40"/>
+        <ellipse cx="200" cy="330" rx="48" ry="20"/>
+      </g>
+      <!-- dashed route -->
+      <path d="M150 120 C 230 200, 300 170, 360 220 S 520 260, 640 200" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="10 8"/>
+      <circle cx="150" cy="120" r="7" fill="var(--ink)"/>
+      <!-- pin -->
+      <path d="M640 200 c-14 -22 -30 -30 -30 -48 a30 30 0 1 1 60 0 c0 18 -16 26 -30 48 z" fill="var(--accent)"/>
+      <circle cx="640" cy="152" r="10" fill="#fbf7ee"/>
+      <!-- title cartouche -->
+      <rect x="92" y="72" width="170" height="44" fill="#fbf7ee" stroke="#8c7b62"/>
+      <text x="177" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" letter-spacing="2" fill="var(--ink)">SURVEY SHEET 14</text>
+      <text x="177" y="106" text-anchor="middle" font-family="Newsreader, serif" font-style="italic" font-size="13" fill="var(--muted)">Upper valley, 1:25,000</text>
+      <!-- compass rose -->
+      <g transform="translate(680 400)">
+        <circle r="34" fill="#fbf7ee" stroke="#8c7b62"/>
+        <path d="M0 -28 L7 0 L0 28 L-7 0 Z" fill="var(--ink)"/>
+        <path d="M-28 0 L0 6 L28 0 L0 -6 Z" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        <text y="-40" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="var(--ink)">N</text>
+      </g>
+    </svg>
+    <figcaption class="ui text-sm mt-3 leading-relaxed" style="color:var(--muted)"><span class="font-semibold" style="color:var(--ink)">Fig. 1</span> A folded survey sheet, pencilled with a route that no app would suggest. Illustration by the staff.</figcaption>
+  </figure>
+
+  <!-- Body -->
+  <article class="prose serif mt-12 dropcap">
+    <p>For about a decade the paper map was declared dead, and it was easy to believe. A blue dot on a glowing screen knew where you stood, rerouted you around traffic and told you when to turn. Folding a map along its creases in a moving car started to look like a chore from another century, something people did only because a battery had run out.</p>
+    <p>Then the sales figures began to shift. Independent bookshops reported a steady trickle of regional atlases, then a flood. Print shops that once produced wayfinding for conferences started getting requests for sheets of hand-drawn trails. Nobody was writing a manifesto. People were simply buying the thing their phones had taken away and discovering what it had been doing all along.</p>
+
+    <h2>Attention, unbroken</h2>
+    <p>Ask people why they carry a paper map and the answers rarely mention accuracy. They talk about looking up. A printed sheet shows the whole valley at once, the coastline and the ridge and the road that bends back on itself, and the eye travels across it in a way a zoomed screen never allows. One walker described it as holding the country in her lap. Another said the map made her decide where to go, instead of waiting to be told.</p>
+    <p>Designers who work on navigation software have a name for what the phone removes: the cognitive map. When a device handles every turn, the brain builds less of a picture of the place. Several small studies have suggested that people who navigate with paper sketch more accurate layouts afterwards, though the research is young and its samples are small. The honest version is more modest. A map asks you to participate, and participation tends to stick.</p>
+
+    <blockquote class="my-12 border-y rule py-8 px-2 text-center">
+      <p class="display text-3xl sm:text-4xl leading-tight" style="color:var(--accent)">&ldquo;The screen tells you where you are. The paper asks where you want to go.&rdquo;</p>
+      <footer class="ui text-xs uppercase tracking-[.16em] mt-5" style="color:var(--muted)">Mapmaker, Kendal Cartographic Co-operative</footer>
+    </blockquote>
+
+    <h2>A pleasant kind of getting lost</h2>
+    <p>The new paper enthusiasts are not nostalgists, at least not only. Many grew up with navigation apps and use them every day. What they want is a boundary: a place where the signal ends and the sheet begins. Some fold a single regional map into a jacket pocket for weekend hikes and leave the phone in the car. Others frame old topographic sheets of their hometowns and study them the way earlier generations studied family photographs.</p>
+    <p>There is also an economic story. Paper maps are slower to produce and cost more to print than a digital update, which is one reason the best of them have become objects. Publishers now sell heavier stock, waterproof coatings, sewn bindings and sheets printed on both sides. A map that lasts twenty years on a shelf is not a disposable item. It is closer to a good notebook, with the same odd pleasure of owning something that cannot be updated overnight.</p>
+
+    <h2>What the sheet cannot do</h2>
+    <p>None of this means the paper map will win back its old job. It cannot tell you about a closed bridge, cannot reroute around a crash and cannot find the nearest pharmacy in the rain. Anyone who has tried to refold a stiff sheet at a windy crossroads knows its limits. The argument of this new movement is narrower and, I think, more durable: that some of what we do with places is worth doing slowly, and that a map is one of the few tools that makes slowness feel like a choice.</p>
+    <p>On a recent afternoon I spent two hours with a sheet of hills and streams, planning a walk I did not need to take. I traced three possible routes, argued with myself about a ford, and gave up on the one with the steepest contour lines. The walk itself was ordinary. The planning was the part I remember, and it happened entirely on paper, with a pencil, while the phone sat face down on the table.</p>
+  </article>
+
+  <!-- Author note and sign-off -->
+  <div class="ui mt-10 pt-6 border-t rule text-sm flex items-center gap-4" style="color:var(--muted)">
+    <div class="w-12 h-12 rounded-full flex-shrink-0" style="background:linear-gradient(135deg,var(--accent),var(--sea))"></div>
+    <p><strong style="color:var(--ink)">Elena Marsh</strong> writes about cities, cartography and the small habits that shape them. This is her first feature for The Long Form.</p>
+  </div>
+
+  <!-- Related stories -->
+  <section class="mt-16 border-t rule pt-10">
+    <h2 class="display text-3xl mb-8">Keep reading</h2>
+    <div class="grid gap-8 sm:grid-cols-3">
+      <a href="#" class="group block">
+        <div class="thumb aspect-[4/3] relative overflow-hidden">
+          <div class="absolute left-[12%] top-[20%] w-[60%] h-[55%] rounded-full border-2" style="border-color:var(--sea)"></div>
+          <div class="absolute left-[30%] top-[38%] w-[40%] h-[28%] rounded-full" style="background:var(--accent);opacity:.8"></div>
+        </div>
+        <p class="ui kicker text-[11px] font-semibold mt-4">Travel</p>
+        <h3 class="display text-xl mt-2 leading-snug group-hover:underline">The night trains that still run across the plains</h3>
+      </a>
+      <a href="#" class="group block">
+        <div class="thumb aspect-[4/3] relative overflow-hidden">
+          <div class="absolute inset-x-[10%] top-[30%] h-[6px]" style="background:var(--ink);opacity:.5"></div>
+          <div class="absolute inset-x-[10%] top-[48%] h-[6px]" style="background:var(--ink);opacity:.3"></div>
+          <div class="absolute inset-x-[10%] top-[66%] h-[6px]" style="background:var(--ink);opacity:.2"></div>
+        </div>
+        <p class="ui kicker text-[11px] font-semibold mt-4">Essays</p>
+        <h3 class="display text-xl mt-2 leading-snug group-hover:underline">In praise of the unanswered letter</h3>
+      </a>
+      <a href="#" class="group block">
+        <div class="thumb aspect-[4/3] relative overflow-hidden">
+          <div class="absolute left-[18%] bottom-[18%] w-[30%] h-[60%] rounded-t-full" style="background:var(--sea);opacity:.6"></div>
+          <div class="absolute right-[18%] bottom-[18%] w-[22%] h-[44%] rounded-t-full" style="background:var(--accent);opacity:.7"></div>
+        </div>
+        <p class="ui kicker text-[11px] font-semibold mt-4">Ideas</p>
+        <h3 class="display text-xl mt-2 leading-snug group-hover:underline">Why coastal towns are rebuilding their harbours</h3>
+      </a>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="mt-16 mb-16 px-6 py-10 sm:px-10 text-center rounded-sm" style="background:var(--card)">
+    <p class="ui kicker text-xs font-semibold">The Weekly Fold</p>
+    <h2 class="display text-3xl mt-3">Long reads, once a week</h2>
+    <p class="serif text-lg mt-3 max-w-md mx-auto" style="color:var(--muted)">Four essays and one map, delivered on Sunday mornings. No tracking pixels, no daily noise.</p>
+    <form class="ui mt-7 flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Thanks, see you Sunday';">
+      <label for="email" class="sr-only">Email address</label>
+      <input id="email" type="email" required placeholder="you@example.com" class="flex-1 px-4 py-3 rounded-sm border text-base bg-transparent" style="border-color:var(--rule);color:var(--ink)">
+      <button type="submit" class="px-6 py-3 rounded-sm font-semibold text-white" style="background:var(--accent)">Subscribe</button>
+    </form>
+    <p class="ui text-xs mt-4" style="color:var(--muted)">Unsubscribe any time.</p>
+  </section>
+</main>
+
+<footer class="ui border-t rule">
+  <div class="max-w-6xl mx-auto px-4 sm:px-8 py-6 flex flex-col sm:flex-row justify-between gap-2 text-xs" style="color:var(--muted)">
+    <span>&copy; 2026 The Long Form</span>
+    <span>About &middot; Contact &middot; Corrections &middot; Privacy</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scribbloo Studio</title>
+<meta name="description" content="Scribbloo Studio: kids draw, then make their pictures dance. Gallery, features and a parent section.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      sun: '#FFD23F', sky: '#4CC9F0', coral: '#FF6B6B', mint: '#7BE0AD',
+      grape: '#6C4BFF', ink: '#1E1B3A', paper: '#FFF8E7'
+    },
+    fontFamily: { display: ['"Lilita One"', 'cursive'], body: ['Nunito', 'sans-serif'] },
+    boxShadow: { pop: '6px 6px 0 #1E1B3A' }
+  }}
+};
+</script>
+<style>
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-14px) rotate(2deg); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+  @keyframes hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-38px); } }
+  .bob { animation: bob 4s ease-in-out infinite; }
+  .rise { animation: rise 600ms cubic-bezier(.2,.8,.2,1) both; }
+  .rise-2 { animation: rise 600ms 150ms cubic-bezier(.2,.8,.2,1) both; }
+  .rise-3 { animation: rise 600ms 300ms cubic-bezier(.2,.8,.2,1) both; }
+  .wiggle:hover { animation: wiggle 500ms ease-in-out; }
+  .hop { animation: hop 1.2s ease-in-out infinite; }
+  .stroke-ink { -webkit-text-stroke: 3px #1E1B3A; color: #FFF8E7; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+  :focus-visible { outline: 4px solid #6C4BFF; outline-offset: 3px; }
+</style>
+</head>
+<body class="bg-paper text-ink font-body antialiased">
+
+<header class="bg-paper border-b-4 border-ink">
+  <nav class="mx-auto max-w-6xl px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+    <a href="#top" class="flex items-center gap-2 font-display text-2xl text-grape">
+      <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3l4.6 11.4L37 15l-9 8 2.8 12L20 29.4 9.2 35 12 23l-9-8 12.4-.6z" fill="#FFD23F" stroke="#1E1B3A" stroke-width="3" stroke-linejoin="round"/></svg>
+      Scribbloo
+    </a>
+    <ul class="hidden md:flex gap-6 font-extrabold">
+      <li><a href="#gallery" class="hover:text-grape">Gallery</a></li>
+      <li><a href="#features" class="hover:text-grape">Features</a></li>
+      <li><a href="#parents" class="hover:text-grape">For parents</a></li>
+    </ul>
+    <a href="#get" class="bg-coral text-ink font-black px-5 py-2.5 rounded-full border-4 border-ink shadow-pop hover:-translate-y-0.5 active:translate-y-0.5 transition">Get the app</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- Hero: saturated stage -->
+  <section class="bg-sun relative overflow-hidden">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 py-16 lg:py-20 grid lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <p class="rise inline-block bg-paper border-4 border-ink rounded-full px-4 py-1 font-extrabold -rotate-2">Ages 3 to 9</p>
+        <h1 class="rise-2 font-display text-6xl sm:text-7xl lg:text-8xl leading-[0.95] mt-5">
+          Draw it.<br><span class="stroke-ink">Then make</span><br><span class="text-[#532cff]">it dance!</span>
+        </h1>
+        <p class="rise-3 mt-6 text-lg sm:text-xl font-semibold max-w-md">Paint with 40 brushes, tap any shape to bring it to life, and keep every masterpiece in one cozy gallery.</p>
+        <div class="rise-3 mt-8 flex flex-wrap gap-4" id="get">
+          <a href="#gallery" class="bg-grape text-paper font-black text-lg px-7 py-4 rounded-full border-4 border-ink shadow-pop hover:-translate-y-0.5 transition">Start drawing</a>
+          <a href="#features" class="bg-paper font-black text-lg px-7 py-4 rounded-full border-4 border-ink hover:bg-sky transition">See how it works</a>
+        </div>
+      </div>
+
+      <!-- Mascot: drawn blob with crayon -->
+      <div class="relative mx-auto w-full max-w-md bob" aria-hidden="true">
+        <svg viewBox="0 0 400 400" class="w-full h-auto">
+          <ellipse cx="200" cy="370" rx="130" ry="16" fill="#1E1B3A" opacity=".18"/>
+          <path d="M200 60c80 0 140 60 140 150 0 70-55 130-140 130S60 280 60 210C60 120 120 60 200 60z" fill="#FF6B6B" stroke="#1E1B3A" stroke-width="8"/>
+          <circle cx="150" cy="170" r="22" fill="#1E1B3A"/>
+          <circle cx="250" cy="170" r="22" fill="#1E1B3A"/>
+          <circle cx="158" cy="162" r="7" fill="#FFF8E7"/>
+          <circle cx="258" cy="162" r="7" fill="#FFF8E7"/>
+          <ellipse cx="120" cy="215" rx="16" ry="10" fill="#FFD23F" opacity=".9"/>
+          <ellipse cx="280" cy="215" rx="16" ry="10" fill="#FFD23F" opacity=".9"/>
+          <path d="M160 230q40 40 80 0" fill="none" stroke="#1E1B3A" stroke-width="9" stroke-linecap="round"/>
+          <!-- crayon arm -->
+          <g transform="rotate(-28 330 250)">
+            <rect x="300" y="235" width="120" height="30" rx="6" fill="#4CC9F0" stroke="#1E1B3A" stroke-width="6"/>
+            <path d="M420 235l-14 15 14 15z" fill="#FFD23F" stroke="#1E1B3A" stroke-width="5" stroke-linejoin="round"/>
+          </g>
+          <path d="M70 60l8 16 16 3-12 11 3 17-15-8-15 8 3-17-12-11 16-3z" fill="#6C4BFF" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M330 90l6 12 13 2-9 9 2 13-12-6-12 6 2-13-9-9 13-2z" fill="#7BE0AD" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery: kid creations -->
+  <section id="gallery" class="py-16 lg:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="flex flex-wrap items-end justify-between gap-4 mb-10">
+        <h2 class="font-display text-5xl sm:text-6xl">Made this week</h2>
+        <p class="font-bold text-lg max-w-sm">Real drawings from kids in our community, shared with a parent's OK.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <figure class="bg-sky rounded-[24px] border-4 border-ink shadow-pop p-5 -rotate-2 wiggle">
+          <svg viewBox="0 0 120 120" class="w-full h-auto bg-paper rounded-2xl border-4 border-ink" aria-hidden="true"><circle cx="60" cy="50" r="24" fill="#FFD23F" stroke="#1E1B3A" stroke-width="4"/><path d="M0 120V85q30-30 60 0t60 0v35z" fill="#7BE0AD" stroke="#1E1B3A" stroke-width="4"/></svg>
+          <figcaption class="mt-4 font-extrabold text-lg">Mila, 6 <span class="font-bold">· Sunny hills</span></figcaption>
+        </figure>
+        <figure class="bg-sun rounded-[24px] border-4 border-ink shadow-pop p-5 rotate-1 wiggle">
+          <svg viewBox="0 0 120 120" class="w-full h-auto bg-paper rounded-2xl border-4 border-ink" aria-hidden="true"><ellipse cx="55" cy="60" rx="34" ry="22" fill="#FF6B6B" stroke="#1E1B3A" stroke-width="4"/><path d="M85 60l24-18v36z" fill="#FF6B6B" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/><circle cx="42" cy="54" r="4" fill="#1E1B3A"/></svg>
+          <figcaption class="mt-4 font-extrabold text-lg">Theo, 5 <span class="font-bold">· Swimmy fish</span></figcaption>
+        </figure>
+        <figure class="bg-mint rounded-[24px] border-4 border-ink shadow-pop p-5 rotate-2 wiggle">
+          <svg viewBox="0 0 120 120" class="w-full h-auto bg-paper rounded-2xl border-4 border-ink" aria-hidden="true"><path d="M60 14c14 14 16 40 14 70H46c-2-30 0-56 14-70z" fill="#4CC9F0" stroke="#1E1B3A" stroke-width="4"/><path d="M46 60L30 80v10l16-6zM74 60l16 20v10l-16-6z" fill="#FF6B6B" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/><path d="M52 84h16l-8 20z" fill="#FFD23F" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/></svg>
+          <figcaption class="mt-4 font-extrabold text-lg">Ava, 7 <span class="font-bold">· Rocket trip</span></figcaption>
+        </figure>
+        <figure class="bg-grape text-paper rounded-[24px] border-4 border-ink shadow-pop p-5 -rotate-1 wiggle">
+          <svg viewBox="0 0 120 120" class="w-full h-auto bg-paper rounded-2xl border-4 border-ink" aria-hidden="true"><g fill="#FF6B6B" stroke="#1E1B3A" stroke-width="3"><circle cx="60" cy="34" r="15"/><circle cx="82" cy="50" r="15"/><circle cx="74" cy="76" r="15"/><circle cx="46" cy="76" r="15"/><circle cx="38" cy="50" r="15"/></g><circle cx="60" cy="56" r="11" fill="#FFD23F" stroke="#1E1B3A" stroke-width="3"/><path d="M60 80v34" stroke="#1E1B3A" stroke-width="4"/></svg>
+          <figcaption class="mt-4 font-extrabold text-lg">Noor, 8 <span class="font-bold">· Big flower</span></figcaption>
+        </figure>
+        <figure class="bg-coral rounded-[24px] border-4 border-ink shadow-pop p-5 rotate-2 wiggle">
+          <svg viewBox="0 0 120 120" class="w-full h-auto bg-paper rounded-2xl border-4 border-ink" aria-hidden="true"><path d="M20 90V60h12l8-16h30l10 16h12v30z" fill="#7BE0AD" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/><circle cx="88" cy="58" r="3" fill="#1E1B3A"/><rect x="26" y="90" width="8" height="12" fill="#1E1B3A"/><rect x="60" y="90" width="8" height="12" fill="#1E1B3A"/></svg>
+          <figcaption class="mt-4 font-extrabold text-lg">Leo, 4 <span class="font-bold">· Dino home</span></figcaption>
+        </figure>
+        <figure class="bg-paper rounded-[24px] border-4 border-ink shadow-pop p-5 -rotate-2 wiggle">
+          <svg viewBox="0 0 120 120" class="w-full h-auto bg-sky rounded-2xl border-4 border-ink" aria-hidden="true"><path d="M30 100L60 30l30 70z" fill="#7BE0AD" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/><path d="M52 100v-14h16v14" fill="#FFD23F" stroke="#1E1B3A" stroke-width="4"/><circle cx="92" cy="26" r="11" fill="#FFD23F" stroke="#1E1B3A" stroke-width="4"/></svg>
+          <figcaption class="mt-4 font-extrabold text-lg">Iris, 6 <span class="font-bold">· Christmas tree</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features: three highlights, varied sizes -->
+  <section id="features" class="bg-sky border-y-4 border-ink py-16 lg:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class="font-display text-5xl sm:text-6xl mb-10">Three things kids love</h2>
+      <div class="grid lg:grid-cols-3 gap-6">
+        <article class="lg:col-span-2 bg-paper rounded-[24px] border-4 border-ink shadow-pop p-8 flex flex-col sm:flex-row gap-6 items-center">
+          <div class="flex-1">
+            <h3 class="font-display text-3xl">Paint with 40 brushes</h3>
+            <p class="mt-3 font-semibold text-lg max-w-prose">Crayons, glitter, bubbles and a rainbow spray. Undo is a big friendly arrow, so mistakes feel fine.</p>
+          </div>
+          <svg viewBox="0 0 120 120" class="w-40 h-40 shrink-0" aria-hidden="true"><path d="M18 102c20-4 30-22 40-40l22-22c6-6 16-6 20 0s6 14 0 20L78 82c-18 10-36 20-60 20z" fill="#FF6B6B" stroke="#1E1B3A" stroke-width="4" stroke-linejoin="round"/><path d="M14 106c10 6 26 4 34-6" fill="none" stroke="#6C4BFF" stroke-width="8" stroke-linecap="round"/></svg>
+        </article>
+        <article class="bg-sun rounded-[24px] border-4 border-ink shadow-pop p-8 -rotate-1">
+          <h3 class="font-display text-3xl">Tap to animate</h3>
+          <p class="mt-3 font-semibold max-w-prose">Every drawing gets a bouncy first move. Tap a shape and watch it hop.</p>
+          <div class="mt-8 h-24 flex items-end justify-center" aria-hidden="true">
+            <svg viewBox="0 0 60 60" class="w-14 h-14 hop"><circle cx="30" cy="30" r="24" fill="#6C4BFF" stroke="#1E1B3A" stroke-width="4"/><circle cx="22" cy="24" r="4" fill="#FFF8E7"/></svg>
+          </div>
+        </article>
+        <article class="bg-mint rounded-[24px] border-4 border-ink shadow-pop p-8 rotate-1">
+          <h3 class="font-display text-3xl">Sounds and stickers</h3>
+          <p class="mt-3 font-semibold max-w-prose">Add squeaks, drum loops and 300 stickers. Every sound is tested with real kids.</p>
+        </article>
+        <article class="lg:col-span-2 bg-coral rounded-[24px] border-4 border-ink shadow-pop p-8 flex flex-col sm:flex-row gap-6 items-center">
+          <div class="flex-1">
+            <h3 class="font-display text-3xl">Make a 10-second cartoon</h3>
+            <p class="mt-3 font-semibold text-lg max-w-prose">Draw frames, press play, and share the movie with grandma. Export as a short video in one tap.</p>
+          </div>
+          <div class="flex gap-2" aria-hidden="true">
+            <span class="w-12 h-12 rounded-xl bg-paper border-4 border-ink -rotate-6"></span>
+            <span class="w-12 h-12 rounded-xl bg-sun border-4 border-ink"></span>
+            <span class="w-12 h-12 rounded-xl bg-sky border-4 border-ink rotate-6"></span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="py-16 lg:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+      <div class="bg-paper border-4 border-ink rounded-[24px] p-8 shadow-pop">
+        <p class="font-display text-6xl text-grape tabular-nums">2.4M</p>
+        <p class="font-bold mt-2">drawings made by kids</p>
+      </div>
+      <div class="bg-paper border-4 border-ink rounded-[24px] p-8 shadow-pop">
+        <p class="font-display text-6xl text-grape tabular-nums">4.8</p>
+        <p class="font-bold mt-2">average parent rating</p>
+      </div>
+      <div class="bg-paper border-4 border-ink rounded-[24px] p-8 shadow-pop">
+        <p class="font-display text-6xl text-grape tabular-nums">0</p>
+        <p class="font-bold mt-2">ads, ever</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parent section: dark band -->
+  <section id="parents" class="bg-ink text-paper py-16 lg:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="font-display text-5xl sm:text-6xl text-sun">For grown-ups</h2>
+        <p class="mt-5 text-lg font-semibold max-w-md">You decide what stays on screen. Set daily timers, review every drawing and turn off anything you do not want.</p>
+        <ul class="mt-8 space-y-4 font-bold text-lg">
+          <li class="flex gap-3"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" class="shrink-0"><circle cx="14" cy="14" r="12" fill="#7BE0AD"/><path d="M8 14l4 4 8-8" fill="none" stroke="#1E1B3A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>No ads and no in-app purchases</li>
+          <li class="flex gap-3"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" class="shrink-0"><circle cx="14" cy="14" r="12" fill="#7BE0AD"/><path d="M8 14l4 4 8-8" fill="none" stroke="#1E1B3A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Drawings stay private unless you share them</li>
+          <li class="flex gap-3"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" class="shrink-0"><circle cx="14" cy="14" r="12" fill="#7BE0AD"/><path d="M8 14l4 4 8-8" fill="none" stroke="#1E1B3A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>COPPA-friendly, with data deleted on request</li>
+        </ul>
+        <a href="#get" class="inline-block mt-10 bg-sun text-ink font-black text-lg px-7 py-4 rounded-full border-4 border-paper shadow-pop hover:-translate-y-0.5 transition">Set up a family account</a>
+      </div>
+      <div class="bg-grape rounded-[24px] border-4 border-paper p-8 rotate-2">
+        <p class="font-display text-3xl">Today's report</p>
+        <div class="mt-6 space-y-4 font-bold">
+          <div class="flex justify-between bg-paper text-ink rounded-2xl px-5 py-3 border-4 border-ink"><span>Drawing time</span><span class="tabular-nums">42 min</span></div>
+          <div class="flex justify-between bg-paper text-ink rounded-2xl px-5 py-3 border-4 border-ink"><span>New creations</span><span class="tabular-nums">3</span></div>
+          <div class="flex justify-between bg-paper text-ink rounded-2xl px-5 py-3 border-4 border-ink"><span>Stickers used</span><span class="tabular-nums">17</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA band -->
+  <section class="bg-coral border-t-4 border-ink py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 text-center">
+      <h2 class="font-display text-5xl sm:text-6xl">Your next masterpiece is one tap away</h2>
+      <a href="#top" class="inline-block mt-8 bg-grape text-paper font-black text-lg px-8 py-4 rounded-full border-4 border-ink shadow-pop hover:-translate-y-0.5 transition">Download free</a>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-paper py-8">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 flex flex-wrap justify-between gap-4 font-bold text-sm">
+    <span>Scribbloo Studio</span>
+    <span>Privacy · Terms · Parent help</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PikoLab: Learn to Code by Playing</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { sun: '#FFC93C', sky: '#5BC0EB', coral: '#FF6B5B', mint: '#7BD389', ink: '#1F2A44', cream: '#FFF8E7' },
+        fontFamily: { display: ['"Baloo 2"', 'cursive'], body: ['Inter', 'sans-serif'] }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #FFF8E7; color: #1F2A44; font-family: Inter, sans-serif; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  .rise { animation: rise .6s ease-out both; }
+  .rise-2 { animation-delay: .15s; }
+  .rise-3 { animation-delay: .3s; }
+  .wiggle { animation: wiggle 3.2s ease-in-out infinite; transform-origin: 50% 90%; }
+  p { max-width: 65ch; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+  <a href="#top" class="inline-block py-2 font-display text-2xl font-extrabold">Piko<span class="text-[#c2331c]">Lab</span></a>
+  <nav aria-label="Main" class="hidden gap-7 font-semibold md:flex">
+    <a href="#features" class="underline-offset-4 hover:underline">Features</a>
+    <a href="#game" class="underline-offset-4 hover:underline">Mini-game</a>
+    <a href="#pricing" class="underline-offset-4 hover:underline">Pricing</a>
+    <a href="#faq" class="underline-offset-4 hover:underline">FAQ</a>
+  </nav>
+  <a href="#cta" class="rounded-full bg-ink px-5 py-3 font-semibold text-cream focus-visible:outline focus-visible:outline-4 focus-visible:outline-sun">Try free</a>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="px-4">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 rounded-[40px] bg-sun px-6 py-14 md:grid-cols-2 md:px-12 lg:py-20">
+      <div class="rise">
+        <p class="inline-block -rotate-2 rounded-full bg-cream px-4 py-1.5 text-sm font-semibold">For kids aged 7 to 12</p>
+        <h1 class="font-display mt-5 text-5xl font-extrabold leading-[1.02] md:text-7xl">Code is just a game you write.</h1>
+        <p class="mt-5 max-w-md text-lg">Build characters, make them jump, and ship your own games with Piko, a friendly robot who loves every "what if?".</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#cta" class="rounded-full bg-ink px-7 py-4 font-semibold text-cream focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Start a free lesson</a>
+          <a href="#game" class="rounded-full border-2 border-ink px-7 py-4 font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Play a sample</a>
+        </div>
+      </div>
+
+      <div class="rise rise-2 mx-auto w-full max-w-sm">
+        <svg viewBox="0 0 300 320" class="wiggle w-full" aria-hidden="true">
+          <line x1="150" y1="34" x2="150" y2="64" stroke="#1F2A44" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="150" cy="24" r="16" fill="#FF6B5B" stroke="#1F2A44" stroke-width="6"/>
+          <rect x="30" y="134" width="34" height="82" rx="17" fill="#5BC0EB" stroke="#1F2A44" stroke-width="6"/>
+          <rect x="236" y="134" width="34" height="82" rx="17" fill="#5BC0EB" stroke="#1F2A44" stroke-width="6"/>
+          <rect x="60" y="64" width="180" height="172" rx="56" fill="#5BC0EB" stroke="#1F2A44" stroke-width="6"/>
+          <rect x="92" y="112" width="116" height="74" rx="28" fill="#1F2A44"/>
+          <circle cx="124" cy="146" r="13" fill="#FFF8E7"/>
+          <circle cx="176" cy="146" r="13" fill="#FFF8E7"/>
+          <circle cx="128" cy="150" r="6" fill="#1F2A44"/>
+          <circle cx="180" cy="150" r="6" fill="#1F2A44"/>
+          <path d="M136 166 Q150 178 164 166" stroke="#FFC93C" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <circle cx="92" cy="186" r="10" fill="#FF6B5B"/>
+          <circle cx="208" cy="186" r="10" fill="#FF6B5B"/>
+          <rect x="88" y="228" width="52" height="42" rx="18" fill="#7BD389" stroke="#1F2A44" stroke-width="6"/>
+          <rect x="160" y="228" width="52" height="42" rx="18" fill="#7BD389" stroke="#1F2A44" stroke-width="6"/>
+          <g transform="translate(206 20) rotate(8)">
+            <rect width="84" height="46" rx="16" fill="#FFF8E7" stroke="#1F2A44" stroke-width="5"/>
+            <text x="42" y="32" text-anchor="middle" font-family="Baloo 2, cursive" font-weight="800" font-size="22" fill="#1F2A44">&lt;/&gt;</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Proof strip -->
+  <section class="px-4 pt-10">
+    <dl class="mx-auto grid max-w-6xl grid-cols-2 gap-4 text-center md:grid-cols-4">
+      <div class="rounded-3xl bg-white p-6 shadow-md shadow-sky/30"><dt class="text-sm font-semibold">Games shipped by kids</dt><dd class="font-display text-4xl font-extrabold">42,000</dd></div>
+      <div class="rounded-3xl bg-white p-6 shadow-md shadow-sun/40"><dt class="text-sm font-semibold">Average lesson</dt><dd class="font-display text-4xl font-extrabold">12 min</dd></div>
+      <div class="rounded-3xl bg-white p-6 shadow-md shadow-mint/40"><dt class="text-sm font-semibold">Parent rating</dt><dd class="font-display text-4xl font-extrabold">4.8 / 5</dd></div>
+      <div class="rounded-3xl bg-white p-6 shadow-md shadow-coral/30"><dt class="text-sm font-semibold">Ads shown</dt><dd class="font-display text-4xl font-extrabold">Zero</dd></div>
+    </dl>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="px-4 py-16 lg:py-20">
+    <div class="mx-auto max-w-6xl">
+      <h2 class="font-display text-4xl font-extrabold md:text-5xl">Three ways to level up</h2>
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <article class="rounded-[24px] bg-sky p-8 shadow-lg shadow-sky/50 md:col-span-2">
+          <h3 class="font-display text-3xl font-extrabold">Build your own world</h3>
+          <p class="mt-3 max-w-prose">Drag a hero, a coin and a cloud onto the stage, then give them one rule each. Watch the world react the moment you press play.</p>
+          <pre class="mt-6 overflow-x-auto rounded-2xl bg-ink p-5 text-sm leading-relaxed text-cream"><code>when space is pressed:
+  hero jumps 3 steps
+when hero touches coin:
+  score goes up by 1</code></pre>
+        </article>
+        <article class="rounded-[24px] bg-mint p-8 shadow-lg shadow-mint/50">
+          <h3 class="font-display text-3xl font-extrabold">Quests, not quizzes</h3>
+          <p class="mt-3">Every lesson ends with a small mission, like making a dragon chase a mouse. Finish it and the badge is yours to keep.</p>
+          <ul class="mt-6 flex flex-wrap gap-2 text-sm font-semibold">
+            <li class="rounded-full bg-white px-3 py-1.5">Dragon chase</li>
+            <li class="rounded-full bg-white px-3 py-1.5">Moonwalk</li>
+            <li class="rounded-full bg-white px-3 py-1.5">Mouse maze</li>
+          </ul>
+        </article>
+        <article class="rounded-[24px] bg-coral p-8 shadow-lg shadow-coral/40">
+          <h3 class="font-display text-3xl font-extrabold">Share what you made</h3>
+          <p class="mt-3">Send a link to grandma or your class. Games stay private until you choose otherwise.</p>
+        </article>
+        <article class="rounded-[24px] bg-white p-8 shadow-lg shadow-sun/50 md:col-span-2">
+          <h3 class="font-display text-3xl font-extrabold">Progress that a parent can read</h3>
+          <p class="mt-3 max-w-prose">A weekly note shows which ideas clicked this week, like loops and variables, and which one needs a little more play time.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mini-game teaser -->
+  <section id="game" class="px-4 py-16 lg:py-20">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 rounded-[32px] bg-ink px-6 py-12 text-cream md:grid-cols-2 md:px-12">
+      <div>
+        <p class="font-semibold text-sun">Mini-game teaser</p>
+        <h2 class="font-display mt-2 text-4xl font-extrabold md:text-5xl">Tap the blocks, then write the rule.</h2>
+        <p class="mt-4 max-w-md">Each tap sends one instruction to Piko. Tomorrow you will write the rule that makes the whole grid dance.</p>
+        <p class="mt-6 font-semibold">Taps so far: <span id="taps" class="font-display text-3xl font-extrabold text-sun" aria-live="polite">0</span></p>
+      </div>
+      <div class="mx-auto grid w-full max-w-xs grid-cols-3 gap-3 rounded-[28px] bg-cream/10 p-4">
+        <button type="button" class="tile aspect-square rounded-xl bg-sky transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="0" aria-label="Tile 1"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-sun transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="1" aria-label="Tile 2"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-coral transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="2" aria-label="Tile 3"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-mint transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="3" aria-label="Tile 4"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-sky transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="0" aria-label="Tile 5"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-sun transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="1" aria-label="Tile 6"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-coral transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="2" aria-label="Tile 7"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-mint transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="3" aria-label="Tile 8"></button>
+        <button type="button" class="tile aspect-square rounded-xl bg-sky transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-white" data-i="0" aria-label="Tile 9"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="px-4 py-16 lg:py-20">
+    <div class="mx-auto max-w-6xl">
+      <h2 class="font-display text-4xl font-extrabold md:text-5xl">Pick your crew size</h2>
+      <div class="mt-10 grid items-stretch gap-6 md:grid-cols-3">
+        <div class="flex flex-col rounded-[24px] bg-white p-8 shadow-md">
+          <h3 class="font-display text-2xl font-extrabold">Explorer</h3>
+          <p class="mt-2 font-display text-5xl font-extrabold">$0</p>
+          <p class="mt-3">One world and three lessons a week. Enough to get hooked.</p>
+          <a href="#cta" class="mt-auto block rounded-full border-2 border-ink py-3.5 text-center font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Start free</a>
+        </div>
+        <div class="flex flex-col rounded-[24px] bg-sun p-8 shadow-xl shadow-sun/60 md:-translate-y-4">
+          <h3 class="font-display text-2xl font-extrabold">Maker</h3>
+          <p class="mt-2 font-display text-5xl font-extrabold">$9<span class="text-base font-semibold">/month</span></p>
+          <p class="mt-3">Unlimited worlds, all quests and export to a playable link.</p>
+          <a href="#cta" class="mt-auto block rounded-full bg-ink py-3.5 text-center font-semibold text-cream focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Choose Maker</a>
+        </div>
+        <div class="flex flex-col rounded-[24px] bg-white p-8 shadow-md">
+          <h3 class="font-display text-2xl font-extrabold">Family</h3>
+          <p class="mt-2 font-display text-5xl font-extrabold">$19<span class="text-base font-semibold">/month</span></p>
+          <p class="mt-3">Up to four kids, weekly progress notes and a shared project gallery.</p>
+          <a href="#cta" class="mt-auto block rounded-full border-2 border-ink py-3.5 text-center font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Choose Family</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="px-4 py-16 lg:py-20">
+    <div class="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1fr_1.4fr]">
+      <h2 class="font-display text-4xl font-extrabold md:text-5xl">Questions parents ask</h2>
+      <div class="space-y-3">
+        <details class="group rounded-2xl bg-white p-5 shadow-sm open:shadow-md">
+          <summary class="cursor-pointer list-none font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Does my child need to know how to code?</summary>
+          <p class="mt-3">No. Lessons start with blocks you snap together, and text code arrives gently around week six.</p>
+        </details>
+        <details class="group rounded-2xl bg-white p-5 shadow-sm open:shadow-md">
+          <summary class="cursor-pointer list-none font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Is it safe for kids?</summary>
+          <p class="mt-3">There are no ads, no public chat rooms and no strangers. Projects stay private unless you share them.</p>
+        </details>
+        <details class="group rounded-2xl bg-white p-5 shadow-sm open:shadow-md">
+          <summary class="cursor-pointer list-none font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-coral">Can we cancel anytime?</summary>
+          <p class="mt-3">Yes. Cancel in two taps from your account page and keep every game you made.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section id="cta" class="px-4 pb-16">
+    <div class="mx-auto flex max-w-6xl flex-col items-start gap-6 rounded-[40px] bg-coral px-6 py-12 md:flex-row md:items-center md:justify-between md:px-12">
+      <div>
+        <h2 class="font-display text-4xl font-extrabold md:text-5xl">Your first game is one click away.</h2>
+        <p class="mt-3 max-w-md">Start a free lesson today. Piko is already warming up the stage.</p>
+      </div>
+      <a href="#top" class="rounded-full bg-ink px-8 py-4 font-semibold text-cream focus-visible:outline focus-visible:outline-4 focus-visible:outline-sun">Start free lesson</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="px-4 pb-10">
+  <div class="mx-auto flex max-w-6xl flex-col gap-3 border-t border-ink/15 pt-6 text-sm md:flex-row md:justify-between">
+    <p class="font-display text-lg font-extrabold">PikoLab</p>
+    <p>Made for young makers in 2026. No ads, ever.</p>
+  </div>
+</footer>
+
+<script>
+  const tiles = [...document.querySelectorAll('.tile')];
+  const taps = document.getElementById('taps');
+  const colors = ['bg-sky', 'bg-sun', 'bg-coral', 'bg-mint'];
+  let count = 0;
+  tiles.forEach((tile) => {
+    tile.addEventListener('click', () => {
+      const next = (Number(tile.dataset.i) + 1) % colors.length;
+      tile.classList.remove(...colors);
+      tile.classList.add(colors[next]);
+      tile.dataset.i = next;
+      taps.textContent = ++count;
+    });
+  });
+</script>
+</body>
+</html>

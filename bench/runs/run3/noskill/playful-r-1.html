@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PikoLab - Learn to code by playing</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Nunito', sans-serif; background: #FFF8EC; color: #2B2148; }
+  h1, h2, h3, .display { font-family: 'Fredoka', sans-serif; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(0px); opacity: .55; z-index: 0; }
+  .bounce-slow { animation: bob 4s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-14px) rotate(2deg); } }
+  .pop { box-shadow: 0 6px 0 #2B2148; transition: transform .1s, box-shadow .1s; }
+  .pop:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #2B2148; }
+  .pop:active { transform: translateY(4px); box-shadow: 0 2px 0 #2B2148; }
+  details summary { list-style: none; cursor: pointer; }
+  details summary::-webkit-details-marker { display: none; }
+  details[open] .chev { transform: rotate(180deg); }
+</style>
+</head>
+<body class="overflow-x-hidden">
+
+<!-- NAV -->
+<header class="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+  <a href="#" class="display flex items-center gap-2 text-2xl font-bold">
+    <span class="grid h-10 w-10 place-items-center rounded-xl bg-[#FF6B6B] text-white shadow-[0_4px_0_#2B2148]">{ }</span>
+    PikoLab
+  </a>
+  <nav class="hidden gap-6 font-semibold md:flex">
+    <a href="#features" class="hover:text-[#7C5CFF]">Features</a>
+    <a href="#game" class="hover:text-[#7C5CFF]">Games</a>
+    <a href="#pricing" class="hover:text-[#7C5CFF]">Pricing</a>
+    <a href="#faq" class="hover:text-[#7C5CFF]">FAQ</a>
+  </nav>
+  <a href="#cta" class="pop rounded-full bg-[#FFD23F] px-4 py-2 font-bold text-[#2B2148]">Try free</a>
+</header>
+
+<!-- HERO -->
+<section class="relative overflow-hidden">
+  <div class="blob -left-20 top-10 h-72 w-72 bg-[#7C5CFF]"></div>
+  <div class="blob right-0 top-0 h-80 w-80 bg-[#3CD7A6]"></div>
+  <div class="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-6 sm:px-6 md:grid-cols-2">
+    <div>
+      <p class="inline-block rounded-full bg-white px-4 py-1 text-sm font-bold shadow-[0_3px_0_#2B2148]">Ages 7-12 - no experience needed</p>
+      <h1 class="mt-5 text-5xl font-bold leading-tight sm:text-6xl">Code is just <span class="text-[#FF6B6B]">play</span> with rules.</h1>
+      <p class="mt-5 max-w-md text-lg">PikoLab turns coding into quests, puzzles and tiny games. Your kid builds real skills, one fun level at a time.</p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#cta" class="pop rounded-full bg-[#FF6B6B] px-6 py-3 text-lg font-bold text-white">Start the first quest</a>
+        <a href="#game" class="pop rounded-full bg-white px-6 py-3 text-lg font-bold">See a game</a>
+      </div>
+    </div>
+
+    <!-- Mascot -->
+    <div class="bounce-slow relative mx-auto h-80 w-72 sm:h-96 sm:w-80">
+      <svg viewBox="0 0 300 340" class="h-full w-full" aria-label="Piko the robot mascot">
+        <line x1="150" y1="30" x2="150" y2="6" stroke="#2B2148" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="150" cy="6" r="12" fill="#FFD23F" stroke="#2B2148" stroke-width="5"/>
+        <rect x="58" y="36" width="184" height="150" rx="48" fill="#7C5CFF" stroke="#2B2148" stroke-width="6"/>
+        <circle cx="112" cy="104" r="26" fill="#fff" stroke="#2B2148" stroke-width="5"/>
+        <circle cx="188" cy="104" r="26" fill="#fff" stroke="#2B2148" stroke-width="5"/>
+        <circle cx="118" cy="108" r="11" fill="#2B2148"/>
+        <circle cx="182" cy="108" r="11" fill="#2B2148"/>
+        <path d="M120 150 Q150 176 180 150" fill="none" stroke="#2B2148" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="90" cy="140" r="9" fill="#FF6B6B" opacity=".7"/>
+        <circle cx="210" cy="140" r="9" fill="#FF6B6B" opacity=".7"/>
+        <rect x="80" y="196" width="140" height="110" rx="34" fill="#3CD7A6" stroke="#2B2148" stroke-width="6"/>
+        <rect x="112" y="226" width="76" height="46" rx="12" fill="#2B2148"/>
+        <text x="150" y="257" font-family="Fredoka, sans-serif" font-size="22" font-weight="700" text-anchor="middle" fill="#FFD23F">&lt;/&gt;</text>
+        <rect x="28" y="208" width="40" height="78" rx="20" fill="#FFD23F" stroke="#2B2148" stroke-width="6"/>
+        <rect x="232" y="208" width="40" height="78" rx="20" fill="#FFD23F" stroke="#2B2148" stroke-width="6"/>
+      </svg>
+      <div class="absolute -right-2 top-4 rotate-12 rounded-2xl bg-white px-3 py-2 text-sm font-bold shadow-[0_4px_0_#2B2148]">Hi, I'm Piko!</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+  <h2 class="text-center text-4xl font-bold">Why kids love it</h2>
+  <div class="mt-10 grid gap-6 md:grid-cols-3">
+    <article class="rounded-3xl bg-white p-6 shadow-[0_6px_0_#2B2148]">
+      <div class="grid h-14 w-14 place-items-center rounded-2xl bg-[#FFD23F] text-2xl">&#9733;</div>
+      <h3 class="mt-4 text-2xl font-semibold">Quests, not lectures</h3>
+      <p class="mt-2">Every lesson is a short adventure with a goal, a reward and a clear next step.</p>
+    </article>
+    <article class="rounded-3xl bg-white p-6 shadow-[0_6px_0_#2B2148]">
+      <div class="grid h-14 w-14 place-items-center rounded-2xl bg-[#3CD7A6] text-2xl">&#9881;</div>
+      <h3 class="mt-4 text-2xl font-semibold">Build real code</h3>
+      <p class="mt-2">Kids write actual blocks of logic that turn into working games, animations and stories.</p>
+    </article>
+    <article class="rounded-3xl bg-white p-6 shadow-[0_6px_0_#2B2148]">
+      <div class="grid h-14 w-14 place-items-center rounded-2xl bg-[#FF6B6B] text-2xl text-white">&#9829;</div>
+      <h3 class="mt-4 text-2xl font-semibold">Safe and calm</h3>
+      <p class="mt-2">No ads, no chat with strangers, and progress reports you can read in a minute.</p>
+    </article>
+  </div>
+</section>
+
+<!-- MINI GAME TEASER -->
+<section id="game" class="mx-auto max-w-6xl px-4 sm:px-6">
+  <div class="grid items-center gap-8 rounded-[2.5rem] bg-[#2B2148] p-8 text-white md:grid-cols-2 md:p-12">
+    <div>
+      <p class="font-bold text-[#FFD23F]">Mini-game teaser</p>
+      <h2 class="mt-2 text-4xl font-bold">Help Piko catch the stars</h2>
+      <p class="mt-4 text-lg opacity-90">Write three lines of code to move Piko left, right and jump. Each star you catch teaches a new idea: loops, ifs and variables.</p>
+      <a href="#cta" class="pop mt-6 inline-block rounded-full bg-[#3CD7A6] px-6 py-3 font-bold text-[#2B2148]">Play the demo</a>
+    </div>
+    <div class="relative h-64 overflow-hidden rounded-3xl border-4 border-[#7C5CFF] bg-[#1B1433]">
+      <svg viewBox="0 0 400 260" class="h-full w-full" aria-label="Mini game preview">
+        <rect x="0" y="220" width="400" height="40" fill="#3CD7A6"/>
+        <polygon points="200,30 212,62 246,62 218,82 228,116 200,96 172,116 182,82 154,62 188,62" fill="#FFD23F"/>
+        <polygon points="70,90 80,116 108,116 86,132 94,160 70,144 46,160 54,132 32,116 60,116" fill="#FFD23F" opacity=".8"/>
+        <polygon points="330,140 338,160 360,160 342,172 350,194 330,180 310,194 318,172 300,160 322,160" fill="#FFD23F" opacity=".8"/>
+        <g>
+          <rect x="176" y="168" width="48" height="52" rx="14" fill="#FF6B6B" stroke="#fff" stroke-width="4"/>
+          <circle cx="192" cy="186" r="5" fill="#2B2148"/>
+          <circle cx="208" cy="186" r="5" fill="#2B2148"/>
+        </g>
+      </svg>
+      <div class="absolute bottom-3 left-3 rounded-xl bg-white px-3 py-1 font-mono text-sm font-bold text-[#2B2148]">move_right(3)</div>
+      <div class="absolute right-3 top-3 rounded-xl bg-[#FFD23F] px-3 py-1 text-sm font-bold text-[#2B2148]">Stars: 7</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+  <h2 class="text-center text-4xl font-bold">Simple pricing</h2>
+  <p class="mt-3 text-center text-lg">Start free. Upgrade when your kid is hooked.</p>
+  <div class="mt-10 grid gap-6 md:grid-cols-3">
+    <div class="rounded-3xl bg-white p-8 shadow-[0_6px_0_#2B2148]">
+      <h3 class="text-2xl font-semibold">Explorer</h3>
+      <p class="mt-2 text-4xl font-bold">$0<span class="text-base font-semibold"> / month</span></p>
+      <ul class="mt-6 space-y-2 font-semibold"><li>&#10003; 5 starter quests</li><li>&#10003; 1 mini-game</li><li>&#10003; Weekly progress card</li></ul>
+      <a href="#cta" class="pop mt-8 block rounded-full bg-[#E9E4FF] px-5 py-3 text-center font-bold">Start free</a>
+    </div>
+    <div class="relative rounded-3xl bg-[#7C5CFF] p-8 text-white shadow-[0_6px_0_#2B2148] md:-translate-y-4">
+      <span class="absolute -top-3 right-6 rounded-full bg-[#FFD23F] px-3 py-1 text-sm font-bold text-[#2B2148]">Most popular</span>
+      <h3 class="text-2xl font-semibold">Adventurer</h3>
+      <p class="mt-2 text-4xl font-bold">$12<span class="text-base font-semibold"> / month</span></p>
+      <ul class="mt-6 space-y-2 font-semibold"><li>&#10003; All 120+ quests</li><li>&#10003; Every mini-game</li><li>&#10003; Projects to share with family</li></ul>
+      <a href="#cta" class="pop mt-8 block rounded-full bg-[#FFD23F] px-5 py-3 text-center font-bold text-[#2B2148]">Get Adventurer</a>
+    </div>
+    <div class="rounded-3xl bg-white p-8 shadow-[0_6px_0_#2B2148]">
+      <h3 class="text-2xl font-semibold">Family</h3>
+      <p class="mt-2 text-4xl font-bold">$20<span class="text-base font-semibold"> / month</span></p>
+      <ul class="mt-6 space-y-2 font-semibold"><li>&#10003; Up to 4 kids</li><li>&#10003; Parent dashboard</li><li>&#10003; Live help sessions</li></ul>
+      <a href="#cta" class="pop mt-8 block rounded-full bg-[#E9E4FF] px-5 py-3 text-center font-bold">Choose Family</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+  <h2 class="text-center text-4xl font-bold">Questions parents ask</h2>
+  <div class="mt-10 space-y-4">
+    <details class="group rounded-2xl bg-white p-5 shadow-[0_4px_0_#2B2148]">
+      <summary class="flex items-center justify-between font-bold text-lg">Does my child need to know how to code?<span class="chev transition">&#9662;</span></summary>
+      <p class="mt-3">Nope. PikoLab starts from zero and every quest explains the one idea it needs.</p>
+    </details>
+    <details class="group rounded-2xl bg-white p-5 shadow-[0_4px_0_#2B2148]">
+      <summary class="flex items-center justify-between font-bold text-lg">Is it safe for kids?<span class="chev transition">&#9662;</span></summary>
+      <p class="mt-3">Yes. There are no ads, no open chat with strangers and no data sold to anyone.</p>
+    </details>
+    <details class="group rounded-2xl bg-white p-5 shadow-[0_4px_0_#2B2148]">
+      <summary class="flex items-center justify-between font-bold text-lg">Can I cancel any time?<span class="chev transition">&#9662;</span></summary>
+      <p class="mt-3">Yes, with one click from your account page. You keep access until the end of the billing month.</p>
+    </details>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section id="cta" class="px-4 pb-20 sm:px-6">
+  <div class="mx-auto max-w-6xl rounded-[2.5rem] bg-[#FF6B6B] px-6 py-14 text-center text-white shadow-[0_8px_0_#2B2148]">
+    <h2 class="text-4xl font-bold sm:text-5xl">Ready for quest one?</h2>
+    <p class="mx-auto mt-4 max-w-xl text-lg">Give your kid a free first week. No card needed.</p>
+    <a href="#" class="pop mt-8 inline-block rounded-full bg-[#FFD23F] px-8 py-4 text-lg font-bold text-[#2B2148]">Start my free week</a>
+  </div>
+</section>
+
+<footer class="px-4 pb-10 text-center text-sm font-semibold opacity-80">
+  PikoLab - Learn to code by playing. Made for curious kids.
+</footer>
+
+</body>
+</html>

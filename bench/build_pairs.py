@@ -15,7 +15,7 @@ from playwright.sync_api import sync_playwright
 from PIL import Image
 
 ap = argparse.ArgumentParser(); ap.add_argument('work'); ap.add_argument('--seed', type=int, default=1)
-ap.add_argument('--checks', action='store_true'); a = ap.parse_args()
+ap.add_argument('--checks', action='store_true'); ap.add_argument('--width', type=int, default=1000); a = ap.parse_args()
 W = pathlib.Path(a.work); random.seed(a.seed)
 AXE = R.find_axe()
 files = sorted((W / 'raw').glob('*/*.html'))
@@ -59,8 +59,8 @@ for m, b, r in order:
     for side, pid in (('A', A), ('B', B)):
         shutil.copy(W / 'anon' / f'{pid}.html', W / 'pairs' / f'cift{n}-{side}.html')
         im = Image.open(W / 'shots' / f'{pid}.png').convert('RGB'); w, h = im.size
-        im = im.resize((1000, int(h * 1000 / w))); h = im.size[1]; k = 2 if h < 3400 else 3
-        for j in range(k): im.crop((0, j * h // k, 1000, (j + 1) * h // k)).save(W / 'judge' / f'cift{n}-{side}-{j + 1}.png')
+        im = im.resize((a.width, int(h * a.width / w))); h = im.size[1]; k = 2 if h * 1000 / a.width < 3400 else 3
+        for j in range(k): im.crop((0, j * h // k, a.width, (j + 1) * h // k)).save(W / 'judge' / f'cift{n}-{side}-{j + 1}.png')
 json.dump(pm, open(W / 'PAIR_MAP_DO_NOT_OPEN.json', 'w')); json.dump(key, open(W / 'KEY_DO_NOT_OPEN.json', 'w'))
 json.dump(metrics, open(W / 'metrics.json', 'w'))
 print(f'{n} pairs built')

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledgerly - Finance Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f5f7fa; }
+  .tnum { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body class="text-slate-800 antialiased">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+  <!-- Header -->
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-lg bg-emerald-600 flex items-center justify-center">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4v16h16"/><path d="M8 15l4-4 3 3 5-6"/></svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-semibold leading-tight">Ledgerly</h1>
+        <p class="text-xs text-slate-500">Northwind Traders &middot; November 2026</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <select class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+        <option>Last 30 days</option>
+        <option>Last quarter</option>
+        <option>Year to date</option>
+      </select>
+      <button class="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2">New invoice</button>
+    </div>
+  </header>
+
+  <!-- Overdue alert -->
+  <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+    <div class="flex items-center gap-3">
+      <svg viewBox="0 0 24 24" class="h-5 w-5 text-red-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+      <p class="text-sm"><span class="font-semibold text-red-700">3 invoices are overdue</span> totaling <span class="tnum font-semibold">$18,450</span>. The oldest is 22 days late (INV-2041, Bluebird Cafe).</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="rounded-lg border border-red-300 bg-white text-red-700 text-sm font-medium px-3 py-1.5 hover:bg-red-100">View invoices</button>
+      <button class="rounded-lg bg-red-600 text-white text-sm font-medium px-3 py-1.5 hover:bg-red-700">Send reminders</button>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <article class="rounded-xl bg-white border border-slate-200 p-5">
+      <p class="text-sm text-slate-500">Cash on hand</p>
+      <p class="tnum text-2xl font-semibold mt-2">$248,310</p>
+      <p class="mt-2 text-sm"><span class="inline-flex items-center rounded-md bg-emerald-50 text-emerald-700 px-1.5 py-0.5 font-medium">&uarr; 6.2%</span> <span class="text-slate-500">vs last month</span></p>
+    </article>
+    <article class="rounded-xl bg-white border border-slate-200 p-5">
+      <p class="text-sm text-slate-500">Revenue (MTD)</p>
+      <p class="tnum text-2xl font-semibold mt-2">$124,000</p>
+      <p class="mt-2 text-sm"><span class="inline-flex items-center rounded-md bg-emerald-50 text-emerald-700 px-1.5 py-0.5 font-medium">&uarr; 12.4%</span> <span class="text-slate-500">vs last month</span></p>
+    </article>
+    <article class="rounded-xl bg-white border border-slate-200 p-5">
+      <p class="text-sm text-slate-500">Expenses (MTD)</p>
+      <p class="tnum text-2xl font-semibold mt-2">$85,000</p>
+      <p class="mt-2 text-sm"><span class="inline-flex items-center rounded-md bg-emerald-50 text-emerald-700 px-1.5 py-0.5 font-medium">&darr; 3.1%</span> <span class="text-slate-500">vs last month</span></p>
+    </article>
+    <article class="rounded-xl bg-white border border-slate-200 p-5">
+      <p class="text-sm text-slate-500">Open receivables</p>
+      <p class="tnum text-2xl font-semibold mt-2">$64,920</p>
+      <p class="mt-2 text-sm"><span class="inline-flex items-center rounded-md bg-red-50 text-red-700 px-1.5 py-0.5 font-medium">&uarr; 8.0%</span> <span class="text-slate-500">vs last month</span></p>
+    </article>
+  </section>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Cash flow chart -->
+    <section class="lg:col-span-2 rounded-xl bg-white border border-slate-200 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="font-semibold">Cash flow</h2>
+          <p class="text-sm text-slate-500">Inflow vs outflow, last 6 months ($k)</p>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-slate-600">
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-emerald-500"></span>Inflow</span>
+          <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-sm bg-slate-300"></span>Outflow</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 600 240" class="w-full h-auto mt-4" role="img" aria-label="Cash flow bar chart">
+        <g stroke="#e2e8f0" stroke-width="1">
+          <line x1="0" y1="40" x2="600" y2="40"/>
+          <line x1="0" y1="80" x2="600" y2="80"/>
+          <line x1="0" y1="120" x2="600" y2="120"/>
+          <line x1="0" y1="160" x2="600" y2="160"/>
+        </g>
+        <line x1="0" y1="200" x2="600" y2="200" stroke="#94a3b8" stroke-width="1"/>
+        <!-- inflow -->
+        <g fill="#10b981">
+          <rect x="22" y="80.4" width="26" height="119.6" rx="4"/>
+          <rect x="122" y="64.8" width="26" height="135.2" rx="4"/>
+          <rect x="222" y="72.6" width="26" height="127.4" rx="4"/>
+          <rect x="322" y="50.5" width="26" height="149.5" rx="4"/>
+          <rect x="422" y="58.3" width="26" height="141.7" rx="4"/>
+          <rect x="522" y="38.8" width="26" height="161.2" rx="4"/>
+        </g>
+        <!-- outflow -->
+        <g fill="#cbd5e1">
+          <rect x="52" y="103.8" width="26" height="96.2" rx="4"/>
+          <rect x="152" y="94.7" width="26" height="105.3" rx="4"/>
+          <rect x="252" y="85.6" width="26" height="114.4" rx="4"/>
+          <rect x="352" y="97.3" width="26" height="102.7" rx="4"/>
+          <rect x="452" y="80.4" width="26" height="119.6" rx="4"/>
+          <rect x="552" y="89.5" width="26" height="110.5" rx="4"/>
+        </g>
+        <g font-size="12" fill="#64748b" text-anchor="middle" font-family="Inter, sans-serif">
+          <text x="50" y="222">Jun</text>
+          <text x="150" y="222">Jul</text>
+          <text x="250" y="222">Aug</text>
+          <text x="350" y="222">Sep</text>
+          <text x="450" y="222">Oct</text>
+          <text x="550" y="222">Nov</text>
+        </g>
+      </svg>
+    </section>
+
+    <!-- Upcoming payments -->
+    <section class="rounded-xl bg-white border border-slate-200 p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="font-semibold">Upcoming payments</h2>
+        <span class="text-xs text-slate-500">Next 14 days</span>
+      </div>
+      <ul class="divide-y divide-slate-100 mt-3">
+        <li class="flex items-center gap-3 py-3">
+          <div class="w-11 text-center rounded-lg bg-slate-100 py-1"><p class="text-[10px] uppercase text-slate-500">Nov</p><p class="font-semibold leading-none">24</p></div>
+          <div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">Payroll run</p><p class="text-xs text-slate-500">Bank transfer</p></div>
+          <p class="tnum text-sm font-semibold">$41,200</p>
+        </li>
+        <li class="flex items-center gap-3 py-3">
+          <div class="w-11 text-center rounded-lg bg-slate-100 py-1"><p class="text-[10px] uppercase text-slate-500">Nov</p><p class="font-semibold leading-none">26</p></div>
+          <div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">Office rent</p><p class="text-xs text-slate-500">Harbor Properties</p></div>
+          <p class="tnum text-sm font-semibold">$6,800</p>
+        </li>
+        <li class="flex items-center gap-3 py-3">
+          <div class="w-11 text-center rounded-lg bg-slate-100 py-1"><p class="text-[10px] uppercase text-slate-500">Dec</p><p class="font-semibold leading-none">01</p></div>
+          <div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">Cloud hosting</p><p class="text-xs text-slate-500">Card ending 4421</p></div>
+          <p class="tnum text-sm font-semibold">$1,240</p>
+        </li>
+        <li class="flex items-center gap-3 py-3">
+          <div class="w-11 text-center rounded-lg bg-slate-100 py-1"><p class="text-[10px] uppercase text-slate-500">Dec</p><p class="font-semibold leading-none">03</p></div>
+          <div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">Supplier: Acme Paper</p><p class="text-xs text-slate-500">Net 30 invoice</p></div>
+          <p class="tnum text-sm font-semibold">$3,575</p>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Recent transactions -->
+  <section class="rounded-xl bg-white border border-slate-200">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+      <h2 class="font-semibold">Recent transactions</h2>
+      <a href="#" class="text-sm text-emerald-700 font-medium hover:underline">View all</a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-5 py-2.5 font-medium">Date</th>
+            <th class="px-5 py-2.5 font-medium">Description</th>
+            <th class="px-5 py-2.5 font-medium hidden md:table-cell">Category</th>
+            <th class="px-5 py-2.5 font-medium">Status</th>
+            <th class="px-5 py-2.5 font-medium text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr>
+            <td class="px-5 py-3 text-slate-500 whitespace-nowrap">Nov 19</td>
+            <td class="px-5 py-3 font-medium">Client payment - Lumen Studio</td>
+            <td class="px-5 py-3 hidden md:table-cell text-slate-500">Revenue</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-xs font-medium">Cleared</span></td>
+            <td class="px-5 py-3 text-right tnum text-emerald-700 font-medium">+$9,400</td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3 text-slate-500 whitespace-nowrap">Nov 18</td>
+            <td class="px-5 py-3 font-medium">AWS invoice</td>
+            <td class="px-5 py-3 hidden md:table-cell text-slate-500">Software</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-xs font-medium">Cleared</span></td>
+            <td class="px-5 py-3 text-right tnum">-$1,240</td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3 text-slate-500 whitespace-nowrap">Nov 17</td>
+            <td class="px-5 py-3 font-medium">Client payment - Bluebird Cafe</td>
+            <td class="px-5 py-3 hidden md:table-cell text-slate-500">Revenue</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-amber-50 text-amber-700 px-2 py-0.5 text-xs font-medium">Pending</span></td>
+            <td class="px-5 py-3 text-right tnum text-emerald-700 font-medium">+$2,150</td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3 text-slate-500 whitespace-nowrap">Nov 15</td>
+            <td class="px-5 py-3 font-medium">Team lunch reimbursement</td>
+            <td class="px-5 py-3 hidden md:table-cell text-slate-500">Meals</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-red-50 text-red-700 px-2 py-0.5 text-xs font-medium">Flagged</span></td>
+            <td class="px-5 py-3 text-right tnum">-$286</td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3 text-slate-500 whitespace-nowrap">Nov 14</td>
+            <td class="px-5 py-3 font-medium">Client payment - Harbor Logistics</td>
+            <td class="px-5 py-3 hidden md:table-cell text-slate-500">Revenue</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-xs font-medium">Cleared</span></td>
+            <td class="px-5 py-3 text-right tnum text-emerald-700 font-medium">+$15,800</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

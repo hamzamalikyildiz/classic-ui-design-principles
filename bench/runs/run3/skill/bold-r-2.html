@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova X1 Wireless Headphones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { ink: '#0B0A09', ember: '#FF5A1F', bone: '#F4EFE6', smoke: '#A39E95', char: '#171513' },
+  fontFamily: { display: ['"Archivo Black"', 'sans-serif'], body: ['Inter', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] }
+} } };
+</script>
+<style>
+  body { background: #0B0A09; color: #F4EFE6; font-family: Inter, sans-serif; }
+  .stage { background: radial-gradient(ellipse at 70% 35%, rgba(255,90,31,.38), transparent 55%), #0B0A09; }
+  .outline { color: transparent; -webkit-text-stroke: 2px #FF5A1F; }
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .d1 { animation-delay: .1s; } .d2 { animation-delay: .25s; } .d3 { animation-delay: .4s; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body class="bg-ink text-bone">
+
+<header class="flex items-center justify-between px-6 lg:px-12 py-5">
+  <span class="font-display text-xl tracking-tight">NOVA<span class="text-ember">.</span></span>
+  <nav class="hidden md:flex gap-8 text-sm text-smoke">
+    <a href="#features" class="hover:text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember">Features</a>
+    <a href="#specs" class="hover:text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember">Specs</a>
+    <a href="#reviews" class="hover:text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember">Reviews</a>
+  </nav>
+  <a href="#preorder" class="bg-ember text-ink font-semibold text-sm px-4 py-2.5 rounded-lg min-h-[44px] inline-flex items-center">Pre-order</a>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="stage relative overflow-hidden px-6 lg:px-12 pt-8 pb-24 grid lg:grid-cols-2 gap-10 items-center">
+    <div>
+      <p class="rise font-mono text-xs uppercase tracking-[.2em] text-ember">Wireless ANC &middot; 42 h battery</p>
+      <h1 class="rise d1 font-display uppercase leading-[.86] mt-6 text-[clamp(64px,11vw,168px)]">
+        Hear<br>the <span class="outline">dark.</span>
+      </h1>
+      <p class="rise d2 mt-8 max-w-md text-lg text-smoke leading-relaxed">Adaptive noise cancelling that listens 400 times a second, and a 40 mm driver tuned in a Berlin studio. Nova X1 cuts the room and leaves the music.</p>
+      <div class="rise d3 mt-10 flex flex-wrap items-center gap-6">
+        <a href="#preorder" class="bg-ember text-ink font-semibold px-7 py-4 rounded-xl min-h-[44px] inline-flex items-center hover:brightness-110 active:scale-[.98] transition">Pre-order for $299</a>
+        <span class="text-sm text-smoke">Ships December 9</span>
+      </div>
+    </div>
+
+    <!-- Drawn product -->
+    <svg viewBox="0 0 400 400" class="rise d2 w-full max-w-[520px] mx-auto" aria-hidden="true">
+      <circle cx="200" cy="200" r="178" fill="none" stroke="#FF5A1F" stroke-opacity=".25" stroke-width="2"/>
+      <circle cx="200" cy="200" r="140" fill="none" stroke="#FF5A1F" stroke-opacity=".15" stroke-width="2"/>
+      <path d="M70 232 C70 84 330 84 330 232" fill="none" stroke="#F4EFE6" stroke-width="24" stroke-linecap="round"/>
+      <path d="M88 232 C88 108 312 108 312 232" fill="none" stroke="#FF5A1F" stroke-width="4"/>
+      <rect x="36" y="196" width="84" height="136" rx="36" fill="#F4EFE6"/>
+      <rect x="54" y="216" width="48" height="96" rx="24" fill="#0B0A09"/>
+      <circle cx="78" cy="264" r="8" fill="#FF5A1F"/>
+      <rect x="280" y="196" width="84" height="136" rx="36" fill="#F4EFE6"/>
+      <rect x="298" y="216" width="48" height="96" rx="24" fill="#0B0A09"/>
+      <circle cx="322" cy="264" r="8" fill="#FF5A1F"/>
+      <path d="M120 360 Q200 386 280 360" fill="none" stroke="#A39E95" stroke-width="2" stroke-dasharray="4 8"/>
+    </svg>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="px-6 lg:px-12 py-24 lg:py-32 bg-char">
+    <p class="font-mono text-xs uppercase tracking-[.2em] text-ember">01 / Features</p>
+    <h2 class="font-display uppercase text-[clamp(44px,6vw,88px)] leading-[.9] mt-4 max-w-3xl">Built to disappear.</h2>
+
+    <div class="mt-14 grid gap-5 md:grid-cols-3">
+      <article class="md:col-span-2 rounded-3xl bg-ink p-8 lg:p-10 shadow-lg shadow-black/40">
+        <h3 class="font-display text-3xl uppercase">Adaptive ANC</h3>
+        <p class="mt-3 text-smoke max-w-lg">Four microphones read the room every few milliseconds and retune the cancelling for the train, the flight or the open-plan office.</p>
+        <svg viewBox="0 0 480 96" class="mt-8 w-full h-24" aria-hidden="true">
+          <g fill="#FF5A1F">
+            <rect x="0" y="40" width="10" height="16" rx="5"/><rect x="18" y="28" width="10" height="40" rx="5"/><rect x="36" y="16" width="10" height="64" rx="5"/>
+            <rect x="54" y="30" width="10" height="36" rx="5"/><rect x="72" y="46" width="10" height="4" rx="2"/><rect x="90" y="44" width="10" height="8" rx="4"/>
+            <rect x="108" y="36" width="10" height="24" rx="5"/><rect x="126" y="22" width="10" height="52" rx="5"/><rect x="144" y="10" width="10" height="76" rx="5"/>
+            <rect x="162" y="26" width="10" height="44" rx="5"/><rect x="180" y="40" width="10" height="16" rx="5"/>
+          </g>
+          <g fill="#F4EFE6" fill-opacity=".35">
+            <rect x="216" y="42" width="10" height="12" rx="5"/><rect x="234" y="34" width="10" height="28" rx="5"/><rect x="252" y="42" width="10" height="12" rx="5"/>
+            <rect x="270" y="36" width="10" height="24" rx="5"/><rect x="288" y="44" width="10" height="8" rx="4"/><rect x="306" y="38" width="10" height="20" rx="5"/>
+            <rect x="324" y="44" width="10" height="8" rx="4"/><rect x="342" y="40" width="10" height="16" rx="5"/><rect x="360" y="44" width="10" height="8" rx="4"/>
+            <rect x="378" y="40" width="10" height="16" rx="5"/><rect x="396" y="44" width="10" height="8" rx="4"/><rect x="414" y="42" width="10" height="12" rx="5"/>
+            <rect x="432" y="44" width="10" height="8" rx="4"/><rect x="450" y="46" width="10" height="4" rx="2"/><rect x="468" y="46" width="10" height="4" rx="2"/>
+          </g>
+        </svg>
+        <p class="mt-2 font-mono text-xs text-smoke">Ember: cancelling on. Grey: ambient passthrough.</p>
+      </article>
+
+      <article class="rounded-3xl bg-ember text-ink p-8">
+        <p class="font-display text-[88px] leading-none">42</p>
+        <h3 class="font-semibold text-xl mt-2">hours of playback</h3>
+        <p class="mt-3 text-ink/80 text-sm">Ten minutes of charge gives five hours of listening.</p>
+      </article>
+
+      <article class="rounded-3xl bg-ink p-8">
+        <h3 class="font-display text-2xl uppercase">Two devices, one tap</h3>
+        <p class="mt-3 text-smoke max-w-prose">Laptop and phone stay connected at once. Switching is automatic when a call comes in.</p>
+      </article>
+
+      <article class="md:col-span-2 rounded-3xl bg-ink p-8 flex flex-col sm:flex-row gap-6 sm:items-center">
+        <p class="font-display text-6xl text-ember outline">40mm</p>
+        <div>
+          <h3 class="font-display text-2xl uppercase">Driver tuned by ear</h3>
+          <p class="mt-2 text-smoke max-w-prose">Graphene-coated diaphragm, measured against 212 reference recordings before it shipped.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Specs -->
+  <section id="specs" class="px-6 lg:px-12 py-24 lg:py-32">
+    <div class="grid lg:grid-cols-[1fr_1.2fr] gap-12">
+      <div>
+        <p class="font-mono text-xs uppercase tracking-[.2em] text-ember">02 / Specs</p>
+        <h2 class="font-display uppercase text-[clamp(44px,6vw,80px)] leading-[.9] mt-4">The numbers, plainly.</h2>
+        <p class="mt-6 text-smoke max-w-sm">Measured in our anechoic room. Figures are for firmware 2.4 and the standard tip set.</p>
+      </div>
+      <dl class="divide-y divide-white/10 border-y border-white/10">
+        <div class="py-5 grid grid-cols-2 gap-4"><dt class="text-smoke">Driver</dt><dd class="font-mono tabular-nums">40 mm graphene</dd></div>
+        <div class="py-5 grid grid-cols-2 gap-4"><dt class="text-smoke">Frequency response</dt><dd class="font-mono tabular-nums">5 Hz to 40 kHz</dd></div>
+        <div class="py-5 grid grid-cols-2 gap-4"><dt class="text-smoke">Noise cancelling</dt><dd class="font-mono tabular-nums">up to 42 dB</dd></div>
+        <div class="py-5 grid grid-cols-2 gap-4"><dt class="text-smoke">Bluetooth</dt><dd class="font-mono tabular-nums">5.4, multipoint</dd></div>
+        <div class="py-5 grid grid-cols-2 gap-4"><dt class="text-smoke">Weight</dt><dd class="font-mono tabular-nums">246 g</dd></div>
+        <div class="py-5 grid grid-cols-2 gap-4"><dt class="text-smoke">Charging</dt><dd class="font-mono tabular-nums">USB-C, 15 min = 5 h</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section id="reviews" class="px-6 lg:px-12 py-24 lg:py-32 bg-char">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+      <h2 class="font-display uppercase text-[clamp(44px,6vw,80px)] leading-[.9]">Listeners<br>say so.</h2>
+      <p class="font-display text-6xl text-ember">4.8<span class="text-2xl text-smoke"> / 5 from 1,942 reviews</span></p>
+    </div>
+    <div class="mt-14 grid gap-5 md:grid-cols-3">
+      <blockquote class="rounded-3xl bg-ink p-8">
+        <p class="text-ember tracking-widest" aria-label="5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
+        <p class="mt-4 text-lg leading-relaxed max-w-prose">The first pair that made my open-plan office feel quiet. The battery outlasts my week.</p>
+        <footer class="mt-6 text-sm text-smoke">Marco Lenz, studio engineer</footer>
+      </blockquote>
+      <blockquote class="rounded-3xl bg-ink p-8 md:-translate-y-6">
+        <p class="text-ember tracking-widest" aria-label="5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
+        <p class="mt-4 text-lg leading-relaxed max-w-prose">Bass is tight without sounding boomy. I stopped reaching for my old pair on long flights.</p>
+        <footer class="mt-6 text-sm text-smoke">Priya Raman, frequent flyer</footer>
+      </blockquote>
+      <blockquote class="rounded-3xl bg-ink p-8">
+        <p class="text-ember tracking-widest" aria-label="4 stars">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
+        <p class="mt-4 text-lg leading-relaxed max-w-prose">Multipoint just works. The case is a little large for a jacket pocket, but I forgive it.</p>
+        <footer class="mt-6 text-sm text-smoke">Jonas Veldt, commuter</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- Pre-order band -->
+  <section id="preorder" class="px-6 lg:px-12 py-24">
+    <div class="rounded-[32px] bg-ember text-ink p-10 lg:p-16 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
+      <div>
+        <h2 class="font-display uppercase text-[clamp(44px,6vw,88px)] leading-[.88]">Pre-order<br>Nova X1.</h2>
+        <p class="mt-5 max-w-md text-ink max-w-prose">Pre-orders close November 30. Early buyers get the midnight case free.</p>
+      </div>
+      <div class="flex flex-col gap-4 min-w-[240px]">
+        <p class="font-display text-5xl">$299</p>
+        <a href="#" class="bg-ink text-bone font-semibold px-7 py-4 rounded-xl min-h-[44px] inline-flex justify-center items-center hover:brightness-125 active:scale-[.98] transition">Pre-order now</a>
+        <p class="text-sm text-ink text-center">Free returns for 30 days</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="px-6 lg:px-12 py-10 border-t border-white/10 flex flex-col sm:flex-row gap-4 justify-between text-sm text-smoke">
+  <span class="font-display text-bone">NOVA<span class="text-ember">.</span></span>
+  <span>&copy; 2026 Nova Audio. Specs subject to change.</span>
+</footer>
+
+</body>
+</html>

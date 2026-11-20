@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracewise: Observability</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: {
+    sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+    mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+  } } } };
+</script>
+<style>
+  .rise { animation: rise 500ms ease-out both; }
+  .rise-2 { animation: rise 500ms 90ms ease-out both; }
+  .rise-3 { animation: rise 500ms 180ms ease-out both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .pulse { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) {
+    .rise, .rise-2, .rise-3, .pulse { animation: none; }
+  }
+</style>
+</head>
+<body class="min-h-screen bg-zinc-950 font-sans text-zinc-200 antialiased">
+
+<header class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 px-4 py-3 lg:px-6">
+  <div class="flex flex-wrap items-center gap-3">
+    <svg viewBox="0 0 24 24" class="h-6 w-6 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12h4l3-7 4 14 3-7h6"/></svg>
+    <h1 class="text-base font-semibold tracking-tight">Tracewise</h1>
+    <span class="rounded border border-zinc-800 px-2 py-0.5 font-mono text-xs text-zinc-400">prod-eu-west-1</span>
+    <span class="flex items-center gap-1.5 font-mono text-xs text-emerald-400"><span class="pulse h-1.5 w-1.5 rounded-full bg-emerald-400"></span>live</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <div class="flex rounded-md border border-zinc-800 p-0.5 font-mono text-xs" role="group" aria-label="Time range">
+      <button class="inline-flex min-h-9 items-center rounded px-2.5 text-zinc-400 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">1h</button>
+      <button class="inline-flex min-h-9 items-center rounded bg-zinc-800 px-2.5 text-zinc-100" aria-pressed="true">6h</button>
+      <button class="inline-flex min-h-9 items-center rounded px-2.5 text-zinc-400 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">24h</button>
+      <button class="inline-flex min-h-9 items-center rounded px-2.5 text-zinc-400 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">7d</button>
+    </div>
+    <button class="rounded-md bg-cyan-400 px-3 py-1.5 text-sm font-semibold text-zinc-950 hover:bg-cyan-300 active:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">Install SDK</button>
+  </div>
+</header>
+
+<div role="status" class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-amber-400/30 bg-amber-400/10 px-4 py-2 text-sm text-amber-100 lg:px-6">
+  <span class="rounded bg-amber-400 px-1.5 font-mono text-xs font-semibold text-zinc-950">WARN</span>
+  <span>payments-worker p99 above the 350 ms SLO for 6 min</span>
+  <a href="#services" class="font-medium text-amber-300 underline underline-offset-2">Open service</a>
+</div>
+
+<main class="p-4 lg:px-6">
+  <section class="rise grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Key metrics">
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+      <p class="text-xs text-zinc-400">p95 latency</p>
+      <p class="mt-1 font-mono text-2xl font-semibold tabular-nums">184<span class="text-sm font-normal text-zinc-400"> ms</span></p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-emerald-400">down 12 ms vs 1h</p>
+      <svg viewBox="0 0 100 24" class="mt-2 h-6 w-full text-cyan-400" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" points="0,16 12,14 25,18 37,12 50,10 62,13 75,7 87,9 100,6"/></svg>
+    </div>
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+      <p class="text-xs text-zinc-400">Error rate</p>
+      <p class="mt-1 font-mono text-2xl font-semibold tabular-nums">0.42<span class="text-sm font-normal text-zinc-400"> %</span></p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-amber-300">up 0.08 pts vs 1h</p>
+      <svg viewBox="0 0 100 24" class="mt-2 h-6 w-full text-amber-300" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" points="0,18 12,17 25,19 37,15 50,16 62,12 75,13 87,8 100,5"/></svg>
+    </div>
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+      <p class="text-xs text-zinc-400">Requests / s</p>
+      <p class="mt-1 font-mono text-2xl font-semibold tabular-nums">2,318</p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-zinc-400">up 4.1% vs 1h</p>
+      <svg viewBox="0 0 100 24" class="mt-2 h-6 w-full text-zinc-400" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" points="0,20 12,19 25,16 37,15 50,14 62,11 75,10 87,8 100,7"/></svg>
+    </div>
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+      <p class="text-xs text-zinc-400">SLO attainment, 30d</p>
+      <p class="mt-1 font-mono text-2xl font-semibold tabular-nums">99.93<span class="text-sm font-normal text-zinc-400"> %</span></p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-emerald-400">budget 61% left</p>
+      <svg viewBox="0 0 100 24" class="mt-2 h-6 w-full text-emerald-400" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" points="0,8 12,9 25,7 37,10 50,9 62,11 75,10 87,12 100,11"/></svg>
+    </div>
+  </section>
+
+  <section class="rise-2 mt-3 grid gap-3 lg:grid-cols-3">
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-4 lg:col-span-2">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-semibold">Latency, checkout-api</h2>
+        <ul class="flex flex-wrap gap-3 font-mono text-xs text-zinc-400" aria-label="Legend">
+          <li class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-zinc-400"></span>p50</li>
+          <li class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-cyan-400"></span>p95</li>
+          <li class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-rose-400"></span>p99</li>
+          <li class="flex items-center gap-1.5"><span class="w-4 border-t border-dashed border-amber-300"></span>SLO 250 ms</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 640 240" class="mt-3 w-full" role="img" aria-label="Latency lines for p50, p95 and p99 with a 250 ms SLO threshold">
+        <g stroke="#27272a" stroke-width="1">
+          <line x1="40" x2="620" y1="40" y2="40"/><line x1="40" x2="620" y1="85" y2="85"/>
+          <line x1="40" x2="620" y1="130" y2="130"/><line x1="40" x2="620" y1="175" y2="175"/>
+          <line x1="40" x2="620" y1="220" y2="220"/>
+        </g>
+        <g class="font-mono" font-size="10" fill="#a1a1aa">
+          <text x="4" y="44">400</text><text x="4" y="89">300</text><text x="4" y="134">200</text><text x="4" y="179">100</text>
+          <text x="40" y="236">14:00</text><text x="146" y="236">15:00</text><text x="252" y="236">16:00</text><text x="358" y="236">17:00</text><text x="464" y="236">18:00</text><text x="570" y="236">19:00</text>
+        </g>
+        <line x1="40" x2="620" y1="107.5" y2="107.5" stroke="#fcd34d" stroke-dasharray="6 4" stroke-width="1.25"/>
+        <line x1="252" x2="252" y1="20" y2="220" stroke="#a1a1aa" stroke-dasharray="2 3"/>
+        <text x="258" y="30" font-family="JetBrains Mono, monospace" font-size="10" fill="#e4e4e7">deploy 2.14.3 (16:00)</text>
+        <polyline fill="none" stroke="#a1a1aa" stroke-width="1.5" points="40,180 93,181 146,179 199,176 252,170 305,173 358,175 411,171 464,166 517,174 570,178 620,180"/>
+        <polyline fill="none" stroke="#22d3ee" stroke-width="2" points="40,138 93,141 146,135 199,128 252,108 305,116 358,121 411,112 464,99 517,118 570,131 620,137"/>
+        <polyline fill="none" stroke="#fb7185" stroke-width="1.5" points="40,80 93,83 146,72 199,63 252,39 305,49 358,58 411,45 464,27 517,54 570,72 620,77"/>
+        <circle cx="464" cy="99" r="3.5" fill="#22d3ee"/>
+        <text x="410" y="88" font-family="JetBrains Mono, monospace" font-size="10" fill="#e4e4e7">p95 268 ms</text>
+      </svg>
+    </div>
+
+    <div id="services" class="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold">Services</h2>
+        <span class="font-mono text-xs text-zinc-400">6 running</span>
+      </div>
+      <ul class="mt-3 divide-y divide-zinc-800 font-mono text-xs" role="list">
+        <li class="flex items-center gap-3 rounded border-l-2 border-cyan-400 bg-zinc-800 px-2 py-2">
+          <span class="h-2 w-2 rounded-full bg-emerald-400" role="img" aria-label="healthy"></span>
+          <span class="flex-1 text-zinc-100">checkout-api</span><span class="tabular-nums text-zinc-400">184 ms</span><span class="w-12 text-right tabular-nums">0.42%</span>
+        </li>
+        <li class="flex items-center gap-3 px-2 py-2">
+          <span class="h-2 w-2 rounded-full bg-amber-400" role="img" aria-label="warning"></span>
+          <span class="flex-1 text-zinc-300">payments-worker</span><span class="tabular-nums text-zinc-400">412 ms</span><span class="w-12 text-right tabular-nums text-amber-300">1.90%</span>
+        </li>
+        <li class="flex items-center gap-3 px-2 py-2">
+          <span class="h-2 w-2 rounded-full bg-rose-400" role="img" aria-label="critical"></span>
+          <span class="flex-1 text-zinc-300">notify-queue</span><span class="tabular-nums text-zinc-400">1.2 s</span><span class="w-12 text-right tabular-nums text-rose-300">4.70%</span>
+        </li>
+        <li class="flex items-center gap-3 px-2 py-2">
+          <span class="h-2 w-2 rounded-full bg-emerald-400" role="img" aria-label="healthy"></span>
+          <span class="flex-1 text-zinc-300">search-gateway</span><span class="tabular-nums text-zinc-400">96 ms</span><span class="w-12 text-right tabular-nums">0.08%</span>
+        </li>
+        <li class="flex items-center gap-3 px-2 py-2">
+          <span class="h-2 w-2 rounded-full bg-emerald-400" role="img" aria-label="healthy"></span>
+          <span class="flex-1 text-zinc-300">inventory-sync</span><span class="tabular-nums text-zinc-400">231 ms</span><span class="w-12 text-right tabular-nums">0.31%</span>
+        </li>
+        <li class="flex items-center gap-3 px-2 py-2">
+          <span class="h-2 w-2 rounded-full bg-emerald-400" role="img" aria-label="healthy"></span>
+          <span class="flex-1 text-zinc-300">auth-edge</span><span class="tabular-nums text-zinc-400">41 ms</span><span class="w-12 text-right tabular-nums">0.02%</span>
+        </li>
+      </ul>
+      <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-zinc-800 pt-4 font-mono text-xs">
+        <dt class="text-zinc-400">runtime</dt><dd class="text-right">node 20.11</dd>
+        <dt class="text-zinc-400">replicas</dt><dd class="text-right tabular-nums">6 / 6</dd>
+        <dt class="text-zinc-400">deploy</dt><dd class="text-right">3f9c1a2</dd>
+        <dt class="text-zinc-400">region</dt><dd class="text-right">eu-west-1</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="rise-3 mt-3 grid gap-3 lg:grid-cols-3">
+    <div class="flex min-h-0 flex-col rounded-md border border-zinc-800 bg-zinc-900 p-4 lg:col-span-2">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold">Live log tail</h2>
+        <button id="pause" class="rounded border border-zinc-700 px-2.5 py-1 font-mono text-xs text-zinc-300 hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">Pause</button>
+      </div>
+      <ol id="log" tabindex="0" aria-label="Live log, scrollable" class="mt-3 min-h-72 flex-1 overflow-y-auto font-mono text-xs tabular-nums focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400"></ol>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <div class="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+        <h2 class="text-sm font-semibold">Errors per minute</h2>
+        <svg id="bars" viewBox="0 0 240 64" class="mt-3 h-24 w-full" role="img" aria-label="Error rate bars for the last 24 minutes"></svg>
+        <p class="mt-2 font-mono text-xs text-zinc-400">last 24 min, peak 1.9% at 16:52</p>
+      </div>
+      <div class="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+        <h2 class="text-sm font-semibold">Install the SDK</h2>
+        <pre class="mt-3 overflow-x-auto rounded border border-zinc-800 bg-zinc-950 p-3 font-mono text-xs leading-relaxed text-zinc-300"><code><span class="text-zinc-400"># install</span>
+npm i @tracewise/sdk
+
+<span class="text-zinc-400">// instrument the service</span>
+<span class="text-cyan-300">import</span> { init } <span class="text-cyan-300">from</span> <span class="text-emerald-300">"@tracewise/sdk"</span>;
+init({
+  service: <span class="text-emerald-300">"checkout-api"</span>,
+  dsn: process.env.TRACEWISE_DSN,
+  sampleRate: <span class="text-amber-300">0.25</span>
+});</code></pre>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  const bars = document.getElementById('bars');
+  const errs = [0.2,0.3,0.2,0.4,0.3,0.5,0.4,0.6,0.5,0.8,0.7,0.9,1.1,0.9,1.4,1.2,1.6,1.9,1.5,1.1,0.8,0.7,0.6,0.5];
+  errs.forEach((v, i) => {
+    const h = Math.max(2, v * 30);
+    const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.setAttribute('x', i * 10 + 1); r.setAttribute('y', 64 - h);
+    r.setAttribute('width', 7); r.setAttribute('height', h); r.setAttribute('rx', 1);
+    r.setAttribute('fill', v >= 1 ? '#fb7185' : v >= 0.6 ? '#fcd34d' : '#3f3f46');
+    bars.appendChild(r);
+  });
+
+  const LV = { INFO: 'text-zinc-400', WARN: 'text-amber-300', ERROR: 'text-rose-300' };
+  const pool = [
+    ['INFO', 'checkout-api', 'POST /v2/orders 201 in 142ms trace=7f3a9c'],
+    ['INFO', 'search-gateway', 'GET /v1/search q="usb-c hub" 200 in 88ms'],
+    ['WARN', 'payments-worker', 'stripe retry 2/5 idempotency=pi_3Q8k1 after 503'],
+    ['ERROR', 'notify-queue', 'SMTP 421 4.7.0 rate limited, requeued job 88412'],
+    ['INFO', 'auth-edge', 'token verified sub=usr_58d2 in 6ms'],
+    ['INFO', 'inventory-sync', 'batch 1204 upserted 312 rows in 231ms'],
+    ['WARN', 'payments-worker', 'p99 350ms exceeded, slo_window=6m'],
+    ['ERROR', 'notify-queue', 'consumer timeout after 30s partition=3 lag=1842']
+  ];
+  const seed = [
+    ['14:21:03', 'INFO', 'checkout-api', 'POST /v2/orders 201 in 139ms trace=4b0e21'],
+    ['14:21:04', 'INFO', 'auth-edge', 'token verified sub=usr_11fa in 5ms'],
+    ['14:21:05', 'WARN', 'payments-worker', 'stripe retry 1/5 after 502 pi_3Q8h7'],
+    ['14:21:06', 'INFO', 'search-gateway', 'GET /v1/search q="monitor arm" 200 in 91ms'],
+    ['14:21:07', 'ERROR', 'notify-queue', 'SMTP 421 rate limited, requeued job 88409'],
+    ['14:21:08', 'INFO', 'inventory-sync', 'batch 1203 upserted 298 rows in 219ms'],
+    ['14:21:09', 'INFO', 'checkout-api', 'cache hit sku=KB-7712 ttl=60s'],
+    ['14:21:10', 'INFO', 'auth-edge', 'jwks refreshed keys=3 in 44ms'],
+    ['14:21:11', 'WARN', 'payments-worker', 'queue depth 412, scaling to 8 replicas'],
+    ['14:21:12', 'INFO', 'search-gateway', 'GET /v1/search q="ssd 2tb" 200 in 77ms'],
+    ['14:21:13', 'ERROR', 'checkout-api', 'card_declined code=insufficient_funds order=ord_9Q2'],
+    ['14:21:14', 'INFO', 'inventory-sync', 'webhook received source=erp evt=stock.update'],
+    ['14:21:15', 'WARN', 'payments-worker', 'p99 362ms above SLO, slo_window=6m'],
+    ['14:21:16', 'INFO', 'checkout-api', 'POST /v2/orders 201 in 151ms trace=9d12c7'],
+    ['14:21:17', 'ERROR', 'notify-queue', 'consumer timeout after 30s partition=3 lag=1620']
+  ];
+  const log = document.getElementById('log');
+  const row = ([t, lvl, svc, msg]) => {
+    const li = document.createElement('li');
+    li.className = 'grid grid-cols-[72px_52px_120px_1fr] gap-2 border-b border-zinc-800/70 py-1.5';
+    li.innerHTML = `<span class="text-zinc-400">${t}</span><span class="${LV[lvl]} font-semibold">${lvl}</span><span class="truncate text-cyan-300">${svc}</span><span class="truncate text-zinc-300">${msg}</span>`;
+    return li;
+  };
+  seed.forEach(r => log.appendChild(row(r)));
+
+  let tick = 0, timer = null;
+  const now = () => new Date().toTimeString().slice(0, 8);
+  const push = () => {
+    const [lvl, svc, msg] = pool[tick++ % pool.length];
+    log.appendChild(row([now(), lvl, svc, msg]));
+    while (log.children.length > 60) log.removeChild(log.firstChild);
+    log.scrollTop = log.scrollHeight;
+  };
+  const start = () => { timer = setInterval(push, 1800); };
+  const pause = document.getElementById('pause');
+  pause.addEventListener('click', () => {
+    if (timer) { clearInterval(timer); timer = null; pause.textContent = 'Resume'; }
+    else { start(); pause.textContent = 'Pause'; }
+  });
+  start();
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+{
+ "cift1": {
+  "orig": "cift7",
+  "skill": "B",
+  "mood": "trust",
+  "brief": "r",
+  "rep": "1"
+ },
+ "cift2": {
+  "orig": "cift20",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "m",
+  "rep": "2"
+ },
+ "cift3": {
+  "orig": "cift18",
+  "skill": "A",
+  "mood": "bold",
+  "brief": "r",
+  "rep": "2"
+ },
+ "cift4": {
+  "orig": "cift4",
+  "skill": "A",
+  "mood": "bold",
+  "brief": "m",
+  "rep": "2"
+ },
+ "cift5": {
+  "orig": "cift6",
+  "skill": "A",
+  "mood": "bold",
+  "brief": "m",
+  "rep": "1"
+ },
+ "cift6": {
+  "orig": "cift8",
+  "skill": "B",
+  "mood": "editorial",
+  "brief": "r",
+  "rep": "1"
+ },
+ "cift7": {
+  "orig": "cift12",
+  "skill": "B",
+  "mood": "trust",
+  "brief": "m",
+  "rep": "2"
+ },
+ "cift8": {
+  "orig": "cift5",
+  "skill": "B",
+  "mood": "playful",
+  "brief": "r",
+  "rep": "2"
+ },
+ "cift9": {
+  "orig": "cift17",
+  "skill": "A",
+  "mood": "playful",
+  "brief": "r",
+  "rep": "1"
+ },
+ "cift10": {
+  "orig": "cift2",
+  "skill": "A",
+  "mood": "technical",
+  "brief": "r",
+  "rep": "1"
+ },
+ "cift11": {
+  "orig": "cift14",
+  "skill": "A",
+  "mood": "technical",
+  "brief": "r",
+  "rep": "2"
+ },
+ "cift12": {
+  "orig": "cift3",
+  "skill": "A",
+  "mood": "bold",
+  "brief": "r",
+  "rep": "1"
+ },
+ "cift13": {
+  "orig": "cift10",
+  "skill": "B",
+  "mood": "technical",
+  "brief": "m",
+  "rep": "1"
+ },
+ "cift14": {
+  "orig": "cift9",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "r",
+  "rep": "2"
+ },
+ "cift15": {
+  "orig": "cift1",
+  "skill": "A",
+  "mood": "trust",
+  "brief": "r",
+  "rep": "2"
+ },
+ "cift16": {
+  "orig": "cift11",
+  "skill": "B",
+  "mood": "editorial",
+  "brief": "m",
+  "rep": "1"
+ },
+ "cift17": {
+  "orig": "cift13",
+  "skill": "A",
+  "mood": "trust",
+  "brief": "m",
+  "rep": "1"
+ },
+ "cift18": {
+  "orig": "cift19",
+  "skill": "B",
+  "mood": "playful",
+  "brief": "m",
+  "rep": "2"
+ },
+ "cift19": {
+  "orig": "cift15",
+  "skill": "B",
+  "mood": "playful",
+  "brief": "m",
+  "rep": "1"
+ },
+ "cift20": {
+  "orig": "cift16",
+  "skill": "A",
+  "mood": "technical",
+  "brief": "m",
+  "rep": "2"
+ }
+}

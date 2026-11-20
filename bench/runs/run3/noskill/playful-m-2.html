@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doodle Park - Draw, Animate, Play</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Nunito', sans-serif; background: #FFF8EC; color: #2D2A4A; }
+  .display { font-family: 'Baloo 2', cursive; }
+  .wiggle { animation: wiggle 3s ease-in-out infinite; transform-origin: center; }
+  .bob { animation: bob 4s ease-in-out infinite; }
+  .spin-slow { animation: spin 18s linear infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .tilt-a { transform: rotate(-2deg); }
+  .tilt-b { transform: rotate(2deg); }
+  .tilt-c { transform: rotate(-1deg); }
+</style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+<!-- Nav -->
+<header class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
+  <a href="#" class="flex items-center gap-2 display text-2xl font-extrabold text-violet-700">
+    <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+      <circle cx="18" cy="18" r="16" fill="#FF8A65"/>
+      <path d="M8 22 Q18 6 28 22" stroke="#FFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="13" cy="15" r="2.5" fill="#2D2A4A"/>
+      <circle cx="23" cy="15" r="2.5" fill="#2D2A4A"/>
+    </svg>
+    Doodle Park
+  </a>
+  <nav class="hidden sm:flex gap-6 font-bold text-violet-900">
+    <a href="#gallery" class="hover:text-pink-500">Gallery</a>
+    <a href="#features" class="hover:text-pink-500">Features</a>
+    <a href="#parents" class="hover:text-pink-500">For Parents</a>
+  </nav>
+  <a href="#" class="rounded-full bg-pink-500 text-white font-extrabold px-5 py-2 shadow-[0_4px_0_#B0245E] hover:translate-y-0.5 hover:shadow-[0_2px_0_#B0245E] transition">Start Drawing</a>
+</header>
+
+<!-- Hero -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-16 grid md:grid-cols-2 gap-10 items-center">
+  <div>
+    <p class="inline-block rounded-full bg-yellow-300 px-4 py-1 font-extrabold text-sm mb-4 tilt-c">Ages 3 to 9</p>
+    <h1 class="display text-5xl sm:text-6xl font-extrabold leading-tight text-violet-800">
+      Draw it. <span class="text-pink-500">Bring it to life.</span>
+    </h1>
+    <p class="mt-5 text-lg text-violet-900/80 max-w-md">
+      A safe little studio where kids sketch, paint and animate their own cartoons, then show them off in a gallery made for proud grown-ups.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-4">
+      <a href="#" class="rounded-full bg-violet-600 text-white font-extrabold px-7 py-3 shadow-[0_5px_0_#4C2A9E] hover:translate-y-0.5 hover:shadow-[0_3px_0_#4C2A9E] transition">Try it free</a>
+      <a href="#gallery" class="rounded-full bg-white text-violet-700 font-extrabold px-7 py-3 border-4 border-violet-200 hover:border-violet-400 transition">See the gallery</a>
+    </div>
+  </div>
+
+  <div class="relative h-[340px] sm:h-[400px]">
+    <!-- Canvas card -->
+    <div class="absolute inset-x-6 top-4 bottom-6 rounded-3xl bg-white shadow-xl border-4 border-violet-200 tilt-b overflow-hidden">
+      <svg viewBox="0 0 300 260" class="w-full h-full" aria-hidden="true">
+        <rect width="300" height="260" fill="#E8F7FF"/>
+        <circle cx="240" cy="50" r="28" fill="#FFD54F" class="spin-slow" style="transform-origin:240px 50px"/>
+        <path d="M30 210 Q90 150 150 210 T270 210 V260 H30Z" fill="#7BD389"/>
+        <path d="M40 60 Q60 35 85 58 Q105 35 125 60 Q105 75 85 70 Q62 78 40 60Z" fill="#FFFFFF"/>
+        <g class="bob">
+          <circle cx="150" cy="130" r="48" fill="#FF8A65"/>
+          <circle cx="132" cy="122" r="7" fill="#2D2A4A"/>
+          <circle cx="168" cy="122" r="7" fill="#2D2A4A"/>
+          <path d="M132 146 Q150 164 168 146" stroke="#2D2A4A" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <circle cx="118" cy="140" r="7" fill="#FF5C8A" opacity="0.6"/>
+          <circle cx="182" cy="140" r="7" fill="#FF5C8A" opacity="0.6"/>
+        </g>
+        <path d="M108 84 L120 102 M192 84 L180 102" stroke="#FF8A65" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+      <span class="absolute bottom-4 left-4 rounded-full bg-pink-500 text-white text-sm font-extrabold px-3 py-1">Lily's sun-bear</span>
+    </div>
+    <!-- Floating sticker -->
+    <div class="wiggle absolute -top-2 -right-1 sm:right-0 w-24 h-24 rounded-full bg-yellow-300 border-4 border-white shadow-lg flex items-center justify-center display font-extrabold text-violet-800 text-center leading-tight">
+      Press<br>Play!
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section id="gallery" class="bg-violet-100/60 py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <h2 class="display text-4xl font-extrabold text-violet-800 text-center">Fresh from the studio</h2>
+    <p class="text-center mt-2 text-violet-900/70">Hand-picked creations from kids around the world.</p>
+
+    <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6">
+      <!-- Card 1 -->
+      <figure class="tilt-a bg-white rounded-3xl p-4 shadow-md hover:-translate-y-1 transition">
+        <div class="rounded-2xl bg-sky-100 aspect-square flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 120 120" class="w-full h-full" aria-hidden="true">
+            <path d="M20 90 L60 30 L100 90Z" fill="#FFB74D"/>
+            <circle cx="88" cy="28" r="12" fill="#FFEB3B"/>
+            <rect x="0" y="90" width="120" height="30" fill="#66BB6A"/>
+          </svg>
+        </div>
+        <figcaption class="mt-3 font-extrabold text-violet-800">Mountain Rocket</figcaption>
+        <p class="text-sm text-violet-900/60">by Noah, age 6</p>
+      </figure>
+      <!-- Card 2 -->
+      <figure class="tilt-b bg-white rounded-3xl p-4 shadow-md hover:-translate-y-1 transition">
+        <div class="rounded-2xl bg-pink-100 aspect-square flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 120 120" class="w-full h-full" aria-hidden="true">
+            <circle cx="60" cy="60" r="34" fill="#F06292"/>
+            <circle cx="60" cy="60" r="20" fill="#FFCDD2"/>
+            <circle cx="60" cy="60" r="8" fill="#F06292"/>
+            <circle cx="30" cy="25" r="9" fill="#4DD0E1"/>
+            <circle cx="98" cy="96" r="7" fill="#AED581"/>
+          </svg>
+        </div>
+        <figcaption class="mt-3 font-extrabold text-violet-800">Bubble Flower</figcaption>
+        <p class="text-sm text-violet-900/60">by Mia, age 4</p>
+      </figure>
+      <!-- Card 3 -->
+      <figure class="tilt-c bg-white rounded-3xl p-4 shadow-md hover:-translate-y-1 transition">
+        <div class="rounded-2xl bg-yellow-100 aspect-square flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 120 120" class="w-full h-full" aria-hidden="true">
+            <rect x="20" y="30" width="80" height="60" rx="14" fill="#7E57C2"/>
+            <circle cx="46" cy="58" r="7" fill="#FFF"/>
+            <circle cx="74" cy="58" r="7" fill="#FFF"/>
+            <path d="M46 78 Q60 88 74 78" stroke="#FFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M60 30 V16" stroke="#7E57C2" stroke-width="5"/>
+            <circle cx="60" cy="12" r="5" fill="#FF5252"/>
+          </svg>
+        </div>
+        <figcaption class="mt-3 font-extrabold text-violet-800">Robot Pal</figcaption>
+        <p class="text-sm text-violet-900/60">by Aiden, age 7</p>
+      </figure>
+      <!-- Card 4 -->
+      <figure class="tilt-a bg-white rounded-3xl p-4 shadow-md hover:-translate-y-1 transition">
+        <div class="rounded-2xl bg-green-100 aspect-square flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 120 120" class="w-full h-full" aria-hidden="true">
+            <path d="M60 100 V60" stroke="#558B2F" stroke-width="6"/>
+            <circle cx="60" cy="45" r="28" fill="#43A047"/>
+            <circle cx="50" cy="40" r="5" fill="#FF7043"/>
+            <circle cx="72" cy="50" r="5" fill="#FF7043"/>
+            <rect x="20" y="98" width="80" height="10" rx="5" fill="#8D6E63"/>
+          </svg>
+        </div>
+        <figcaption class="mt-3 font-extrabold text-violet-800">Apple Tree</figcaption>
+        <p class="text-sm text-violet-900/60">by Zara, age 5</p>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+  <h2 class="display text-4xl font-extrabold text-violet-800 text-center">Three ways to play</h2>
+  <div class="mt-10 grid md:grid-cols-3 gap-6">
+    <article class="rounded-3xl bg-orange-100 p-7 border-4 border-white shadow-md">
+      <div class="w-14 h-14 rounded-2xl bg-orange-400 flex items-center justify-center mb-4">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M5 25 L8 17 L20 5 L25 10 L13 22Z" fill="#FFF"/></svg>
+      </div>
+      <h3 class="display text-2xl font-extrabold text-violet-800">Magic brushes</h3>
+      <p class="mt-2 text-violet-900/75">Glitter, bubbles and crayon textures that make every stroke feel special.</p>
+    </article>
+    <article class="rounded-3xl bg-sky-100 p-7 border-4 border-white shadow-md">
+      <div class="w-14 h-14 rounded-2xl bg-sky-500 flex items-center justify-center mb-4">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><polygon points="11,8 23,15 11,22" fill="#FFF"/></svg>
+      </div>
+      <h3 class="display text-2xl font-extrabold text-violet-800">One-tap animation</h3>
+      <p class="mt-2 text-violet-900/75">Drawings wiggle, hop and dance the moment a child taps play. No tutorials needed.</p>
+    </article>
+    <article class="rounded-3xl bg-pink-100 p-7 border-4 border-white shadow-md">
+      <div class="w-14 h-14 rounded-2xl bg-pink-500 flex items-center justify-center mb-4">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="9" fill="#FFF"/><circle cx="15" cy="15" r="4" fill="#FF4081"/></svg>
+      </div>
+      <h3 class="display text-2xl font-extrabold text-violet-800">Share the joy</h3>
+      <p class="mt-2 text-violet-900/75">Send creations to grandparents with a private link. Nothing goes public unless you say so.</p>
+    </article>
+  </div>
+</section>
+
+<!-- Parents -->
+<section id="parents" class="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+  <div class="rounded-[2.5rem] bg-violet-700 text-white p-8 sm:p-12 grid md:grid-cols-2 gap-8 items-center">
+    <div>
+      <p class="font-extrabold text-yellow-300">For parents</p>
+      <h2 class="display text-4xl font-extrabold mt-2">Built with care, kept simple</h2>
+      <ul class="mt-6 space-y-3 text-violet-100">
+        <li class="flex gap-3"><span class="text-yellow-300 font-black">&#10003;</span> No ads, no in-app purchases, no chat with strangers.</li>
+        <li class="flex gap-3"><span class="text-yellow-300 font-black">&#10003;</span> Screen time limits and a weekly activity summary.</li>
+        <li class="flex gap-3"><span class="text-yellow-300 font-black">&#10003;</span> Delete any drawing with one tap, anytime.</li>
+      </ul>
+      <a href="#" class="inline-block mt-8 rounded-full bg-yellow-300 text-violet-900 font-extrabold px-6 py-3 hover:bg-yellow-200 transition">Create a parent account</a>
+    </div>
+    <div class="flex justify-center">
+      <svg viewBox="0 0 200 200" class="w-56 h-56 bob" aria-hidden="true">
+        <circle cx="100" cy="100" r="88" fill="#4C2A9E"/>
+        <circle cx="100" cy="100" r="66" fill="#FFD54F"/>
+        <path d="M70 110 Q100 140 130 110" stroke="#2D2A4A" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <circle cx="80" cy="88" r="8" fill="#2D2A4A"/>
+        <circle cx="120" cy="88" r="8" fill="#2D2A4A"/>
+        <circle cx="62" cy="108" r="8" fill="#FF8A65" opacity="0.7"/>
+        <circle cx="138" cy="108" r="8" fill="#FF8A65" opacity="0.7"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer class="text-center text-sm text-violet-900/60 pb-10">
+  Doodle Park - made for little artists everywhere.
+</footer>
+
+</body>
+</html>

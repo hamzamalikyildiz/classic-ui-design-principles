@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline Ops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'] },
+      colors: { ink: '#09090b', panel: '#111114', line: '#26262c', accent: '#22d3ee' }
+    } }
+  };
+</script>
+<style>
+  body { background: #09090b; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise 500ms ease-out both; }
+  .d1 { animation-delay: 80ms; } .d2 { animation-delay: 160ms; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+  .sel { background: rgb(34 211 238 / 0.08); box-shadow: inset 2px 0 0 #22d3ee; }
+  .panel { background: #111114; border: 1px solid #26262c; border-radius: 8px; }
+  .tnum { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body class="font-sans text-zinc-200 antialiased min-h-screen bg-ink">
+<main class="max-w-[1400px] mx-auto px-4 lg:px-6 py-4 space-y-4">
+
+  <header class="rise flex flex-wrap items-center gap-3 border-b border-line pb-3">
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" aria-hidden="true"></span>
+      <h1 class="font-mono text-sm font-semibold">pipeline/ops-core</h1>
+      <span class="font-mono text-xs text-zinc-400 truncate">main &middot; 8f3a21c</span>
+    </div>
+    <div class="ml-auto flex gap-2">
+      <button class="h-9 px-3 rounded-md border border-line bg-zinc-900 font-mono text-xs text-zinc-300 hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">Env: all</button>
+      <button class="h-9 px-3 rounded-md bg-accent text-zinc-950 text-xs font-semibold hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">Trigger build</button>
+    </div>
+  </header>
+
+  <div role="alert" class="rise d1 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-rose-500/40 bg-rose-500/10 px-3 py-2 font-mono text-xs">
+    <span class="text-rose-400 font-semibold">CRITICAL</span>
+    <span class="text-zinc-200">deploy-prod 2026.11.21-2 failed health check in eu-west-1 (3/5 pods unready)</span>
+    <span class="ml-auto text-zinc-400 tnum">14:02 UTC</span>
+  </div>
+
+  <section class="rise d1 grid grid-cols-2 lg:grid-cols-4 gap-3" aria-label="Key metrics">
+    <div class="panel p-3">
+      <p class="font-mono text-[11px] uppercase tracking-wide text-zinc-400">Success rate 7d</p>
+      <p class="mt-1 text-2xl font-semibold tnum">94.2%</p>
+      <p class="font-mono text-xs text-emerald-400 tnum">&#9650; 1.8 pts vs prev</p>
+    </div>
+    <div class="panel p-3">
+      <p class="font-mono text-[11px] uppercase tracking-wide text-zinc-400">p50 build time</p>
+      <p class="mt-1 text-2xl font-semibold tnum">6m 42s</p>
+      <p class="font-mono text-xs text-emerald-400 tnum">&#9660; 38s vs prev</p>
+    </div>
+    <div class="panel p-3">
+      <p class="font-mono text-[11px] uppercase tracking-wide text-zinc-400">Deploys today</p>
+      <p class="mt-1 text-2xl font-semibold tnum">14</p>
+      <p class="font-mono text-xs text-rose-400 tnum">&#9650; 3 vs avg</p>
+    </div>
+    <div class="panel p-3">
+      <p class="font-mono text-[11px] uppercase tracking-wide text-zinc-400">Flaky tests</p>
+      <p class="mt-1 text-2xl font-semibold tnum">7</p>
+      <p class="font-mono text-xs text-rose-400 tnum">&#9650; 2 this week</p>
+    </div>
+  </section>
+
+  <section class="rise d2 grid gap-4 lg:grid-cols-3">
+    <div class="panel p-4 lg:col-span-2">
+      <div class="flex flex-wrap items-center gap-3 mb-3">
+        <h2 class="text-sm font-semibold">Build duration &middot; last 12 runs</h2>
+        <ul class="ml-auto flex gap-4 font-mono text-xs text-zinc-400">
+          <li class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-cyan-400" aria-hidden="true"></span>main</li>
+          <li class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-amber-400" aria-hidden="true"></span>pull requests</li>
+        </ul>
+      </div>
+      <svg id="chart" viewBox="0 0 640 200" class="w-full h-auto" role="img" aria-label="Build duration in minutes for main and pull request builds with an 8 minute SLO line"></svg>
+    </div>
+
+    <div class="panel p-4">
+      <h2 class="text-sm font-semibold mb-3">Flaky tests <span class="font-mono text-xs text-zinc-400 font-normal">fail rate 7d</span></h2>
+      <ul class="space-y-3 font-mono text-xs">
+        <li><div class="flex justify-between gap-2"><span class="truncate text-zinc-200">ws.reconnect.spec &rsaquo; backoff jitter</span><span class="tnum text-rose-400">18.4%</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-rose-400" style="width:92%"></div></div></li>
+        <li><div class="flex justify-between gap-2"><span class="truncate text-zinc-200">billing.proration.e2e &rsaquo; preview</span><span class="tnum text-amber-400">11.2%</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-amber-400" style="width:56%"></div></div></li>
+        <li><div class="flex justify-between gap-2"><span class="truncate text-zinc-200">search.facets.int &rsaquo; under load</span><span class="tnum text-amber-400">9.6%</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-amber-400" style="width:48%"></div></div></li>
+        <li><div class="flex justify-between gap-2"><span class="truncate text-zinc-200">auth.refresh.unit &rsaquo; concurrent</span><span class="tnum text-zinc-300">6.1%</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-zinc-400" style="width:31%"></div></div></li>
+        <li><div class="flex justify-between gap-2"><span class="truncate text-zinc-200">uploads.multipart &rsaquo; resume 503</span><span class="tnum text-zinc-300">4.8%</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-zinc-400" style="width:24%"></div></div></li>
+        <li><div class="flex justify-between gap-2"><span class="truncate text-zinc-200">notify.digest &rsaquo; tz boundary</span><span class="tnum text-zinc-300">3.3%</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-zinc-400" style="width:17%"></div></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="rise d2 grid gap-4 lg:grid-cols-3">
+    <div class="panel lg:col-span-2 overflow-hidden">
+      <div class="flex items-center justify-between px-4 h-11 border-b border-line">
+        <h2 class="text-sm font-semibold">Recent builds</h2>
+        <span class="font-mono text-xs text-zinc-400">select a row to inspect</span>
+      </div>
+      <ul id="builds" class="divide-y divide-line"></ul>
+    </div>
+
+    <div class="panel">
+      <div class="flex items-center justify-between px-4 h-11 border-b border-line">
+        <h2 class="text-sm font-semibold">Deploy history</h2>
+        <span class="font-mono text-xs text-zinc-400">prod + staging</span>
+      </div>
+      <ol class="divide-y divide-line font-mono text-xs">
+        <li class="grid grid-cols-[12px_1fr_auto] gap-3 items-center px-4 h-12"><span class="h-2 w-2 rounded-full bg-rose-400" aria-hidden="true"></span><span class="min-w-0"><span class="block truncate text-zinc-200">prod &middot; 2026.11.21-2</span><span class="text-zinc-400">rpatel &middot; health 3/5</span></span><span class="text-rose-400 tnum">14:02</span></li>
+        <li class="grid grid-cols-[12px_1fr_auto] gap-3 items-center px-4 h-12"><span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span><span class="min-w-0"><span class="block truncate text-zinc-200">prod &middot; 2026.11.21-1</span><span class="text-zinc-400">rpatel &middot; live</span></span><span class="text-zinc-300 tnum">11:18</span></li>
+        <li class="grid grid-cols-[12px_1fr_auto] gap-3 items-center px-4 h-12"><span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span><span class="min-w-0"><span class="block truncate text-zinc-200">staging &middot; 3.8.2-rc1</span><span class="text-zinc-400">hweber &middot; passed</span></span><span class="text-zinc-300 tnum">10:52</span></li>
+        <li class="grid grid-cols-[12px_1fr_auto] gap-3 items-center px-4 h-12"><span class="h-2 w-2 rounded-full bg-amber-400" aria-hidden="true"></span><span class="min-w-0"><span class="block truncate text-zinc-200">prod &middot; 2026.11.20-2</span><span class="text-zinc-400">kmoreau &middot; rolled back</span></span><span class="text-zinc-300 tnum">09:12</span></li>
+        <li class="grid grid-cols-[12px_1fr_auto] gap-3 items-center px-4 h-12"><span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span><span class="min-w-0"><span class="block truncate text-zinc-200">prod &middot; 2026.11.20-3</span><span class="text-zinc-400">amartin &middot; passed</span></span><span class="text-zinc-300 tnum">Nov 20</span></li>
+        <li class="grid grid-cols-[12px_1fr_auto] gap-3 items-center px-4 h-12"><span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span><span class="min-w-0"><span class="block truncate text-zinc-200">staging &middot; 3.8.1</span><span class="text-zinc-400">ljin &middot; passed</span></span><span class="text-zinc-300 tnum">Nov 20</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="rise d2 panel overflow-hidden">
+    <div class="flex flex-wrap items-center gap-2 px-4 h-11 border-b border-line">
+      <h2 id="log-title" class="font-mono text-xs font-semibold text-zinc-200 truncate"></h2>
+      <span class="ml-auto font-mono text-[11px] text-zinc-400">stdout &middot; utf-8 &middot; tail -f</span>
+    </div>
+    <div id="log" class="bg-ink font-mono text-xs leading-relaxed p-4 overflow-x-auto whitespace-pre min-h-[260px]"></div>
+  </section>
+
+</main>
+
+<script>
+  const builds = [
+    { id: '4821', br: 'main', sha: '8f3a21c', msg: 'fix(auth): refresh token race', st: 'passed', d: 412, by: 'hweber', ago: '4m' },
+    { id: '4820', br: 'feat/billing-v2', sha: 'b71e0d4', msg: 'feat(billing): proration preview', st: 'failed', d: 288, by: 'kmoreau', ago: '11m' },
+    { id: '4819', br: 'main', sha: '2c9d7f1', msg: 'chore(deps): bump undici 6.21', st: 'running', d: 199, by: 'renovate', ago: '14m' },
+    { id: '4818', br: 'release/3.8', sha: 'e40a9b2', msg: 'release: 3.8.2 candidate', st: 'passed', d: 527, by: 'rpatel', ago: '31m' },
+    { id: '4817', br: 'fix/ws-reconnect', sha: '5d1cf88', msg: 'fix(ws): backoff jitter', st: 'flaky', d: 463, by: 'ljin', ago: '44m' },
+    { id: '4816', br: 'main', sha: 'a0f42be', msg: 'perf(db): index on deploys.env', st: 'passed', d: 389, by: 'hweber', ago: '1h' },
+    { id: '4815', br: 'feat/search-facets', sha: '7bb3e61', msg: 'feat(search): facet counts', st: 'failed', d: 611, by: 'tnakamura', ago: '1h' },
+    { id: '4814', br: 'main', sha: 'c18e0aa', msg: 'docs: runbook for rollback', st: 'passed', d: 244, by: 'amartin', ago: '2h' }
+  ];
+  const mainSeries = [6.2, 6.8, 6.5, 7.9, 6.4, 6.1, 7.2, 8.9, 6.6, 6.3, 7.0, 6.9];
+  const prSeries   = [5.1, 5.4, 6.0, 5.8, 9.7, 6.2, 5.9, 6.4, 6.1, 5.6, 5.3, 5.7];
+  const stages = ['checkout', 'install deps', 'lint', 'unit tests', 'integration', 'e2e', 'build image', 'push registry'];
+  const dot = { passed: 'bg-emerald-400', failed: 'bg-rose-400', running: 'bg-cyan-400 animate-pulse', flaky: 'bg-amber-400' };
+  const txt = { passed: 'text-emerald-400', failed: 'text-rose-400', running: 'text-cyan-400', flaky: 'text-amber-400' };
+  let sel = '4820';
+
+  const fmt = s => `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
+
+  function drawChart() {
+    const W = 640, H = 200, L = 40, R = 12, T = 12, B = 28;
+    const xs = i => L + i * (W - L - R) / (mainSeries.length - 1);
+    const ys = v => T + (1 - v / 12) * (H - T - B);
+    const pts = s => s.map((v, i) => `${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(' ');
+    let g = '';
+    [0, 4, 8, 12].forEach(m => {
+      g += `<line x1="${L}" x2="${W - R}" y1="${ys(m)}" y2="${ys(m)}" stroke="#26262c"/>`;
+      g += `<text x="${L - 8}" y="${ys(m) + 4}" text-anchor="end" fill="#a1a1aa" font-size="11" font-family="JetBrains Mono">${m}m</text>`;
+    });
+    g += `<line x1="${L}" x2="${W - R}" y1="${ys(8)}" y2="${ys(8)}" stroke="#fb7185" stroke-dasharray="4 4"/>`;
+    g += `<text x="${W - R}" y="${ys(8) - 6}" text-anchor="end" fill="#fb7185" font-size="11" font-family="JetBrains Mono">SLO 8m</text>`;
+    g += `<polyline points="${pts(prSeries)}" fill="none" stroke="#fbbf24" stroke-width="1.5"/>`;
+    g += `<polyline points="${pts(mainSeries)}" fill="none" stroke="#22d3ee" stroke-width="2"/>`;
+    mainSeries.forEach((v, i) => {
+      if (i % 2 === 0) g += `<text x="${xs(i)}" y="${H - 8}" text-anchor="middle" fill="#a1a1aa" font-size="11" font-family="JetBrains Mono">#${4810 + i}</text>`;
+    });
+    g += `<circle cx="${xs(7)}" cy="${ys(8.9)}" r="3.5" fill="#22d3ee"/>`;
+    g += `<text x="${xs(7) - 8}" y="${ys(8.9) - 8}" text-anchor="end" fill="#e4e4e7" font-size="11" font-family="JetBrains Mono">#4817 +2.1m cache miss</text>`;
+    document.getElementById('chart').innerHTML = g;
+  }
+
+  function renderBuilds() {
+    document.getElementById('builds').innerHTML = builds.map(b => `
+      <li><button data-id="${b.id}" aria-pressed="${b.id === sel}" class="w-full grid grid-cols-[12px_56px_1fr_72px_56px_40px] sm:grid-cols-[12px_56px_1fr_72px_56px_40px] items-center gap-2 sm:gap-3 px-4 h-10 text-left font-mono text-xs hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${b.id === sel ? 'sel' : ''}">
+        <span class="h-2 w-2 rounded-full ${dot[b.st]}" aria-hidden="true"></span>
+        <span class="text-zinc-300 tnum">#${b.id}</span>
+        <span class="truncate text-zinc-400"><span class="text-zinc-200">${b.msg}</span> <span class="text-zinc-400">${b.br}</span></span>
+        <span class="${txt[b.st]} uppercase tracking-wide text-[11px]">${b.st}</span>
+        <span class="text-right tnum text-zinc-300">${fmt(b.d)}</span>
+        <span class="text-right tnum text-zinc-400">${b.ago}</span>
+      </button></li>`).join('');
+  }
+
+  function logFor(b) {
+    const fail = b.st === 'failed' ? 4 : -1;
+    const run = b.st === 'running' ? 5 : -1;
+    const stop = fail >= 0 ? fail : (run >= 0 ? run : stages.length - 1);
+    const lines = [`$ ci run #${b.id} --branch ${b.br} --sha ${b.sha}`, `runner gha-linux-07 · trigger ${b.by} · queued 3s`];
+    stages.forEach((s, i) => {
+      if (i > stop) return;
+      const sec = (((+b.id) * (i + 7) * 37) % 41 + 9) + 0.4;
+      if (i === run) lines.push(`[${s}] running...`);
+      else if (i === fail) lines.push(`[${s}] FAIL ${sec.toFixed(1)}s`, '  ERR 503 from ledger-svc:8080/v2/charges', '  retry 1/2 ... still failing');
+      else lines.push(`[${s}] ok ${sec.toFixed(1)}s`);
+    });
+    if (b.st !== 'running') lines.push('artifacts 3 uploaded · cache hit 71%', `total ${fmt(b.d)} · exit ${b.st === 'failed' ? 1 : 0}`, 'cleanup runner released');
+    return lines;
+  }
+
+  function show() {
+    const b = builds.find(x => x.id === sel);
+    document.getElementById('log-title').textContent = `build #${b.id} · ${b.br} · ${b.sha}`;
+    document.getElementById('log').innerHTML = logFor(b).map(line => {
+      const c = /FAIL|ERR|retry/.test(line) ? 'text-rose-400' : /\bok \d/.test(line) ? 'text-emerald-400' : /^\$/.test(line) ? 'text-cyan-300' : 'text-zinc-400';
+      return `<div class="${c}">${line}</div>`;
+    }).join('');
+  }
+
+  document.getElementById('builds').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-id]');
+    if (!btn) return;
+    sel = btn.dataset.id;
+    renderBuilds();
+    show();
+  });
+
+  drawChart();
+  renderBuilds();
+  show();
+</script>
+</body>
+</html>

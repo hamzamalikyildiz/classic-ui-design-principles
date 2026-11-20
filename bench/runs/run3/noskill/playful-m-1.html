@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doodle Pals - Draw, Animate, Play</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Nunito', sans-serif; background: #fff9ef; color: #2d2a4a; }
+  h1, h2, h3, .display { font-family: 'Fredoka', sans-serif; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(0px); }
+  .wiggle { animation: wiggle 3s ease-in-out infinite; }
+  .bob { animation: bob 4s ease-in-out infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .card-tilt:hover { transform: rotate(-2deg) scale(1.03); }
+  .card-tilt { transition: transform .25s ease; }
+</style>
+</head>
+<body class="overflow-x-hidden">
+
+<!-- Nav -->
+<header class="relative z-20">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+    <a href="#" class="display flex items-center gap-2 text-2xl font-bold text-indigo-700">
+      <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+        <circle cx="18" cy="18" r="16" fill="#ff7a59"/>
+        <circle cx="13" cy="15" r="3" fill="#fff"/><circle cx="23" cy="15" r="3" fill="#fff"/>
+        <path d="M11 23 Q18 30 25 23" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+      Doodle Pals
+    </a>
+    <div class="hidden gap-6 font-bold text-indigo-900 md:flex">
+      <a href="#gallery" class="hover:text-pink-500">Gallery</a>
+      <a href="#features" class="hover:text-pink-500">Features</a>
+      <a href="#parents" class="hover:text-pink-500">For Parents</a>
+    </div>
+    <a href="#" class="rounded-full bg-pink-500 px-5 py-2 font-extrabold text-white shadow-lg shadow-pink-300 hover:bg-pink-600">Start Drawing</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="relative overflow-hidden">
+  <div class="blob -left-16 top-10 h-64 w-64 bg-yellow-200 opacity-70"></div>
+  <div class="blob right-0 top-0 h-80 w-80 bg-sky-200 opacity-70"></div>
+  <div class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-6 md:grid-cols-2">
+    <div>
+      <p class="mb-3 inline-block rounded-full bg-white px-4 py-1 text-sm font-extrabold text-pink-500 shadow">Ages 3 to 9</p>
+      <h1 class="text-5xl font-bold leading-tight text-indigo-900 md:text-6xl">Draw it. <span class="text-pink-500">Bring it</span> to life!</h1>
+      <p class="mt-5 max-w-md text-lg text-indigo-800/80">Little artists sketch, paint and animate their own characters, then share them in a gallery made just for kids.</p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#" class="rounded-full bg-indigo-600 px-7 py-3 font-extrabold text-white shadow-xl shadow-indigo-300 hover:bg-indigo-700">Let's Draw!</a>
+        <a href="#gallery" class="rounded-full border-2 border-indigo-600 px-7 py-3 font-extrabold text-indigo-700 hover:bg-indigo-50">See the Gallery</a>
+      </div>
+    </div>
+    <!-- Hero illustration: inline SVG -->
+    <div class="relative mx-auto h-80 w-80 bob">
+      <svg viewBox="0 0 320 320" class="h-full w-full" aria-hidden="true">
+        <rect x="30" y="40" width="260" height="200" rx="24" fill="#fff" stroke="#2d2a4a" stroke-width="6"/>
+        <rect x="46" y="56" width="228" height="168" rx="12" fill="#e8f7ff"/>
+        <path d="M60 210 Q110 150 160 200 T270 180 L270 224 L60 224 Z" fill="#8fd694"/>
+        <circle cx="240" cy="95" r="22" fill="#ffd166"/>
+        <g class="wiggle" style="transform-origin:160px 130px">
+          <circle cx="160" cy="130" r="42" fill="#ff7a9c" stroke="#2d2a4a" stroke-width="5"/>
+          <circle cx="146" cy="122" r="6" fill="#2d2a4a"/><circle cx="174" cy="122" r="6" fill="#2d2a4a"/>
+          <path d="M146 142 Q160 156 174 142" stroke="#2d2a4a" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </g>
+        <path d="M108 200 L92 250 M212 200 L228 250" stroke="#2d2a4a" stroke-width="6" stroke-linecap="round"/>
+        <path d="M250 262 l10 -26 l10 26 l-26 -14 h32 z" fill="#7c5cff" opacity="0"/>
+        <circle cx="62" cy="268" r="10" fill="#ff7a59"/><circle cx="90" cy="282" r="7" fill="#7c5cff"/>
+        <circle cx="270" cy="278" r="9" fill="#ffd166"/>
+      </svg>
+      <span class="absolute -right-2 top-4 rotate-12 rounded-2xl bg-yellow-300 px-3 py-1 font-bold text-indigo-900 shadow-lg">Wow!</span>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section id="gallery" class="mx-auto max-w-6xl px-4 py-16">
+  <div class="mb-10 text-center">
+    <h2 class="text-4xl font-bold text-indigo-900">Made by Kids, Loved by Everyone</h2>
+    <p class="mt-2 text-indigo-800/70">A peek at this week's creations</p>
+  </div>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <figure class="card-tilt rounded-3xl bg-white p-4 shadow-lg">
+      <div class="flex h-40 items-end justify-center overflow-hidden rounded-2xl bg-sky-100">
+        <div class="mb-0 h-0 w-0 border-x-[40px] border-b-[70px] border-x-transparent border-b-rose-400"></div>
+      </div>
+      <figcaption class="mt-3 font-bold">Rocket Ride <span class="text-sm font-normal text-indigo-700/60">by Mia, 6</span></figcaption>
+    </figure>
+    <figure class="card-tilt rounded-3xl bg-white p-4 shadow-lg">
+      <div class="flex h-40 items-center justify-center overflow-hidden rounded-2xl bg-yellow-100">
+        <div class="h-24 w-24 rounded-full bg-orange-400 shadow-inner"></div>
+      </div>
+      <figcaption class="mt-3 font-bold">Sunny Day <span class="text-sm font-normal text-indigo-700/60">by Leo, 5</span></figcaption>
+    </figure>
+    <figure class="card-tilt rounded-3xl bg-white p-4 shadow-lg">
+      <div class="flex h-40 items-center justify-center gap-2 overflow-hidden rounded-2xl bg-green-100">
+        <div class="h-16 w-6 rounded-full bg-green-600"></div>
+        <div class="h-24 w-6 rounded-full bg-green-500"></div>
+        <div class="h-12 w-6 rounded-full bg-green-700"></div>
+      </div>
+      <figcaption class="mt-3 font-bold">Dino Park <span class="text-sm font-normal text-indigo-700/60">by Ava, 7</span></figcaption>
+    </figure>
+    <figure class="card-tilt rounded-3xl bg-white p-4 shadow-lg">
+      <div class="flex h-40 items-center justify-center overflow-hidden rounded-2xl bg-purple-100">
+        <svg viewBox="0 0 100 100" class="h-28 w-28" aria-hidden="true">
+          <polygon points="50,8 61,38 93,38 67,57 77,88 50,70 23,88 33,57 7,38 39,38" fill="#7c5cff"/>
+        </svg>
+      </div>
+      <figcaption class="mt-3 font-bold">Star Friend <span class="text-sm font-normal text-indigo-700/60">by Noah, 4</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="bg-white py-16">
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="mb-12 text-center text-4xl font-bold text-indigo-900">Three Ways to Play</h2>
+    <div class="grid gap-8 md:grid-cols-3">
+      <div class="rounded-3xl bg-pink-50 p-8 text-center">
+        <div class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-pink-400 text-4xl">&#9998;</div>
+        <h3 class="mb-2 text-2xl font-bold text-indigo-900">Magic Brushes</h3>
+        <p class="text-indigo-800/75">Crayons, glitter, and paint that splash. Every stroke feels like real art.</p>
+      </div>
+      <div class="rounded-3xl bg-sky-50 p-8 text-center">
+        <div class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-sky-400 text-4xl">&#9654;</div>
+        <h3 class="mb-2 text-2xl font-bold text-indigo-900">One-Tap Animation</h3>
+        <p class="text-indigo-800/75">Drawings wiggle, hop and dance with a single tap. No tech skills needed.</p>
+      </div>
+      <div class="rounded-3xl bg-yellow-50 p-8 text-center">
+        <div class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-yellow-400 text-4xl">&#9733;</div>
+        <h3 class="mb-2 text-2xl font-bold text-indigo-900">Sticker Stories</h3>
+        <p class="text-indigo-800/75">Add stickers, sounds and backgrounds to build a tiny story for anyone to enjoy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Parents -->
+<section id="parents" class="mx-auto max-w-6xl px-4 py-16">
+  <div class="grid items-center gap-10 rounded-[2.5rem] bg-indigo-700 p-10 text-white md:grid-cols-2 md:p-14">
+    <div>
+      <p class="mb-2 font-extrabold uppercase tracking-widest text-yellow-300">For Parents</p>
+      <h2 class="mb-4 text-4xl font-bold">Safe, calm and ad-free</h2>
+      <ul class="space-y-3 text-indigo-100">
+        <li>&#10003; No ads, no in-app purchases, no chat with strangers</li>
+        <li>&#10003; Set daily play limits with a simple slider</li>
+        <li>&#10003; Save and export every creation to your device</li>
+      </ul>
+      <a href="#" class="mt-8 inline-block rounded-full bg-yellow-300 px-7 py-3 font-extrabold text-indigo-900 hover:bg-yellow-200">Create a Parent Account</a>
+    </div>
+    <div class="flex justify-center">
+      <svg viewBox="0 0 240 240" class="h-60 w-60" aria-hidden="true">
+        <rect x="50" y="30" width="140" height="180" rx="22" fill="#fff"/>
+        <rect x="64" y="50" width="112" height="120" rx="10" fill="#fdf2f8"/>
+        <circle cx="120" cy="110" r="26" fill="#ff7a9c"/>
+        <circle cx="111" cy="106" r="4" fill="#2d2a4a"/><circle cx="129" cy="106" r="4" fill="#2d2a4a"/>
+        <path d="M110 118 Q120 127 130 118" stroke="#2d2a4a" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <rect x="84" y="188" width="72" height="8" rx="4" fill="#c7d2fe"/>
+        <circle cx="200" cy="50" r="14" fill="#ffd166"/>
+        <circle cx="30" cy="180" r="10" fill="#8fd694"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-indigo-950 py-10 text-center text-indigo-200">
+  <p class="display text-2xl font-bold text-white">Doodle Pals</p>
+  <p class="mt-2 text-sm">Made for curious minds. &copy; 2026</p>
+  <div class="mt-4 flex justify-center gap-6 text-sm">
+    <a href="#" class="hover:text-white">Privacy</a>
+    <a href="#" class="hover:text-white">Terms</a>
+    <a href="#" class="hover:text-white">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>

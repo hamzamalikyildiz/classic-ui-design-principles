@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blistered Tomatoes, Burnt Honey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Playfair Display"', 'Georgia', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        },
+        colors: {
+          paper: '#f6f1e7',
+          ink: '#1d1a16',
+          tomato: '#c8452c',
+          basil: '#3e5b3a',
+          honey: '#d9962b',
+          sand: '#e8dcc6'
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #f6f1e7; color: #1d1a16; }
+  .dropcap::first-letter {
+    font-family: 'Playfair Display', Georgia, serif;
+    float: left; font-size: 4.2rem; line-height: .9;
+    padding: .4rem .6rem 0 0; color: #c8452c; font-weight: 800;
+  }
+</style>
+</head>
+<body class="font-sans antialiased">
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+
+  <!-- Masthead -->
+  <header class="border-b border-ink pb-4 flex justify-between items-baseline text-[11px] uppercase tracking-[.18em] font-semibold">
+    <span>The Kitchen Quarterly</span>
+    <span class="text-tomato">Issue 14 &middot; Summer</span>
+  </header>
+
+  <!-- Headline -->
+  <section class="pt-10">
+    <p class="text-tomato text-xs font-semibold uppercase tracking-[.2em]">Recipe &amp; Essay</p>
+    <h1 class="font-display font-extrabold text-4xl sm:text-6xl leading-[1.02] mt-4">
+      Blistered Tomatoes, <em class="font-medium text-tomato">Burnt Honey</em>
+    </h1>
+    <p class="font-display italic text-xl sm:text-2xl text-ink/75 mt-5 leading-snug">
+      On the one week of the year when tomatoes taste like they should, and how to keep it going.
+    </p>
+    <p class="text-sm mt-6 text-ink/70">By Elena Marsh &middot; Illustrated in SVG &middot; 35 min &middot; Serves 4</p>
+  </section>
+
+  <!-- Hero illustration (inline SVG, no web images) -->
+  <figure class="mt-10">
+    <div class="rounded-sm bg-sand overflow-hidden">
+      <svg viewBox="0 0 640 360" class="w-full h-auto block" role="img" aria-label="Plate of blistered tomatoes drizzled with honey">
+        <rect width="640" height="360" fill="#e8dcc6"/>
+        <circle cx="320" cy="200" r="150" fill="#f6f1e7" stroke="#1d1a16" stroke-width="2"/>
+        <circle cx="320" cy="200" r="118" fill="none" stroke="#1d1a16" stroke-opacity=".25"/>
+        <g>
+          <circle cx="262" cy="170" r="40" fill="#c8452c"/>
+          <circle cx="262" cy="170" r="40" fill="none" stroke="#7a2416" stroke-width="3"/>
+          <circle cx="362" cy="175" r="46" fill="#d9523a"/>
+          <circle cx="330" cy="240" r="38" fill="#c8452c"/>
+          <circle cx="250" cy="238" r="32" fill="#e0664a"/>
+          <circle cx="395" cy="232" r="30" fill="#b53a24"/>
+          <path d="M262 136 q6 -14 14 -10 q-4 6 -14 10z" fill="#3e5b3a"/>
+          <path d="M362 130 q8 -14 18 -8 q-6 8 -18 8z" fill="#3e5b3a"/>
+          <path d="M330 198 q6 -12 14 -8 q-4 6 -14 8z" fill="#3e5b3a"/>
+        </g>
+        <path d="M200 205 C 240 190, 280 225, 320 205 S 400 185, 440 210" fill="none" stroke="#d9962b" stroke-width="7" stroke-linecap="round"/>
+        <path d="M210 150 l0 0" stroke="#d9962b" stroke-width="0"/>
+        <circle cx="90" cy="70" r="16" fill="#3e5b3a"/>
+        <circle cx="550" cy="300" r="22" fill="#d9962b"/>
+        <rect x="496" y="36" width="92" height="22" fill="#1d1a16"/>
+        <text x="542" y="51" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#f6f1e7" letter-spacing="2">PLATE 01</text>
+      </svg>
+    </div>
+    <figcaption class="text-xs text-ink/60 mt-3 italic">Illustration: four tomatoes, one drizzle, no garnish needed.</figcaption>
+  </figure>
+
+  <!-- Intro essay -->
+  <article class="mt-12 space-y-6 text-lg leading-relaxed text-ink/90">
+    <p class="dropcap">Every summer there is a window, roughly seven days long, when a tomato stops being a tomato and starts being a memory of one. The skin tightens, the sugar comes up through the flesh, and the whole thing smells faintly of vine. Most of us spend the rest of the year chasing that smell in the supermarket and coming back with something mealy and pale.</p>
+    <p>This recipe is an argument for not overthinking the window. Blister the fruit in a hot pan until the skins split and char in places. Then pour over honey that has been cooked until it turns the colour of an old church window and tastes faintly of toast. The contrast does most of the work: sharp acid, deep caramel, and a salt that wakes everything up.</p>
+    <p>It is also a dish that asks very little of you. You will need one pan, one bowl, and the patience to leave the fruit alone long enough for it to catch. That last part is harder than it sounds, and it is the whole secret.</p>
+  </article>
+
+  <!-- Pull quote -->
+  <aside class="my-14 border-y border-tomato py-8 px-2 sm:px-8">
+    <blockquote class="font-display italic text-2xl sm:text-3xl leading-snug text-center text-ink">
+      &ldquo;Leave the tomatoes alone. The char is not a mistake; it is the flavour arriving.&rdquo;
+    </blockquote>
+    <p class="text-center text-xs uppercase tracking-[.2em] mt-5 text-ink/60">Elena Marsh, on pan discipline</p>
+  </aside>
+
+  <!-- Ingredients -->
+  <section class="grid sm:grid-cols-5 gap-8">
+    <div class="sm:col-span-2">
+      <h2 class="font-display font-extrabold text-3xl">Ingredients</h2>
+      <p class="text-sm text-ink/70 mt-3">Serves four as a starter, or two as a light lunch with bread.</p>
+    </div>
+    <ul class="sm:col-span-3 divide-y divide-ink/20 border-t border-ink">
+      <li class="flex justify-between gap-4 py-3"><span>Ripe tomatoes, mixed sizes</span><span class="text-ink/70 whitespace-nowrap">900 g</span></li>
+      <li class="flex justify-between gap-4 py-3"><span>Runny honey, preferably wildflower</span><span class="text-ink/70 whitespace-nowrap">3 tbsp</span></li>
+      <li class="flex justify-between gap-4 py-3"><span>Olive oil, good and fruity</span><span class="text-ink/70 whitespace-nowrap">2 tbsp</span></li>
+      <li class="flex justify-between gap-4 py-3"><span>Sherry vinegar</span><span class="text-ink/70 whitespace-nowrap">1 tbsp</span></li>
+      <li class="flex justify-between gap-4 py-3"><span>Flaky sea salt</span><span class="text-ink/70 whitespace-nowrap">1 tsp</span></li>
+      <li class="flex justify-between gap-4 py-3"><span>Fresh basil leaves, torn</span><span class="text-ink/70 whitespace-nowrap">a handful</span></li>
+      <li class="flex justify-between gap-4 py-3"><span>Stale sourdough, to serve</span><span class="text-ink/70 whitespace-nowrap">4 slices</span></li>
+    </ul>
+  </section>
+
+  <!-- Method -->
+  <section class="mt-16">
+    <h2 class="font-display font-extrabold text-3xl">Method</h2>
+    <ol class="mt-6 space-y-7">
+      <li class="grid grid-cols-[3rem_1fr] gap-3">
+        <span class="font-display font-extrabold text-4xl text-tomato leading-none">1</span>
+        <p class="leading-relaxed">Halve the larger tomatoes and leave the small ones whole. Season the cut faces with a pinch of salt and let them sit on a tea towel for ten minutes to drain.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-3">
+        <span class="font-display font-extrabold text-4xl text-tomato leading-none">2</span>
+        <p class="leading-relaxed">Heat a heavy pan over high heat until it is nearly smoking. Add the oil, then the tomatoes, cut side down, in a single layer. Do not move them.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-3">
+        <span class="font-display font-extrabold text-4xl text-tomato leading-none">3</span>
+        <p class="leading-relaxed">Cook for four to five minutes, until the skins split and the bottoms are deeply blistered. Turn once, briefly, then move everything to a warm plate.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-3">
+        <span class="font-display font-extrabold text-4xl text-tomato leading-none">4</span>
+        <p class="leading-relaxed">Lower the heat to medium. Add the honey and let it bubble for about a minute, until it darkens to amber and smells of toast. Splash in the vinegar and take the pan off the heat.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-3">
+        <span class="font-display font-extrabold text-4xl text-tomato leading-none">5</span>
+        <p class="leading-relaxed">Toast the bread in the same pan, in the honey and tomato juices. Lay the slices on plates, pile the tomatoes on top, spoon over the pan sauce, and finish with basil and sea salt.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Related recipes -->
+  <section class="mt-20 border-t border-ink pt-8">
+    <div class="flex items-baseline justify-between">
+      <h2 class="font-display font-extrabold text-2xl">Keep Cooking</h2>
+      <a href="#" class="text-xs uppercase tracking-[.18em] font-semibold text-tomato hover:underline">All recipes</a>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-6 mt-6">
+      <a href="#" class="group block">
+        <div class="h-36 rounded-sm bg-gradient-to-br from-honey to-tomato relative overflow-hidden">
+          <div class="absolute -right-4 -bottom-6 w-24 h-24 rounded-full bg-paper/40"></div>
+        </div>
+        <h3 class="font-display font-bold text-lg mt-4 group-hover:text-tomato">Charred Leeks, Brown Butter</h3>
+        <p class="text-sm text-ink/65 mt-1">20 min &middot; Serves 4</p>
+      </a>
+      <a href="#" class="group block">
+        <div class="h-36 rounded-sm bg-gradient-to-br from-basil to-[#7c9a6b] relative overflow-hidden">
+          <div class="absolute left-6 top-6 w-14 h-14 rounded-full bg-paper/50"></div>
+        </div>
+        <h3 class="font-display font-bold text-lg mt-4 group-hover:text-tomato">Green Herb Panzanella</h3>
+        <p class="text-sm text-ink/65 mt-1">25 min &middot; Serves 4</p>
+      </a>
+      <a href="#" class="group block">
+        <div class="h-36 rounded-sm bg-gradient-to-br from-[#7a2416] to-ink relative overflow-hidden">
+          <div class="absolute right-6 top-8 w-20 h-3 bg-honey rounded-full"></div>
+        </div>
+        <h3 class="font-display font-bold text-lg mt-4 group-hover:text-tomato">Sherry Vinegar Plums</h3>
+        <p class="text-sm text-ink/65 mt-1">40 min &middot; Makes 1 jar</p>
+      </a>
+    </div>
+  </section>
+
+  <footer class="mt-16 border-t border-ink pt-4 text-xs text-ink/60 flex justify-between">
+    <span>The Kitchen Quarterly</span>
+    <span>Recipe tested in a small kitchen</span>
+  </footer>
+
+</main>
+</body>
+</html>

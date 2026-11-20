@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charred Tomato Panzanella, Slowly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#F6F0E4',
+          ink: '#241C16',
+          tomato: '#B2432A',
+          olive: '#5E6B3B',
+          mustard: '#E0A93B',
+          muted: '#6B5E52'
+        },
+        fontFamily: {
+          display: ['Fraunces', 'Georgia', 'serif'],
+          body: ['"Source Serif 4"', 'Georgia', 'serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #F6F0E4; color: #241C16; font-family: "Source Serif 4", Georgia, serif; }
+  .drop-cap::first-letter { font-family: Fraunces, Georgia, serif; float: left; font-size: 4.6rem; line-height: .9; padding: .35rem .6rem 0 0; color: #B2432A; font-weight: 800; }
+  .fade-up { animation: fadeUp .6s ease-out both; }
+  .fade-up-2 { animation: fadeUp .6s .12s ease-out both; }
+  .fade-up-3 { animation: fadeUp .6s .24s ease-out both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade-up, .fade-up-2, .fade-up-3 { animation: none; } }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="border-b border-ink/20">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-4 flex items-center justify-between text-sm">
+    <p class="font-display text-xl font-semibold tracking-tight">The Hearth Quarterly</p>
+    <nav aria-label="Sections" class="hidden sm:flex gap-6 text-muted">
+      <a href="#" class="hover:text-tomato focus-visible:outline focus-visible:outline-2 focus-visible:outline-tomato">Cooking</a>
+      <a href="#" class="hover:text-tomato focus-visible:outline focus-visible:outline-2 focus-visible:outline-tomato">Gardens</a>
+      <a href="#" class="hover:text-tomato focus-visible:outline focus-visible:outline-2 focus-visible:outline-tomato">Markets</a>
+      <a href="#" class="hover:text-tomato focus-visible:outline focus-visible:outline-2 focus-visible:outline-tomato">Letters</a>
+    </nav>
+    <time datetime="2026-08-14" class="text-muted">14 August 2026</time>
+  </div>
+</header>
+
+<main>
+  <article class="mx-auto max-w-5xl px-4 sm:px-6 pt-14 pb-16">
+    <p class="fade-up text-sm uppercase tracking-[0.18em] text-tomato font-semibold">Summer Recipes</p>
+    <h1 class="fade-up-2 font-display font-semibold text-5xl sm:text-7xl leading-[1.02] tracking-tight mt-4 max-w-4xl">Charred Tomato Panzanella, Made Slowly</h1>
+    <p class="fade-up-3 font-display text-xl sm:text-2xl leading-relaxed text-muted mt-6 max-w-prose">A bread salad is only as good as the weeks you spent waiting for the tomatoes. Here is how to stretch the wait into dinner.</p>
+
+    <div class="flex items-center gap-3 mt-8 text-sm text-muted">
+      <svg class="w-10 h-10 rounded-full" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#E0A93B"/><circle cx="20" cy="16" r="6" fill="#241C16"/><path d="M8 36c2-7 7-10 12-10s10 3 12 10" fill="#241C16"/></svg>
+      <p>By <span class="text-ink font-semibold">Marisol Vance</span>, kitchen notes from a farm stand in the Hudson Valley</p>
+    </div>
+
+    <div class="grid lg:grid-cols-[minmax(0,65ch)_280px] gap-12 mt-14">
+      <div>
+        <figure class="mb-12">
+          <svg viewBox="0 0 640 360" class="w-full h-auto rounded-sm" role="img" aria-labelledby="fig1">
+            <title id="fig1">Line drawing of tomatoes on a board with a bread heel</title>
+            <rect width="640" height="360" fill="#EBE1CE"/>
+            <ellipse cx="320" cy="300" rx="260" ry="26" fill="#D8C7A8"/>
+            <circle cx="220" cy="210" r="78" fill="#B2432A"/>
+            <circle cx="210" cy="198" r="22" fill="#D96A4C" opacity=".6"/>
+            <path d="M220 132 q10 -22 26 -24" stroke="#5E6B3B" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <circle cx="352" cy="232" r="60" fill="#C4553A"/>
+            <circle cx="342" cy="220" r="16" fill="#E38A6E" opacity=".6"/>
+            <path d="M352 176 q6 -18 20 -20" stroke="#5E6B3B" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <rect x="430" y="150" width="170" height="92" rx="46" fill="#D9B98A" transform="rotate(-8 515 196)"/>
+            <rect x="440" y="160" width="150" height="72" rx="36" fill="#CDA772" transform="rotate(-8 515 196)"/>
+            <path d="M120 300 h400" stroke="#241C16" stroke-width="2" opacity=".2"/>
+          </svg>
+          <figcaption class="text-sm text-muted mt-3">Heirloom tomatoes, picked the same morning. Ripeness matters more than variety.</figcaption>
+        </figure>
+
+        <div class="drop-cap max-w-prose text-lg leading-[1.75] space-y-6">
+          <p>Every August my neighbour sends a crate of misshapen tomatoes over the fence with a note that says only "too many." That crate is the reason this salad exists. The fruit is split, sun-blistered and sweeter than anything you can buy in a supermarket, and it wants to be eaten the same day.</p>
+          <p>The trick is heat. A hot cast-iron pan turns the cut faces dark and sticky in about four minutes, and that char carries the sugar, smoke and a little bitterness that cuts through the bread. Do not rush it. The pan should hiss, not sizzle.</p>
+          <p>Stale bread is not a failure here; it is the point. Torn sourdough soaks up the tomato juice and vinegar and turns soft in the middle while the crust stays firm enough to bite. Give it fifteen minutes, then toss again just before serving so nothing goes limp.</p>
+        </div>
+
+        <blockquote class="my-14 border-l-4 border-tomato pl-6">
+          <p class="font-display text-3xl sm:text-4xl leading-snug text-ink">"The bread should drink the tomato, not drown in it."</p>
+          <footer class="text-sm text-muted mt-4">Marisol Vance, on the second pan</footer>
+        </blockquote>
+
+        <section aria-labelledby="ingredients" class="mt-4">
+          <h2 id="ingredients" class="font-display text-3xl font-semibold">What you need</h2>
+          <p class="text-muted mt-2">Serves four as a main, or six as a starter.</p>
+          <ul class="mt-6 divide-y divide-ink/15 border-y border-ink/15">
+            <li class="flex justify-between py-3"><span>Ripe heirloom tomatoes, mixed</span><span class="tabular-nums text-muted">900 g</span></li>
+            <li class="flex justify-between py-3"><span>Sourdough, a day old, torn</span><span class="tabular-nums text-muted">250 g</span></li>
+            <li class="flex justify-between py-3"><span>Red wine vinegar</span><span class="tabular-nums text-muted">3 tbsp</span></li>
+            <li class="flex justify-between py-3"><span>Extra-virgin olive oil, peppery</span><span class="tabular-nums text-muted">90 ml</span></li>
+            <li class="flex justify-between py-3"><span>Red onion, thinly sliced</span><span class="tabular-nums text-muted">1 small</span></li>
+            <li class="flex justify-between py-3"><span>Capers, drained</span><span class="tabular-nums text-muted">2 tbsp</span></li>
+            <li class="flex justify-between py-3"><span>Basil leaves and flaky salt</span><span class="tabular-nums text-muted">1 handful</span></li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="method" class="mt-16">
+          <h2 id="method" class="font-display text-3xl font-semibold">Method</h2>
+          <ol class="mt-6 max-w-prose space-y-7 text-lg leading-[1.7]">
+            <li class="grid grid-cols-[2.5rem_1fr] gap-2"><span class="font-display text-3xl font-semibold text-tomato leading-none">1</span><p>Heat a cast-iron pan until a drop of water skitters. Halve the largest tomatoes and set them cut-side down. Leave them alone for four minutes.</p></li>
+            <li class="grid grid-cols-[2.5rem_1fr] gap-2"><span class="font-display text-3xl font-semibold text-tomato leading-none">2</span><p>Turn the tomatoes and char the skins for one minute more. Tip the lot into a bowl with every juice from the board.</p></li>
+            <li class="grid grid-cols-[2.5rem_1fr] gap-2"><span class="font-display text-3xl font-semibold text-tomato leading-none">3</span><p>Fry the torn bread in the same pan with two tablespoons of oil until the edges are gold, about three minutes. Toss it straight into the tomato juice.</p></li>
+            <li class="grid grid-cols-[2.5rem_1fr] gap-2"><span class="font-display text-3xl font-semibold text-tomato leading-none">4</span><p>Whisk the vinegar with the remaining oil and a pinch of salt. Pour over, add the onion and capers, and let it stand for fifteen minutes.</p></li>
+            <li class="grid grid-cols-[2.5rem_1fr] gap-2"><span class="font-display text-3xl font-semibold text-tomato leading-none">5</span><p>Fold in the basil with your hands, not a spoon, and finish with flaky salt. Serve at once, while the bread still has some chew.</p></li>
+          </ol>
+        </section>
+      </div>
+
+      <aside aria-labelledby="facts" class="lg:sticky lg:top-8 self-start space-y-10">
+        <div class="border-t-2 border-tomato pt-5">
+          <h2 id="facts" class="text-sm uppercase tracking-[0.16em] font-semibold">At a glance</h2>
+          <dl class="mt-4 space-y-4">
+            <div><dt class="text-sm text-muted">Time</dt><dd class="font-display text-3xl font-semibold tabular-nums">35 min</dd></div>
+            <div><dt class="text-sm text-muted">Difficulty</dt><dd class="text-lg">Easy, with patience</dd></div>
+            <div><dt class="text-sm text-muted">Best tomatoes</dt><dd class="text-lg">Late July to early September</dd></div>
+          </dl>
+        </div>
+
+        <div class="bg-olive/10 rounded-sm p-6">
+          <p class="font-display text-5xl font-semibold text-olive tabular-nums">41%</p>
+          <p class="text-sm text-ink/80 mt-2 max-w-prose">Of the flavour in a ripe tomato sits in its juice. Keep every drop when you tip the pan.</p>
+        </div>
+
+        <div>
+          <h2 class="text-sm uppercase tracking-[0.16em] font-semibold">Keep reading</h2>
+          <ul class="mt-4 space-y-4 text-base">
+            <li><a href="#" class="underline decoration-tomato/50 underline-offset-4 hover:decoration-tomato">Why the best tomatoes are ugly</a></li>
+            <li><a href="#" class="underline decoration-tomato/50 underline-offset-4 hover:decoration-tomato">A week of bread, from dough to crumb</a></li>
+            <li><a href="#" class="underline decoration-tomato/50 underline-offset-4 hover:decoration-tomato">Vinegar, a short history</a></li>
+          </ul>
+        </div>
+
+        <figure>
+          <svg viewBox="0 0 280 200" class="w-full h-auto" role="img" aria-labelledby="fig2">
+            <title id="fig2">Bar chart of tomato season by month, peaking in August</title>
+            <g font-family="Source Serif 4, Georgia, serif" font-size="11" fill="#6B5E52">
+              <rect x="20" y="130" width="18" height="10" fill="#D8C7A8"/><text x="20" y="160">Jun</text>
+              <rect x="60" y="92" width="18" height="48" fill="#C4553A"/><text x="60" y="160">Jul</text>
+              <rect x="100" y="34" width="18" height="106" fill="#B2432A"/><text x="100" y="160">Aug</text>
+              <rect x="140" y="62" width="18" height="78" fill="#C4553A"/><text x="140" y="160">Sep</text>
+              <rect x="180" y="118" width="18" height="22" fill="#D8C7A8"/><text x="180" y="160">Oct</text>
+              <line x1="16" y1="140" x2="212" y2="140" stroke="#241C16" stroke-opacity=".3"/>
+            </g>
+            <text x="20" y="24" font-family="Source Serif 4, Georgia, serif" font-size="12" fill="#241C16">Peak season, by month</text>
+          </svg>
+          <figcaption class="text-sm text-muted mt-3">Home-grown tomatoes peak in August. Supermarket fruit rarely tastes like this in any month.</figcaption>
+        </figure>
+
+        <div class="border-t border-ink/15 pt-5">
+          <h2 class="text-sm uppercase tracking-[0.16em] font-semibold">No heirlooms? Substitute</h2>
+          <dl class="mt-4 space-y-4 text-base">
+            <div><dt class="font-semibold">Cherry tomatoes</dt><dd class="text-muted">Halve and char the same way; they cook faster, so watch the pan.</dd></div>
+            <div><dt class="font-semibold">Sherry vinegar</dt><dd class="text-muted">Softer than red wine vinegar and a good stand-in if the salad tastes sharp.</dd></div>
+            <div><dt class="font-semibold">Stale baguette</dt><dd class="text-muted">Use the heel end; the crumb holds its shape better than a loaf.</dd></div>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  <section aria-labelledby="related" class="bg-[#EBE1CE]">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-16">
+      <h2 id="related" class="font-display text-3xl font-semibold">Related recipes</h2>
+      <div class="mt-8 grid gap-6 sm:grid-cols-3">
+        <a href="#" class="group block bg-paper p-5 rounded-sm hover:-translate-y-1 transition-transform">
+          <svg viewBox="0 0 200 120" class="w-full h-28" aria-hidden="true"><rect width="200" height="120" fill="#E0A93B" opacity=".25"/><circle cx="100" cy="64" r="36" fill="#E0A93B"/><path d="M40 100h120" stroke="#241C16" stroke-width="3" opacity=".3"/></svg>
+          <h3 class="font-display text-xl font-semibold mt-4 group-hover:text-tomato">Corn, Chilli and Lime Fritters</h3>
+          <p class="text-sm text-muted mt-2">25 minutes, serves four</p>
+        </a>
+        <a href="#" class="group block bg-paper p-5 rounded-sm hover:-translate-y-1 transition-transform">
+          <svg viewBox="0 0 200 120" class="w-full h-28" aria-hidden="true"><rect width="200" height="120" fill="#5E6B3B" opacity=".2"/><path d="M30 90 Q100 10 170 90" stroke="#5E6B3B" stroke-width="10" fill="none"/></svg>
+          <h3 class="font-display text-xl font-semibold mt-4 group-hover:text-tomato">Green Bean and Anchovy Toast</h3>
+          <p class="text-sm text-muted mt-2">15 minutes, serves two</p>
+        </a>
+        <a href="#" class="group block bg-paper p-5 rounded-sm hover:-translate-y-1 transition-transform">
+          <svg viewBox="0 0 200 120" class="w-full h-28" aria-hidden="true"><rect width="200" height="120" fill="#B2432A" opacity=".15"/><rect x="50" y="36" width="100" height="56" rx="28" fill="#B2432A"/></svg>
+          <h3 class="font-display text-xl font-semibold mt-4 group-hover:text-tomato">Peach and Burrata on Rye</h3>
+          <p class="text-sm text-muted mt-2">10 minutes, serves four</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="letters" class="bg-ink text-paper">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-16 grid gap-8 md:grid-cols-2 md:items-end">
+      <div>
+        <h2 id="letters" class="font-display text-4xl font-semibold leading-tight">Letters from the kitchen, once a month</h2>
+        <p class="text-paper/75 mt-4 max-w-prose">Recipes that survive a bad week, notes from growers, and the odd crate of tomatoes.</p>
+      </div>
+      <form class="flex flex-col sm:flex-row gap-3" action="#" onsubmit="return false">
+        <label class="sr-only" for="email">Email address</label>
+        <input id="email" type="email" placeholder="you@example.com" class="flex-1 bg-paper/10 border border-paper/30 rounded-sm px-4 py-3 placeholder:text-paper/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-mustard">
+        <button type="submit" class="bg-mustard text-ink font-semibold px-6 py-3 rounded-sm hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="mx-auto max-w-5xl px-4 sm:px-6 py-8 text-sm text-muted">
+  <p class="max-w-prose">The Hearth Quarterly, printed in small batches. Recipes tested twice in two kitchens.</p>
+</footer>
+
+</body>
+</html>

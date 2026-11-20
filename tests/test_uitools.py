@@ -226,6 +226,16 @@ class Character(unittest.TestCase):
         self.assertEqual(rules(run(color), 'grey-chart'), [])
         self.assertEqual(rules(run(skeleton), 'grey-chart'), [])
 
+    def test_stock_look(self):
+        stock = '<a className="bg-indigo-600 text-white h-12">Go</a><span className="text-indigo-600">x</span>'
+        subject = '<a className="bg-emerald-700 text-white h-12">Go</a>'
+        custom = '<script>tailwind.config = { theme: { extend: { colors: { brand: "#123" } } } }</script>' + stock
+        display = '<link href="https://fonts.googleapis.com/css2?family=Fraunces&display=swap">' + stock
+        self.assertTrue(rules(run(stock), 'stock-look'))
+        self.assertEqual(rules(run(subject), 'stock-look'), [])
+        self.assertEqual(rules(run(custom), 'stock-look'), [])
+        self.assertEqual(rules(run(display), 'stock-look'), [])
+
     def test_mood_hero_surface_and_color(self):
         sterile = '<section className="p-8 bg-white"><h1 className="text-slate-900">x</h1><a className="bg-violet-600 h-12">Go</a></section>'
         lively = '<section className="p-8 bg-gradient-to-br from-violet-500 to-amber-400"><h1>x</h1></section><p className="text-sky-700">y</p>'

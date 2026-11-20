@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quiet Return of the Paper Map</title>
+<meta name="description" content="Why folding maps are back in the glovebox, the cafe table and the classroom, and what the revival says about how we look for our way.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: { paper: '#F6F1E7', ink: '#1d1b17', rust: '#A23B24', ochre: '#E0B45A', night: '#1f2a24', mist: '#5c564b', rule: '#d8cfbd' },
+    fontFamily: { display: ['"Playfair Display"', 'Georgia', 'serif'], body: ['"Source Serif 4"', 'Georgia', 'serif'] }
+  } }
+};
+</script>
+<style>
+  body { background: #F6F1E7; color: #1d1b17; }
+  .drop-cap::first-letter { float: left; font-family: "Playfair Display", Georgia, serif; font-weight: 700; font-size: 4.4rem; line-height: .85; padding: .3rem .6rem 0 0; color: #A23B24; }
+  .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .rise-2 { animation-delay: .12s; }
+  .rise-3 { animation-delay: .24s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<header class="border-b border-rule">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="flex items-center justify-between py-3 text-xs uppercase tracking-[0.18em] text-mist">
+      <span>Thursday, 19 November 2026</span>
+      <span>Vol. 14 · No. 3</span>
+    </div>
+    <div class="py-6 text-center">
+      <p class="font-display text-4xl sm:text-5xl font-extrabold tracking-tight">The Long Survey</p>
+    </div>
+    <nav aria-label="Sections" class="flex flex-wrap justify-center gap-x-7 gap-y-2 border-t border-rule py-3 text-sm">
+      <a href="#" class="font-semibold text-rust underline underline-offset-4">Features</a>
+      <a href="#" class="hover:text-rust focus-visible:text-rust">Design</a>
+      <a href="#" class="hover:text-rust focus-visible:text-rust">Travel</a>
+      <a href="#" class="hover:text-rust focus-visible:text-rust">Science</a>
+      <a href="#" class="hover:text-rust focus-visible:text-rust">Letters</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 pt-14 pb-10">
+    <p class="rise text-sm font-semibold uppercase tracking-[0.2em] text-rust">Features &middot; Cartography</p>
+    <h1 class="rise rise-2 mt-4 font-display text-[2.75rem] sm:text-6xl font-bold leading-[1.05] tracking-tight">The Quiet Return of the Paper Map</h1>
+    <p class="rise rise-3 mt-6 max-w-prose font-body text-xl sm:text-2xl leading-relaxed text-mist">Phones promised to make the printed map obsolete. Instead, folding maps are back in glove boxes, cafe tables and classrooms, and the people buying them say the reason is less about navigation than about attention.</p>
+
+    <div class="rise rise-3 mt-8 flex items-center gap-4 border-y border-rule py-4">
+      <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="24" fill="#A23B24"/>
+        <circle cx="24" cy="19" r="7" fill="#F6F1E7"/>
+        <path d="M11 40c3-7 8-10 13-10s10 3 13 10" fill="#F6F1E7"/>
+      </svg>
+      <div class="text-sm leading-snug">
+        <p class="font-semibold text-ink">By Hanna Brandt</p>
+        <p class="text-mist">Photographs by the author &middot; 12 min read</p>
+      </div>
+    </div>
+  </section>
+
+  <figure class="mx-auto max-w-5xl px-4 sm:px-6">
+    <svg viewBox="0 0 1000 520" class="w-full h-auto rounded-sm" role="img" aria-labelledby="fig-title fig-desc">
+      <title id="fig-title">Illustrated folding map of a coastal valley</title>
+      <desc id="fig-desc">A paper map with contour lines, a river, a dashed rust route and a compass rose.</desc>
+      <rect width="1000" height="520" fill="#EFE7D6"/>
+      <g fill="none" stroke="#c9bda5" stroke-width="1.5">
+        <path d="M0 90 C180 60 300 120 470 95 S760 40 1000 80"/>
+        <path d="M0 160 C200 130 330 190 500 165 S780 120 1000 150"/>
+        <path d="M0 300 C160 270 300 330 480 300 S760 250 1000 290"/>
+        <path d="M0 380 C220 350 340 410 520 380 S800 340 1000 370"/>
+        <path d="M0 450 C170 430 330 480 520 452 S820 420 1000 445"/>
+      </g>
+      <path d="M560 0 C540 90 600 150 575 240 S520 360 560 520" fill="none" stroke="#7fa3ad" stroke-width="10" stroke-linecap="round" opacity=".8"/>
+      <path d="M120 430 C250 390 300 330 420 260 S640 170 790 120 S900 90 930 60" fill="none" stroke="#A23B24" stroke-width="4" stroke-dasharray="14 10" stroke-linecap="round"/>
+      <circle cx="120" cy="430" r="11" fill="#1f2a24"/>
+      <circle cx="930" cy="60" r="11" fill="#A23B24"/>
+      <circle cx="930" cy="60" r="22" fill="none" stroke="#A23B24" stroke-width="2"/>
+      <text x="142" y="470" font-family="Source Serif 4, Georgia, serif" font-size="22" fill="#1d1b17">Harbour Inn</text>
+      <text x="740" y="40" font-family="Source Serif 4, Georgia, serif" font-size="22" fill="#A23B24">Summit Hut</text>
+      <g transform="translate(860 430)" fill="none" stroke="#1d1b17" stroke-width="2">
+        <circle r="46"/>
+        <path d="M0 -58 L8 0 L0 58 L-8 0 Z" fill="#1d1b17"/>
+        <path d="M-58 0 L0 8 L58 0 L0 -8 Z" fill="none"/>
+        <text x="-6" y="-64" font-family="Source Serif 4, Georgia, serif" font-size="20" fill="#1d1b17" stroke="none">N</text>
+      </g>
+    </svg>
+    <figcaption class="mt-3 max-w-prose text-sm leading-relaxed text-mist">
+      <span class="font-semibold text-ink">Figure 1.</span> A folded survey sheet of the Kerry valley, redrawn for this issue. The dashed line is a walking route that the author tested with a phone, a compass and the paper sheet, in that order.
+    </figcaption>
+  </figure>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 pt-14 pb-16 lg:grid lg:grid-cols-[minmax(0,65ch)_280px] lg:gap-12">
+    <article class="max-w-prose font-body text-[1.1875rem] leading-[1.75] text-ink">
+      <p class="drop-cap">Every hiker has a story about a phone that died at the wrong moment. The battery went first, then the signal, then the blue dot that had been the only thing between a valley road and a long walk home. Paper never needed charging, and for about a decade it looked like a relic that nobody would miss.</p>
+      <p class="mt-6">Then the sales started climbing again. Publishers of regional survey sheets reported reprints selling out in spring, and independent shops began stacking folded maps beside the candles and notebooks. Nobody ran a campaign. The change arrived the way most habits do, one person showing a friend how the sheet opens across a table.</p>
+
+      <h2 class="mt-12 font-body text-2xl font-semibold leading-tight">What the screen hides</h2>
+      <p class="mt-5">A phone map answers the question you asked. A paper map shows you the question you did not know to ask: where the ridge runs, why the river bends, which road is a single lane for three miles. Cartographers have a name for this quality, density of context, and it is the thing most people say they miss.</p>
+      <p class="mt-5">Designers who study wayfinding describe a shift in attention. On a screen the eye follows a single arrow and the body follows the eye. On a sheet the eye travels across the whole region, and the traveller builds a rough mental model before setting out. That model holds up better when the battery runs out.</p>
+
+      <blockquote class="my-12 border-y border-rule py-8">
+        <p class="font-display text-3xl sm:text-4xl font-semibold leading-snug text-rust">&ldquo;The phone tells you where you are. The paper tells you where you are going, and what you will pass on the way.&rdquo;</p>
+        <footer class="mt-4 text-sm uppercase tracking-[0.15em] text-mist">Tomas Relle, retired surveyor</footer>
+      </blockquote>
+
+      <h2 class="font-body text-2xl font-semibold leading-tight">The cost of folding</h2>
+      <p class="mt-5">Paper is not free of trade-offs. A printed sheet goes out of date, it tears along the creases, and it needs a flat surface and some patience to read in a wind. Most of the publishers interviewed for this piece have shortened their print runs and now revise only the coastal and mountain series each year.</p>
+      <p class="mt-5">The revival is also a market in good taste. Shops price the sheets like objects, and some buyers frame them. That is a pleasant outcome for designers and an odd one for a tool that was built to be folded, pocketed and forgotten on a bus.</p>
+    </article>
+
+    <aside class="mt-14 lg:mt-0 lg:sticky lg:top-8 lg:self-start space-y-10 border-t border-rule pt-8 lg:border-t-0 lg:pt-0">
+      <section aria-labelledby="contents-h">
+        <h2 id="contents-h" class="text-xs font-semibold uppercase tracking-[0.2em] text-rust">In this piece</h2>
+        <ol class="mt-4 space-y-3 text-[0.95rem] leading-snug">
+          <li><a href="#" class="hover:text-rust">The phone that died</a></li>
+          <li><a href="#" class="hover:text-rust">What the screen hides</a></li>
+          <li><a href="#" class="hover:text-rust">The cost of folding</a></li>
+        </ol>
+      </section>
+      <section class="border-t border-rule pt-8" aria-labelledby="stat-h">
+        <h2 id="stat-h" class="sr-only">By the numbers</h2>
+        <p class="font-display text-7xl font-bold leading-none text-rust">38%</p>
+        <p class="mt-3 max-w-prose text-[0.95rem] leading-relaxed text-mist">Rise in paper map sales at independent bookshops across the region, comparing the spring of 2025 with the spring of 2026.</p>
+      </section>
+      <section class="border-t border-rule pt-8">
+        <h2 class="text-xs font-semibold uppercase tracking-[0.2em] text-rust">Key facts</h2>
+        <dl class="mt-4 space-y-3 text-[0.95rem]">
+          <div class="flex justify-between gap-4 border-b border-rule pb-2"><dt class="text-mist">Standard sheet</dt><dd class="font-semibold">1:25,000</dd></div>
+          <div class="flex justify-between gap-4 border-b border-rule pb-2"><dt class="text-mist">Average fold count</dt><dd class="font-semibold tabular-nums">8</dd></div>
+          <div class="flex justify-between gap-4 pb-2"><dt class="text-mist">Typical lifespan</dt><dd class="font-semibold">4 years</dd></div>
+        </dl>
+      </section>
+      <section class="border-t border-rule pt-8" aria-labelledby="legend-h">
+        <h2 id="legend-h" class="text-xs font-semibold uppercase tracking-[0.2em] text-rust">Reading the sheet</h2>
+        <svg viewBox="0 0 280 200" class="mt-4 w-full h-auto rounded-sm bg-[#EFE7D6]" role="img" aria-label="Map legend">
+          <g font-family="Source Serif 4, Georgia, serif" font-size="15" fill="#1d1b17">
+            <path d="M16 30 H64" stroke="#A23B24" stroke-width="3" stroke-dasharray="8 6"/>
+            <text x="78" y="35">Walking route</text>
+            <path d="M16 62 H64" stroke="#c9bda5" stroke-width="2"/>
+            <text x="78" y="67">Contour line</text>
+            <path d="M16 94 H64" stroke="#7fa3ad" stroke-width="7" stroke-linecap="round"/>
+            <text x="78" y="99">River</text>
+            <circle cx="40" cy="126" r="7" fill="#1f2a24"/>
+            <text x="78" y="131">Inn or shelter</text>
+            <circle cx="40" cy="158" r="7" fill="#A23B24"/>
+            <text x="78" y="163">Summit or high point</text>
+          </g>
+        </svg>
+      </section>
+      <section class="border-t border-rule pt-8" aria-labelledby="read-h">
+        <h2 id="read-h" class="text-xs font-semibold uppercase tracking-[0.2em] text-rust">Further reading</h2>
+        <ul class="mt-4 space-y-4 text-[0.95rem] leading-relaxed">
+          <li><a href="#" class="font-semibold hover:text-rust">A short history of the folding sheet</a><p class="text-mist">Printing, paper stock and the survey offices that shaped them.</p></li>
+          <li><a href="#" class="font-semibold hover:text-rust">Contour lines, explained by a hillwalker</a><p class="text-mist">How to read the spacing and why steep ground hides itself.</p></li>
+          <li><a href="#" class="font-semibold hover:text-rust">Field notes on sheets in the rain</a><p class="text-mist">Waterproofing, cases and the best folds for a long day outdoors.</p></li>
+        </ul>
+      </section>
+      <section class="border-t border-rule pt-8" aria-labelledby="gloss-h">
+        <h2 id="gloss-h" class="text-xs font-semibold uppercase tracking-[0.2em] text-rust">Glossary</h2>
+        <dl class="mt-4 space-y-4 text-[0.95rem] leading-relaxed">
+          <div><dt class="font-semibold">Density of context</dt><dd class="text-mist">How much of the surrounding land a map shows at once.</dd></div>
+          <div><dt class="font-semibold">Scale</dt><dd class="text-mist">The ratio of a distance on paper to the same distance on the ground.</dd></div>
+          <div><dt class="font-semibold">Wayfinding</dt><dd class="text-mist">The mental process of choosing and following a route.</dd></div>
+        </dl>
+      </section>
+    </aside>
+  </div>
+
+  <section class="border-t border-rule bg-paper" aria-labelledby="related-h">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-16">
+      <h2 id="related-h" class="font-display text-3xl font-bold">Related reading</h2>
+      <div class="mt-8 grid gap-8 sm:grid-cols-3">
+        <a href="#" class="group block">
+          <svg viewBox="0 0 400 220" class="w-full h-auto rounded-sm" aria-hidden="true"><rect width="400" height="220" fill="#E9DFC9"/><circle cx="130" cy="110" r="70" fill="none" stroke="#A23B24" stroke-width="3"/><circle cx="130" cy="110" r="40" fill="none" stroke="#A23B24" stroke-width="3"/><rect x="250" y="60" width="90" height="110" fill="#7fa3ad"/></svg>
+          <p class="mt-4 text-xs uppercase tracking-[0.15em] text-rust">Design</p>
+          <h3 class="mt-2 font-display text-xl font-bold leading-snug group-hover:text-rust">Why the best city maps still use the color blue</h3>
+        </a>
+        <a href="#" class="group block">
+          <svg viewBox="0 0 400 220" class="w-full h-auto rounded-sm" aria-hidden="true"><rect width="400" height="220" fill="#DCE3D6"/><path d="M0 150 C80 100 140 190 220 140 S330 90 400 130" fill="none" stroke="#1f2a24" stroke-width="4"/><path d="M0 180 C90 140 150 210 230 170 S340 130 400 165" fill="none" stroke="#1f2a24" stroke-width="2" opacity=".6"/></svg>
+          <p class="mt-4 text-xs uppercase tracking-[0.15em] text-rust">Travel</p>
+          <h3 class="mt-2 font-display text-xl font-bold leading-snug group-hover:text-rust">Eleven walks you can only do with a sheet and a pencil</h3>
+        </a>
+        <a href="#" class="group block">
+          <svg viewBox="0 0 400 220" class="w-full h-auto rounded-sm" aria-hidden="true"><rect width="400" height="220" fill="#F1DDD2"/><rect x="40" y="50" width="120" height="120" fill="none" stroke="#A23B24" stroke-width="3"/><path d="M200 170 L260 60 L320 170 Z" fill="#E0B45A"/></svg>
+          <p class="mt-4 text-xs uppercase tracking-[0.15em] text-rust">Science</p>
+          <h3 class="mt-2 font-display text-xl font-bold leading-snug group-hover:text-rust">How spatial memory forms when you read a map by hand</h3>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-night text-paper" aria-labelledby="news-h">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-20 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-ochre">The Sunday Sheet</p>
+        <h2 id="news-h" class="mt-4 font-display text-4xl sm:text-5xl font-bold leading-tight">One long read, folded into your inbox</h2>
+        <p class="mt-5 max-w-prose text-lg leading-relaxed text-paper/80">Five features each Sunday, on design, travel and the slow sciences. No tracking pixels and no daily noise.</p>
+      </div>
+      <form class="flex flex-col gap-3 sm:flex-row" onsubmit="event.preventDefault()">
+        <label for="email" class="sr-only">Email address</label>
+        <input id="email" type="email" required placeholder="you@example.com" class="h-12 flex-1 rounded-sm border border-paper/30 bg-transparent px-4 text-paper placeholder:text-paper/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ochre">
+        <button type="submit" class="h-12 rounded-sm bg-ochre px-6 font-semibold text-night hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper active:brightness-95">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-rule">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-8 flex flex-col gap-2 text-sm text-mist sm:flex-row sm:justify-between">
+    <p>&copy; 2026 The Long Survey</p>
+    <p>Corrections, letters and story pitches welcome.</p>
+  </div>
+</footer>
+
+</body>
+</html>

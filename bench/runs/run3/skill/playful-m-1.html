@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doodlebug: Draw, Animate, Share</title>
+<meta name="description" content="Doodlebug turns kids' crayon drawings into little animations, a gallery to show off, and a parent area with simple limits.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          sun: '#FFC83D',
+          sky: '#4CC9F0',
+          coral: '#D42F35',
+          mint: '#2EC4A0',
+          ink: '#2B2D42',
+          paper: '#FFF8EC'
+        },
+        fontFamily: {
+          display: ['"Baloo 2"', 'cursive'],
+          body: ['Inter', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background: #FFF8EC; color: #2B2D42; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  @keyframes wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  @keyframes draw { from { stroke-dashoffset: 320; } to { stroke-dashoffset: 0; } }
+  .rise { animation: rise 0.6s ease-out both; }
+  .d1 { animation-delay: 0.1s; }
+  .d2 { animation-delay: 0.2s; }
+  .d3 { animation-delay: 0.3s; }
+  .wobble { animation: wobble 4s ease-in-out infinite; transform-origin: 50% 60%; }
+  .squiggle { stroke-dasharray: 320; animation: draw 1.6s ease-out 0.4s both; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<header class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5">
+  <a href="#top" class="flex items-center gap-2 font-display text-2xl font-extrabold">
+    <svg viewBox="0 0 40 40" class="h-10 w-10" aria-hidden="true">
+      <path d="M20 3c9 0 17 6 17 16s-6 18-17 18S3 30 3 19 11 3 20 3z" fill="#4CC9F0" stroke="#2B2D42" stroke-width="3"/>
+      <circle cx="14" cy="18" r="2.5" fill="#2B2D42"/>
+      <circle cx="26" cy="18" r="2.5" fill="#2B2D42"/>
+      <path d="M14 25q6 5 12 0" fill="none" stroke="#2B2D42" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    Doodlebug
+  </a>
+  <nav aria-label="Main" class="hidden gap-6 font-semibold md:flex">
+    <a href="#gallery" class="min-h-11 py-3 hover:underline">Gallery</a>
+    <a href="#features" class="min-h-11 py-3 hover:underline">Features</a>
+    <a href="#parents" class="min-h-11 py-3 hover:underline">For parents</a>
+  </nav>
+  <a href="#start" class="min-h-11 rounded-full bg-sun px-5 py-3 font-bold text-ink shadow-md shadow-sun/40">Start drawing</a>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-8 lg:grid-cols-2 lg:pb-24 lg:pt-14">
+    <div class="rise">
+      <p class="inline-block rounded-full bg-sky px-4 py-1 text-sm font-bold text-ink">Made for ages 3 to 9</p>
+      <h1 class="font-display mt-5 text-5xl font-extrabold leading-[0.95] sm:text-7xl">
+        Draw it. Then make it <span class="text-coral">dance.</span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed">
+        Doodlebug turns crayon scribbles into little animations kids can play with, share with grandma, and hang in their own gallery.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#start" class="min-h-11 rounded-full bg-sun px-7 py-4 font-bold text-ink shadow-lg shadow-sun/40 transition hover:-translate-y-0.5">Start drawing free</a>
+        <a href="#parents" class="min-h-11 rounded-full border-2 border-ink px-7 py-4 font-bold transition hover:bg-ink hover:text-paper">Parent area</a>
+      </div>
+    </div>
+
+    <div class="rise d2 relative mx-auto w-full max-w-md">
+      <svg viewBox="0 0 320 320" class="wobble w-full" role="img" aria-label="Pip, a smiling yellow crayon, waving on a sky-blue stage">
+        <circle cx="160" cy="165" r="140" fill="#4CC9F0"/>
+        <path d="M30 262q30-30 60 0t60 0 60 0 60 0" fill="none" stroke="#2B2D42" stroke-width="5" stroke-linecap="round" class="squiggle"/>
+        <path d="M120 200 L160 300 L200 200 Z" fill="#F6D7B0" stroke="#2B2D42" stroke-width="6" stroke-linejoin="round"/>
+        <path d="M120 240 L160 300 L200 240 Z" fill="#2B2D42"/>
+        <rect x="118" y="50" width="84" height="165" rx="22" fill="#FFC83D" stroke="#2B2D42" stroke-width="6"/>
+        <rect x="118" y="100" width="84" height="26" fill="#FFF8EC" stroke="#2B2D42" stroke-width="4"/>
+        <text x="160" y="119" text-anchor="middle" font-family="Baloo 2, cursive" font-weight="800" font-size="17" fill="#2B2D42">PIP</text>
+        <circle cx="146" cy="160" r="6" fill="#2B2D42"/>
+        <circle cx="174" cy="160" r="6" fill="#2B2D42"/>
+        <circle cx="134" cy="178" r="8" fill="#E5484D" opacity="0.5"/>
+        <circle cx="186" cy="178" r="8" fill="#E5484D" opacity="0.5"/>
+        <path d="M145 182q15 14 30 0" fill="none" stroke="#2B2D42" stroke-width="5" stroke-linecap="round"/>
+        <path d="M250 70l5 12 13 5-13 5-5 12-5-12-13-5 13-5z" fill="#E5484D"/>
+        <path d="M60 110l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="#FFF8EC"/>
+        <path d="M262 200l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#2EC4A0"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section id="gallery" class="bg-sky/25 py-16 lg:py-20">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Made by kids this week</h2>
+          <p class="mt-2 text-lg">Over 48,210 animations shared. Here are six favourites.</p>
+        </div>
+        <a href="#gallery" class="min-h-11 font-bold underline decoration-coral decoration-4 underline-offset-4">See the full gallery</a>
+      </div>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <figure class="rounded-3xl bg-white p-4 shadow-md sm:col-span-2">
+          <div class="flex aspect-[16/9] items-center justify-center overflow-hidden rounded-2xl bg-sun">
+            <svg viewBox="0 0 160 90" class="h-full w-auto" aria-hidden="true">
+              <circle cx="120" cy="24" r="14" fill="#FFF8EC" stroke="#2B2D42" stroke-width="3"/>
+              <path d="M0 90V60q40-30 80-6t80-8v44z" fill="#2EC4A0" stroke="#2B2D42" stroke-width="3"/>
+              <path d="M30 60l10-18 10 18z" fill="#E5484D" stroke="#2B2D42" stroke-width="3"/>
+              <path d="M90 66l12-22 12 22z" fill="#4CC9F0" stroke="#2B2D42" stroke-width="3"/>
+            </svg>
+          </div>
+          <figcaption class="mt-4 flex flex-wrap items-baseline justify-between gap-2">
+            <span class="font-display text-2xl font-bold">Hill Town Sunset</span>
+            <span class="text-sm font-semibold">by Lina, 6 · 2.1k plays</span>
+          </figcaption>
+        </figure>
+
+        <figure class="flex flex-col rounded-3xl bg-white p-4 shadow-md">
+          <div class="flex min-h-64 flex-1 items-center justify-center rounded-2xl bg-mint/30">
+            <svg viewBox="0 0 120 90" class="w-3/4" aria-hidden="true">
+              <ellipse cx="54" cy="45" rx="34" ry="20" fill="#E5484D" stroke="#2B2D42" stroke-width="3"/>
+              <path d="M84 45l24-16v32z" fill="#FFC83D" stroke="#2B2D42" stroke-width="3" stroke-linejoin="round"/>
+              <circle cx="40" cy="40" r="4" fill="#2B2D42"/>
+            </svg>
+          </div>
+          <figcaption class="mt-4 flex flex-wrap items-baseline justify-between gap-2">
+            <span class="font-display text-xl font-bold">Swimmy Fish</span>
+            <span class="text-sm font-semibold">by Omar, 5</span>
+          </figcaption>
+        </figure>
+
+        <figure class="rounded-3xl bg-white p-4 shadow-md">
+          <div class="flex aspect-[4/3] items-center justify-center rounded-2xl bg-sun/50">
+            <svg viewBox="0 0 120 90" class="w-3/4" aria-hidden="true">
+              <path d="M20 40L60 12l40 28v38H20z" fill="#4CC9F0" stroke="#2B2D42" stroke-width="3" stroke-linejoin="round"/>
+              <rect x="50" y="52" width="20" height="26" fill="#FFF8EC" stroke="#2B2D42" stroke-width="3"/>
+              <rect x="30" y="48" width="12" height="12" fill="#FFC83D" stroke="#2B2D42" stroke-width="2"/>
+            </svg>
+          </div>
+          <figcaption class="mt-4 flex flex-wrap items-baseline justify-between gap-2">
+            <span class="font-display text-xl font-bold">Our Blue House</span>
+            <span class="text-sm font-semibold">by Ada, 7</span>
+          </figcaption>
+        </figure>
+
+        <figure class="rounded-3xl bg-white p-4 shadow-md">
+          <div class="flex aspect-[4/3] items-center justify-center rounded-2xl bg-coral/15">
+            <svg viewBox="0 0 120 90" class="w-3/4" aria-hidden="true">
+              <path d="M18 70a42 42 0 0 1 84 0" fill="none" stroke="#E5484D" stroke-width="8" stroke-linecap="round"/>
+              <path d="M30 70a30 30 0 0 1 60 0" fill="none" stroke="#FFC83D" stroke-width="8" stroke-linecap="round"/>
+              <path d="M42 70a18 18 0 0 1 36 0" fill="none" stroke="#2EC4A0" stroke-width="8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <figcaption class="mt-4 flex flex-wrap items-baseline justify-between gap-2">
+            <span class="font-display text-xl font-bold">Rainbow Bridge</span>
+            <span class="text-sm font-semibold">by Mei, 4</span>
+          </figcaption>
+        </figure>
+
+        <figure class="rounded-3xl bg-white p-4 shadow-md">
+          <div class="flex aspect-[4/3] items-center justify-center rounded-2xl bg-mint/30">
+            <svg viewBox="0 0 120 90" class="w-3/4" aria-hidden="true">
+              <path d="M60 10l8 22 22 2-17 14 6 22-19-12-19 12 6-22-17-14 22-2z" fill="#FFC83D" stroke="#2B2D42" stroke-width="3" stroke-linejoin="round"/>
+              <circle cx="60" cy="66" r="12" fill="#4CC9F0" stroke="#2B2D42" stroke-width="3"/>
+            </svg>
+          </div>
+          <figcaption class="mt-4 flex flex-wrap items-baseline justify-between gap-2">
+            <span class="font-display text-xl font-bold">Starry Night Bear</span>
+            <span class="text-sm font-semibold">by Tomas, 6</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="mx-auto max-w-6xl px-4 py-16 lg:py-20">
+    <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Three ways to play</h2>
+    <div class="mt-10 grid gap-6 lg:grid-cols-5">
+      <article class="rounded-3xl bg-sun p-8 shadow-lg shadow-sun/40 lg:col-span-3">
+        <h3 class="font-display text-3xl font-extrabold">Crayon Studio</h3>
+        <p class="mt-3 max-w-md text-lg leading-relaxed">Thick, chunky brushes that never run out. Kids draw on a big canvas, pick a colour from the crayon tray, and undo with one big round button.</p>
+        <div class="mt-6 flex gap-3" aria-hidden="true">
+          <span class="h-10 w-10 rounded-full bg-coral ring-4 ring-ink"></span>
+          <span class="h-10 w-10 rounded-full bg-sky ring-4 ring-ink"></span>
+          <span class="h-10 w-10 rounded-full bg-mint ring-4 ring-ink"></span>
+          <span class="h-10 w-10 rounded-full bg-paper ring-4 ring-ink"></span>
+        </div>
+      </article>
+
+      <article class="rounded-3xl bg-white p-8 shadow-md lg:col-span-2">
+        <h3 class="font-display text-2xl font-extrabold">Tap to animate</h3>
+        <p class="mt-3 max-w-prose leading-relaxed">One tap makes a drawing wiggle, swim or fly. Shapes learn how they move, so a fish swims and a bird flaps.</p>
+      </article>
+
+      <article class="rounded-3xl bg-ink p-8 text-paper shadow-md lg:col-span-2">
+        <h3 class="font-display text-2xl font-extrabold text-sun">Share with family</h3>
+        <p class="mt-3 max-w-prose leading-relaxed">Send a link to grandparents or pin a favourite to the family wall. Nothing is public unless a grown-up says so.</p>
+      </article>
+
+      <article class="rounded-3xl bg-mint p-8 shadow-md lg:col-span-3">
+        <h3 class="font-display text-3xl font-extrabold">Stories that grow</h3>
+        <p class="mt-3 max-w-md text-lg leading-relaxed">Drop three drawings in a row and Doodlebug builds a short cartoon, with the sound of your own voice as the narrator.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Parents -->
+  <section id="parents" class="bg-ink py-16 text-paper lg:py-24">
+    <div class="mx-auto grid max-w-6xl gap-10 px-4 lg:grid-cols-2 lg:items-center">
+      <div>
+        <p class="font-bold text-sun">For parents</p>
+        <h2 class="font-display mt-2 text-4xl font-extrabold sm:text-5xl">You set the rules. Kids keep the fun.</h2>
+        <p class="mt-5 max-w-lg text-lg leading-relaxed">Choose daily time limits, approve every share, and download any drawing as a video file. No ads, no in-app shopping, and no chat with strangers.</p>
+        <a href="#start" class="mt-8 inline-block min-h-11 rounded-full bg-sun px-7 py-4 font-bold text-ink">Open the parent dashboard</a>
+      </div>
+      <dl class="grid grid-cols-2 gap-4">
+        <div class="rounded-3xl bg-paper/10 p-6">
+          <dt class="text-sm font-semibold text-paper/80">Ads shown</dt>
+          <dd class="font-display mt-2 text-5xl font-extrabold text-sun tabular-nums">0</dd>
+        </div>
+        <div class="rounded-3xl bg-paper/10 p-6">
+          <dt class="text-sm font-semibold text-paper/80">Daily limit set</dt>
+          <dd class="font-display mt-2 text-5xl font-extrabold text-sky tabular-nums">20 min</dd>
+        </div>
+        <div class="rounded-3xl bg-paper/10 p-6">
+          <dt class="text-sm font-semibold text-paper/80">Families using it</dt>
+          <dd class="font-display mt-2 text-5xl font-extrabold text-mint tabular-nums">31,400</dd>
+        </div>
+        <div class="rounded-3xl bg-paper/10 p-6">
+          <dt class="text-sm font-semibold text-paper/80">Average rating</dt>
+          <dd class="font-display mt-2 text-5xl font-extrabold text-paper tabular-nums">4.8</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section id="start" class="mx-auto max-w-6xl px-4 py-16 lg:py-20">
+    <div class="rounded-[2.5rem] bg-sky px-6 py-14 text-center shadow-lg sm:px-12">
+      <h2 class="font-display text-4xl font-extrabold sm:text-6xl">Grab a crayon. Pip is ready.</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg">Free to start, no card needed. Works on tablets, phones and the family laptop.</p>
+      <a href="#top" class="mt-8 inline-block min-h-11 rounded-full bg-ink px-8 py-4 font-bold text-paper transition hover:-translate-y-0.5">Start drawing free</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mx-auto flex max-w-6xl flex-wrap justify-between gap-4 px-4 py-8 text-sm">
+  <p>Doodlebug, made for little artists.</p>
+  <nav aria-label="Footer" class="flex flex-wrap gap-6 font-semibold">
+    <a href="#gallery" class="min-h-11 py-3 hover:underline">Gallery</a>
+    <a href="#parents" class="min-h-11 py-3 hover:underline">Parents</a>
+    <a href="#top" class="min-h-11 py-3 hover:underline">Privacy</a>
+  </nav>
+</footer>
+
+</body>
+</html>

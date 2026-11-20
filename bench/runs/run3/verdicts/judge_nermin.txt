@@ -1,0 +1,20 @@
+cift1: B | 3 | A çok sıkışık ve küçük yazılı, B kenar menüsü ve net KPI kartlarıyla daha kolay takip ediliyor | A 6/7/4/8 B 6/7/7/6
+cift2: A | 4 | A'nın yazıları büyük, bölümler net ayrılmış ve randevu tablosu okunaklı; B sade ama yazıları küçük ve alt kısmı boş kalıyor | A 8/8/8/9 B 6/6/6/5
+cift3: B | 4 | A çok yoğun, küçük yazılı ve konsol satırlarıyla dolu; B'nin net başlığı ve sade kartları ne işe yaradığını hemen gösteriyor | A 5/6/4/9 B 7/7/8/6
+cift4: B | 3 | A'da kritik uyarı ve büyük rakamlar iyi, ama çok fazla küçük panel var; B daha sade ve tablo ile grafik ayrı ayrı okunuyor | A 6/6/5/9 B 7/7/8/6
+cift5: A | 3 | A'nın tek sütunlu, büyük ve rahat serif metni okumayı kolaylaştırıyor; B zengin ama yan panel ve küçük sans yazı yorucu | A 8/7/8/7 B 7/8/6/8
+cift6: B | 4 | B'nin büyük başlık cümlesi sayfanın ne işe yaradığını hemen anlatıyor ve bilgiler düzenli; A sade ama küçük yazılı ve içerik daha az | A 7/7/6/5 B 8/8/9/8
+cift7: A | 3 | A'nın büyük ve koyu yazıları, net bölümleri ve güçlü kontrastı daha okunaklı; B'nin açık gri metinleri ve küçük yazıları zayıf kalıyor | A 8/6/8/8 B 7/7/6/6
+cift8: B | 4 | B'nin güçlü başlıkları, koyu-parlak kontrastı ve büyük galeri görselleri daha net; A'nın süs daireleri ve açık pastel kartları dağınık ve yapay duruyor | A 6/5/6/6 B 8/8/8/8
+cift9: A | 3 | İkisi de koyu ve izlemesi zor ama A'nın kenar menüsü, büyük KPI rakamları ve az sayıda grafiği daha sade; B çok yoğun ve yazılar küçük | A 7/7/7/7 B 6/6/5/8
+cift10: A | 3 | A'nın çok büyük ve kontrastlı başlıkları ve net bölüm sırası daha okunaklı, B'nin içi boş kontur yazısı ve gri küçük metinleri zor; A'nın bağırgan büyük harfleri yorucu | A 7/6/8/7 B 7/7/6/7
+cift11: A | 4 | A'nın büyük başlıkları, net fiyat kartları ve açık bölüm sırası daha kolay takip ediliyor; B'nin süs daireleri ve küçük açık metinleri daha dağınık | A 8/7/8/9 B 6/6/6/6
+cift12: B | 3 | B'nin büyük "42" gibi net rakamları, daha büyük gövde metni ve düzenli özellik kutuları daha okunaklı; A'nın özellik ve teknik yazıları küçük ve soluk | A 7/6/6/7 B 8/7/7/8
+cift13: A | 4 | A'nın büyük ve dolu başlığı, okunaklı rakam şeridi ve net teknik tablosu daha güçlü; B'nin özellik açıklamaları küçük ve gri kalıyor | A 8/8/8/8 B 7/7/6/6
+cift14: B | 3 | B'nin büyük başlığı, uyarı kutusu ve sıcak, sakin renkleriyle ne işe yaradığı hemen anlaşılıyor; A'nın mor-mavi standart görünümü ve küçük tablo yazıları daha yapay | A 6/5/7/6 B 8/8/8/8
+cift15: B | 4 | B'nin kalın ve büyük başlığı, daha iri gövde metni ve büyük alıntı kutusu okumayı kolaylaştırıyor; A'nın ince başlığı soluk, kapak görselleri de yarım kalmış gibi | A 7/6/6/7 B 8/8/8/8
+cift16: A | 4 | A'nın sarı zemin üzerindeki büyük lacivert başlığı ve koyu metinleri çok net, bölümler sade ve sırayla ilerliyor; B'nin pastel kutuları ve küçük gri yazıları daha soluk | A 8/7/8/8 B 6/6/6/6
+cift17: A | 4 | A'nın büyük rakamlı kartları, sakin yeşil-krem düzeni ve net işlem tablosu daha okunaklı; B'nin koyu kenar çubuğu ve küçük yazıları standart ve daha yorucu | A 8/8/8/8 B 6/5/6/6
+cift18: B | 3 | B'nin normal büyük-küçük harfli başlığı ve sakin kartları daha okunaklı; A'nın dar, bağıran büyük harfleri ve küçük açıklama yazıları yorucu | A 6/6/6/7 B 8/8/8/7
+cift19: B | 3 | B'nin büyük başlığı, iri "2:40" rakamı ve malzeme tablosu ne aradığımı hemen gösteriyor; A'nın malzeme ve yapılış metinleri küçük ve kart içinde sıkışık | A 7/7/6/6 B 8/8/8/8
+cift20: A | 3 | A'nın büyük başlığı, "35 min" gibi net özet bilgileri ve adım numaraları daha dolu ve yol gösterici; B'nin malzeme yazıları küçük, görselleri ise bulanık gradyan | A 8/7/8/8 B 7/6/6/5

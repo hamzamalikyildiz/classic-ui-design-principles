@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PikoLab - Code Adventures for Kids</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    fontFamily: { display: ['Fredoka', 'sans-serif'], body: ['Nunito', 'sans-serif'] },
+    colors: { piko: { sky: '#7DD3FC', mint: '#5EEAD4', sun: '#FDE047', pink: '#F472B6', ink: '#1E1B4B', violet: '#8B5CF6' } }
+  } } }
+</script>
+<style>
+  body { background: #FFF9EC; }
+  .bounce-slow { animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-12px) } }
+  .blink { animation: blink 4s infinite; transform-origin: center; }
+  @keyframes blink { 0%,92%,100% { transform: scaleY(1) } 95% { transform: scaleY(0.1) } }
+  .wiggle:hover { animation: wig .5s; }
+  @keyframes wig { 25% { transform: rotate(-4deg) } 75% { transform: rotate(4deg) } }
+</style>
+</head>
+<body class="font-body text-piko-ink antialiased overflow-x-hidden">
+
+<!-- NAV -->
+<header class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
+  <a href="#" class="flex items-center gap-2 font-display text-2xl font-bold">
+    <span class="inline-block w-9 h-9 rounded-xl bg-piko-violet text-white grid place-items-center text-lg">&lt;/&gt;</span>
+    PikoLab
+  </a>
+  <nav class="hidden md:flex gap-6 font-semibold text-sm">
+    <a href="#features" class="hover:text-piko-violet">Features</a>
+    <a href="#game" class="hover:text-piko-violet">Mini-game</a>
+    <a href="#pricing" class="hover:text-piko-violet">Pricing</a>
+    <a href="#faq" class="hover:text-piko-violet">FAQ</a>
+  </nav>
+  <a href="#cta" class="rounded-full bg-piko-pink text-white font-bold px-5 py-2 text-sm shadow-md hover:scale-105 transition">Start free</a>
+</header>
+
+<!-- HERO -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-16 grid md:grid-cols-2 gap-10 items-center">
+  <div>
+    <span class="inline-block rounded-full bg-piko-mint/40 px-4 py-1 text-sm font-bold">For kids ages 7-12</span>
+    <h1 class="font-display text-5xl sm:text-6xl font-bold leading-tight mt-4">
+      Code is a <span class="text-piko-violet">playground</span> for your brain!
+    </h1>
+    <p class="mt-5 text-lg text-piko-ink/80 max-w-md">
+      Build games, draw robots and solve tiny puzzles with Piko, our friendly coding buddy.
+      No boring lectures, just bright ideas.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-4">
+      <a href="#cta" class="rounded-full bg-piko-violet text-white font-bold px-7 py-3 shadow-lg hover:-translate-y-1 transition">Let's play</a>
+      <a href="#features" class="rounded-full border-2 border-piko-ink font-bold px-7 py-3 hover:bg-piko-sun transition">See how it works</a>
+    </div>
+  </div>
+
+  <!-- Mascot -->
+  <div class="relative flex justify-center">
+    <div class="absolute w-80 h-80 rounded-full bg-piko-sky/50 top-4"></div>
+    <div class="absolute w-16 h-16 rounded-full bg-piko-sun top-6 right-10"></div>
+    <div class="absolute w-10 h-10 rounded-lg bg-piko-pink rotate-12 bottom-10 left-8"></div>
+    <svg viewBox="0 0 280 300" class="relative w-72 bounce-slow" role="img" aria-label="Piko the robot mascot">
+      <line x1="140" y1="30" x2="140" y2="8" stroke="#1E1B4B" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="140" cy="8" r="11" fill="#FDE047" stroke="#1E1B4B" stroke-width="4"/>
+      <rect x="55" y="30" width="170" height="150" rx="40" fill="#5EEAD4" stroke="#1E1B4B" stroke-width="6"/>
+      <g class="blink">
+        <circle cx="105" cy="95" r="20" fill="#fff" stroke="#1E1B4B" stroke-width="4"/>
+        <circle cx="175" cy="95" r="20" fill="#fff" stroke="#1E1B4B" stroke-width="4"/>
+        <circle cx="110" cy="99" r="8" fill="#1E1B4B"/>
+        <circle cx="180" cy="99" r="8" fill="#1E1B4B"/>
+      </g>
+      <path d="M115 136 Q140 160 165 136" fill="none" stroke="#1E1B4B" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="82" cy="128" r="9" fill="#F472B6" opacity=".7"/>
+      <circle cx="198" cy="128" r="9" fill="#F472B6" opacity=".7"/>
+      <rect x="85" y="185" width="110" height="90" rx="26" fill="#8B5CF6" stroke="#1E1B4B" stroke-width="6"/>
+      <text x="140" y="240" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="30" font-weight="700" fill="#fff">{ }</text>
+      <rect x="20" y="195" width="50" height="30" rx="15" fill="#F472B6" stroke="#1E1B4B" stroke-width="5"/>
+      <rect x="210" y="195" width="50" height="30" rx="15" fill="#F472B6" stroke="#1E1B4B" stroke-width="5"/>
+    </svg>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="bg-white py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <h2 class="font-display text-4xl font-bold text-center">Everything you need to invent</h2>
+    <p class="text-center mt-3 text-piko-ink/70">Three big worlds to explore, one step at a time.</p>
+    <div class="mt-12 grid md:grid-cols-3 gap-6">
+      <div class="wiggle rounded-3xl bg-piko-sky/30 p-7 border-2 border-piko-ink">
+        <div class="w-14 h-14 rounded-2xl bg-piko-sky grid place-items-center text-2xl border-2 border-piko-ink">&#127912;</div>
+        <h3 class="font-display text-2xl font-bold mt-5">Draw &amp; Animate</h3>
+        <p class="mt-2 text-piko-ink/80">Make sprites move, spin and dance with simple blocks of code.</p>
+      </div>
+      <div class="wiggle rounded-3xl bg-piko-mint/40 p-7 border-2 border-piko-ink">
+        <div class="w-14 h-14 rounded-2xl bg-piko-mint grid place-items-center text-2xl border-2 border-piko-ink">&#129302;</div>
+        <h3 class="font-display text-2xl font-bold mt-5">Robot Quests</h3>
+        <p class="mt-2 text-piko-ink/80">Guide Piko through mazes and teach it new tricks, one puzzle at a time.</p>
+      </div>
+      <div class="wiggle rounded-3xl bg-piko-sun/50 p-7 border-2 border-piko-ink">
+        <div class="w-14 h-14 rounded-2xl bg-piko-sun grid place-items-center text-2xl border-2 border-piko-ink">&#127942;</div>
+        <h3 class="font-display text-2xl font-bold mt-5">Badges &amp; Levels</h3>
+        <p class="mt-2 text-piko-ink/80">Earn stickers for every win and watch your skills grow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MINI-GAME TEASER -->
+<section id="game" class="py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-10 items-center">
+    <div class="order-2 md:order-1 rounded-3xl bg-piko-ink p-6 border-4 border-piko-ink shadow-xl">
+      <svg viewBox="0 0 320 220" class="w-full rounded-2xl bg-piko-sky/30" role="img" aria-label="Mini-game preview: Piko jumping over blocks to reach a star">
+        <rect x="0" y="180" width="320" height="40" fill="#5EEAD4"/>
+        <rect x="150" y="150" width="30" height="30" fill="#F472B6" stroke="#1E1B4B" stroke-width="3"/>
+        <rect x="230" y="120" width="30" height="60" fill="#8B5CF6" stroke="#1E1B4B" stroke-width="3"/>
+        <polygon points="260,40 268,62 292,62 273,76 280,98 260,85 240,98 247,76 228,62 252,62" fill="#FDE047" stroke="#1E1B4B" stroke-width="3"/>
+        <g transform="translate(60 100)">
+          <rect x="0" y="0" width="40" height="50" rx="12" fill="#5EEAD4" stroke="#1E1B4B" stroke-width="4"/>
+          <circle cx="13" cy="20" r="4" fill="#1E1B4B"/>
+          <circle cx="27" cy="20" r="4" fill="#1E1B4B"/>
+          <rect x="6" y="50" width="10" height="12" fill="#1E1B4B"/>
+          <rect x="24" y="50" width="10" height="12" fill="#1E1B4B"/>
+        </g>
+        <path d="M108 118 Q140 40 200 80" fill="none" stroke="#FDE047" stroke-width="3" stroke-dasharray="6 6"/>
+      </svg>
+      <div class="mt-5 flex items-center justify-between text-white">
+        <span class="font-display text-xl font-bold">Jump Piko Jump</span>
+        <span class="rounded-full bg-piko-sun text-piko-ink font-bold px-3 py-1 text-sm">Score 120</span>
+      </div>
+    </div>
+    <div class="order-1 md:order-2">
+      <h2 class="font-display text-4xl font-bold">Try a mini-game in 30 seconds</h2>
+      <p class="mt-4 text-piko-ink/80 text-lg">
+        Drag a few blocks, press play, and watch Piko leap to the star. Change one number and see what happens!
+      </p>
+      <a href="#cta" class="inline-block mt-7 rounded-full bg-piko-pink text-white font-bold px-7 py-3 shadow-lg hover:-translate-y-1 transition">Play the demo</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="bg-white py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <h2 class="font-display text-4xl font-bold text-center">Pick your adventure</h2>
+    <p class="text-center mt-3 text-piko-ink/70">Start free. Upgrade when your family is ready.</p>
+    <div class="mt-12 grid md:grid-cols-3 gap-6 items-stretch">
+      <div class="rounded-3xl border-2 border-piko-ink p-8 flex flex-col">
+        <h3 class="font-display text-2xl font-bold">Explorer</h3>
+        <p class="mt-2 text-4xl font-display font-bold">Free</p>
+        <ul class="mt-6 space-y-2 text-piko-ink/80 flex-1">
+          <li>&#10003; 10 starter lessons</li>
+          <li>&#10003; Piko mini-games</li>
+          <li>&#10003; Basic badges</li>
+        </ul>
+        <a href="#cta" class="mt-8 rounded-full border-2 border-piko-ink text-center font-bold py-3 hover:bg-piko-sun transition">Start free</a>
+      </div>
+      <div class="rounded-3xl bg-piko-violet text-white p-8 flex flex-col shadow-2xl md:-translate-y-4">
+        <span class="self-start rounded-full bg-piko-sun text-piko-ink text-xs font-bold px-3 py-1">MOST POPULAR</span>
+        <h3 class="font-display text-2xl font-bold mt-4">Adventurer</h3>
+        <p class="mt-2 text-4xl font-display font-bold">$9<span class="text-base font-semibold">/mo</span></p>
+        <ul class="mt-6 space-y-2 flex-1">
+          <li>&#10003; All 120 lessons</li>
+          <li>&#10003; Build your own games</li>
+          <li>&#10003; Weekly live challenges</li>
+        </ul>
+        <a href="#cta" class="mt-8 rounded-full bg-white text-piko-violet text-center font-bold py-3 hover:scale-105 transition">Go Adventurer</a>
+      </div>
+      <div class="rounded-3xl border-2 border-piko-ink p-8 flex flex-col">
+        <h3 class="font-display text-2xl font-bold">Family</h3>
+        <p class="mt-2 text-4xl font-display font-bold">$15<span class="text-base font-semibold">/mo</span></p>
+        <ul class="mt-6 space-y-2 text-piko-ink/80 flex-1">
+          <li>&#10003; Up to 4 kids</li>
+          <li>&#10003; Parent progress dashboard</li>
+          <li>&#10003; Everything in Adventurer</li>
+        </ul>
+        <a href="#cta" class="mt-8 rounded-full border-2 border-piko-ink text-center font-bold py-3 hover:bg-piko-sun transition">Choose Family</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-16">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <h2 class="font-display text-4xl font-bold text-center">Questions, answered</h2>
+    <div class="mt-10 space-y-4">
+      <details class="rounded-2xl bg-white border-2 border-piko-ink p-5 group" open>
+        <summary class="font-display text-xl font-bold cursor-pointer list-none flex justify-between">Do kids need coding experience? <span class="group-open:rotate-45 transition">+</span></summary>
+        <p class="mt-3 text-piko-ink/80">Nope! Lessons start with pictures and blocks. No typing needed for the first chapters.</p>
+      </details>
+      <details class="rounded-2xl bg-white border-2 border-piko-ink p-5 group">
+        <summary class="font-display text-xl font-bold cursor-pointer list-none flex justify-between">Is it safe for my child? <span class="group-open:rotate-45 transition">+</span></summary>
+        <p class="mt-3 text-piko-ink/80">Yes. There are no ads, no chat with strangers, and parents can review every project.</p>
+      </details>
+      <details class="rounded-2xl bg-white border-2 border-piko-ink p-5 group">
+        <summary class="font-display text-xl font-bold cursor-pointer list-none flex justify-between">Can I cancel any time? <span class="group-open:rotate-45 transition">+</span></summary>
+        <p class="mt-3 text-piko-ink/80">Of course. Cancel in one click from your account page.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section id="cta" class="bg-piko-violet text-white py-16 relative overflow-hidden">
+  <div class="absolute -left-10 -top-10 w-40 h-40 rounded-full bg-piko-pink"></div>
+  <div class="absolute -right-8 -bottom-8 w-52 h-52 rounded-full bg-piko-sun"></div>
+  <div class="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
+    <h2 class="font-display text-4xl sm:text-5xl font-bold">Ready to build your first game?</h2>
+    <p class="mt-4 text-lg text-white/90">Free to start. Takes about two minutes to set up.</p>
+    <form class="mt-8 flex flex-col sm:flex-row gap-3 justify-center" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Yay, see you soon!';">
+      <input type="email" required placeholder="Parent email" class="rounded-full px-6 py-3 text-piko-ink w-full sm:w-72 outline-none focus:ring-4 ring-piko-sun">
+      <button class="rounded-full bg-piko-sun text-piko-ink font-bold px-8 py-3 shadow-lg hover:scale-105 transition">Start my adventure</button>
+    </form>
+  </div>
+</section>
+
+<footer class="py-8 text-center text-sm text-piko-ink/70">
+  &copy; 2026 PikoLab. Made with &#10084;&#65039; for young coders.
+</footer>
+
+</body>
+</html>

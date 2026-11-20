@@ -36,7 +36,8 @@ Playful and Bold are **expressive**: the audit enforces only the accessibility f
 2. **Palette from the subject**, not the default (audio: ember on near-black; kids learning: sun yellow + sky + coral; observability: cyan on ink). Supporting hue 60-150 degrees away. A violet-to-fuchsia gradient only if the brief calls for it.
 3. **Icons are inline SVG**, one stroke style. Emoji as icons only in Playful.
 4. **Specific copy and data**: real-sounding names, numbers, units; no "Lorem", no "Feature one".
-5. **Fill the page**: no half-empty panels, every list/table shows real rows, every plan card has its own button, art keeps its subject inside the viewport, all content visible without JavaScript (no `opacity-0` start states).
+5. **Visual polish** (`reference/visual-quality.md`, read it before building): palette recipe from the subject, a display or serif face with a voice, one hero entrance and one dealt moment, real product UI instead of boxes, one atmosphere treatment, varied section rhythm. Cover the logo: if the page could belong to any company, add specifics. `audit` flags stock blue/violet accents with no custom palette as `stock-look`.
+6. **Fill the page**: no half-empty panels, every list/table shows real rows, every plan card has its own button, art keeps its subject inside the viewport, all content visible without JavaScript (no `opacity-0` start states).
 
 ## 4. Hard rules (details and values in `reference/rules.md`; read it when fixing findings or building components)
 

@@ -13,4 +13,5 @@ Fill the page (lost 5/6 blind pairs for looking thin):
 - A 65ch column alone leaves the right half empty at 1280px. Use a two-column article: reading column plus a sticky aside (`lg:grid-cols-[minmax(0,65ch)_280px] gap-12`) with contents list, one big statistic, key facts or related reading.
 - Include at least one custom inline-SVG figure (map, diagram, timeline) with a caption, not a gradient box or stock placeholder. Related stories get small illustrated cards (SVG shape per card), not text-only links.
 - Give the piece a signature: a distinctive serif display face at 56px+ for the headline, one spot accent color from the subject, and a dark newsletter/closing band for contrast.
-- Verify with the screenshot: no region of the page wider than 300px x 400px is blank.
+- Verify with the screenshot: no region of the page wider than 300px x 400px is blank. A sticky aside that is short still looks like an empty right column in a full-page screenshot: keep the aside as long as the article (stats, key facts, contents, related reading, a second figure) or use one centered column instead. `render.py --check` reports this as `empty-column`.
+- Labels inside SVG figures (map pins, chart annotations) need 8px clearance from each other and from lines; place them on a grid, shorten them, or move them into a legend. `--check` reports `overlapping-labels`.

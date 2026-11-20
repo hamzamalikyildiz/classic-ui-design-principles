@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kai Morrow — Motion Designer</title>
+<meta name="description" content="Independent motion designer for brands, launches and title sequences.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #f5f5f0; }
+  .display { font-family: 'Unbounded', sans-serif; letter-spacing: -0.04em; }
+  .accent { color: #d4ff3a; }
+  .bg-accent { background: #d4ff3a; }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  .spin-slow { animation: spin-slow 28s linear infinite; }
+  .float { animation: float 6s ease-in-out infinite; }
+  .rise { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
+  .rise-d1 { animation-delay: .12s; } .rise-d2 { animation-delay: .24s; } .rise-d3 { animation-delay: .36s; }
+  .card:hover .card-art { transform: scale(1.06); }
+  .card-art { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+<!-- NAV -->
+<header class="fixed top-0 inset-x-0 z-50 backdrop-blur bg-black/50">
+  <nav class="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="#top" class="display text-sm font-black tracking-tight">KAI<span class="accent">/</span>MORROW</a>
+    <div class="hidden md:flex gap-8 text-sm text-white/70">
+      <a href="#work" class="hover:text-white">Work</a>
+      <a href="#services" class="hover:text-white">Services</a>
+      <a href="#clients" class="hover:text-white">Clients</a>
+    </div>
+    <a href="#contact" class="bg-accent text-black text-sm font-semibold px-4 py-2 rounded-full hover:opacity-90">Book a call</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section id="top" class="relative min-h-screen pt-28 pb-16 overflow-hidden">
+  <!-- decorative shapes -->
+  <div class="absolute -right-24 top-24 w-[32rem] h-[32rem] rounded-full border-[40px] border-accent/90 opacity-80 spin-slow" style="border-color:#d4ff3a;border-right-color:transparent"></div>
+  <div class="absolute right-16 bottom-24 w-56 h-56 bg-[#ff5a3c] float" style="border-radius:42% 58% 70% 30% / 45% 45% 55% 55%"></div>
+  <div class="absolute left-[52%] bottom-28 w-16 h-16 bg-white/90 float" style="animation-delay:-2s"></div>
+
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
+    <p class="rise text-xs uppercase tracking-[0.3em] text-white/60 mb-8">Independent motion designer &middot; Based remotely</p>
+    <h1 class="rise rise-d1 display text-[13vw] sm:text-[9vw] lg:text-[8rem] font-black leading-[0.88] max-w-5xl">
+      Motion that<br> <span class="accent">moves</span> people<span class="text-[#ff5a3c]">.</span>
+    </h1>
+    <p class="rise rise-d2 mt-10 max-w-xl text-lg text-white/70 leading-relaxed">
+      I design motion for launches, brand systems and title sequences. Sharp timing, loud color and a lot of care about the last 10 frames.
+    </p>
+    <div class="rise rise-d3 mt-10 flex flex-wrap gap-4">
+      <a href="#work" class="bg-accent text-black font-semibold px-7 py-4 rounded-full">See selected work</a>
+      <a href="#contact" class="border border-white/30 px-7 py-4 rounded-full hover:bg-white hover:text-black transition">Start a project</a>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="border-y border-white/10 py-5 overflow-hidden">
+  <p class="display text-2xl sm:text-3xl font-black whitespace-nowrap text-white/25">
+    BRAND MOTION &nbsp;&bull;&nbsp; LAUNCH FILMS &nbsp;&bull;&nbsp; TITLE SEQUENCES &nbsp;&bull;&nbsp; UI ANIMATION &nbsp;&bull;&nbsp; SOCIAL CUTS &nbsp;&bull;&nbsp; 3D LOOPS
+  </p>
+</div>
+
+<!-- SELECTED WORK -->
+<section id="work" class="mx-auto max-w-7xl px-4 sm:px-6 py-24">
+  <div class="flex items-end justify-between mb-12 gap-6 flex-wrap">
+    <h2 class="display text-4xl sm:text-6xl font-black">Selected work</h2>
+    <p class="text-white/60 max-w-xs text-sm">2019 to 2026. A selection of launches, identities and sequences.</p>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <!-- card 1 -->
+    <article class="card group">
+      <div class="overflow-hidden rounded-2xl aspect-[4/5] bg-[#1a1a1a]">
+        <svg class="card-art w-full h-full" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#1b1f0c"/><circle cx="200" cy="230" r="150" fill="#d4ff3a"/><rect x="60" y="330" width="280" height="22" fill="#0a0a0a"/><rect x="60" y="370" width="170" height="22" fill="#0a0a0a"/></svg>
+      </div>
+      <h3 class="mt-4 font-semibold text-lg">Halo Audio: Launch Film</h3>
+      <p class="text-white/55 text-sm">Brand film &middot; 60s &middot; 2025</p>
+    </article>
+    <!-- card 2 -->
+    <article class="card group">
+      <div class="overflow-hidden rounded-2xl aspect-[4/5] bg-[#1a1a1a]">
+        <svg class="card-art w-full h-full" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#2a0f0a"/><rect x="40" y="60" width="320" height="180" rx="90" fill="#ff5a3c"/><rect x="40" y="270" width="150" height="150" rx="20" fill="#f5f5f0"/><circle cx="310" cy="360" r="75" fill="#d4ff3a"/></svg>
+      </div>
+      <h3 class="mt-4 font-semibold text-lg">Form Studio: Identity System</h3>
+      <p class="text-white/55 text-sm">Logo motion &middot; Web &middot; 2025</p>
+    </article>
+    <!-- card 3 -->
+    <article class="card group">
+      <div class="overflow-hidden rounded-2xl aspect-[4/5] bg-[#1a1a1a]">
+        <svg class="card-art w-full h-full" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#0c1a2a"/><g fill="none" stroke="#7fd4ff" stroke-width="10"><circle cx="200" cy="250" r="40"/><circle cx="200" cy="250" r="90"/><circle cx="200" cy="250" r="140"/></g><rect x="0" y="0" width="400" height="60" fill="#0c1a2a"/></svg>
+      </div>
+      <h3 class="mt-4 font-semibold text-lg">Orbit: Title Sequence</h3>
+      <p class="text-white/55 text-sm">Film titles &middot; 2 min &middot; 2024</p>
+    </article>
+    <!-- card 4 -->
+    <article class="card group">
+      <div class="overflow-hidden rounded-2xl aspect-[4/5] bg-[#1a1a1a]">
+        <svg class="card-art w-full h-full" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#161616"/><polygon points="200,80 360,380 40,380" fill="#d4ff3a"/><polygon points="200,180 290,340 110,340" fill="#ff5a3c"/></svg>
+      </div>
+      <h3 class="mt-4 font-semibold text-lg">Pulse Fitness: App Motion</h3>
+      <p class="text-white/55 text-sm">UI animation &middot; iOS &middot; 2024</p>
+    </article>
+    <!-- card 5 -->
+    <article class="card group">
+      <div class="overflow-hidden rounded-2xl aspect-[4/5] bg-[#1a1a1a]">
+        <svg class="card-art w-full h-full" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#f5f5f0"/><rect x="50" y="50" width="300" height="130" fill="#0a0a0a"/><circle cx="130" cy="330" r="80" fill="#ff5a3c"/><rect x="220" y="260" width="130" height="190" fill="#d4ff3a"/></svg>
+      </div>
+      <h3 class="mt-4 font-semibold text-lg">Northbound: Social Cuts</h3>
+      <p class="text-white/55 text-sm">Social &middot; 12 cuts &middot; 2023</p>
+    </article>
+    <!-- card 6 -->
+    <article class="card group">
+      <div class="overflow-hidden rounded-2xl aspect-[4/5] bg-[#1a1a1a]">
+        <svg class="card-art w-full h-full" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice"><rect width="400" height="500" fill="#14091f"/><path d="M0 380 Q100 200 200 380 T400 380 V500 H0Z" fill="#b97cff"/><path d="M0 430 Q100 300 200 430 T400 430 V500 H0Z" fill="#d4ff3a"/><circle cx="300" cy="140" r="50" fill="#f5f5f0"/></svg>
+      </div>
+      <h3 class="mt-4 font-semibold text-lg">Drift: Album Visuals</h3>
+      <p class="text-white/55 text-sm">Music video &middot; 2023</p>
+    </article>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="bg-[#f5f5f0] text-black py-24">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <p class="text-xs uppercase tracking-[0.3em] text-black/50 mb-4">What I do</p>
+    <h2 class="display text-4xl sm:text-6xl font-black mb-14 max-w-3xl">Three ways we can work together.</h2>
+    <div class="grid gap-px bg-black/15 md:grid-cols-3 rounded-2xl overflow-hidden">
+      <div class="bg-[#f5f5f0] p-8 sm:p-10">
+        <span class="display text-5xl font-black">01</span>
+        <h3 class="mt-8 text-xl font-semibold">Launch films</h3>
+        <p class="mt-3 text-black/65 leading-relaxed">Concept to final cut for product launches, with a motion system you can reuse across channels.</p>
+        <p class="mt-6 text-sm font-semibold">From 3 weeks</p>
+      </div>
+      <div class="bg-[#f5f5f0] p-8 sm:p-10">
+        <span class="display text-5xl font-black">02</span>
+        <h3 class="mt-8 text-xl font-semibold">Identity in motion</h3>
+        <p class="mt-3 text-black/65 leading-relaxed">Logo reveals, type systems and motion guidelines so your brand moves the same way everywhere.</p>
+        <p class="mt-6 text-sm font-semibold">From 4 weeks</p>
+      </div>
+      <div class="bg-[#f5f5f0] p-8 sm:p-10">
+        <span class="display text-5xl font-black">03</span>
+        <h3 class="mt-8 text-xl font-semibold">UI and product motion</h3>
+        <p class="mt-3 text-black/65 leading-relaxed">Micro-interactions, onboarding animation and prototypes that help engineers ship the feel, not just the screens.</p>
+        <p class="mt-6 text-sm font-semibold">Retainers available</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTES -->
+<section id="clients" class="mx-auto max-w-7xl px-4 sm:px-6 py-24">
+  <h2 class="display text-3xl sm:text-5xl font-black mb-14">Kind words from clients</h2>
+  <div class="grid gap-6 md:grid-cols-3">
+    <figure class="rounded-2xl border border-white/10 p-8 flex flex-col">
+      <span class="accent text-5xl leading-none display">&ldquo;</span>
+      <blockquote class="mt-4 text-lg leading-relaxed flex-1">Kai turned a 40 second spec into a film our whole team still quotes. Every frame had a reason.</blockquote>
+      <figcaption class="mt-8 text-sm"><span class="font-semibold">Dana Reyes</span><span class="block text-white/50">Creative Director, Halo Audio</span></figcaption>
+    </figure>
+    <figure class="rounded-2xl border border-white/10 p-8 flex flex-col">
+      <span class="accent text-5xl leading-none display">&ldquo;</span>
+      <blockquote class="mt-4 text-lg leading-relaxed flex-1">Fast, precise and easy to work with. Our motion guidelines went from a PDF nobody read to a system everyone uses.</blockquote>
+      <figcaption class="mt-8 text-sm"><span class="font-semibold">Tomas Lindqvist</span><span class="block text-white/50">Head of Brand, Form Studio</span></figcaption>
+    </figure>
+    <figure class="rounded-2xl border border-white/10 p-8 flex flex-col">
+      <span class="accent text-5xl leading-none display">&ldquo;</span>
+      <blockquote class="mt-4 text-lg leading-relaxed flex-1">The onboarding animations cut our drop-off in half. Engineers loved the clear specs too.</blockquote>
+      <figcaption class="mt-8 text-sm"><span class="font-semibold">Priya Anand</span><span class="block text-white/50">Product Lead, Pulse</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- CONTACT CTA -->
+<section id="contact" class="relative mx-auto max-w-7xl px-4 sm:px-6 pb-24">
+  <div class="relative overflow-hidden rounded-[2rem] bg-accent text-black px-8 py-20 sm:px-16">
+    <div class="absolute -right-10 -bottom-16 w-72 h-72 rounded-full bg-[#ff5a3c] float"></div>
+    <div class="relative max-w-3xl">
+      <p class="text-xs uppercase tracking-[0.3em] text-black/60 mb-6">Currently booking Q1</p>
+      <h2 class="display text-4xl sm:text-7xl font-black leading-[0.95]">Let's make something move.</h2>
+      <p class="mt-6 text-lg text-black/70 max-w-xl">Tell me about the project, the timeline and where it will live. I reply within two working days.</p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <a href="mailto:hello@kaimorrow.example" class="bg-black text-white font-semibold px-7 py-4 rounded-full hover:opacity-90">hello@kaimorrow.example</a>
+        <a href="#top" class="border-2 border-black font-semibold px-7 py-4 rounded-full hover:bg-black hover:text-white transition">Back to top</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="border-t border-white/10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 py-8 flex flex-wrap items-center justify-between gap-4 text-sm text-white/50">
+    <span class="display text-xs font-black text-white/80">KAI<span class="accent">/</span>MORROW</span>
+    <span>&copy; 2026 Kai Morrow. All rights reserved.</span>
+    <div class="flex gap-6">
+      <a href="#" class="hover:text-white">Vimeo</a>
+      <a href="#" class="hover:text-white">Instagram</a>
+      <a href="#" class="hover:text-white">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

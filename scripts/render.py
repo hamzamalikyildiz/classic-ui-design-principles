@@ -42,14 +42,19 @@ def npm(*args):
     CACHE.mkdir(parents=True, exist_ok=True)
     if not (CACHE / 'package.json').exists():
         (CACHE / 'package.json').write_text('{"name":"uitools-render","private":true}')
-    return subprocess.run(['npm', *args], cwd=CACHE, capture_output=True, text=True)
+    return subprocess.run([shutil.which('npm') or 'npm', *args], cwd=CACHE, capture_output=True, text=True)
+
+
+def tailwind_bin():
+    b = CACHE / 'node_modules' / '.bin'
+    return b / 'tailwindcss.cmd' if (b / 'tailwindcss.cmd').exists() else b / 'tailwindcss'
 
 
 def compile_tailwind(html):
     if not shutil.which('npm') or not shutil.which('node'):
         log('npm/node not found; Tailwind classes will be unstyled')
         return html
-    if not (CACHE / 'node_modules' / '.bin' / 'tailwindcss').exists():
+    if not tailwind_bin().exists():
         r = npm('install', '--silent', 'tailwindcss@3')
         if r.returncode:
             log(f'could not install tailwindcss: {r.stderr.strip()[:200]}')
@@ -68,12 +73,12 @@ def compile_tailwind(html):
         (d / 'page.html').write_text(html, encoding='utf-8')
         (d / 'tailwind.config.js').write_text('module.exports=' + json.dumps({**cfg, 'content': [str(d / 'page.html')]}))
         (d / 'in.css').write_text('@tailwind base;@tailwind components;@tailwind utilities;')
-        r = subprocess.run([str(CACHE / 'node_modules' / '.bin' / 'tailwindcss'), '-c', str(d / 'tailwind.config.js'),
+        r = subprocess.run([str(tailwind_bin()), '-c', str(d / 'tailwind.config.js'),
                             '-i', str(d / 'in.css'), '-o', str(d / 'out.css'), '--minify'], capture_output=True, text=True)
         if r.returncode:
             log(f'tailwind build failed: {r.stderr.strip()[:200]}')
             return html
-        css = (d / 'out.css').read_text()
+        css = (d / 'out.css').read_text(encoding='utf-8')
     html = CDN.sub('', html)
     html = INLINE_CFG.sub('', html)
     return html.replace('</head>', f'<style>{css}</style></head>', 1)
@@ -152,6 +157,36 @@ CHECK_JS = r"""() => {
     if (n && (last - r.top) / r.height < 0.5) sparse.push(where(e) + ` (${Math.round(100 * (last - r.top) / r.height)}% filled)`);
   }
   if (sparse.length) out.push(['WARN', 'empty-panel', `${sparse.length} panel(s) are more than half empty: ${[...new Set(sparse)].slice(0, 4).join(', ')}; fill them (more rows, content) or shrink the panel`]);
+  const cols = [];
+  for (const p of document.querySelectorAll('div, section, main, article')) {
+    if (!vis(p)) continue;
+    const pr = p.getBoundingClientRect(), pcs = getComputedStyle(p);
+    if (pr.height < 700 || p.children.length < 2) continue;
+    if (!(pcs.display === 'grid' || (pcs.display === 'flex' && pcs.flexDirection.startsWith('row')))) continue;
+    for (const c of p.children) {
+      if (!vis(c)) continue;
+      const r = c.getBoundingClientRect();
+      if (r.width < 200) continue;
+      let last = r.top;
+      for (const d of c.querySelectorAll('*')) {
+        if (!vis(d)) continue;
+        const t = d.children.length === 0 && (d.innerText || '').trim();
+        if (t || ['svg', 'img', 'canvas'].includes(d.tagName.toLowerCase())) last = Math.max(last, d.getBoundingClientRect().bottom);
+      }
+      const blankH = pr.bottom - last;
+      if (blankH > 500 && blankH / pr.height > 0.4) cols.push(where(c) + ` (${Math.round(blankH)}px empty below its content)`);
+    }
+  }
+  if (cols.length) out.push(['WARN', 'empty-column', `${cols.length} column(s) end far above their row: ${[...new Set(cols)].slice(0, 3).join(', ')}; continue the column (stats, related reading, contents) or use a single column`]);
+  const labs = [...document.querySelectorAll('svg text')].filter(vis).slice(0, 200), ovl = [];
+  for (let i = 0; i < labs.length; i++) for (let j = i + 1; j < labs.length; j++) {
+    if (labs[i].ownerSVGElement !== labs[j].ownerSVGElement) continue;
+    const a = labs[i].getBoundingClientRect(), b = labs[j].getBoundingClientRect();
+    const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+    if (w > 2 && h > 2 && w * h > 0.25 * Math.min(a.width * a.height, b.width * b.height))
+      ovl.push(`"${(labs[i].textContent || '').trim().slice(0, 12)}" / "${(labs[j].textContent || '').trim().slice(0, 12)}"`);
+  }
+  if (ovl.length) out.push(['WARN', 'overlapping-labels', `${ovl.length} SVG label pair(s) overlap: ${ovl.slice(0, 3).join(', ')}; move or shorten the labels`]);
   const u = a => [...new Set(a)].slice(0, 5).join(', ');
   if (clipped.length) out.push(['WARN', 'clipped-content', `${clipped.length} element(s) cut off or overflowing: ${u(clipped)}`]);
   if (hidden.length) out.push(['WARN', 'invisible-content', `${hidden.length} element(s) with text but opacity 0 after load and scroll: ${u(hidden)}`]);

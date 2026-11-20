@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracewise - Observability</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0b0d12; color: #e6e8ee; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .card { background: #11141c; border: 1px solid rgba(255,255,255,.06); border-radius: 14px; }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="hidden md:flex w-56 shrink-0 flex-col gap-6 border-r border-white/5 bg-[#0f1219] p-5">
+    <div class="flex items-center gap-2">
+      <div class="h-7 w-7 rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500"></div>
+      <span class="font-semibold tracking-tight">Tracewise</span>
+    </div>
+    <nav class="flex flex-col gap-1 text-sm">
+      <a class="rounded-md bg-white/5 px-3 py-2 font-medium text-white">Overview</a>
+      <a class="rounded-md px-3 py-2 text-slate-400 hover:bg-white/5">Traces</a>
+      <a class="rounded-md px-3 py-2 text-slate-400 hover:bg-white/5">Logs</a>
+      <a class="rounded-md px-3 py-2 text-slate-400 hover:bg-white/5">Alerts</a>
+      <a class="rounded-md px-3 py-2 text-slate-400 hover:bg-white/5">Settings</a>
+    </nav>
+  </aside>
+
+  <main class="min-w-0 flex-1 space-y-6 p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight">Overview</h1>
+        <p class="text-sm text-slate-400">Production &middot; last 1 hour</p>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <span class="flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-emerald-300">
+          <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span></span>
+          Live
+        </span>
+        <select class="rounded-lg border border-white/10 bg-[#11141c] px-3 py-1.5 text-slate-300">
+          <option>Last 1 hour</option><option>Last 24 hours</option><option>Last 7 days</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- KPI tiles -->
+    <section class="grid grid-cols-2 gap-4 xl:grid-cols-4">
+      <div class="card p-5">
+        <p class="text-xs uppercase tracking-wider text-slate-400">p95 latency</p>
+        <p class="mt-2 text-2xl font-semibold">182 <span class="text-sm text-slate-400">ms</span></p>
+        <p class="mt-1 text-xs text-emerald-400">&#9660; 8% vs last hour</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Requests / min</p>
+        <p class="mt-2 text-2xl font-semibold">4.8k</p>
+        <p class="mt-1 text-xs text-emerald-400">&#9650; 3% vs last hour</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Error rate</p>
+        <p class="mt-2 text-2xl font-semibold text-rose-300">0.42%</p>
+        <p class="mt-1 text-xs text-rose-400">&#9650; 0.11 pts vs last hour</p>
+      </div>
+      <div class="card p-5">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Uptime</p>
+        <p class="mt-2 text-2xl font-semibold">99.98%</p>
+        <p class="mt-1 text-xs text-slate-400">30 day window</p>
+      </div>
+    </section>
+
+    <!-- Latency + services -->
+    <section class="grid gap-6 xl:grid-cols-3">
+      <div class="card p-5 xl:col-span-2">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="font-semibold">Latency</h2>
+          <div class="flex gap-4 text-xs text-slate-400">
+            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-cyan-400"></span>p95</span>
+            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-violet-400"></span>p50</span>
+          </div>
+        </div>
+        <svg viewBox="0 0 600 220" class="h-56 w-full" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="fill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(255,255,255,.06)" stroke-width="1">
+            <line x1="0" y1="50" x2="600" y2="50"/><line x1="0" y1="100" x2="600" y2="100"/>
+            <line x1="0" y1="150" x2="600" y2="150"/><line x1="0" y1="200" x2="600" y2="200"/>
+          </g>
+          <path d="M0,90 L55,100 L110,80 L165,110 L220,120 L275,70 L330,85 L385,130 L440,115 L495,100 L550,122 L600,135 L600,220 L0,220 Z" fill="url(#fill)"/>
+          <polyline points="0,90 55,100 110,80 165,110 220,120 275,70 330,85 385,130 440,115 495,100 550,122 600,135" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linejoin="round"/>
+          <polyline points="0,150 55,155 110,145 165,160 220,158 275,140 330,148 385,165 440,160 495,152 550,158 600,162" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div class="mt-4 border-t border-white/5 pt-4">
+          <p class="mb-2 text-xs uppercase tracking-wider text-slate-400">Error rate per 5 min</p>
+          <div class="flex h-14 items-end gap-1.5">
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:20%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:35%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:28%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:55%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:40%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:30%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:65%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:45%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:25%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:38%"></div>
+            <div class="flex-1 rounded-t bg-rose-400/60" style="height:50%"></div>
+            <div class="flex-1 rounded-t bg-rose-400 " style="height:82%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <h2 class="mb-4 font-semibold">Services</h2>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center justify-between">
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-400"></span>api-gateway</span>
+            <span class="mono text-xs text-slate-400">42 ms</span>
+          </li>
+          <li class="flex items-center justify-between">
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-400"></span>auth-service</span>
+            <span class="mono text-xs text-slate-400">18 ms</span>
+          </li>
+          <li class="flex items-center justify-between">
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-400"></span>billing-worker</span>
+            <span class="mono text-xs text-amber-300">311 ms</span>
+          </li>
+          <li class="flex items-center justify-between">
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-rose-400"></span>search-index</span>
+            <span class="mono text-xs text-rose-300">1.2% err</span>
+          </li>
+          <li class="flex items-center justify-between">
+            <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-400"></span>notify-queue</span>
+            <span class="mono text-xs text-slate-400">7 ms</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Logs + SDK snippet -->
+    <section class="grid gap-6 xl:grid-cols-3">
+      <div class="card p-5 xl:col-span-2">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="font-semibold">Live log tail</h2>
+          <span class="mono text-xs text-slate-400">streaming</span>
+        </div>
+        <div class="mono space-y-1.5 overflow-hidden rounded-lg bg-black/40 p-4 text-xs leading-relaxed">
+          <p class="truncate"><span class="text-slate-500">12:04:11</span> <span class="text-emerald-400">INFO </span> <span class="text-cyan-300">api-gateway</span>  GET /v1/orders 200 38ms</p>
+          <p class="truncate"><span class="text-slate-500">12:04:12</span> <span class="text-emerald-400">INFO </span> <span class="text-cyan-300">auth-service</span>  token refreshed user=u_8421</p>
+          <p class="truncate"><span class="text-slate-500">12:04:13</span> <span class="text-amber-300">WARN </span> <span class="text-cyan-300">billing-worker</span>  retry 2/5 invoice=inv_2291</p>
+          <p class="truncate"><span class="text-slate-500">12:04:14</span> <span class="text-rose-400">ERROR</span> <span class="text-cyan-300">search-index</span>  shard timeout after 900ms</p>
+          <p class="truncate"><span class="text-slate-500">12:04:15</span> <span class="text-emerald-400">INFO </span> <span class="text-cyan-300">notify-queue</span>  delivered 128 messages</p>
+          <p class="truncate"><span class="text-slate-500">12:04:16</span> <span class="text-emerald-400">INFO </span> <span class="text-cyan-300">api-gateway</span>  POST /v1/checkout 201 121ms</p>
+          <p class="truncate"><span class="text-slate-500">12:04:17</span> <span class="text-rose-400">ERROR</span> <span class="text-cyan-300">search-index</span>  query failed: connection reset</p>
+          <p class="truncate"><span class="text-slate-500">12:04:18</span> <span class="text-emerald-400">INFO </span> <span class="text-cyan-300">auth-service</span>  login ok user=u_1190</p>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="font-semibold">Install the SDK</h2>
+          <button onclick="copySnippet(this)" class="rounded-md border border-white/10 px-2.5 py-1 text-xs text-slate-300 hover:bg-white/5">Copy</button>
+        </div>
+        <pre id="snippet" class="mono overflow-x-auto rounded-lg bg-black/40 p-4 text-xs leading-relaxed text-slate-300"><span class="text-slate-500"># terminal</span>
+npm install @tracewise/sdk
+
+<span class="text-slate-500">// app entry</span>
+<span class="text-violet-300">import</span> { init } <span class="text-violet-300">from</span> <span class="text-emerald-300">'@tracewise/sdk'</span>;
+
+init({
+  apiKey: process.env.TRACEWISE_KEY,
+  service: <span class="text-emerald-300">'api-gateway'</span>
+});</pre>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function copySnippet(btn) {
+    const text = document.getElementById('snippet').innerText;
+    try { navigator.clipboard.writeText(text); } catch (e) {}
+    btn.textContent = 'Copied';
+    setTimeout(() => (btn.textContent = 'Copy'), 1500);
+  }
+</script>
+</body>
+</html>

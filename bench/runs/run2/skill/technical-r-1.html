@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracewise Observability</title>
+<meta name="description" content="Tracewise developer observability: latency, error rate, live logs, SDK install and services.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'] },
+  colors: {
+    ink: { 950: '#080b10', 900: '#0d1117', 800: '#161b22', 700: '#262c36' },
+    signal: '#5eead4', warn: '#fcd34d', alert: '#fb7185', ok: '#4ade80'
+  }
+}}};
+</script>
+<style>
+  body { background: #080b10; color: #e6edf3; }
+  .fade-up { animation: fadeUp .6s ease both; }
+  .d1 { animation-delay: .08s } .d2 { animation-delay: .16s } .d3 { animation-delay: .24s }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+  .blink { animation: blink 1.6s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .3 } }
+  .grain { background-image: radial-gradient(rgba(94, 234, 212, .05) 1px, transparent 1px); background-size: 22px 22px; }
+  :focus-visible { outline: 2px solid #5eead4; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="font-sans antialiased min-h-screen bg-ink-950">
+<div class="lg:grid lg:grid-cols-[208px_1fr] min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="hidden lg:flex flex-col gap-6 border-r border-ink-700 bg-ink-900 p-5">
+    <div class="flex items-center gap-2 font-mono text-sm font-medium">
+      <span class="h-2.5 w-2.5 rounded-full bg-signal blink" aria-hidden="true"></span>
+      tracewise
+    </div>
+    <nav aria-label="Primary" class="flex flex-col gap-1 text-sm">
+      <a href="#" class="rounded-md bg-ink-800 px-3 py-1.5 text-white">Overview</a>
+      <a href="#" class="rounded-md px-3 py-1.5 text-zinc-400 hover:bg-ink-800 hover:text-white">Traces</a>
+      <a href="#logs" class="rounded-md px-3 py-1.5 text-zinc-400 hover:bg-ink-800 hover:text-white">Logs</a>
+      <a href="#services" class="rounded-md px-3 py-1.5 text-zinc-400 hover:bg-ink-800 hover:text-white">Services</a>
+      <a href="#" class="rounded-md px-3 py-1.5 text-zinc-400 hover:bg-ink-800 hover:text-white">Alerts <span class="ml-1 rounded bg-alert/15 px-1.5 font-mono text-xs text-alert">3</span></a>
+      <a href="#" class="rounded-md px-3 py-1.5 text-zinc-400 hover:bg-ink-800 hover:text-white">Settings</a>
+    </nav>
+    <div class="mt-auto font-mono text-xs text-zinc-400">
+      <div>env: <span class="text-zinc-300">production</span></div>
+      <div>sdk: <span class="text-zinc-300">2.14.0</span></div>
+    </div>
+  </aside>
+
+  <main class="min-w-0 grain p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Header -->
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between fade-up">
+      <div>
+        <p class="font-mono text-xs text-zinc-400">prod / checkout-api / us-east-1</p>
+        <h1 class="text-2xl font-semibold tracking-tight">Overview</h1>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <div role="group" aria-label="Time range" class="flex rounded-md border border-ink-700 bg-ink-900 p-0.5 font-mono text-xs">
+          <button class="rounded px-2.5 h-8 text-zinc-400 hover:text-white">1h</button>
+          <button class="rounded px-2.5 h-8 bg-ink-700 text-white" aria-pressed="true">6h</button>
+          <button class="rounded px-2.5 h-8 text-zinc-400 hover:text-white">24h</button>
+          <button class="rounded px-2.5 h-8 text-zinc-400 hover:text-white">7d</button>
+        </div>
+        <button class="h-8 rounded-md border border-ink-700 px-3 text-sm text-zinc-200 hover:bg-ink-800">Export</button>
+        <button class="h-11 rounded-md bg-signal px-4 text-sm font-medium text-ink-950 hover:brightness-110">Create alert</button>
+      </div>
+    </header>
+
+    <!-- Alert strip -->
+    <div role="status" class="fade-up d1 flex flex-wrap items-center gap-3 rounded-md border border-alert/30 bg-alert/10 px-4 py-3 text-sm">
+      <span class="font-mono text-xs font-medium text-alert">SLO BURN</span>
+      <span class="text-zinc-200">checkout-api p99 above 300 ms for 12 min, burning error budget at 3.1x</span>
+      <span class="font-mono text-xs text-zinc-400">since 14:02 UTC</span>
+      <a href="#logs" class="ml-auto font-medium text-alert underline underline-offset-4">Investigate</a>
+    </div>
+
+    <!-- KPIs -->
+    <section aria-label="Key metrics" class="grid grid-cols-2 xl:grid-cols-4 gap-4 fade-up d1">
+      <article class="rounded-md border border-ink-700 bg-ink-900 p-4">
+        <p class="text-xs text-zinc-400">p95 latency</p>
+        <p class="mt-2 font-mono text-2xl tabular-nums">184<span class="text-sm text-zinc-400"> ms</span></p>
+        <p class="mt-1 font-mono text-xs text-ok">&darr; 6.2% vs 1h</p>
+      </article>
+      <article class="rounded-md border border-ink-700 bg-ink-900 p-4">
+        <p class="text-xs text-zinc-400">Error rate</p>
+        <p class="mt-2 font-mono text-2xl tabular-nums">0.42<span class="text-sm text-zinc-400"> %</span></p>
+        <p class="mt-1 font-mono text-xs text-warn">&uarr; 0.11 pts vs 1h</p>
+      </article>
+      <article class="rounded-md border border-ink-700 bg-ink-900 p-4">
+        <p class="text-xs text-zinc-400">Throughput</p>
+        <p class="mt-2 font-mono text-2xl tabular-nums">2,847<span class="text-sm text-zinc-400"> req/s</span></p>
+        <p class="mt-1 font-mono text-xs text-ok">&uarr; 3.4% vs 1h</p>
+      </article>
+      <article class="rounded-md border border-ink-700 bg-ink-900 p-4">
+        <p class="text-xs text-zinc-400">Availability (SLO 99.90)</p>
+        <p class="mt-2 font-mono text-2xl tabular-nums">99.94<span class="text-sm text-zinc-400"> %</span></p>
+        <p class="mt-1 font-mono text-xs text-zinc-400">budget left 62%</p>
+      </article>
+    </section>
+
+    <!-- Latency + services -->
+    <section class="grid gap-4 xl:grid-cols-3 fade-up d2">
+      <div class="xl:col-span-2 rounded-md border border-ink-700 bg-ink-900 p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-sm font-medium">Latency, ms</h2>
+          <ul class="flex gap-4 font-mono text-xs text-zinc-400" aria-label="Legend">
+            <li><span class="inline-block h-0.5 w-3 bg-signal align-middle"></span> p50</li>
+            <li><span class="inline-block h-0.5 w-3 bg-sky-300 align-middle"></span> p95</li>
+            <li><span class="inline-block h-0.5 w-3 bg-warn align-middle"></span> p99</li>
+            <li><span class="inline-block h-0.5 w-3 border-t border-dashed border-alert align-middle"></span> SLO 300</li>
+          </ul>
+        </div>
+        <svg id="latency" viewBox="0 0 640 220" class="mt-4 h-56 w-full" role="img" aria-label="Latency p50, p95 and p99 over the last 6 hours with a 300 ms SLO line"></svg>
+      </div>
+
+      <div id="services" class="rounded-md border border-ink-700 bg-ink-900 p-4">
+        <h2 class="text-sm font-medium">Services</h2>
+        <ul class="mt-3 divide-y divide-ink-700 font-mono text-xs">
+          <li class="flex items-center gap-3 rounded bg-ink-800 px-2 py-2">
+            <span class="h-2 w-2 rounded-full bg-warn" aria-hidden="true"></span>
+            <span class="flex-1 text-zinc-100">checkout-api</span>
+            <span class="tabular-nums text-zinc-300">184 ms</span>
+            <span class="w-14 text-right tabular-nums text-zinc-400">0.42%</span>
+          </li>
+          <li class="flex items-center gap-3 px-2 py-2">
+            <span class="h-2 w-2 rounded-full bg-ok" aria-hidden="true"></span>
+            <span class="flex-1 text-zinc-200">payments-worker</span>
+            <span class="tabular-nums text-zinc-400">96 ms</span>
+            <span class="w-14 text-right tabular-nums text-zinc-400">0.08%</span>
+          </li>
+          <li class="flex items-center gap-3 px-2 py-2">
+            <span class="h-2 w-2 rounded-full bg-ok" aria-hidden="true"></span>
+            <span class="flex-1 text-zinc-200">inventory-svc</span>
+            <span class="tabular-nums text-zinc-400">41 ms</span>
+            <span class="w-14 text-right tabular-nums text-zinc-400">0.00%</span>
+          </li>
+          <li class="flex items-center gap-3 px-2 py-2">
+            <span class="h-2 w-2 rounded-full bg-ok" aria-hidden="true"></span>
+            <span class="flex-1 text-zinc-200">auth-gateway</span>
+            <span class="tabular-nums text-zinc-400">22 ms</span>
+            <span class="w-14 text-right tabular-nums text-zinc-400">0.01%</span>
+          </li>
+          <li class="flex items-center gap-3 px-2 py-2">
+            <span class="h-2 w-2 rounded-full bg-alert" aria-hidden="true"></span>
+            <span class="flex-1 text-zinc-200">search-indexer</span>
+            <span class="tabular-nums text-zinc-400">512 ms</span>
+            <span class="w-14 text-right tabular-nums text-alert">1.87%</span>
+          </li>
+        </ul>
+        <div class="mt-4 rounded-md border border-ink-700 p-3 font-mono text-xs leading-relaxed text-zinc-400">
+          <p class="text-zinc-200">checkout-api &middot; us-east-1</p>
+          <p>version 4.8.2 &middot; sha 3f9a1c7</p>
+          <p>replicas 12/12 &middot; cpu 61% &middot; mem 72%</p>
+          <p>deployed 13:48 UTC by ci-bot</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Errors + SDK -->
+    <section class="grid gap-4 xl:grid-cols-3 fade-up d3">
+      <div class="rounded-md border border-ink-700 bg-ink-900 p-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-medium">Error rate, %</h2>
+          <span class="font-mono text-xs text-zinc-400">5 min buckets</span>
+        </div>
+        <svg id="errors" viewBox="0 0 300 160" class="mt-4 h-40 w-full" role="img" aria-label="Error rate bars for the last 2 hours"></svg>
+      </div>
+
+      <div class="xl:col-span-2 rounded-md border border-ink-700 bg-ink-900 p-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-medium">Install the SDK</h2>
+          <button id="copy" class="h-8 rounded-md border border-ink-700 px-3 font-mono text-xs text-zinc-200 hover:bg-ink-800">Copy</button>
+        </div>
+        <pre id="snippet" class="mt-3 overflow-x-auto rounded-md bg-ink-950 p-4 font-mono text-xs leading-6 text-zinc-300"><span class="text-zinc-400"># install</span>
+npm install @tracewise/sdk
+
+<span class="text-zinc-400">// src/instrument.js</span>
+<span class="text-sky-300">import</span> { init } <span class="text-sky-300">from</span> <span class="text-ok">"@tracewise/sdk"</span>;
+
+init({
+  service: <span class="text-ok">"checkout-api"</span>,
+  dsn: process.env.TRACEWISE_DSN,
+  sampleRate: <span class="text-warn">0.25</span>,
+});</pre>
+      </div>
+    </section>
+
+    <!-- Live logs -->
+    <section id="logs" class="rounded-md border border-ink-700 bg-ink-900 fade-up d3" aria-labelledby="logs-title">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-ink-700 px-4 py-3">
+        <div class="flex items-center gap-2">
+          <h2 id="logs-title" class="text-sm font-medium">Live log tail</h2>
+          <span class="flex items-center gap-1.5 font-mono text-xs text-ok"><span class="h-1.5 w-1.5 rounded-full bg-ok blink"></span>streaming</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="search" placeholder="filter service or trace id" class="h-8 w-56 rounded-md border border-ink-700 bg-ink-950 px-3 font-mono text-xs text-zinc-200 placeholder:text-zinc-600">
+          <button id="pause" aria-pressed="false" class="h-8 rounded-md border border-ink-700 px-3 text-xs text-zinc-200 hover:bg-ink-800">Pause</button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[640px] font-mono text-xs">
+          <thead class="text-left text-zinc-400">
+            <tr class="border-b border-ink-700">
+              <th class="px-4 py-2 font-normal">time</th>
+              <th class="px-2 py-2 font-normal">level</th>
+              <th class="px-2 py-2 font-normal">service</th>
+              <th class="px-2 py-2 font-normal">message</th>
+              <th class="px-4 py-2 font-normal">trace</th>
+            </tr>
+          </thead>
+          <tbody id="log-body" class="text-zinc-300"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// Latency chart
+const latency = {
+  p50: [62, 58, 66, 71, 64, 60, 68, 74, 70, 63, 59, 65, 72, 68, 61, 57, 63],
+  p95: [170, 164, 182, 196, 188, 175, 201, 224, 210, 190, 178, 186, 230, 218, 192, 176, 184],
+  p99: [260, 248, 275, 312, 298, 281, 330, 362, 341, 305, 270, 289, 358, 326, 296, 268, 281]
+};
+const colors = { p50: '#5eead4', p95: '#7dd3fc', p99: '#fcd34d' };
+const svgNS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs, parent) => {
+  const n = document.createElementNS(svgNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+};
+
+(function drawLatency() {
+  const svg = document.getElementById('latency');
+  const top = 12, bottom = 186, max = 400, n = latency.p50.length;
+  const x = i => 44 + i * (640 - 60) / (n - 1);
+  const y = v => bottom - (v / max) * (bottom - top);
+  [0, 100, 200, 300, 400].forEach(v => {
+    el('line', { x1: 44, x2: 636, y1: y(v), y2: y(v), stroke: '#262c36' }, svg);
+    el('text', { x: 36, y: y(v) + 4, 'text-anchor': 'end', fill: '#8b949e', 'font-size': 11, 'font-family': 'JetBrains Mono' }, svg).textContent = v;
+  });
+  el('line', { x1: 44, x2: 636, y1: y(300), y2: y(300), stroke: '#fb7185', 'stroke-dasharray': '5 4' }, svg);
+  el('text', { x: 636, y: y(300) - 6, 'text-anchor': 'end', fill: '#fb7185', 'font-size': 11, 'font-family': 'JetBrains Mono' }, svg).textContent = 'SLO 300 ms';
+  ['14:00', '15:00', '16:00', '17:00', '18:00', '19:00'].forEach((t, i) => {
+    el('text', { x: 44 + i * 118.4, y: 206, 'text-anchor': i === 0 ? 'start' : 'middle', fill: '#8b949e', 'font-size': 11, 'font-family': 'JetBrains Mono' }, svg).textContent = t;
+  });
+  for (const key of ['p50', 'p95', 'p99']) {
+    const pts = latency[key].map((v, i) => x(i) + ',' + y(v)).join(' ');
+    el('polyline', { points: pts, fill: 'none', stroke: colors[key], 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
+  }
+  const spike = 7;
+  el('circle', { cx: x(spike), cy: y(latency.p99[spike]), r: 4, fill: '#fcd34d', stroke: '#080b10', 'stroke-width': 2 }, svg);
+  el('text', { x: x(spike) - 8, y: y(latency.p99[spike]) - 10, 'text-anchor': 'end', fill: '#e6edf3', 'font-size': 11, 'font-family': 'Inter' }, svg).textContent = 'deploy 3f9a1c: cache cold';
+})();
+
+// Error rate bars
+(function drawErrors() {
+  const svg = document.getElementById('errors');
+  const vals = [0.2, 0.3, 0.25, 0.4, 0.35, 0.5, 0.45, 0.6, 0.8, 0.7, 0.9, 1.1, 0.95, 0.6, 0.5, 0.42, 0.38, 0.44, 0.52, 0.48, 0.41, 0.39, 0.42, 0.45];
+  const max = 1.2, base = 140, top = 10;
+  vals.forEach((v, i) => {
+    const h = (v / max) * (base - top);
+    const color = v >= 1 ? '#fb7185' : v >= 0.5 ? '#fcd34d' : '#5eead4';
+    el('rect', { x: 8 + i * 12, y: base - h, width: 8, height: h, rx: 1, fill: color }, svg);
+  });
+  el('line', { x1: 0, x2: 300, y1: base, y2: base, stroke: '#262c36' }, svg);
+  el('text', { x: 0, y: 156, fill: '#8b949e', 'font-size': 9, 'font-family': 'JetBrains Mono' }, svg).textContent = '-2h';
+  el('text', { x: 300, y: 156, 'text-anchor': 'end', fill: '#8b949e', 'font-size': 9, 'font-family': 'JetBrains Mono' }, svg).textContent = 'now';
+})();
+
+// Copy snippet
+document.getElementById('copy').addEventListener('click', async e => {
+  const btn = e.currentTarget;
+  try {
+    await navigator.clipboard.writeText(document.getElementById('snippet').textContent);
+    btn.textContent = 'Copied';
+  } catch (_) {
+    btn.textContent = 'Copy failed';
+  }
+  setTimeout(() => (btn.textContent = 'Copy'), 1500);
+});
+
+// Live log tail
+(function liveLogs() {
+  const body = document.getElementById('log-body');
+  const pauseBtn = document.getElementById('pause');
+  const levelStyle = { INFO: 'text-sky-300', WARN: 'text-warn', ERROR: 'text-alert', DEBUG: 'text-zinc-400' };
+  const services = ['checkout-api', 'payments-worker', 'inventory-svc', 'auth-gateway', 'search-indexer'];
+  const msgs = [
+    ['INFO', 'checkout-api', 'POST /v1/charges 201 in 142 ms'],
+    ['INFO', 'inventory-svc', 'GET /v1/stock/sku_8831 200 in 19 ms'],
+    ['WARN', 'checkout-api', 'retry 1/3 upstream=stripe timeout after 2000 ms'],
+    ['DEBUG', 'auth-gateway', 'token refreshed sub=usr_20931 ttl=3600'],
+    ['ERROR', 'search-indexer', 'bulk rejected 429 shard=5 retry_after=8s'],
+    ['INFO', 'payments-worker', 'settled batch=418 count=36 lag_ms=212'],
+    ['WARN', 'checkout-api', 'cache miss key=cart:9f21 fallback=db'],
+    ['INFO', 'notify-queue', 'delivered email msg=ord_77120 attempt=1'],
+    ['DEBUG', 'inventory-svc', 'reserve sku_1204 qty=2 hold=900s'],
+    ['ERROR', 'checkout-api', 'db pool exhausted waited=318 ms max=40'],
+    ['INFO', 'auth-gateway', 'jwks cache refreshed keys=3'],
+    ['WARN', 'payments-worker', 'consumer lag partition=4 lag=1832']
+  ];
+  const hex = n => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  const stamp = () => {
+    const d = new Date();
+    return [d.getHours(), d.getMinutes(), d.getSeconds()].map(v => String(v).padStart(2, '0')).join(':') + '.' + String(d.getMilliseconds()).padStart(3, '0');
+  };
+  const row = () => {
+    const [level, svc, text] = msgs[Math.floor(Math.random() * msgs.length)];
+    const tr = document.createElement('tr');
+    tr.className = 'border-b border-ink-800 hover:bg-ink-800/60';
+    tr.innerHTML =
+      `<td class="px-4 py-2 tabular-nums text-zinc-400">${stamp()}</td>` +
+      `<td class="px-2 py-2 ${levelStyle[level]}">${level}</td>` +
+      `<td class="px-2 py-2 text-zinc-400">${svc}</td>` +
+      `<td class="px-2 py-2 text-zinc-200">${text}</td>` +
+      `<td class="px-4 py-2 text-zinc-400">${hex(12)}</td>`;
+    return tr;
+  };
+  for (let i = 0; i < 14; i++) body.appendChild(row());
+  let paused = false;
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    pauseBtn.setAttribute('aria-pressed', String(paused));
+  });
+  const timer = setInterval(() => {
+    if (paused) return;
+    body.prepend(row());
+    while (body.children.length > 40) body.lastElementChild.remove();
+  }, 1800);
+  window.addEventListener('pagehide', () => clearInterval(timer));
+})();
+</script>
+</body>
+</html>

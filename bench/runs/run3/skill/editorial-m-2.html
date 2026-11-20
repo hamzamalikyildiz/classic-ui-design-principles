@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slow Tomato Sugo</title>
+  <meta name="description" content="A weeknight-friendly tomato sugo that rewards patience, with method, ingredients and related recipes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { paper: '#FBF7F0', ink: '#1F1A17', rule: '#D9CFC1', paprika: '#A4432A', ochre: '#E3B06A', muted: '#6B5F55' },
+          fontFamily: { display: ['Fraunces', 'Georgia', 'serif'], body: ['"Source Serif 4"', 'Georgia', 'serif'] }
+        }
+      }
+    };
+  </script>
+  <style>
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .rise { animation: rise 0.7s ease-out both; }
+    .rise-2 { animation-delay: 0.12s; }
+    .rise-3 { animation-delay: 0.24s; }
+    .dropcap::first-letter { float: left; font-family: Fraunces, Georgia, serif; font-size: 4.5rem; line-height: 0.9; font-weight: 600; color: #A4432A; padding: 0.35rem 0.5rem 0 0; }
+    @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+  </style>
+</head>
+<body class="bg-paper text-ink font-body antialiased">
+
+  <header class="border-b border-rule">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 py-3 text-sm text-muted">
+        <span>Issue 214 &middot; November 2026</span>
+        <span>The Hearth &amp; Salt</span>
+      </div>
+      <nav aria-label="Sections" class="flex flex-wrap items-baseline justify-between gap-4 border-t border-rule py-5">
+        <a href="#" class="font-display text-3xl font-semibold tracking-tight">The Hearth &amp; Salt</a>
+        <ul class="flex flex-wrap gap-6 text-base">
+          <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Recipes</a></li>
+          <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Essays</a></li>
+          <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Techniques</a></li>
+          <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Kitchen Notes</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-4 sm:px-6">
+
+    <section class="pt-16 pb-12">
+      <p class="rise text-sm font-semibold uppercase tracking-[0.18em] text-paprika">Weeknight Italian, slowed down</p>
+      <h1 class="rise rise-2 mt-4 font-display text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-7xl">The sauce that taught me to wait</h1>
+      <p class="rise rise-2 mt-6 max-w-prose text-xl leading-relaxed text-muted">Forty minutes of heat cannot fix a tomato. Two and a half hours of quiet can, and the result is a sugo that tastes like it was planned for a month.</p>
+
+      <div class="rise rise-3 mt-8 flex items-center gap-4 border-t border-rule pt-6">
+        <svg class="h-12 w-12 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="24" fill="#A4432A"/>
+          <text x="24" y="30" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="16" font-weight="600" fill="#FBF7F0">MR</text>
+        </svg>
+        <div class="text-sm leading-snug">
+          <p class="font-semibold">By Marta Reyes</p>
+          <p class="text-muted">Tested three times &middot; 2 hr 40 min &middot; Serves 6</p>
+        </div>
+      </div>
+
+      <figure class="rise rise-3 mt-12">
+        <svg viewBox="0 0 800 420" class="h-auto w-full rounded-sm" role="img" aria-labelledby="fig1-title">
+          <title id="fig1-title">A heavy pot with a lid ajar and tomatoes beside it</title>
+          <rect width="800" height="420" fill="#F1E6D3"/>
+          <rect x="0" y="330" width="800" height="90" fill="#E7D6BC"/>
+          <path d="M210 170 H520 Q530 170 530 180 V300 Q530 340 490 340 H250 Q210 340 210 300 Z" fill="#2E2A27"/>
+          <rect x="200" y="150" width="340" height="22" rx="8" fill="#3B3632"/>
+          <circle cx="365" cy="138" r="10" fill="#3B3632"/>
+          <path d="M530 210 H585 Q600 210 600 225 Q600 240 585 240 H530" fill="none" stroke="#2E2A27" stroke-width="12" stroke-linecap="round"/>
+          <path d="M240 200 H500 V300 Q500 320 480 320 H260 Q240 320 240 300 Z" fill="#A4432A"/>
+          <circle cx="290" cy="265" r="22" fill="#C85A3C"/>
+          <circle cx="340" cy="285" r="18" fill="#D66B47"/>
+          <circle cx="395" cy="262" r="24" fill="#B8402A"/>
+          <circle cx="450" cy="284" r="19" fill="#C85A3C"/>
+          <circle cx="330" cy="236" r="12" fill="#E3B06A"/>
+          <circle cx="420" cy="232" r="10" fill="#E3B06A"/>
+          <circle cx="140" cy="312" r="30" fill="#B8402A"/>
+          <circle cx="695" cy="300" r="26" fill="#C85A3C"/>
+          <path d="M140 282 Q146 268 152 282" fill="none" stroke="#4E6B3A" stroke-width="4" stroke-linecap="round"/>
+          <path d="M360 90 Q350 70 362 52 Q374 36 364 16" fill="none" stroke="#8C7F72" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+          <path d="M400 96 Q392 76 404 58 Q416 42 406 22" fill="none" stroke="#8C7F72" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+        <figcaption class="mt-3 max-w-prose text-sm leading-relaxed text-muted"><span class="font-semibold text-ink">Fig. 1.</span> A heavy pot, a lid left ajar, and the tomatoes that will spend the next two hours becoming something else.</figcaption>
+      </figure>
+    </section>
+
+    <div class="grid gap-12 pb-20 lg:grid-cols-[minmax(0,65ch)_280px]">
+
+      <article class="min-w-0">
+        <h2 class="font-display text-3xl font-semibold leading-tight">Why slow is the whole trick</h2>
+        <p class="dropcap mt-6 max-w-prose text-lg leading-[1.75]">Most tomato sauces fail in the first ten minutes. The cook adds everything at once, turns the heat up to hurry things along, and ends with something bright and thin that tastes mostly of onion. The fix is not a secret ingredient. It is patience with the pot, and a willingness to let the water leave the fruit before anything else happens.</p>
+        <p class="mt-6 max-w-prose text-lg leading-[1.75]">My grandmother never measured anything. She kept a wooden spoon in the pot and returned to it every few minutes, scraping the bottom and tipping the lid to see what the steam was doing. This recipe is my attempt to write down those returns so that a cook who is not standing in her kitchen can still arrive at the same place.</p>
+
+        <blockquote class="my-12 border-y border-rule py-10">
+          <p class="max-w-prose font-display text-3xl italic leading-snug text-paprika sm:text-4xl">Tomatoes do not need to be rushed. They need to be left alone long enough to forget what they were.</p>
+          <footer class="mt-5 text-sm text-muted">Marta Reyes, from her notebook</footer>
+        </blockquote>
+
+        <h2 id="ingredients" class="font-display text-3xl font-semibold leading-tight">What you will need</h2>
+        <p class="mt-4 max-w-prose text-lg leading-[1.75]">Use the ripest plum tomatoes you can find. Pale, watery fruit will cook down into something flat, however long you wait.</p>
+        <ul class="mt-8 divide-y divide-rule border-y border-rule">
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Ripe plum tomatoes</span><span class="tabular-nums text-muted">1.2 kg</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Extra virgin olive oil</span><span class="tabular-nums text-muted">3 tbsp</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Yellow onion, finely chopped</span><span class="tabular-nums text-muted">1</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Garlic cloves, smashed</span><span class="tabular-nums text-muted">4</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Fennel seed, lightly toasted</span><span class="tabular-nums text-muted">1 tsp</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Chili flakes</span><span class="tabular-nums text-muted">1/2 tsp</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Tomato paste</span><span class="tabular-nums text-muted">2 tbsp</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Dry white wine</span><span class="tabular-nums text-muted">200 ml</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Parmesan rind</span><span class="tabular-nums text-muted">60 g</span></li>
+          <li class="flex justify-between gap-6 py-3 text-lg"><span>Sugar, fine salt, basil</span><span class="tabular-nums text-muted">to taste</span></li>
+        </ul>
+
+        <h2 id="method" class="mt-16 font-display text-3xl font-semibold leading-tight">The method</h2>
+        <ol class="mt-8 space-y-8">
+          <li class="grid grid-cols-[3rem_1fr] gap-4">
+            <span class="font-display text-4xl font-semibold leading-none text-paprika" aria-hidden="true">1</span>
+            <p class="max-w-prose text-lg leading-[1.75]">Warm the oil over medium-low heat, add the onion with a pinch of salt, and cook for twelve minutes until it is soft and sweet, not coloured.</p>
+          </li>
+          <li class="grid grid-cols-[3rem_1fr] gap-4">
+            <span class="font-display text-4xl font-semibold leading-none text-paprika" aria-hidden="true">2</span>
+            <p class="max-w-prose text-lg leading-[1.75]">Add the garlic, fennel and chili and stir for two minutes. Stir in the tomato paste and let it darken slightly on the bottom of the pan.</p>
+          </li>
+          <li class="grid grid-cols-[3rem_1fr] gap-4">
+            <span class="font-display text-4xl font-semibold leading-none text-paprika" aria-hidden="true">3</span>
+            <p class="max-w-prose text-lg leading-[1.75]">Pour in the wine and let it bubble until nearly gone. Add the tomatoes, crushed by hand, along with the cheese rind and a teaspoon of sugar.</p>
+          </li>
+          <li class="grid grid-cols-[3rem_1fr] gap-4">
+            <span class="font-display text-4xl font-semibold leading-none text-paprika" aria-hidden="true">4</span>
+            <p class="max-w-prose text-lg leading-[1.75]">Cover with the lid set slightly open and simmer very gently for ninety minutes. Scrape the bottom every fifteen minutes and do not let it boil hard.</p>
+          </li>
+          <li class="grid grid-cols-[3rem_1fr] gap-4">
+            <span class="font-display text-4xl font-semibold leading-none text-paprika" aria-hidden="true">5</span>
+            <p class="max-w-prose text-lg leading-[1.75]">Remove the lid and cook for another thirty minutes, until the sauce coats the back of a spoon and the oil rises at the edges.</p>
+          </li>
+          <li class="grid grid-cols-[3rem_1fr] gap-4">
+            <span class="font-display text-4xl font-semibold leading-none text-paprika" aria-hidden="true">6</span>
+            <p class="max-w-prose text-lg leading-[1.75]">Fish out the rind, season with salt, tear in the basil and rest for ten minutes. Serve over pasta with more oil and a grind of pepper.</p>
+          </li>
+        </ol>
+      </article>
+
+      <aside aria-label="Recipe details" class="lg:sticky lg:top-8 lg:self-start">
+        <div class="space-y-10 text-base">
+          <section>
+            <h2 class="font-display text-xl font-semibold">In this recipe</h2>
+            <ol class="mt-4 space-y-2 text-muted">
+              <li><a href="#ingredients" class="hover:text-paprika underline decoration-rule underline-offset-4">What you will need</a></li>
+              <li><a href="#method" class="hover:text-paprika underline decoration-rule underline-offset-4">The method</a></li>
+              <li><a href="#cook-next" class="hover:text-paprika underline decoration-rule underline-offset-4">Cook next</a></li>
+            </ol>
+          </section>
+
+          <section class="border-t border-rule pt-8">
+            <p class="font-display text-7xl font-semibold leading-none text-paprika tabular-nums">2:40</p>
+            <p class="mt-3 leading-snug text-muted">Total time from first onion to final spoonful, most of it unattended.</p>
+          </section>
+
+          <section class="border-t border-rule pt-8">
+            <h2 class="font-display text-xl font-semibold">Key facts</h2>
+            <dl class="mt-4 space-y-3">
+              <div class="flex justify-between gap-4"><dt class="text-muted">Hands-on</dt><dd class="tabular-nums">25 min</dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-muted">Serves</dt><dd class="tabular-nums">6</dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-muted">Keeps</dt><dd class="tabular-nums">5 days chilled</dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-muted">Freezes</dt><dd class="tabular-nums">3 months</dd></div>
+            </dl>
+          </section>
+
+          <section class="border-t border-rule pt-8">
+            <h2 class="font-display text-xl font-semibold">Reading on the side</h2>
+            <ul class="mt-4 space-y-4 leading-snug">
+              <li><span class="block text-sm text-muted">Essay</span>The case for the wooden spoon</li>
+              <li><span class="block text-sm text-muted">Technique</span>Why tomatoes need their water gone</li>
+              <li><span class="block text-sm text-muted">Kitchen notes</span>A pot that earns its weight</li>
+            </ul>
+          </section>
+
+          <section class="border-t border-rule pt-8">
+            <h2 class="font-display text-xl font-semibold">Equipment</h2>
+            <ul class="mt-4 space-y-3 leading-snug text-muted">
+              <li>A heavy 4 litre pot with a tight lid</li>
+              <li>A wooden spoon with a flat edge</li>
+              <li>A box grater or a sieve for the tomatoes</li>
+              <li>A ladle for the final stir</li>
+            </ul>
+          </section>
+
+          <section class="border-t border-rule pt-8">
+            <h2 class="font-display text-xl font-semibold">Make ahead</h2>
+            <ol class="mt-4 space-y-5 leading-snug">
+              <li><span class="block text-sm text-muted">Day before</span>Crush the tomatoes, toast the fennel and chill both overnight.</li>
+              <li><span class="block text-sm text-muted">Two hours before</span>Soften the onion and build the base in the pot.</li>
+              <li><span class="block text-sm text-muted">Serving day</span>Reheat gently with a splash of water and finish with basil.</li>
+            </ol>
+          </section>
+
+          <section class="border-t border-rule pt-8">
+            <h2 class="font-display text-xl font-semibold">Yield</h2>
+            <svg viewBox="0 0 280 120" class="mt-4 h-auto w-full" role="img" aria-labelledby="yield-title">
+              <title id="yield-title">About 1.2 kg of tomatoes becomes about 900 ml of sauce</title>
+              <rect x="0" y="10" width="260" height="28" rx="4" fill="#C85A3C"/>
+              <rect x="0" y="50" width="195" height="28" rx="4" fill="#A4432A"/>
+              <text x="0" y="104" font-family="Source Serif 4, Georgia, serif" font-size="13" fill="#6B5F55">1.2 kg in</text>
+              <text x="280" y="104" text-anchor="end" font-family="Source Serif 4, Georgia, serif" font-size="13" fill="#6B5F55">about 900 ml out</text>
+            </svg>
+            <p class="mt-3 text-sm leading-relaxed text-muted">About a quarter of the weight leaves as steam; the rest becomes sauce.</p>
+          </section>
+          <section class="border-t border-rule pt-8">
+            <h2 class="font-display text-xl font-semibold">Wine on the table</h2>
+            <p class="mt-4 max-w-prose leading-relaxed text-muted">The same dry white that goes into the pot works well in the glass. Something light and mineral, served cool.</p>
+          </section>
+        </div>
+      </aside>
+    </div>
+
+    <section id="cook-next" class="border-t border-rule py-20">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h2 class="font-display text-4xl font-semibold leading-tight">Cook next</h2>
+        <p class="max-w-prose text-muted">Three recipes that ask the same thing of you: a little time and a heavy pot.</p>
+      </div>
+      <div class="mt-12 grid gap-8 md:grid-cols-3">
+        <a href="#" class="group md:col-span-2 grid gap-6 sm:grid-cols-2 sm:items-center">
+          <svg viewBox="0 0 400 300" class="h-auto w-full rounded-sm bg-[#F1E6D3]" aria-hidden="true">
+            <rect width="400" height="300" fill="#F1E6D3"/>
+            <circle cx="200" cy="170" r="105" fill="#E7D6BC"/>
+            <circle cx="200" cy="170" r="70" fill="#A4432A"/>
+            <circle cx="180" cy="150" r="14" fill="#E3B06A"/>
+            <circle cx="225" cy="190" r="10" fill="#E3B06A"/>
+          </svg>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.14em] text-paprika">Dinner</p>
+            <h3 class="mt-2 font-display text-3xl font-semibold leading-tight group-hover:text-paprika">Braised white beans with fennel and lemon</h3>
+            <p class="mt-3 max-w-prose leading-relaxed text-muted">Ninety minutes in the oven, then a bright finish that keeps the dish from sitting heavy.</p>
+          </div>
+        </a>
+        <a href="#" class="group flex flex-col">
+          <svg viewBox="0 0 400 300" class="h-auto w-full rounded-sm bg-[#E9E2D2]" aria-hidden="true">
+            <rect width="400" height="300" fill="#E9E2D2"/>
+            <path d="M80 240 V150 Q80 70 200 70 Q320 70 320 150 V240 Z" fill="#4E6B3A"/>
+            <circle cx="200" cy="160" r="26" fill="#E3B06A"/>
+          </svg>
+          <p class="mt-5 text-sm font-semibold uppercase tracking-[0.14em] text-paprika">Bread</p>
+          <h3 class="mt-2 font-display text-2xl font-semibold leading-tight group-hover:text-paprika">Overnight focaccia</h3>
+          <p class="mt-2 max-w-prose leading-relaxed text-muted">Cold fermentation does the work while you sleep.</p>
+        </a>
+        <a href="#" class="group grid gap-6 sm:grid-cols-2 sm:items-center md:col-span-3">
+          <svg viewBox="0 0 400 240" class="h-auto w-full rounded-sm bg-[#F3DCCB]" aria-hidden="true">
+            <rect width="400" height="240" fill="#F3DCCB"/>
+            <rect x="60" y="120" width="280" height="90" rx="6" fill="#A4432A"/>
+            <rect x="60" y="100" width="280" height="22" rx="4" fill="#C85A3C"/>
+          </svg>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.14em] text-paprika">Dessert</p>
+            <h3 class="mt-2 font-display text-3xl font-semibold leading-tight group-hover:text-paprika">Slow-roasted plums in their own juice</h3>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <section aria-labelledby="letters" class="bg-ink text-paper">
+    <div class="mx-auto flex max-w-5xl flex-col gap-10 px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+      <div class="max-w-3xl">
+        <h2 id="letters" class="font-display text-4xl font-semibold leading-tight">Thursday letters, one recipe at a time</h2>
+        <p class="mt-4 max-w-prose text-lg leading-relaxed text-rule">A short note from the test kitchen every week, with the recipe that taught us something.</p>
+      </div>
+      <form id="letters-form" class="w-full max-w-md">
+        <label for="email" class="block text-sm font-semibold">Email address</label>
+        <div class="mt-3 flex flex-col gap-3 sm:flex-row">
+          <input id="email" type="email" required placeholder="you@example.com" class="min-h-11 flex-1 rounded-md border border-muted bg-transparent px-4 text-paper placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-ochre">
+          <button type="submit" class="min-h-11 rounded-md bg-ochre px-6 font-semibold text-ink hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper active:brightness-95">Subscribe</button>
+        </div>
+        <p id="letters-msg" class="mt-3 min-h-6 text-sm text-rule" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="mx-auto max-w-5xl px-4 py-10 text-sm text-muted sm:px-6">
+    <p class="max-w-prose">&copy; 2026 The Hearth &amp; Salt. Recipes are tested in our kitchen and written for home cooks.</p>
+  </footer>
+
+  <script>
+    document.getElementById('letters-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('letters-msg').textContent = 'Thanks. The first letter arrives on Thursday.';
+      this.reset();
+    });
+  </script>
+</body>
+</html>

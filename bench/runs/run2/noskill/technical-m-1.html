@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CI/CD Pipeline Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0b0f17; color: #e2e8f0; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; }
+  .h2 { font-size: 0.8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #94a3b8; margin-bottom: .75rem; }
+  .bar { transition: opacity .15s; cursor: pointer; }
+  .bar:hover { opacity: .8; }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+  <header class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-semibold">Pipeline Overview</h1>
+      <p class="text-sm text-slate-400">web-app &middot; main &middot; updated <span id="updated" class="mono"></span></p>
+    </div>
+    <div class="flex flex-wrap gap-2 text-sm">
+      <span class="px-3 py-1.5 rounded-lg bg-rose-500/15 text-rose-300">Success 73%</span>
+      <span class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Median 7m 12s</span>
+      <span class="px-3 py-1.5 rounded-lg bg-amber-500/15 text-amber-300">1 running</span>
+    </div>
+  </header>
+
+  <section id="stats" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></section>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <section class="card p-4 lg:col-span-2">
+      <h2 class="h2">Recent builds</h2>
+      <ul id="builds" class="divide-y divide-slate-800"></ul>
+    </section>
+    <section class="card p-4">
+      <h2 class="h2">Build duration (last 12)</h2>
+      <svg id="chart" viewBox="0 0 400 220" class="w-full h-auto" role="img" aria-label="Build duration bar chart"></svg>
+      <div class="flex gap-4 text-xs text-slate-400 mt-2">
+        <span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-400 mr-1"></i>passed</span>
+        <span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-rose-400 mr-1"></i>failed</span>
+        <span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-400 mr-1"></i>running</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <section class="card p-4 lg:col-span-2">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h2 class="h2 mb-0">Log &middot; <span id="logTitle" class="mono normal-case text-slate-300"></span></h2>
+        <span id="logStatus" class="text-xs px-2 py-0.5 rounded-md"></span>
+      </div>
+      <pre id="log" class="mono text-xs leading-relaxed bg-black rounded-lg p-4 h-64 overflow-auto text-green-400 whitespace-pre-wrap"></pre>
+    </section>
+    <section class="card p-4">
+      <h2 class="h2">Flaky tests</h2>
+      <ul id="flaky" class="space-y-3"></ul>
+    </section>
+  </div>
+
+  <section class="card p-4">
+    <h2 class="h2">Deploy history</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="text-left text-slate-500 text-xs uppercase">
+          <tr><th class="py-2 pr-4 font-medium">Environment</th><th class="py-2 pr-4 font-medium">Version</th><th class="py-2 pr-4 font-medium">By</th><th class="py-2 pr-4 font-medium">When</th><th class="py-2 font-medium">Status</th></tr>
+        </thead>
+        <tbody id="deploys" class="divide-y divide-slate-800"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+const builds = [
+  { id: 1842, branch: 'main',         commit: 'a3f9c1e', who: 'mira',  msg: 'feat: retry webhook delivery',     status: 'passed',  dur: 412, ago: '4m ago' },
+  { id: 1841, branch: 'feat/billing', commit: '7be20d4', who: 'omar',  msg: 'fix: proration rounding',          status: 'failed',  dur: 298, ago: '22m ago' },
+  { id: 1840, branch: 'main',         commit: 'c51e8a9', who: 'lena',  msg: 'chore: bump node to 22',           status: 'passed',  dur: 503, ago: '48m ago' },
+  { id: 1839, branch: 'release/2.8',  commit: '0f4d2b6', who: 'mira',  msg: 'release: 2.8.1',                   status: 'passed',  dur: 671, ago: '1h ago' },
+  { id: 1838, branch: 'feat/search',  commit: 'e9a7713', who: 'joon',  msg: 'feat: fuzzy match on tags',        status: 'failed',  dur: 244, ago: '2h ago' },
+  { id: 1837, branch: 'main',         commit: '2bc0f58', who: 'omar',  msg: 'perf: cache route manifest',       status: 'passed',  dur: 388, ago: '3h ago' },
+  { id: 1836, branch: 'main',         commit: '98d1e4c', who: 'lena',  msg: 'test: session timeout coverage',   status: 'passed',  dur: 430, ago: '4h ago' },
+  { id: 1835, branch: 'fix/cors',     commit: 'f03a6bd', who: 'joon',  msg: 'fix: preflight headers',           status: 'passed',  dur: 365, ago: '5h ago' },
+  { id: 1834, branch: 'main',         commit: '61ce2a0', who: 'mira',  msg: 'docs: deploy runbook',             status: 'failed',  dur: 189, ago: '6h ago' },
+  { id: 1833, branch: 'feat/i18n',    commit: 'b8e5d17', who: 'omar',  msg: 'feat: locale switcher',            status: 'passed',  dur: 459, ago: '7h ago' },
+  { id: 1832, branch: 'main',         commit: '4a2f9e8', who: 'lena',  msg: 'refactor: split auth module',      status: 'passed',  dur: 520, ago: '8h ago' },
+  { id: 1831, branch: 'main',         commit: 'd7c3b10', who: 'joon',  msg: 'build: lockfile refresh',          status: 'running', dur: 96,  ago: 'now' }
+];
+const flaky = [
+  { name: 'checkout > applies coupon on retry', fails: 9, runs: 40 },
+  { name: 'ws/presence reconnect within 5s',    fails: 6, runs: 52 },
+  { name: 'search > fuzzy tag ranking',         fails: 4, runs: 61 },
+  { name: 'upload > resumes after 503',         fails: 3, runs: 35 }
+];
+const deploys = [
+  { env: 'production', ver: 'v2.8.1', by: 'mira', when: '1h ago',  status: 'live' },
+  { env: 'staging',    ver: 'v2.8.2-rc1', by: 'omar', when: '3h ago', status: 'live' },
+  { env: 'production', ver: 'v2.8.0', by: 'lena', when: '2d ago',  status: 'rolled back' },
+  { env: 'preview',    ver: 'pr-611', by: 'joon', when: '5h ago',  status: 'live' }
+];
+let selected = 0;
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = s => `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
+const clock = t => `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+const dot = { passed: 'bg-emerald-400', failed: 'bg-rose-400', running: 'bg-amber-400' };
+const pill = {
+  passed: 'bg-emerald-500/15 text-emerald-300', failed: 'bg-rose-500/15 text-rose-300',
+  running: 'bg-amber-500/15 text-amber-300', live: 'bg-emerald-500/15 text-emerald-300',
+  'rolled back': 'bg-rose-500/15 text-rose-300'
+};
+const tag = (cls, text) => `<span class="text-xs px-2 py-0.5 rounded-md ${cls}">${text}</span>`;
+
+function renderStats() {
+  const done = builds.filter(b => b.status !== 'running');
+  const passed = done.filter(b => b.status === 'passed').length;
+  const cards = [
+    ['Builds today', builds.length, 'last 24h'],
+    ['Success rate', Math.round(passed / done.length * 100) + '%', `${passed} of ${done.length}`],
+    ['Median duration', '7m 12s', 'main branch'],
+    ['Flaky tests', flaky.length, 'quarantine: 2']
+  ];
+  document.getElementById('stats').innerHTML = cards.map(([k, v, s]) =>
+    `<div class="card p-4"><p class="text-xs text-slate-400">${k}</p><p class="text-2xl font-semibold mt-1">${v}</p><p class="text-xs text-slate-500 mt-1">${s}</p></div>`
+  ).join('');
+}
+
+function renderBuilds() {
+  document.getElementById('builds').innerHTML = builds.map((b, i) => `
+    <li>
+      <button data-i="${i}" class="w-full text-left py-3 px-2 -mx-2 rounded-lg flex items-center gap-3 hover:bg-slate-800/60 ${i === selected ? 'bg-slate-800' : ''}">
+        <span class="w-2.5 h-2.5 rounded-full shrink-0 ${dot[b.status]} ${b.status === 'running' ? 'animate-pulse' : ''}"></span>
+        <span class="mono text-slate-400 w-14 shrink-0">#${b.id}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-sm">${esc(b.msg)}</span>
+          <span class="block text-xs text-slate-500 mono truncate">${esc(b.branch)} &middot; ${b.commit} &middot; ${esc(b.who)}</span>
+        </span>
+        <span class="hidden sm:block mono text-xs text-slate-400 w-16 text-right">${b.status === 'running' ? '...' : fmt(b.dur)}</span>
+        <span class="hidden md:block text-xs text-slate-500 w-16 text-right">${b.ago}</span>
+      </button>
+    </li>`).join('');
+  document.querySelectorAll('#builds button').forEach(btn => btn.onclick = () => {
+    selected = +btn.dataset.i;
+    renderBuilds(); renderChart(); renderLog();
+  });
+}
+
+function renderChart() {
+  const data = builds.slice(0, 12).reverse();
+  const max = Math.max(...data.map(b => b.dur));
+  const W = 400, H = 320, pad = 46, slot = (W - pad) / data.length, bw = slot * 0.62;
+  let svg = '';
+  [0, .5, 1].forEach(f => {
+    const y = H - f * (H - 20);
+    svg += `<line x1="${pad}" x2="${W}" y1="${y}" y2="${y}" stroke="#1f2937"/>`;
+    svg += `<text x="0" y="${y + 4}" fill="#64748b" font-size="10" font-family="JetBrains Mono">${fmt(Math.round(max * f))}</text>`;
+  });
+  data.forEach((b, i) => {
+    const idx = builds.indexOf(b);
+    const h = b.dur / max * (H - 20);
+    const x = pad + i * slot + (slot - bw) / 2;
+    const color = { passed: '#34d399', failed: '#fb7185', running: '#fbbf24' }[b.status];
+    const sel = idx === selected;
+    svg += `<rect class="bar" data-i="${idx}" x="${x}" y="${H - h}" width="${bw}" height="${h}" rx="3" fill="${color}" opacity="${sel ? 1 : .55}" ${sel ? 'stroke="#f8fafc" stroke-width="1.5"' : ''}><title>#${b.id}: ${fmt(b.dur)}</title></rect>`;
+    svg += `<text x="${x + bw / 2}" y="${H + 14}" text-anchor="middle" fill="#64748b" font-size="9" font-family="JetBrains Mono">${b.id % 100}</text>`;
+  });
+  const chart = document.getElementById('chart');
+  chart.setAttribute('viewBox', `0 0 ${W} ${H + 20}`);
+  chart.innerHTML = svg;
+  chart.querySelectorAll('.bar').forEach(r => r.onclick = () => {
+    selected = +r.dataset.i; renderBuilds(); renderChart(); renderLog();
+  });
+}
+
+function renderLog() {
+  const b = builds[selected];
+  const stages = ['checkout', 'install', 'lint', 'unit-test', 'build', 'deploy'];
+  const per = Math.max(1, Math.floor(b.dur / stages.length));
+  const failAt = b.status === 'failed' ? 3 : -1;
+  const lines = [`$ pipeline run #${b.id} --branch ${b.branch} --commit ${b.commit}`];
+  let t = 0;
+  for (let i = 0; i < stages.length; i++) {
+    const s = stages[i].padEnd(10);
+    if (b.status === 'running' && i > 1) { lines.push(`[${clock(t)}] ${s} <span class="text-amber-400">queued</span>`); continue; }
+    if (i === failAt) {
+      lines.push(`[${clock(t)}] ${s} <span class="text-rose-400">FAILED</span>`);
+      lines.push(`          AssertionError: expected 200, got 503 (retry 3/3)`);
+      break;
+    }
+    lines.push(`[${clock(t)}] ${s} <span class="text-emerald-400">ok</span>  ${per}s`);
+    t += per;
+  }
+  if (b.status === 'passed') lines.push(`<span class="text-emerald-300">pipeline finished in ${fmt(b.dur)}</span>`);
+  if (b.status === 'running') lines.push(`<span class="text-amber-300">waiting on build step...</span><span class="animate-pulse">_</span>`);
+  document.getElementById('log').innerHTML = lines.join('\n');
+  document.getElementById('logTitle').textContent = `#${b.id} ${b.branch}`;
+  const st = document.getElementById('logStatus');
+  st.className = `text-xs px-2 py-0.5 rounded-md ${pill[b.status]}`;
+  st.textContent = b.status;
+}
+
+function renderFlaky() {
+  document.getElementById('flaky').innerHTML = flaky.map(f => {
+    const rate = Math.round(f.fails / f.runs * 100);
+    return `<li>
+      <div class="flex justify-between gap-2 text-sm"><span class="truncate mono text-xs">${esc(f.name)}</span><span class="text-slate-400 shrink-0">${rate}%</span></div>
+      <div class="h-1.5 bg-slate-800 rounded-full mt-1.5 overflow-hidden"><div class="h-full bg-amber-400 rounded-full" style="width:${rate}%"></div></div>
+      <p class="text-xs text-slate-500 mt-1">${f.fails} failures in ${f.runs} runs</p>
+    </li>`;
+  }).join('');
+}
+
+function renderDeploys() {
+  document.getElementById('deploys').innerHTML = deploys.map(d => `
+    <tr>
+      <td class="py-2.5 pr-4 capitalize">${esc(d.env)}</td>
+      <td class="py-2.5 pr-4 mono text-xs">${esc(d.ver)}</td>
+      <td class="py-2.5 pr-4 text-slate-300">${esc(d.by)}</td>
+      <td class="py-2.5 pr-4 text-slate-400">${d.when}</td>
+      <td class="py-2.5">${tag(pill[d.status], d.status)}</td>
+    </tr>`).join('');
+}
+
+document.getElementById('updated').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+renderStats(); renderBuilds(); renderChart(); renderLog(); renderFlaky(); renderDeploys();
+</script>
+</body>
+</html>
