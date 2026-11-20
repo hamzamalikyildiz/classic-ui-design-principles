@@ -38,6 +38,19 @@ The mood sets the dose of color, depth, shape and decoration. The rules in secti
 
 Every mood respects `prefers-reduced-motion`.
 
+**Editorial notes**
+- Two measures only: a wide frame (`max-w-4xl`/`5xl`) for header, display headline, figures and pull quotes, and a reading column (`max-w-prose`, 65ch) for body text. Align both to the same left edge or center both. Do not stack three or more container widths.
+- The 65ch rule is for paragraphs. A 40–60px serif headline inside the reading column gets squeezed into 3–4 lines; let it span the wide frame.
+- Long-form leading 1.65–1.8 (`leading-relaxed`/`loose`), quotes ≥1.4, never `leading-tight` on running text.
+- Serif is allowed for body (Merriweather, Source Serif, Lora) and often warmer than a sans; still max 2 families.
+- Depth comes from hairline rules and whitespace, so `border-heavy` does not apply.
+
+**Technical notes**
+- Dark-first neutral layers (zinc/slate 950 → 900 → 800), 1px borders, 4–8px radius, mono for labels, numbers and IDs, dense `h-8` controls.
+- On a dark page, dark neutral buttons (`bg-zinc-800`) are secondary surfaces, not primary CTAs; the primary action is the one accent-colored button.
+
+**No extra moods.** Map unusual briefs onto these five: luxury/fashion → Editorial with a Bold hero; e-commerce → Trust base with a Bold hero band; mobile app → the brand's mood; internal tools → Technical or Trust. Dark mode is a theme, not a mood.
+
 ## 3. Page-type matrix
 
 Always-on baseline: WCAG AA, 8pt grid, semantic colors, max 2 fonts, modular scale, one hero surface per screen, single primary CTA, depth over borders, Jakob, proximity.
@@ -47,7 +60,7 @@ Always-on baseline: WCAG AA, 8pt grid, semantic colors, max 2 fonts, modular sca
 | Landing / marketing | Z-pattern, Fitts (large hero CTA), bento features, focal visual in hero | Bold (Playful for kids/consumer) | Full-width sections, spacing from mood |
 | Dashboard / admin | F-pattern, bento metrics with one featured card, Miller (sidebar ≤7), skeleton/empty/error, categorical chart colors | Trust | Left sidebar + 12-col grid, `gap-4`/`gap-6` |
 | Form / onboarding / checkout | Hick (steps), progressive disclosure, Fitts (full-width submit on mobile), inline errors in semantic red | Trust | Single column, `max-w-md`/`max-w-lg` |
-| Content / blog / docs | 45–75 chars (`max-w-prose`), F-pattern, accent for links only | Editorial | Single centered column |
+| Content / blog / docs | 45–75 chars for body (`max-w-prose`), F-pattern, accent for links only, two measures (see Editorial notes) | Editorial | Wide frame + centered reading column |
 | Mobile app screen | Fitts (44–48px targets, CTA in bottom zone), Miller (tab bar ≤5), skeleton | brand's | Single column, 16px side padding |
 | E-commerce / catalog | Hick (grouped filters), skeleton grid, empty state, one CTA per card | Bold or Trust | Responsive card grid |
 | Settings / profile | Proximity (grouped sections, whitespace over dividers), Jakob, Miller | Trust | Side menu + content |
@@ -84,7 +97,7 @@ The user's explicit request wins over the matrix. Keep every requested item; whe
 - Bento: 12 or 4/6-col grid, cards 1x1/2x1/2x2, same radius, padding and gap. The featured item is the largest **and** the hero surface. If small cards would stretch to the featured card's height with empty space, stack them (`grid-rows-*`) or fill them (sparkline, progress bar).
 
 **Typography**
-- Modular scale: `scale --ratio <ratio>` output. Do not shrink Tailwind's small sizes: `xs` ≥12px, `sm` ≥14px (the script enforces this). Body 16px; heading line-height 1.1–1.25, body 1.5.
+- Modular scale: `scale --ratio <ratio>` output. Do not shrink Tailwind's small sizes: `xs` ≥12px, `sm` ≥14px (the script enforces this). Body 16px. Line-height by size: body 1.5–1.6 (long-form 1.65–1.8), 20–24px text 1.4, headings 1.1–1.25. The `scale` output follows this.
 - Hierarchy uses three channels: **size, weight, color**. Body 400, labels 500, headings 600–700, muted text one shade lighter. If most text is the same size and bold, there is no hierarchy.
 - Line length: paragraphs capped with `max-w-prose` or `max-width: 65ch`.
 - Max 2 fonts (a display font for headings counts as one).
@@ -119,7 +132,7 @@ python3 scripts/uitools.py audit src/App.tsx --css app/globals.css --mood trust
 python3 scripts/render.py page.html --out shot.png [--dark] [--width 1440]
 ```
 
-`audit` checks per element: spacing off the 4px grid (WARN) or off the 8px grid (INFO); text/background contrast against the composited background (translucent layers like `bg-white/10` are blended over their ancestors; Tailwind v3 palette, arbitrary hex, `dark:` pairs, shadcn HSL tokens for `:root` and `.dark` via `--css`; gradients and unknown backgrounds are skipped) with same-hue fix suggestions; solid buttons per section/card; primary CTAs below 40px; nested radius; frame wrappers; nav link count; long paragraphs without a readable max-width; more than 2 fonts; lists without skeleton/empty states. Sterility checks: grey-only charts, borders on most cards with no shadows, flat type hierarchy; with `--mood playful|bold|trust` no hero surface, and with `playful|bold` fewer than 3 hues. The audit cannot see layout results (stretched cards, empty areas, what the eye lands on); the screenshot review covers those.
+`audit` checks per element: spacing off the 4px grid (WARN) or off the 8px grid (INFO); text/background contrast against the composited background (translucent layers like `bg-white/10` are blended over their ancestors; Tailwind v3 palette, arbitrary hex, `dark:` pairs, shadcn HSL tokens for `:root` and `.dark` via `--css`; gradients and unknown backgrounds are skipped) with same-hue fix suggestions; solid buttons per section/card; primary CTAs below 40px; nested radius; frame wrappers; nav link count; long paragraphs without a readable max-width; more than 2 fonts; lists without skeleton/empty states. Sterility checks: grey-only charts, borders on most cards with no shadows, flat type hierarchy; with `--mood playful|bold|trust` no hero surface, with `playful|bold` fewer than 3 hues, with `editorial` headline trapped in the reading measure / width funnel / tight leading, with `technical` soft radii / no mono / heavy shadows. Dark neutral buttons on a dark page are not counted as primary CTAs. The audit cannot see layout results (stretched cards, empty areas, what the eye lands on); the screenshot review covers those.
 
 `render.py` takes a full-page screenshot with headless Chrome/Chromium (Playwright). If the page uses the Tailwind CDN and the network is blocked, it compiles Tailwind locally with `npx tailwindcss@3`, including the page's inline `tailwind.config`, and inlines Google Fonts from `@fontsource` packages.
 
