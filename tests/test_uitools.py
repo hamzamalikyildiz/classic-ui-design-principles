@@ -265,6 +265,8 @@ class CharacterFloor(unittest.TestCase):
 
     def test_bold_headline_size(self):
         self.assertIn('bold-headline-size', self.ids('<h1 class="text-4xl">x</h1>', 'bold'))
+        self.assertIn('bold-headline-size', self.ids('<h1 class="text-5xl">x</h1>', 'bold'))
+        self.assertIn('bold-headline-size', self.ids('<h1 class="text-6xl">x</h1>', 'bold'))
         self.assertNotIn('bold-headline-size', self.ids('<h1 class="text-7xl">x</h1>', 'bold'))
         self.assertNotIn('bold-headline-size', self.ids('<style>h1{font-size:clamp(3rem,9vw,7rem)}</style>', 'bold'))
 
@@ -290,9 +292,11 @@ class Expressive(unittest.TestCase):
     def test_floor_kept(self):
         with tempfile.TemporaryDirectory() as d:
             f = pathlib.Path(d) / 'p.html'
-            f.write_text('<div class="opacity-0">x</div><p class="text-gray-300 bg-white">low</p>')
+            f.write_text('<div class="opacity-0">x</div><p class="text-gray-300 bg-white">low</p>'
+                         '<button class="bg-blue-600 text-white h-8 px-4">Go</button>')
             r = {x[1]: x[0] for x in ut.audit(str(f), 8, {}, None, 'playful')}
         self.assertEqual(r.get('reveal-needs-js'), 'WARN')
+        self.assertEqual(r.get('fitts-primary'), 'WARN')
         self.assertIn(r.get('wcag-aa'), ('WARN', 'FAIL'))
 
 

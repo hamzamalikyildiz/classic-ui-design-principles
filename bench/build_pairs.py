@@ -38,8 +38,10 @@ with sync_playwright() as p:
         key[pid] = {'arm': arm, 'mood': mood, 'brief': brief, 'rep': rep}
         metrics[pid] = {'axe_serious': sum(1 for s, r, m in ax if s == 'WARN')}
         if a.checks:
-            out = subprocess.run([sys.executable, str(HERE.parent / 'scripts/render.py'), str(W / 'anon' / f'{pid}.html'), '--out', '/tmp/_b.png', '--check'],
+            tmp_png = W / 'anon' / '_b.png'
+            out = subprocess.run([sys.executable, str(HERE.parent / 'scripts/render.py'), str(W / 'anon' / f'{pid}.html'), '--out', str(tmp_png), '--check'],
                                  capture_output=True, text=True).stdout
+            tmp_png.unlink(missing_ok=True)
             metrics[pid]['check_warns'] = len(re.findall(r'\[WARN\]', out))
     br.close()
 inv = {(v['arm'], v['mood'], v['brief'], v['rep']): k for k, v in key.items()}

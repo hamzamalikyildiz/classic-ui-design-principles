@@ -39,22 +39,21 @@ def reachable(url):
 
 
 def npm(*args):
+    npm_bin = shutil.which('npm')
+    if not npm_bin:
+        return subprocess.CompletedProcess(['npm', *args], 1, '', 'npm not found')
     CACHE.mkdir(parents=True, exist_ok=True)
     if not (CACHE / 'package.json').exists():
-        (CACHE / 'package.json').write_text('{"name":"uitools-render","private":true}')
-    return subprocess.run([shutil.which('npm') or 'npm', *args], cwd=CACHE, capture_output=True, text=True)
-
-
-def tailwind_bin():
-    b = CACHE / 'node_modules' / '.bin'
-    return b / 'tailwindcss.cmd' if (b / 'tailwindcss.cmd').exists() else b / 'tailwindcss'
+        (CACHE / 'package.json').write_text('{"name":"uitools-render","private":true}', encoding='utf-8')
+    return subprocess.run([npm_bin, *args], cwd=CACHE, capture_output=True, text=True)
 
 
 def compile_tailwind(html):
     if not shutil.which('npm') or not shutil.which('node'):
         log('npm/node not found; Tailwind classes will be unstyled')
         return html
-    if not tailwind_bin().exists():
+    tw_bin = CACHE / 'node_modules' / '.bin' / ('tailwindcss.cmd' if os.name == 'nt' else 'tailwindcss')
+    if not tw_bin.exists():
         r = npm('install', '--silent', 'tailwindcss@3')
         if r.returncode:
             log(f'could not install tailwindcss: {r.stderr.strip()[:200]}')
@@ -71,9 +70,9 @@ def compile_tailwind(html):
     with tempfile.TemporaryDirectory() as d:
         d = pathlib.Path(d)
         (d / 'page.html').write_text(html, encoding='utf-8')
-        (d / 'tailwind.config.js').write_text('module.exports=' + json.dumps({**cfg, 'content': [str(d / 'page.html')]}))
-        (d / 'in.css').write_text('@tailwind base;@tailwind components;@tailwind utilities;')
-        r = subprocess.run([str(tailwind_bin()), '-c', str(d / 'tailwind.config.js'),
+        (d / 'tailwind.config.js').write_text('module.exports=' + json.dumps({**cfg, 'content': [str(d / 'page.html')]}), encoding='utf-8')
+        (d / 'in.css').write_text('@tailwind base;@tailwind components;@tailwind utilities;', encoding='utf-8')
+        r = subprocess.run([str(tw_bin), '-c', str(d / 'tailwind.config.js'),
                             '-i', str(d / 'in.css'), '-o', str(d / 'out.css'), '--minify'], capture_output=True, text=True)
         if r.returncode:
             log(f'tailwind build failed: {r.stderr.strip()[:200]}')
@@ -118,7 +117,7 @@ def chrome_path():
 
 CHECK_JS = r"""() => {
   const out = [], vw = innerWidth;
-  const where = e => { const c = (e.className && e.className.baseVal === undefined ? String(e.className) : '').trim().split(/\\s+/).slice(0, 3).join('.');
+  const where = e => { const c = (e.className && e.className.baseVal === undefined ? String(e.className) : '').trim().split(/\s+/).slice(0, 3).join('.');
                        return e.tagName.toLowerCase() + (c ? '.' + c : ''); };
   const vis = e => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
                      return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'; };
@@ -246,10 +245,12 @@ def find_axe():
     for c in [os.environ.get('AXE_JS', ''), '/tmp/axe/node_modules/axe-core/axe.min.js',
               str(CACHE / 'node_modules/axe-core/axe.min.js')]:
         if c and pathlib.Path(c).is_file():
-            return pathlib.Path(c).read_text()
-    npm('install', 'axe-core')
+            return pathlib.Path(c).read_text(encoding='utf-8')
+    if not shutil.which('npm'):
+        return None
+    npm('install', '--silent', 'axe-core')
     f = CACHE / 'node_modules/axe-core/axe.min.js'
-    return f.read_text() if f.is_file() else None
+    return f.read_text(encoding='utf-8') if f.is_file() else None
 
 
 def run_axe(page):
