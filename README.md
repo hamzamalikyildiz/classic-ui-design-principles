@@ -135,7 +135,7 @@ python3 scripts/render.py index.html --out shot.png [--dark] [--width 1440]
 The audit works per element, not per file:
 
 - **Spacing:** values off the 4px grid are WARN, 4px fine-tunes off the 8px grid are INFO
-- **Contrast:** text/background pairs against the composited background (translucent layers like `bg-white/10` are blended over their ancestors); resolves Tailwind v3 palette names, arbitrary hex, `dark:` variants and shadcn HSL tokens from both `:root` and `.dark` passed with `--css`. Background utilities like `bg-cover` are ignored, `bg-transparent` falls through to the parent, gradients and unknown custom colors are skipped rather than guessed
+- **Contrast:** text/background pairs against the composited background (translucent layers like `bg-white/10` are blended over their ancestors); resolves Tailwind v3 palette names, arbitrary hex, `dark:` variants and shadcn HSL tokens from both `:root` and `.dark` passed with `--css`. Background utilities like `bg-cover` are ignored, `bg-transparent` falls through to the parent, images and unknown custom colors are skipped rather than guessed; text on a gradient is checked against each color stop
 - **Single primary CTA:** solid buttons per section/card, including `bg-primary` and shadcn `<Button>` default/destructive variants
 - **Nested radius:** child radius vs. parent radius minus parent padding
 - **Line length:** long paragraphs without `max-w-prose` / ≤80ch on themselves or an ancestor
