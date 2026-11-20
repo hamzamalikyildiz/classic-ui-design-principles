@@ -251,5 +251,50 @@ class Cli(unittest.TestCase):
         self.assertIn('not found', str(cm.exception.code))
 
 
+class MoodSpecific(unittest.TestCase):
+    def test_dark_neutral_button_on_dark_page_is_not_primary(self):
+        src = ('<body className="bg-zinc-950"><div><button className="h-8 bg-zinc-800">Copy</button>'
+               '<button className="h-11 bg-indigo-600">Run</button></div></body>')
+        iss = run(src)
+        self.assertEqual(rules(iss, 'fitts-primary'), [])
+        self.assertEqual(rules(iss, 'single-primary-cta'), [])
+
+    def test_dark_neutral_button_on_light_page_still_counts(self):
+        src = '<body className="bg-white"><div><button className="bg-slate-900">A</button><button className="bg-indigo-600">B</button></div></body>'
+        self.assertTrue(rules(run(src), 'single-primary-cta'))
+
+    def test_border_heavy_skipped_for_technical_and_editorial(self):
+        cards = ''.join('<div className="rounded-lg border p-4 bg-zinc-900">x</div>' for _ in range(5))
+        self.assertTrue(rules(run(cards), 'border-heavy'))
+        self.assertEqual(rules(run(cards, mood='technical'), 'border-heavy'), [])
+        self.assertEqual(rules(run(cards, mood='editorial'), 'border-heavy'), [])
+
+    def test_editorial_headline_trapped_in_prose(self):
+        src = '<main className="max-w-prose mx-auto"><h1 className="text-4xl font-serif">Big headline</h1></main>'
+        self.assertTrue(rules(run(src, mood='editorial'), 'headline-measure'))
+        ok = '<main className="max-w-4xl mx-auto"><h1 className="text-4xl font-serif">Big</h1><p className="max-w-prose">x</p></main>'
+        self.assertEqual(rules(run(ok, mood='editorial'), 'headline-measure'), [])
+
+    def test_editorial_width_funnel_and_leading(self):
+        src = ('<div className="max-w-5xl mx-auto"></div><div className="max-w-3xl mx-auto"></div>'
+               '<div className="max-w-prose mx-auto"><blockquote className="text-xl leading-tight font-serif">q</blockquote></div>')
+        iss = run(src, mood='editorial')
+        self.assertTrue(rules(iss, 'width-funnel'))
+        self.assertTrue(rules(iss, 'editorial-leading'))
+
+    def test_technical_checks(self):
+        src = ''.join('<div className="rounded-3xl p-4 shadow-xl">x</div>' for _ in range(3))
+        iss = run(src, mood='technical')
+        self.assertTrue(rules(iss, 'radius-too-soft'))
+        self.assertTrue(rules(iss, 'no-mono'))
+        self.assertTrue(rules(iss, 'shadow-heavy'))
+
+    def test_scale_leading_graduated(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            ut.main(['scale', '--ratio', 'major-third'])
+        self.assertIn('--text-xl: 1.5rem; --leading-xl: 2rem;', out.getvalue())  # 24px / 32px, not 28
+
+
 if __name__ == '__main__':
     unittest.main()
