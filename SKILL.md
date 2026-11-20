@@ -39,6 +39,7 @@ The mood sets the dose of color, depth, shape and decoration. The rules in secti
 Every mood respects `prefers-reduced-motion`.
 
 **Editorial notes**
+- Left edges line up: the reading column shares the frame's left edge (no `mx-auto` on the column inside a left-aligned frame), or the headline and column are both centered.
 - Two measures only: a wide frame (`max-w-4xl`/`5xl`) for header, display headline, figures and pull quotes, and a reading column (`max-w-prose`, 65ch) for body text. Align both to the same left edge or center both. Do not stack three or more container widths.
 - The 65ch rule is for paragraphs. A 40–60px serif headline inside the reading column gets squeezed into 3–4 lines; let it span the wide frame.
 - Long-form leading 1.65–1.8 (`leading-relaxed`/`loose`), quotes ≥1.4, never `leading-tight` on running text.
@@ -48,6 +49,12 @@ Every mood respects `prefers-reduced-motion`.
 **Technical notes**
 - Dark-first neutral layers (zinc/slate 950 → 900 → 800), 1px borders, 4–8px radius, mono for labels, numbers and IDs, dense `h-8` controls.
 - On a dark page, dark neutral buttons (`bg-zinc-800`) are secondary surfaces, not primary CTAs; the primary action is the one accent-colored button.
+
+**Content floor.** Rules remove errors, they do not replace content. A page that passes the audit but has half the components of a normal one has failed. Aim for the density a professional product page of that type has:
+- Dashboard (Trust/Technical): top bar or page header with actions, 4+ KPIs with deltas, a multi-series chart with legend, a ranked or status list, a table or log stream, one alert/empty/error state shown, a code or detail panel where relevant.
+- Landing (Playful/Bold): hero with a focal illustration or product visual, 3+ feature blocks of different sizes, proof (numbers or quotes), pricing or specs, FAQ or secondary section, closing CTA band.
+- Editorial: masthead with date/section nav, kicker + headline + standfirst + byline with avatar, illustration with caption, drop cap, pull quote, related stories, newsletter.
+Add detail with inline SVG, emoji, tinted surfaces and real-sounding copy, not with extra colors or extra buttons.
 
 **No extra moods.** Map unusual briefs onto these five: luxury/fashion → Editorial with a Bold hero; e-commerce → Trust base with a Bold hero band; mobile app → the brand's mood; internal tools → Technical or Trust. Dark mode is a theme, not a mood.
 
