@@ -20,7 +20,10 @@ Rules are selected per page type: landing, dashboard, form, content, mobile, e-c
 
 ```
 classic-ui-design-principles/
-├── SKILL.md              # rule matrix, rule reference, workflow
+├── SKILL.md              # core: flow, mood table, hard rules, tooling (~7 KB)
+├── moods/                # per-mood notes: expressive (Playful/Bold), editorial, technical, trust
+├── reference/            # rule values, page-type matrix, tooling details
+├── bench/                # blind A/B benchmark: briefs, pair builder, scorer
 ├── scripts/
 │   ├── uitools.py        # contrast, scale, radius, snap, audit
 │   └── render.py         # offline full-page screenshot for visual review

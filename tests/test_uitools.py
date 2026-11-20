@@ -236,6 +236,88 @@ class Character(unittest.TestCase):
         self.assertEqual(rules(run(sterile), 'no-hero-surface'), [])  # mood checks are opt-in
 
 
+class CharacterFloor(unittest.TestCase):
+    def ids(self, html, mood):
+        return [f[1] for f in ut.character_floor(html, [], mood)]
+
+    def test_reveal_needs_js(self):
+        self.assertIn('reveal-needs-js', self.ids('<div class="opacity-0">x</div>', 'bold'))
+        self.assertNotIn('reveal-needs-js', self.ids('<div class="opacity-0">x</div><noscript></noscript>', 'bold'))
+
+    def test_playful_mascot(self):
+        self.assertIn('no-drawn-mascot', self.ids('<svg><circle/></svg>', 'playful'))
+        shapes = '<svg>' + '<circle/>' * 6 + '</svg>'
+        self.assertNotIn('no-drawn-mascot', self.ids(shapes, 'playful'))
+
+    def test_playful_card_sameness(self):
+        card = '<div class="bg-white rounded-3xl p-4"></div>' * 7
+        self.assertIn('card-sameness', self.ids(card, 'playful'))
+
+    def test_bold_headline_size(self):
+        self.assertIn('bold-headline-size', self.ids('<h1 class="text-4xl">x</h1>', 'bold'))
+        self.assertNotIn('bold-headline-size', self.ids('<h1 class="text-7xl">x</h1>', 'bold'))
+        self.assertNotIn('bold-headline-size', self.ids('<style>h1{font-size:clamp(3rem,9vw,7rem)}</style>', 'bold'))
+
+    def test_other_moods_skip(self):
+        self.assertEqual(self.ids('<h1 class="text-2xl">x</h1>', 'technical'), [])
+
+
+class Expressive(unittest.TestCase):
+    PAGE = '<h1 class="text-2xl">x</h1><div class="m-[13px]">y</div>'
+
+    def sev(self, mood):
+        with tempfile.TemporaryDirectory() as d:
+            f = pathlib.Path(d) / 'p.html'; f.write_text(self.PAGE)
+            return {r: s for s, r, _ in ut.audit(str(f), 8, {}, None, mood)}
+
+    def test_style_rules_relaxed(self):
+        self.assertEqual(self.sev('bold').get('bold-headline-size'), 'INFO')
+        self.assertEqual(self.sev('bold').get('grid'), 'INFO')
+
+    def test_trust_unchanged(self):
+        self.assertEqual(self.sev('trust').get('grid'), 'WARN')
+
+    def test_floor_kept(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = pathlib.Path(d) / 'p.html'
+            f.write_text('<div class="opacity-0">x</div><p class="text-gray-300 bg-white">low</p>')
+            r = {x[1]: x[0] for x in ut.audit(str(f), 8, {}, None, 'playful')}
+        self.assertEqual(r.get('reveal-needs-js'), 'WARN')
+        self.assertIn(r.get('wcag-aa'), ('WARN', 'FAIL'))
+
+
+class Landmark(unittest.TestCase):
+    def rules(self, html):
+        with tempfile.TemporaryDirectory() as d:
+            f = pathlib.Path(d) / 'p.html'; f.write_text(html)
+            return [r for _, r, _ in ut.audit(str(f), 8, {}, None, None)]
+
+    def test_main_required_for_full_pages(self):
+        self.assertIn('landmark-main', self.rules('<html><body><div>x</div></body></html>'))
+        self.assertNotIn('landmark-main', self.rules('<html><body><main>x</main></body></html>'))
+        self.assertNotIn('landmark-main', self.rules('<div>fragment</div>'))
+
+
+class CustomColors(unittest.TestCase):
+    def test_inline_tailwind_config(self):
+        txt = "<script>tailwind.config={theme:{extend:{colors:{ink:'#12264A',brand:{500:'#ff0000',DEFAULT:'#00ff00'}}}}}</script>"
+        c = ut.tailwind_config_colors(txt)
+        self.assertEqual(c['ink'], '#12264A')
+        self.assertEqual(c['brand-500'], '#ff0000')
+        self.assertEqual(c['brand'], '#00ff00')
+
+    def test_v4_theme_vars(self):
+        self.assertEqual(ut.tailwind_config_colors('@theme { --color-sun: #ffc933; }')['sun'], '#ffc933')
+
+    def test_low_contrast_custom_color_flagged(self):
+        html = ("<script>tailwind.config={theme:{extend:{colors:{sun:'#FFC933'}}}}</script>"
+                '<p class="text-sun bg-white">hello</p>')
+        with tempfile.TemporaryDirectory() as d:
+            f = pathlib.Path(d) / 'p.html'; f.write_text(html)
+            iss = ut.audit(str(f), 8, ut.css_tokens([html]), None, None)
+        self.assertTrue(any(r == 'wcag-aa' for _, r, _ in iss))
+
+
 class Cli(unittest.TestCase):
     def test_exit_code_on_fail(self):
         with tempfile.TemporaryDirectory() as d:

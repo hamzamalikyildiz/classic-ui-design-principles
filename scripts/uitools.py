@@ -208,10 +208,39 @@ def hsl2hex(h, s, l):
     return rgb2hex([r * 255, g * 255, b * 255])
 
 
+def tailwind_config_colors(txt):
+    """Custom colors from an inline `tailwind.config = {... colors: {ink:'#123', brand:{500:'#abc'}}}` and v4 `@theme { --color-x: #abc }`."""
+    out = {}
+    for m in re.finditer(r'--color-([\w-]+)\s*:\s*(' + HEX + r')', txt):
+        out[m.group(1)] = m.group(2)
+    for m in re.finditer(r'\bcolors\s*:\s*\{', txt):
+        i, depth, stack, j = m.end(), 1, [], m.end()
+        body = []
+        while j < len(txt) and depth:
+            ch = txt[j]
+            depth += (ch == '{') - (ch == '}')
+            j += 1
+        body = txt[i:j - 1]
+        path, pos = [], 0
+        for t in re.finditer(r"""(?P<key>['"]?[\w-]+['"]?)\s*:\s*(?:(?P<open>\{)|['"](?P<val>#[0-9a-fA-F]{3,8})['"])|(?P<close>\})""", body):
+            if t.group('close'):
+                if path:
+                    path.pop()
+            elif t.group('open'):
+                path.append(t.group('key').strip('\'"'))
+            elif t.group('val'):
+                name = '-'.join(path + [t.group('key').strip('\'"')])
+                name = name[:-8] if name.endswith('-DEFAULT') else name
+                out[name] = t.group('val')[:7]
+    return out
+
+
 def css_tokens(texts, selector=r':root'):
     """CSS custom properties from `selector` blocks (shadcn v3 'H S% L%', hsl() or hex) -> {name: hex}."""
     tok = {}
     for txt in texts:
+        if selector == r':root':
+            tok.update(tailwind_config_colors(txt))
         for blk in re.findall(selector + r'\s*\{([^}]*)\}', txt):
             for name, val in re.findall(r'--([\w-]+)\s*:\s*([^;]+);', blk):
                 val = val.strip()
@@ -463,8 +492,57 @@ NARROW = re.compile(r'^max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[4-7]\d|80)ch\])$'
 DISPLAY_TEXT = re.compile(r'^text-(?:3xl|4xl|5xl|6xl|7xl|8xl|9xl)$')
 
 
-def mood_specific(txt, nodes, mood):
+EXPRESSIVE = ('playful', 'bold')
+# style rules that expressive moods may break on purpose; the accessibility/readability floor
+# (wcag-aa, line-length, reveal-needs-js, ...) stays at full severity
+RELAXED = {'grid', 'miller-7', 'single-primary-cta', 'fitts-primary', 'grey-chart', 'max-2-fonts',
+           'no-hero-surface', 'border-heavy', 'no-drawn-mascot', 'card-sameness', 'bold-headline-size', 'bold-font-default'}
+
+
+def _px(v, unit):
+    return v * 16 if unit == 'rem' else v
+
+
+def character_floor(txt, nodes, mood):
     out = []
+    # content that needs JS to appear
+    if re.search(r'\bopacity-0\b', txt) or re.search(r'\.(?:reveal|fade-in|hidden-on-load)[^{]*\{[^}]*opacity\s*:\s*0', txt):
+        if not re.search(r'<noscript|animation-fill-mode|animation:[^;}]*(?:both|forwards)', txt):
+            out.append(('WARN', 'reveal-needs-js', "content starts at opacity 0 and relies on a script to appear; "
+                        "it renders blank without JS or in a screenshot. Keep content visible or use a CSS animation with fill-mode both"))
+    if mood == 'playful':
+        best = 0
+        for m in re.finditer(r'<svg\b.*?</svg>', txt, re.S):
+            best = max(best, len(re.findall(r'<(?:path|circle|ellipse|rect|polygon|line|polyline)\b', m.group(0))))
+        if best < 6:
+            out.append(('WARN', 'no-drawn-mascot', f"largest inline SVG has {best} shapes; Playful needs a drawn mascot/toy "
+                        "(6+ shapes, 120px+) in the hero, emoji alone does not count"))
+        whites = len(re.findall(r'bg-white[^"\']*rounded-(?:2xl|3xl)|rounded-(?:2xl|3xl)[^"\']*bg-white', txt))
+        if whites >= 7:
+            out.append(('WARN', 'card-sameness', f"{whites} white rounded cards; alternate section treatments "
+                        "(color band, tilted sticker, outline shape) so the page is not one repeated card"))
+    if mood == 'bold':
+        sizes = []
+        for m in re.finditer(r'text-([4-9])xl', txt):
+            sizes.append(int(m.group(1)) * 12 + 12)   # 7xl=96 approx
+        for m in re.finditer(r'text-\[(\d+(?:\.\d+)?)(px|rem)\]', txt):
+            sizes.append(_px(float(m.group(1)), m.group(2)))
+        for m in re.finditer(r'clamp\([^;{}]*?,\s*(\d+(?:\.\d+)?)(px|rem)\s*\)', txt):
+            sizes.append(_px(float(m.group(1)), m.group(2)))
+        for m in re.finditer(r'font-size\s*:\s*(\d+(?:\.\d+)?)(px|rem)', txt):
+            sizes.append(_px(float(m.group(1)), m.group(2)))
+        if not sizes or max(sizes) < 72:
+            out.append(('WARN', 'bold-headline-size', "no headline at 72px+ (text-7xl or clamp up to 6-7rem); "
+                        "Bold needs one oversized display headline"))
+        fams = {f.replace('+', ' ') for f in re.findall(r'family=([A-Za-z0-9+]+)', txt)}
+        if fams and fams <= {'Inter', 'Roboto', 'Open Sans', 'Poppins', 'Lato', 'Montserrat', 'Nunito', 'DM Sans'}:
+            out.append(('INFO', 'bold-font-default', "only neutral body fonts loaded; add a display face "
+                        "(Archivo Black, Anton, Space Grotesk, Sora, Bebas Neue) for the headline"))
+    return out
+
+
+def mood_specific(txt, nodes, mood):
+    out = list(character_floor(txt, nodes, mood))
     if mood == 'editorial':
         # headline trapped in the reading measure
         trapped = []
@@ -714,6 +792,11 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
     # skeleton / empty state
     if re.search(r'\.map\(|v-for|\*ngFor|\{#each', txt) and not re.search(r'(?i)skeleton|empty|no (?:data|results|items)|animate-pulse', txt):
         add('INFO', 'skeleton-empty', "list rendering without skeleton/empty state")
+    if re.search(r'<(?:html|body)\b', txt, re.I) and not re.search(r'<main\b|role=["\']main', txt, re.I):
+        add('WARN', 'landmark-main', 'full page without a <main> landmark; wrap the primary content in <main> (and use <header>/<footer>/<nav>)')
+    if mood in EXPRESSIVE:
+        issues = [(('INFO', r, m + ' [relaxed in expressive moods]') if sev != 'INFO' and r in RELAXED else (sev, r, m))
+                  for sev, r, m in issues]
     return issues
 
 
