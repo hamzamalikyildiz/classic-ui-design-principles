@@ -478,6 +478,18 @@ def mood_specific(txt, nodes, mood):
         widths = {('prose' if w == 'max-w-prose' else w) for w in widths}
         if len(widths) >= 3:
             out.append(('INFO', 'width-funnel', f"{len(widths)} container widths {sorted(widths)}; use two: one wide frame + one reading column, aligned to the same left edge or centered together"))
+        # reading column centered while the headline is left-aligned: left edges drift apart
+        cols = [n for n in nodes if any(NARROW.match(c) for c in n[2]) and 'mx-auto' in n[2]]
+        if cols:
+            drift = []
+            for tag, attrs, cls, anc, s, e in nodes:
+                if tag == 'h1':
+                    chain = [cls] + [a[2] for a in anc]
+                    if not any('text-center' in c for c in chain):
+                        drift.append(line_of(txt, s))
+            if drift:
+                out.append(('WARN', 'edge-align', f"reading column is centered (mx-auto) but the headline is left-aligned (line {drift[0]}); "
+                            "left edges do not line up. Drop mx-auto on the column so it shares the frame's left edge, or center the headline too"))
         # cramped leading on long text
         tight = [line_of(txt, s) for tag, attrs, cls, anc, s, e in nodes
                  if tag in ('p', 'blockquote', 'li') and any(c in ('leading-none', 'leading-tight', 'leading-snug') for c in cls)
