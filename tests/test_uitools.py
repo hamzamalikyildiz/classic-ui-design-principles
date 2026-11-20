@@ -53,7 +53,7 @@ class Color(unittest.TestCase):
 
 class Spacing(unittest.TestCase):
     def test_off_4px_is_warn(self):
-        iss = rules(run('<div className="gap-1.5 m-[10px]" />'), 'grid')
+        iss = rules(run('<div className="gap-[5px] m-[13px]" />'), 'grid')
         self.assertEqual([i[0] for i in iss], ['WARN', 'WARN'])
 
     def test_4px_finetune_is_info_with_default_grid(self):
@@ -296,6 +296,27 @@ class MoodSpecific(unittest.TestCase):
         self.assertTrue(rules(iss, 'radius-too-soft'))
         self.assertTrue(rules(iss, 'no-mono'))
         self.assertTrue(rules(iss, 'shadow-heavy'))
+
+    def test_gradient_stops_checked(self):
+        bad = '<div className="bg-gradient-to-r from-yellow-300 to-pink-600"><p className="text-white">Hi</p></div>'
+        msg = rules(run(bad), 'wcag-aa')
+        self.assertTrue(msg and 'gradient stop from-yellow-300' in msg[0][2])
+        ok = '<div className="bg-gradient-to-r from-violet-700 to-indigo-800"><p className="text-white">Hi</p></div>'
+        self.assertEqual(rules(run(ok), 'wcag-aa'), [])
+        solid = '<div className="bg-gradient-to-r from-yellow-300 to-pink-300"><div className="bg-slate-900"><p className="text-white">Hi</p></div></div>'
+        self.assertEqual(rules(run(solid), 'wcag-aa'), [])
+
+    def test_bold_dark_band_counts_as_hero_surface(self):
+        band = '<section className="bg-slate-950 py-24"><h1 className="text-5xl text-white">X</h1></section>'
+        self.assertEqual(rules(run(band, mood='bold'), 'no-hero-surface'), [])
+        self.assertTrue(rules(run('<section className="bg-white py-24"><h1>X</h1></section>', mood='bold'), 'no-hero-surface'))
+        card = '<div className="bg-slate-900 p-8"><h1>X</h1></div>'
+        self.assertTrue(rules(run(card, mood='bold'), 'no-hero-surface'))
+
+    def test_half_step_spacing_is_info(self):
+        iss = run('<div className="px-3.5 gap-2.5">x</div>')
+        self.assertEqual(rules(iss, 'grid')[0][0], 'INFO')
+        self.assertEqual(rules(run('<div className="p-[5px]">x</div>'), 'grid')[0][0], 'WARN')
 
     def test_scale_leading_graduated(self):
         out = io.StringIO()
