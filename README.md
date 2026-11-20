@@ -142,8 +142,8 @@ The audit works per element, not per file:
 - **Fonts:** more than two families across CSS, Google Fonts and `next/font`
 - **Miller / states:** navs with more than 7 links, lists without skeleton or empty states
 - **Fitts:** solid primary buttons shorter than 40px
-- **Sterility:** frame wrappers (a box whose only child is another rounded box), borders on most cards with no shadows, flat type hierarchy (mostly one size and bold), grey-only charts
-- **Mood (`--mood`):** with `playful`/`bold`, fewer than 3 hues; with `playful`/`bold`/`trust`, no saturated or gradient hero surface
+- **Sterility:** frame wrappers (a box whose only child is another rounded box), borders on most cards with no shadows (skipped for technical/editorial), flat type hierarchy (mostly one size and bold), grey-only charts
+- **Mood (`--mood`):** with `playful`/`bold`, fewer than 3 hues; with `playful`/`bold`/`trust`, no saturated or gradient hero surface; with `editorial`, display headlines trapped in the reading measure, 3+ container widths, tight leading on long text; with `technical`, soft radii, no mono face, heavy shadows
 
 Contrast fixes suggest the nearest passing shade of the **same hue** (`text-pink-700`), never grey. Tailwind v4 `oklch` colors and runtime CSS variables are not resolved; check those with `contrast`.
 
