@@ -26,7 +26,7 @@ Flow: detect context, pick mood, read the mood file, plan, build, audit, render 
 |---|---|---|---|---|---|
 | For | kids, games, consumer | finance, health, B2B, admin | marketing, launches | blogs, docs, news | dev tools, data |
 | Palette | accent + 2-3 hues, tinted surfaces | 1 accent + neutrals, semantic | accent family + 1 contrast hue | neutrals + 1 accent | neutrals + 1 accent, dark-first |
-| Hero surface | saturated stage | one accent card/band | full-bleed gradient or dark band | large type, image | dark panel, code block |
+| Hero surface | saturated stage | one accent card/band | full-bleed gradient or dark band | large type, optional diagram | dark panel, code block |
 | Depth | `shadow-md/lg`, colored shadows ok | `shadow-sm`, bg shift | `shadow-lg`, layered | hairlines | 1px borders |
 | Card / control radius | 24px / full | 12-16 / 8 | 16-24 / 12 | 4-8 / 4 | 6-8 / 6 |
 | Type | rounded display + sans, 1.25-1.333 | serif display + sans (or clean sans), 1.2 | display + sans, 1.333-1.5 | serif display + body, 1.25 | sans + mono, 1.2 |
@@ -36,7 +36,7 @@ Playful and Bold are **expressive**: the audit enforces only the accessibility f
 
 ## 3. Make it memorable (all moods)
 
-1. **One signature element per page**, built for this brief: a custom inline-SVG illustration (a drawn product, scene or mascot, not geometric placeholders or emoji), or one working interaction in vanilla JS (mini demo, configurator, sortable table, pausable live log). Dashboards favor the interaction, landings and articles the illustration plus one interaction.
+1. **One signature element per page**, built for this brief: a custom inline-SVG illustration (a drawn product, scene or mascot, not geometric placeholders or emoji), or one working interaction in vanilla JS (mini demo, configurator, sortable table, pausable live log). Dashboards favor the interaction, landings an illustration or live preview, and articles strong typography — adding a diagram or interaction only when it genuinely helps the reader (never forced clip-art).
 2. **Palette from the subject**, not the default (audio: ember on near-black; kids learning: sun yellow + sky + coral; observability: cyan on ink). Supporting hue 60-150 degrees away. A violet-to-fuchsia gradient only if the brief calls for it.
 3. **Icons are inline SVG**, one stroke style. Emoji as icons only in Playful.
 4. **Specific copy and data**: real-sounding names, numbers, units; no "Lorem", no "Feature one".
@@ -72,7 +72,7 @@ python3 scripts/render.py page.html --out shot.png --check  # screenshot + rende
 
 1. Mood, concept (one line: visual idea + 3 personality words) and plan statement.
 2. Palette from the subject; check every text/background pair with `contrast`. Type scale with `scale`. Tokens in one place.
-3. Build hero surface, focal visual and signature element first, then add only the supporting modules the brief calls for (follow the mood file's focus rule, not a fixed widget quota).
+3. Build the hero and signature element first (include a diagram or illustration only when it genuinely serves the brief), then add only the supporting modules the brief calls for (follow the mood file's focus rule, not a fixed widget quota).
 4. `audit --mood <mood>` once on the finished file. Fix FAIL/WARN with the smallest edit (a shade, a size, a class); never delete the signature element or illustration to satisfy a check.
 5. If Playwright + Chrome are available, run `render.py --check`, fix every WARN, then open the screenshot and ask: where does the eye land (hero surface or primary CTA)? does it feel like the mood? any empty, stretched or boxed-in area? does the squint test show hierarchy? did a requested element lose emphasis? If Playwright/rendering is unavailable and skipped, say so in the report.
 6. Repeat 4-5 at most three times; the last round must be clean.

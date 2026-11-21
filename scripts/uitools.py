@@ -720,7 +720,12 @@ def character_checks(txt, nodes, mood, tokens=None):
 
 MAXW = re.compile(r'^max-w-(prose|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|\[[^\]]+\])$')
 NARROW = re.compile(r'^max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[4-7]\d|80)ch\])$')
+NARROW_COL = re.compile(r'^max-w-(?:prose|xs|sm|md|lg|xl|\[(?:[4-6]\d)ch\])$')
+COL_NARROW = re.compile(r'^max-w-(?:prose|\[(?:[4-7]\d)ch\])$')
+WIDE_FRAME = re.compile(r'^max-w-(?:4xl|5xl|6xl|7xl)$')
+MULTI_COL = re.compile(r'^(?:[a-z]+:)*(?:grid-cols-(?:[2-9]|1[0-2]|\[.+\])|flex-row)$')
 DISPLAY_TEXT = re.compile(r'^text-(?:3xl|4xl|5xl|6xl|7xl|8xl|9xl)$')
+HEADLINE_TEXT = re.compile(r'^(?:[a-z]+:)*text-(?:4xl|5xl|6xl|7xl|8xl|9xl)$')
 
 
 EXPRESSIVE = ('playful', 'bold')
@@ -776,16 +781,38 @@ def character_floor(txt, nodes, mood):
 def mood_specific(txt, nodes, mood):
     out = list(character_floor(txt, nodes, mood))
     if mood == 'editorial':
-        # headline trapped in the reading measure
+        # display h1 trapped in the narrow reading measure
         trapped = []
         for tag, attrs, cls, anc, s, e in nodes:
-            if tag in ('h1', 'h2') and any(DISPLAY_TEXT.match(c) for c in cls):
+            if tag == 'h1' and any(HEADLINE_TEXT.match(c) for c in cls):
                 chain = [cls] + [a[2] for a in anc if a[0] not in ('body', 'html')]
-                if any(NARROW.match(c) for cl in chain for c in cl):
+                if any(NARROW_COL.match(c) for cl in chain for c in cl):
                     trapped.append(line_of(txt, s))
         if trapped:
-            out.append(('WARN', 'headline-measure', f"{len(trapped)} display headline(s) inside the reading measure (lines {trapped[:6]}); "
-                        "keep body at 65ch but let headlines, figures and pull quotes span the wide frame (max-w-4xl/5xl)"))
+            out.append(('WARN', 'headline-measure', f"{len(trapped)} display h1 inside the narrow reading measure (lines {trapped[:6]}); "
+                        "let the h1 span a wider frame (max-w-3xl/4xl/5xl) centered above the column, or use a 2-column grid"))
+        # lone uncentered reading column inside a wide frame with no sidebar
+        if not any(n[0].lower() == 'aside' for n in nodes):
+            left_stacked = []
+            skip_tags = {'blockquote', 'figure', 'header', 'footer', 'aside', 'nav'}
+            for tag, attrs, cls, anc, s, e in nodes:
+                if tag.lower() not in ('div', 'article', 'section', 'main'):
+                    continue
+                if not any(COL_NARROW.match(c) for c in cls) or 'mx-auto' in cls:
+                    continue
+                if not any(WIDE_FRAME.match(c) for a in anc if a[0] not in ('body', 'html') for c in a[2]):
+                    continue
+                if any(a[0].lower() in skip_tags for a in anc):
+                    continue
+                if any(MULTI_COL.match(c) for a in anc for c in a[2]):
+                    continue
+                if any(('flex' in a[2] and not any('flex-col' in c for c in a[2])) or ('flex-col' in a[2] and 'items-center' in a[2]) for a in anc):
+                    continue
+                left_stacked.append(line_of(txt, s))
+            if left_stacked:
+                out.append(('WARN', 'left-stacked-column',
+                            f"{len(left_stacked)} uncentered reading column(s) inside a wide frame with no sidebar (lines {left_stacked[:6]}); "
+                            "add mx-auto (centered with the headline) or use a 2-column grid so the right half is not left blank"))
         # too many container widths
         widths = {c for tag, attrs, cls, anc, s, e in nodes for c in cls if MAXW.match(c) and 'mx-auto' in cls}
         widths = {('prose' if w == 'max-w-prose' else w) for w in widths}
@@ -804,8 +831,8 @@ def mood_specific(txt, nodes, mood):
                     if not any('text-center' in c for c in chain):
                         drift.append(line_of(txt, s))
             if drift:
-                out.append(('WARN', 'edge-align', f"reading column is centered (mx-auto) but the headline is left-aligned (line {drift[0]}); "
-                            "left edges do not line up. Drop mx-auto on the column so it shares the frame's left edge, or center the headline too"))
+                out.append(('WARN', 'edge-align', f"reading column is centered (mx-auto) while the wide-frame headline is left-aligned (line {drift[0]}); "
+                            "center the headline with the column, keep both in one centered frame, or use a 2-column grid"))
         # cramped leading on long text
         tight = [line_of(txt, s) for tag, attrs, cls, anc, s, e in nodes
                  if tag in ('p', 'blockquote', 'li') and any(c in ('leading-none', 'leading-tight', 'leading-snug') for c in cls)

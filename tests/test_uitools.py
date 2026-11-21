@@ -397,11 +397,34 @@ class MoodSpecific(unittest.TestCase):
 
     def test_editorial_edge_alignment(self):
         bad = '<div className="max-w-4xl mx-auto"><h1 className="text-5xl">T</h1></div><div className="max-w-prose mx-auto"><p>x</p></div>'
-        self.assertTrue(rules(run(bad, mood='editorial'), 'edge-align'))
+        iss = run(bad, mood='editorial')
+        self.assertTrue(rules(iss, 'edge-align'))
+        self.assertFalse(any('Drop mx-auto' in msg for _, r, msg in iss if r == 'edge-align'))
         ok = '<div className="max-w-4xl mx-auto"><h1 className="text-5xl">T</h1><div className="max-w-prose"><p>x</p></div></div>'
         self.assertEqual(rules(run(ok, mood='editorial'), 'edge-align'), [])
         centered = '<div className="max-w-4xl mx-auto text-center"><h1 className="text-5xl">T</h1></div><div className="max-w-prose mx-auto"><p>x</p></div>'
         self.assertEqual(rules(run(centered, mood='editorial'), 'edge-align'), [])
+
+    def test_editorial_h2_and_2xl_allowed_in_headline_measure(self):
+        h2_ok = '<div className="max-w-prose mx-auto"><h2 className="text-4xl font-serif">Subheading</h2><p>x</p></div>'
+        self.assertEqual(rules(run(h2_ok, mood='editorial'), 'headline-measure'), [])
+        unified = '<main className="max-w-2xl mx-auto"><h1 className="text-4xl font-serif">Title</h1><p>x</p></main>'
+        self.assertEqual(rules(run(unified, mood='editorial'), 'headline-measure'), [])
+        trapped_h1 = '<main className="max-w-prose mx-auto"><h1 className="text-4xl font-serif">Big</h1></main>'
+        self.assertTrue(rules(run(trapped_h1, mood='editorial'), 'headline-measure'))
+
+    def test_editorial_left_stacked_column(self):
+        bad = '<article className="mx-auto max-w-5xl"><h1 className="text-6xl text-center">T</h1><div className="max-w-prose"><p>x</p></div></article>'
+        iss = run(bad, mood='editorial')
+        self.assertEqual([sev for sev, r, _ in iss if r == 'left-stacked-column'], ['WARN'])
+        centered = '<article className="mx-auto max-w-5xl"><h1 className="text-6xl text-center">T</h1><div className="mx-auto max-w-prose"><p>x</p></div></article>'
+        self.assertEqual(rules(run(centered, mood='editorial'), 'left-stacked-column'), [])
+        two_col_aside = ('<main className="mx-auto max-w-5xl grid lg:grid-cols-[minmax(0,65ch)_280px]">'
+                         '<div className="max-w-prose"><p>x</p></div><aside>rail</aside></main>')
+        self.assertEqual(rules(run(two_col_aside, mood='editorial'), 'left-stacked-column'), [])
+        two_col_grid = ('<article className="mx-auto max-w-5xl"><div className="grid lg:grid-cols-[minmax(0,65ch)_280px]">'
+                        '<div className="max-w-prose"><p>x</p></div><div>rail</div></div></article>')
+        self.assertEqual(rules(run(two_col_grid, mood='editorial'), 'left-stacked-column'), [])
 
     def test_technical_checks(self):
         src = ''.join('<div className="rounded-3xl p-4 shadow-xl">x</div>' for _ in range(3))

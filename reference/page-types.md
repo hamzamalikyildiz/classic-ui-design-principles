@@ -7,7 +7,7 @@ Always-on baseline: WCAG AA, 8pt grid, semantic colors, max 2 fonts (up to 3 in 
 | Landing / marketing | Z-pattern, Fitts (large hero CTA), bento features, focal visual in hero | Bold (Playful for kids/consumer) | Full-width sections, spacing from mood |
 | Dashboard / admin | F-pattern, bento metrics with one featured card, Miller (sidebar ≤7), skeleton/empty/error, categorical chart colors | Trust | Left sidebar + 12-col grid, `gap-4`/`gap-6` |
 | Form / onboarding / checkout | Hick (steps), progressive disclosure, Fitts (full-width submit on mobile), inline errors in semantic red | Trust | Single column, `max-w-md`/`max-w-lg` |
-| Content / blog / docs | 45–75 chars for body (`max-w-prose`), F-pattern, accent for links only, two measures (see Editorial notes) | Editorial | Wide frame + centered reading column |
+| Content / blog / docs | 45–75 chars for body (`max-w-prose`), comfortable 18px/1.7 leading, earned visuals only (see Editorial notes) | Editorial | Centered single column or 2-column rail |
 | Mobile app screen | Fitts (44–48px targets, CTA in bottom zone), Miller (tab bar ≤5), skeleton | brand's | Single column, 16px side padding |
 | E-commerce / catalog | Hick (grouped filters), skeleton grid, empty state, one CTA per card | Bold or Trust | Responsive card grid |
 | Settings / profile | Proximity (grouped sections, whitespace over dividers), Jakob, Miller | Trust | Side menu + content |
