@@ -13,6 +13,7 @@ Needs Python Playwright and a Chromium/Chrome binary.
 import argparse
 import base64
 from dataclasses import dataclass, fields
+import importlib.util
 import json
 import os
 import pathlib
@@ -216,6 +217,9 @@ class RenderOptions:
     height: int = 900
     check: bool = False
     online: bool | None = None
+    storage_state: str | None = None
+    save_storage_state: str | None = None
+    login_script: str | None = None
 
 
 def _coerce_options(opts):
@@ -338,7 +342,7 @@ def _run_dom_checks(page, mobile_factory, target_uri, opts, console_errors, netw
         found.append(['WARN', 'network-errors',
                       f"{len(network_errors)} network error(s): {'; '.join(network_errors[:3])}"])
     if mobile_factory is not None and hasattr(mobile_factory, 'new_page'):
-        m = mobile_factory.new_page(viewport={'width': 375, 'height': 800})
+        m = _new_page(mobile_factory, {'width': 375, 'height': 800})
         try:
             _prepare_page(m, target_uri, opts.dark)
             found += m.evaluate(MOBILE_JS)
@@ -348,6 +352,89 @@ def _run_dom_checks(page, mobile_factory, target_uri, opts, console_errors, netw
     if not found:
         found = [['INFO', 'dom-check', 'no defects found']]
     return found
+
+
+def _base_url(target_uri):
+    """Scheme+host root of an http(s) target (e.g. http://localhost:3000); '' for file targets."""
+    p = urllib.parse.urlparse(str(target_uri))
+    if p.scheme in ('http', 'https') and p.netloc:
+        return f'{p.scheme}://{p.netloc}'
+    return ''
+
+
+def _load_login(path):
+    """Load the user's login script via importlib and return its login(page, base_url) function."""
+    p = pathlib.Path(path)
+    if not p.is_file():
+        sys.exit(f'render: --login-script file not found: {path}')
+    spec = importlib.util.spec_from_file_location('render_login_script', p)
+    mod = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(mod)
+    except Exception as e:
+        sys.exit(f'render: could not load --login-script {path}: {type(e).__name__}: {e}')
+    fn = getattr(mod, 'login', None)
+    if not callable(fn):
+        sys.exit(f'render: --login-script {path} must define def login(page, base_url):')
+    return fn
+
+
+def _check_auth_inputs(opts):
+    """Fail early with a clear message when auth input files are missing/invalid."""
+    if opts.storage_state and not pathlib.Path(opts.storage_state).is_file():
+        sys.exit(f'render: --storage-state file not found: {opts.storage_state}')
+    if opts.login_script:
+        _load_login(opts.login_script)
+
+
+def _has_auth(opts):
+    return bool(opts.storage_state or opts.login_script or opts.save_storage_state)
+
+
+def _new_context(browser, opts):
+    kw = {'viewport': {'width': opts.width, 'height': opts.height}}
+    if opts.storage_state:
+        kw['storage_state'] = str(opts.storage_state)
+    return browser.new_context(**kw)
+
+
+def _login_and_save(context, target_uri, opts):
+    """Run the login script (if any) on its own page, then save storage state (if requested)."""
+    if opts.login_script:
+        login = _load_login(opts.login_script)
+        page = context.new_page()
+        try:
+            login(page, _base_url(target_uri))
+        finally:
+            page.close()
+    if opts.save_storage_state:
+        p = pathlib.Path(opts.save_storage_state)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        context.storage_state(path=str(p))
+        log(f'storage state saved to {p}')  # never print cookie/token values
+
+
+def _open_auth_context(browser, target_uri, opts):
+    """Create a context (loading storageState), run login/save; close it on failure."""
+    _check_auth_inputs(opts)
+    context = _new_context(browser, opts)
+    try:
+        _login_and_save(context, target_uri, opts)
+    except BaseException:
+        context.close()
+        raise
+    return context
+
+
+def _new_page(factory, viewport):
+    """Open a new page on either a Browser (accepts viewport=...) or a BrowserContext."""
+    try:
+        return factory.new_page(viewport=viewport)
+    except TypeError:
+        page = factory.new_page()
+        if hasattr(page, 'set_viewport_size'):
+            page.set_viewport_size(viewport)
+        return page
 
 
 def capture(browser_or_page, target_uri, opts=None):
@@ -360,8 +447,12 @@ def capture(browser_or_page, target_uri, opts=None):
     opts = _coerce_options(opts)
     online = is_online_target(target_uri, opts)
     owns_page = hasattr(browser_or_page, 'new_page')
+    owned_context = None
     if owns_page:
-        page = browser_or_page.new_page(viewport={'width': opts.width, 'height': opts.height})
+        if hasattr(browser_or_page, 'new_context') and _has_auth(opts):
+            owned_context = _open_auth_context(browser_or_page, target_uri, opts)
+            browser_or_page = owned_context
+        page = _new_page(browser_or_page, {'width': opts.width, 'height': opts.height})
         mobile_factory = browser_or_page
     else:
         page = browser_or_page
@@ -392,6 +483,8 @@ def capture(browser_or_page, target_uri, opts=None):
         detach()
         if owns_page:
             page.close()
+        if owned_context is not None:
+            owned_context.close()
 
 
 def build_parser():
@@ -404,8 +497,19 @@ def build_parser():
     ap.add_argument('--dark', action='store_true', help="add class 'dark' to <html> before capturing")
     ap.add_argument('--width', type=int, default=1440)
     ap.add_argument('--height', type=int, default=900)
+    ap.add_argument('--storage-state', metavar='PATH',
+                    help='load a Playwright storageState JSON (cookies/localStorage) into the browser context. PRIVACY: it holds live session secrets; keep it out of git and never share it')
+    ap.add_argument('--save-storage-state', metavar='PATH',
+                    help='save the session (after load/login) to this JSON file. PRIVACY: the file holds live cookies/tokens; add it to .gitignore')
+    ap.add_argument('--login-script', metavar='PATH',
+                    help='Python file defining def login(page, base_url): run once before rendering the target')
     ap.add_argument('--check', action='store_true',
                     help='also print defects found in the rendered page: layout (clipped text, blank/half-empty panels, hidden content), axe accessibility, console errors, 375px mobile, dead buttons, focus rings')
+    ap.epilog = (
+        'Record a session:  python -m playwright codegen --save-storage=auth.json http://localhost:3000/login\n'
+        'then:              python scripts/render.py --url http://localhost:3000/dashboard --storage-state auth.json --out p.png\n'
+        'auth.json contains live cookies/tokens: never commit or share it. Cookie/token values are never printed.')
+    ap.formatter_class = argparse.RawDescriptionHelpFormatter
     return ap
 
 
@@ -430,6 +534,9 @@ def parse_options(argv=None):
         height=a.height,
         check=a.check,
         online=bool(a.url),
+        storage_state=a.storage_state,
+        save_storage_state=a.save_storage_state,
+        login_script=a.login_script,
     )
 
 
@@ -453,9 +560,15 @@ def render(opts):
     try:
         with sync_playwright() as p:
             browser = launch_browser(p)
+            context = None
             try:
+                if _has_auth(opts):
+                    context = _open_auth_context(browser, target_uri, opts)
+                    return capture(context, target_uri, opts)
                 return capture(browser, target_uri, opts)
             finally:
+                if context is not None:
+                    context.close()
                 browser.close()
     finally:
         if page_file is not None:
