@@ -1,0 +1,10 @@
+cift1: B | 3 | B has a cleaner, coherent hero illustration and readable article flow while A has a odd flame-on-a-block image despite richer content | A 7/7/8/8 B 8/7/8/7
+cift2: A | 3 | A has a strong clear hero, pickup ticket, refills, delivery tracker and insurance notice in a trustworthy and well-ordered layout while B is a plainer generic dashboard | A 8/8/8/9 B 7/7/8/7
+cift3: B | 4 | B has a route figure, a fuller itinerary panel and more content with a polished look while A relies on empty gradient placeholders for related essays | A 7/7/8/6 B 8/8/8/8
+cift4: B | 4 | B tells a real story with the SLO line, a clear outlier shard, an event annotation and a rich slow-query table, while A is a tidier but more generic dark dashboard | A 7/7/7/6 B 8/8/8/9
+cift5: B | 2 | B is more useful with income, deductions and tax paid tiles, a progress bar and clear upload actions in a clean familiar layout while A is nicer in character but strikes through received items oddly | A 8/7/7/8 B 7/8/8/8
+cift6: B | 3 | B packs far more usable detail such as severity-tagged alerts, a fuller idle resource table and per-key tag coverage with a restrained look, while A is colorful and pleasant but thinner | A 8/7/8/6 B 7/8/7/9
+cift7: B | 4 | B offers richer, more believable content with a tide graphic, headliner hierarchy, water times, ticket details and sponsor info in a polished layout while A has a meaningless striped placeholder and thin sections | A 7/6/7/5 B 9/8/8/9
+cift8: A | 3 | A is tidier and more consistent with a friendly mascot, clear product cards, a quiz, pricing and trust stats while B has bolder colors but uneven card sizes and a lopsided wide trust section | A 8/8/8/8 B 8/7/7/8
+cift9: A | 3 | A has a stronger mascot hero, ages per zone, a fuller two-day schedule with locations, and a real closing call to action, while B is neat but thinner and more generic | A 9/8/8/9 B 8/7/8/7
+cift10: A | 3 | A has a recognizable shoe drawing with a spec callout, concrete product claims and a clear sizing table with highlighted row, while B shoe is just a blob and its content is more generic | A 8/8/8/8 B 7/7/8/7

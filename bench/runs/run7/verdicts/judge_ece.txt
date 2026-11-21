@@ -1,0 +1,10 @@
+cift1: A | 3 | A is the cleaner one: its illustration is clear and it has cards and a CTA box, while B has a confusing bowl-and-flame picture and plain text lists. | A 7/6/8/7 B 6/6/7/7
+cift2: B | 3 | B has a much better shoe illustration, a bolder lime and orange mix, and an eye-catching lime closing band, while the shoe in A looks like a blob. | A 7/6/7/7 B 8/7/8/7
+cift3: A | 3 | A uses bold full-color sections, a punchy yellow hero and a bento box with more personality, whereas B is cute but feels like a standard kids-brand template. | A 8/7/8/8 B 7/6/7/7
+cift4: B | 3 | B hits in the first 3 seconds with a full yellow hero, a mascot and chunky color-block sections, while A is tidy but its hero art is a vague blob and the page feels paler. | A 7/6/7/7 B 8/7/8/8
+cift5: A | 4 | A adds a dark route graphic and a dark itinerary box that give the long read some visual punch and more content, while B is a plain text page with empty gradient cards. | A 7/7/8/8 B 5/6/7/5
+cift6: B | 3 | B has a striking tide-chart hero, a headliner lineup card and richer content with a polished feel, while A is bold and retro but its stripe box and lineup grid feel emptier. | A 7/6/7/6 B 8/8/8/8
+cift7: A | 4 | A has a strong green hero with a pickup ticket, a clear order from pickup to refills, delivery tracker and insurance notice, while B is a small generic dashboard that looks like a template. | A 7/7/8/8 B 6/6/7/6
+cift8: A | 3 | A is more colorful and airy with a donut chart, colored bars and a clear hierarchy, while B is denser and monochrome like a terminal even though it has more data. | A 8/7/8/7 B 6/7/6/8
+cift9: A | 2 | A has a memorable red spike bar and a clear story with richer data and an SQL panel, while B is colorful but looks like a typical blue dashboard template. | A 7/7/8/8 B 7/6/7/6
+cift10: A | 4 | A has a bold dark-green hero card with a huge refund number and a warm, distinctive look, while B is a clean but generic white SaaS dashboard. | A 8/7/8/7 B 6/6/7/7

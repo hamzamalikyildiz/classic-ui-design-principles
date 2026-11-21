@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloud Cost Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0b1020; color: #e2e8f0; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .card { background: #111830; border: 1px solid #1e2a4a; border-radius: 14px; }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+  <!-- Header -->
+  <header class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-sky-400">Cloud FinOps</p>
+      <h1 class="text-2xl sm:text-3xl font-semibold">Cloud Cost Dashboard</h1>
+      <p class="text-sm text-slate-400">November 1 - November 20, 2026 &middot; All accounts</p>
+    </div>
+    <div class="flex gap-2 text-sm">
+      <span class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700">Last 30 days</span>
+      <span class="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40">USD</span>
+    </div>
+  </header>
+
+  <!-- KPI row -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">Month-to-date spend</p>
+      <p class="mono text-2xl font-semibold mt-1">$48,210</p>
+      <p class="text-xs text-rose-400 mt-1">+12.4% vs. last month</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">Forecast (month end)</p>
+      <p class="mono text-2xl font-semibold mt-1">$71,900</p>
+      <p class="text-xs text-slate-400 mt-1">Budget $65,000</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">Idle resources</p>
+      <p class="mono text-2xl font-semibold mt-1">37</p>
+      <p class="text-xs text-amber-400 mt-1">Est. $3,480 / month</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">Tag coverage</p>
+      <p class="mono text-2xl font-semibold mt-1">81%</p>
+      <p class="text-xs text-slate-400 mt-1">1,246 of 1,538 resources</p>
+    </div>
+  </section>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Daily trend -->
+    <section class="card p-5 lg:col-span-2">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Daily spend trend</h2>
+        <div class="flex items-center gap-3 text-xs text-slate-400">
+          <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-sky-400 inline-block"></span>Actual</span>
+          <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-slate-500 inline-block"></span>Budget/day</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 600 220" class="w-full h-auto" role="img" aria-label="Daily spend line chart">
+        <g stroke="#1e2a4a" stroke-width="1">
+          <line x1="40" y1="20" x2="590" y2="20"/>
+          <line x1="40" y1="75" x2="590" y2="75"/>
+          <line x1="40" y1="130" x2="590" y2="130"/>
+          <line x1="40" y1="185" x2="590" y2="185"/>
+        </g>
+        <g font-size="11" fill="#64748b" font-family="JetBrains Mono, monospace">
+          <text x="4" y="24">2.4k</text>
+          <text x="4" y="79">1.8k</text>
+          <text x="4" y="134">1.2k</text>
+          <text x="4" y="189">0.6k</text>
+        </g>
+        <line x1="40" y1="110" x2="590" y2="110" stroke="#64748b" stroke-dasharray="5 4"/>
+        <polyline fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linejoin="round"
+          points="40,150 80,142 120,138 160,129 200,133 240,120 280,116 320,124 360,108 400,104 440,112 480,98 520,95 560,88 590,70"/>
+        <polygon fill="#38bdf8" fill-opacity="0.12"
+          points="40,150 80,142 120,138 160,129 200,133 240,120 280,116 320,124 360,108 400,104 440,112 480,98 520,95 560,88 590,70 590,200 40,200"/>
+        <circle cx="480" cy="98" r="5" fill="#fb7185"/>
+        <text x="418" y="86" font-size="11" fill="#fda4af" font-family="Inter, sans-serif">Spike Nov 14</text>
+        <g font-size="11" fill="#64748b" font-family="Inter, sans-serif">
+          <text x="40" y="212">Nov 1</text>
+          <text x="290" y="212">Nov 10</text>
+          <text x="540" y="212">Nov 20</text>
+        </g>
+      </svg>
+    </section>
+
+    <!-- Anomaly alerts -->
+    <section class="card p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Anomaly alerts</h2>
+        <span class="text-xs px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300">3 open</span>
+      </div>
+      <ul class="space-y-3 text-sm">
+        <li class="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30">
+          <p class="font-medium text-rose-200">EC2 spend up 46% on Nov 14</p>
+          <p class="text-xs text-slate-400">prod-analytics &middot; +$612 vs. baseline</p>
+        </li>
+        <li class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+          <p class="font-medium text-amber-200">Data transfer egress spike</p>
+          <p class="text-xs text-slate-400">us-east-1 &middot; +$288 over 2 days</p>
+        </li>
+        <li class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+          <p class="font-medium text-amber-200">New NAT gateway in eu-west-2</p>
+          <p class="text-xs text-slate-400">Unplanned resource &middot; $94 / week</p>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Spend by service -->
+    <section class="card p-5">
+      <h2 class="font-semibold mb-4">Spend by service</h2>
+      <div class="space-y-3 text-sm">
+        <div>
+          <div class="flex justify-between mb-1"><span>Compute</span><span class="mono">$19,450</span></div>
+          <div class="h-2 rounded bg-slate-800"><div class="h-2 rounded bg-sky-500" style="width:88%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-1"><span>Storage</span><span class="mono">$9,870</span></div>
+          <div class="h-2 rounded bg-slate-800"><div class="h-2 rounded bg-indigo-500" style="width:52%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-1"><span>Database</span><span class="mono">$8,320</span></div>
+          <div class="h-2 rounded bg-slate-800"><div class="h-2 rounded bg-teal-500" style="width:44%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-1"><span>Data transfer</span><span class="mono">$5,140</span></div>
+          <div class="h-2 rounded bg-slate-800"><div class="h-2 rounded bg-amber-500" style="width:28%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-1"><span>Other</span><span class="mono">$5,430</span></div>
+          <div class="h-2 rounded bg-slate-800"><div class="h-2 rounded bg-slate-500" style="width:24%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top idle resources -->
+    <section class="card p-5 lg:col-span-1">
+      <h2 class="font-semibold mb-4">Top idle resources</h2>
+      <table class="w-full text-sm">
+        <thead class="text-left text-xs text-slate-400">
+          <tr><th class="pb-2 font-normal">Resource</th><th class="pb-2 font-normal">Type</th><th class="pb-2 font-normal text-right">Cost / mo</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <tr><td class="py-2 mono text-xs">i-0a3f…c91</td><td class="py-2 text-slate-400">EC2 m5.2xlarge</td><td class="py-2 mono text-right">$560</td></tr>
+          <tr><td class="py-2 mono text-xs">vol-07be…2d4</td><td class="py-2 text-slate-400">EBS 2 TB gp3</td><td class="py-2 mono text-right">$240</td></tr>
+          <tr><td class="py-2 mono text-xs">db-staging-02</td><td class="py-2 text-slate-400">RDS r6g.xlarge</td><td class="py-2 mono text-right">$430</td></tr>
+          <tr><td class="py-2 mono text-xs">eip-44c1…9a0</td><td class="py-2 text-slate-400">Elastic IP</td><td class="py-2 mono text-right">$22</td></tr>
+          <tr><td class="py-2 mono text-xs">lb-legacy-api</td><td class="py-2 text-slate-400">Load balancer</td><td class="py-2 mono text-right">$118</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Tag coverage -->
+    <section class="card p-5">
+      <h2 class="font-semibold mb-4">Tag coverage</h2>
+      <div class="flex items-center gap-5">
+        <svg viewBox="0 0 120 120" class="w-28 h-28 shrink-0" role="img" aria-label="81 percent tagged">
+          <circle cx="60" cy="60" r="48" fill="none" stroke="#1e2a4a" stroke-width="12"/>
+          <circle cx="60" cy="60" r="48" fill="none" stroke="#34d399" stroke-width="12"
+            stroke-linecap="round" stroke-dasharray="244.3 301.6" transform="rotate(-90 60 60)"/>
+          <text x="60" y="66" text-anchor="middle" font-size="20" font-weight="600" fill="#e2e8f0" font-family="Inter, sans-serif">81%</text>
+        </svg>
+        <ul class="text-sm space-y-2 flex-1">
+          <li class="flex justify-between"><span class="text-slate-400">Fully tagged</span><span class="mono">1,246</span></li>
+          <li class="flex justify-between"><span class="text-slate-400">Partially tagged</span><span class="mono">171</span></li>
+          <li class="flex justify-between"><span class="text-slate-400">Untagged</span><span class="mono text-rose-300">121</span></li>
+        </ul>
+      </div>
+      <p class="text-xs text-slate-500 mt-4">Target: 95% by Dec 31. Untagged resources are excluded from chargeback.</p>
+    </section>
+  </div>
+
+  <footer class="text-xs text-slate-500 text-center pt-2">Figures are estimates from the last billing export and refresh daily.</footer>
+</div>
+</body>
+</html>

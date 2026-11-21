@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bubbly Bites - Healthy Snacks for Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { display: ['Fredoka', 'sans-serif'], body: ['Nunito', 'sans-serif'] },
+        colors: {
+          sun: '#FFD23F', berry: '#FF5C8A', mint: '#3DDC97', sky: '#4CC9F0', grape: '#7B5CFA', ink: '#243047'
+        },
+        animation: { bob: 'bob 3s ease-in-out infinite', wiggle: 'wiggle 2.5s ease-in-out infinite' },
+        keyframes: {
+          bob: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-14px)' } },
+          wiggle: { '0%,100%': { transform: 'rotate(-4deg)' }, '50%': { transform: 'rotate(4deg)' } }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background: #FFF8EC; color: #243047; font-family: 'Nunito', sans-serif; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(0px); opacity: .9; }
+  .squiggle { background-image: radial-gradient(circle, #FF5C8A 3px, transparent 3.5px); background-size: 14px 14px; }
+</style>
+</head>
+<body class="overflow-x-hidden">
+
+<!-- NAV -->
+<header class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+  <a href="#" class="font-display text-2xl font-bold text-ink">Bubbly<span class="text-berry"> Bites</span></a>
+  <nav class="hidden gap-6 font-semibold md:flex">
+    <a href="#box" class="hover:text-berry">What's inside</a>
+    <a href="#quiz" class="hover:text-berry">Snack quiz</a>
+    <a href="#pricing" class="hover:text-berry">Pricing</a>
+    <a href="#parents" class="hover:text-berry">For parents</a>
+  </nav>
+  <a href="#pricing" class="rounded-full bg-berry px-5 py-2 font-bold text-white shadow-md hover:scale-105 transition">Start a box</a>
+</header>
+
+<!-- HERO -->
+<section class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-20 pt-6 md:grid-cols-2">
+  <div class="relative z-10 text-center md:text-left">
+    <span class="inline-block rounded-full bg-mint/20 px-4 py-1 text-sm font-extrabold text-emerald-700">Snacks kids actually love</span>
+    <h1 class="font-display mt-4 text-5xl font-bold leading-tight md:text-6xl">Yummy snacks.<br><span class="text-berry">Happy</span> tummies.</h1>
+    <p class="mt-5 text-lg">A monthly box of fruity, veggie-powered treats your kids will beg to open. No sugar bombs, no boring stuff.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4 md:justify-start">
+      <a href="#pricing" class="rounded-full bg-berry px-8 py-4 text-lg font-extrabold text-white shadow-lg hover:-translate-y-1 transition">Get my first box</a>
+      <a href="#quiz" class="rounded-full border-4 border-ink px-7 py-3 text-lg font-extrabold hover:bg-sun transition">Take the snack quiz</a>
+    </div>
+  </div>
+
+  <!-- Mascot -->
+  <div class="relative mx-auto flex h-[420px] w-[420px] max-w-full items-center justify-center">
+    <div class="blob -left-4 top-6 h-40 w-40 bg-sun"></div>
+    <div class="blob -right-2 bottom-10 h-28 w-28 bg-sky"></div>
+    <div class="blob right-10 top-0 h-16 w-16 bg-mint"></div>
+    <svg viewBox="0 0 300 300" class="relative w-72 animate-bob" aria-label="Bubbly the mascot">
+      <!-- body -->
+      <circle cx="150" cy="160" r="110" fill="#FF5C8A"/>
+      <!-- ears -->
+      <circle cx="78" cy="70" r="34" fill="#FF5C8A"/>
+      <circle cx="222" cy="70" r="34" fill="#FF5C8A"/>
+      <circle cx="78" cy="70" r="16" fill="#FFB3C7"/>
+      <circle cx="222" cy="70" r="16" fill="#FFB3C7"/>
+      <!-- eyes -->
+      <circle cx="120" cy="150" r="14" fill="#243047"/>
+      <circle cx="180" cy="150" r="14" fill="#243047"/>
+      <circle cx="125" cy="144" r="5" fill="#fff"/>
+      <circle cx="185" cy="144" r="5" fill="#fff"/>
+      <!-- cheeks -->
+      <circle cx="98" cy="180" r="12" fill="#FFB3C7" opacity=".8"/>
+      <circle cx="202" cy="180" r="12" fill="#FFB3C7" opacity=".8"/>
+      <!-- smile -->
+      <path d="M118 190 Q150 225 182 190" stroke="#243047" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <!-- leaf on top -->
+      <path d="M150 52 Q140 20 170 14 Q176 44 150 52Z" fill="#3DDC97"/>
+      <path d="M150 52 Q160 30 150 18" stroke="#2BB67C" stroke-width="4" fill="none"/>
+    </svg>
+    <div class="absolute bottom-4 right-2 animate-wiggle rounded-2xl bg-white px-4 py-2 font-display text-lg font-bold shadow-lg">Hi, I'm Bubbly!</div>
+  </div>
+</section>
+
+<!-- WHAT IS IN THE BOX -->
+<section id="box" class="bg-sun/30 py-20">
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="font-display text-center text-4xl font-bold md:text-5xl">What's in the box?</h2>
+    <p class="mx-auto mt-3 max-w-xl text-center text-lg">Every month, about 8 surprises, all tested by real kids.</p>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <div class="rounded-3xl bg-white p-7 shadow-md">
+        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-mint text-3xl">🍓</div>
+        <h3 class="font-display text-2xl font-bold">Fruit crisps</h3>
+        <p class="mt-2">Crunchy apple, strawberry and mango chips with zero added sugar.</p>
+      </div>
+      <div class="rounded-3xl bg-white p-7 shadow-md md:-translate-y-4">
+        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-berry text-3xl">🥕</div>
+        <h3 class="font-display text-2xl font-bold">Veggie bites</h3>
+        <p class="mt-2">Sweet potato puffs and carrot sticks dipped in a yogurt dip kids can make themselves.</p>
+      </div>
+      <div class="rounded-3xl bg-white p-7 shadow-md">
+        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-sky text-3xl">🥜</div>
+        <h3 class="font-display text-2xl font-bold">Brain fuel</h3>
+        <p class="mt-2">Oat bars, nut-free seed clusters and a mini activity card for after snack time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SNACK QUIZ TEASER -->
+<section id="quiz" class="relative overflow-hidden py-20">
+  <div class="squiggle absolute inset-x-0 top-0 h-10 opacity-40"></div>
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 md:grid-cols-2">
+    <div>
+      <h2 class="font-display text-4xl font-bold md:text-5xl">Which snack fits your kid?</h2>
+      <p class="mt-4 text-lg">Answer 3 quick questions and we will pick a starter box based on tastes, allergies and snack-time mood.</p>
+      <a href="#" class="mt-6 inline-block rounded-full bg-grape px-7 py-3 font-extrabold text-white shadow-lg hover:scale-105 transition">Start the quiz</a>
+    </div>
+    <div class="rounded-3xl border-4 border-ink bg-white p-6 shadow-[8px_8px_0_#243047]">
+      <p class="font-display text-sm font-bold uppercase tracking-widest text-grape">Question 1 of 3</p>
+      <p class="font-display mt-2 text-2xl font-bold">Pick a snack mood!</p>
+      <div class="mt-5 grid grid-cols-2 gap-3 font-bold">
+        <button class="rounded-2xl bg-sun px-4 py-4 hover:-translate-y-1 transition">Crunchy</button>
+        <button class="rounded-2xl bg-mint px-4 py-4 hover:-translate-y-1 transition">Chewy</button>
+        <button class="rounded-2xl bg-berry px-4 py-4 text-white hover:-translate-y-1 transition">Sweet</button>
+        <button class="rounded-2xl bg-sky px-4 py-4 hover:-translate-y-1 transition">Savory</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="py-20">
+  <div class="mx-auto max-w-6xl px-4">
+    <h2 class="font-display text-center text-4xl font-bold md:text-5xl">Pick your box</h2>
+    <p class="mt-3 text-center text-lg">Cancel any time. Free shipping on every plan.</p>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <div class="rounded-3xl bg-white p-8 shadow-md">
+        <h3 class="font-display text-2xl font-bold">Little Nibbler</h3>
+        <p class="mt-4"><span class="font-display text-5xl font-bold">$19</span><span class="font-bold"> /month</span></p>
+        <ul class="mt-6 space-y-2 font-semibold">
+          <li>✓ 5 snacks per box</li>
+          <li>✓ 1 activity card</li>
+          <li>✓ Swap any item</li>
+        </ul>
+        <a href="#" class="mt-8 block rounded-full border-4 border-ink py-3 text-center font-extrabold hover:bg-sun transition">Choose</a>
+      </div>
+      <div class="relative rounded-3xl bg-berry p-8 text-white shadow-xl md:-translate-y-4">
+        <span class="absolute -top-4 right-6 rounded-full bg-sun px-4 py-1 text-sm font-extrabold text-ink">Most popular</span>
+        <h3 class="font-display text-2xl font-bold">Snack Explorer</h3>
+        <p class="mt-4"><span class="font-display text-5xl font-bold">$29</span><span class="font-bold"> /month</span></p>
+        <ul class="mt-6 space-y-2 font-semibold">
+          <li>✓ 8 snacks per box</li>
+          <li>✓ 2 activity cards</li>
+          <li>✓ Bonus seasonal treat</li>
+        </ul>
+        <a href="#" class="mt-8 block rounded-full bg-white py-3 text-center font-extrabold text-berry hover:scale-105 transition">Choose</a>
+      </div>
+      <div class="rounded-3xl bg-white p-8 shadow-md">
+        <h3 class="font-display text-2xl font-bold">Family Feast</h3>
+        <p class="mt-4"><span class="font-display text-5xl font-bold">$49</span><span class="font-bold"> /month</span></p>
+        <ul class="mt-6 space-y-2 font-semibold">
+          <li>✓ 15 snacks for 2 kids</li>
+          <li>✓ Family recipe cards</li>
+          <li>✓ Priority support</li>
+        </ul>
+        <a href="#" class="mt-8 block rounded-full border-4 border-ink py-3 text-center font-extrabold hover:bg-sun transition">Choose</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARENTS -->
+<section id="parents" class="bg-mint/20 py-20">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 md:grid-cols-2">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="rounded-3xl bg-white p-6 text-center shadow-md"><p class="font-display text-4xl font-bold text-berry">0g</p><p class="font-semibold">added sugar</p></div>
+      <div class="rounded-3xl bg-white p-6 text-center shadow-md"><p class="font-display text-4xl font-bold text-grape">100%</p><p class="font-semibold">nut-free options</p></div>
+      <div class="rounded-3xl bg-white p-6 text-center shadow-md"><p class="font-display text-4xl font-bold text-sky">Top 8</p><p class="font-semibold">allergens labeled</p></div>
+      <div class="rounded-3xl bg-white p-6 text-center shadow-md"><p class="font-display text-4xl font-bold text-emerald-600">4.9</p><p class="font-semibold">parent rating</p></div>
+    </div>
+    <div>
+      <h2 class="font-display text-4xl font-bold md:text-5xl">Made for grown-ups too</h2>
+      <ul class="mt-5 space-y-3 text-lg">
+        <li>Every ingredient is listed on the card, with a short "why" for each.</li>
+        <li>Pause, skip or cancel from your phone in two taps.</li>
+        <li>Nutrition-checked by a registered dietitian before it ships.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="px-4 py-16">
+  <div class="mx-auto flex max-w-6xl flex-col items-center gap-6 rounded-[2.5rem] bg-ink px-8 py-14 text-center text-white md:flex-row md:text-left">
+    <div class="flex-1">
+      <h2 class="font-display text-4xl font-bold md:text-5xl">Snack time just got a lot more fun.</h2>
+      <p class="mt-3 text-lg text-white/80">Your first box ships this week. Your kids will thank you.</p>
+    </div>
+    <a href="#pricing" class="rounded-full bg-sun px-8 py-4 text-lg font-extrabold text-ink shadow-lg hover:scale-105 transition">Start my box</a>
+  </div>
+</section>
+
+<footer class="pb-10 text-center text-sm font-semibold text-ink/70">
+  &copy; 2026 Bubbly Bites. Happy snacking!
+</footer>
+
+</body>
+</html>

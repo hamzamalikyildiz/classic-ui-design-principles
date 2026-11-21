@@ -1,0 +1,10 @@
+cift1: A | 4 | A has specific, human copy and a cohesive bold palette while B leans on emoji icons and three identical cards. | A 8/8/8/8 B 7/6/7/6
+cift2: B | 4 | B has concrete dates, venue, zone-tagged schedule and a varied bento layout, while A leans on abstract blobs and four identical bordered cards. | A 7/6/7/7 B 8/8/8/9
+cift3: A | 4 | A has a custom route figure, a rich itinerary and fuller prose, while B ends in empty gradient placeholder thumbnails and a thinner article. | A 8/8/8/9 B 7/7/8/6
+cift4: B | 4 | B reads like a real ops tool with severity-tagged alerts, region and idle-reason columns and per-key tag coverage, while A is tidy but thinner and more generic dark-dashboard. | A 7/7/7/6 B 8/9/8/9
+cift5: B | 3 | B has a clean, coherent illustration and a comfortable single reading column, while A has a strange toaster-like figure and body text stuck in a left column leaving dead space despite its richer maker grid. | A 6/6/6/8 B 7/7/8/7
+cift6: A | 4 | A builds a coherent tide concept with a tide-chart hero, water-times table and varied lineup, while B has a meaningless striped placeholder block and cramped edges. | A 9/8/8/9 B 7/6/7/6
+cift7: B | 4 | B has a warm human voice, a pickup-ticket hero and a serif brand identity, while A is a competent but generic dashboard of stat boxes and lists. | A 7/6/8/6 B 8/8/8/8
+cift8: B | 4 | B has a recognisable shoe drawing, hard specifics like 4.2 mm lugs and 38 degrees granite, and varied layout, while A has a blob shoe and triplicate cards and testimonials. | A 7/6/8/7 B 8/8/8/8
+cift9: B | 4 | B has a branded green hero with a serif voice, named clients and a personal story behind the refund, while A is a clean but generic white-card dashboard. | A 7/6/8/6 B 8/8/8/8
+cift10: A | 4 | A tells a coherent incident story (shard-05 spike, vacuum event, seq scan with index suggestion) in a restrained mono palette, while B is a generic navy dashboard with a basic grouped bar chart. | A 9/9/8/9 B 7/7/7/7

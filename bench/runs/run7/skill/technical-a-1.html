@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quillbase Admin Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: { 950: '#09090b', 900: '#111114', 800: '#1c1c21' },
+          signal: '#5eead4',
+          warn: '#fbbf24',
+          crit: '#f87171'
+        },
+        fontFamily: {
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #09090b; }
+  .scroll-dark { scrollbar-width: thin; scrollbar-color: #3f3f46 #111114; }
+  @media (prefers-reduced-motion: no-preference) {
+    .rise { animation: rise 0.5s ease-out both; }
+    .rise-2 { animation: rise 0.5s 0.1s ease-out both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+</head>
+<body class="min-h-screen font-sans text-zinc-300 antialiased">
+
+<header class="border-b border-zinc-800 bg-ink-900">
+  <div class="mx-auto flex h-14 max-w-[1400px] items-center gap-6 px-4 sm:px-6">
+    <div class="flex shrink-0 items-center gap-2">
+      <svg class="h-6 w-6" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="#111114" stroke="#5eead4"/>
+        <path d="M7 9h10M7 13h6M7 17h8" stroke="#5eead4" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <h1 class="font-semibold text-zinc-100">Quillbase</h1>
+      <span class="ml-2 hidden rounded border border-zinc-700 px-1.5 py-0.5 font-mono text-[11px] text-zinc-400 sm:inline">qb-prod-eu-1</span>
+    </div>
+    <nav aria-label="Primary" class="hidden min-w-0 flex-1 items-center gap-5 overflow-x-auto text-sm md:flex">
+      <a href="#overview" class="whitespace-nowrap border-b border-signal pb-0.5 text-zinc-100">Overview</a>
+      <a href="#shards" class="whitespace-nowrap text-zinc-400 hover:text-zinc-100">Shards</a>
+      <a href="#queries" class="whitespace-nowrap text-zinc-400 hover:text-zinc-100">Queries</a>
+      <a href="#replication" class="whitespace-nowrap text-zinc-400 hover:text-zinc-100">Replication</a>
+      <a href="#pools" class="whitespace-nowrap text-zinc-400 hover:text-zinc-100">Pools</a>
+    </nav>
+    <div class="ml-auto flex shrink-0 items-center gap-2 font-mono text-xs text-zinc-400">
+      <span class="h-2 w-2 rounded-full bg-signal" aria-hidden="true"></span>HEALTHY
+    </div>
+  </div>
+</header>
+
+<main id="overview" class="mx-auto max-w-[1400px] space-y-4 px-4 py-6 sm:px-6">
+
+  <section aria-label="Key metrics" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div class="rise rounded-md border border-zinc-800 bg-ink-900 p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">p95 latency</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-100">18.4 <span class="text-sm font-normal text-zinc-400">ms</span></p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-signal">-2.1 ms vs 1h ago</p>
+    </div>
+    <div class="rise rounded-md border border-zinc-800 bg-ink-900 p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Throughput</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-100">12,840 <span class="text-sm font-normal text-zinc-400">q/s</span></p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-zinc-400">+4.2% vs 1h ago</p>
+    </div>
+    <div class="rise-2 rounded-md border border-zinc-800 bg-ink-900 p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Replication lag</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-100">1.1 <span class="text-sm font-normal text-zinc-400">s</span></p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-warn">peak 5.6 s at 13:35</p>
+    </div>
+    <div class="rise-2 rounded-md border border-zinc-800 bg-ink-900 p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Pool saturation</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-100">71 <span class="text-sm font-normal text-zinc-400">%</span></p>
+      <p class="mt-1 font-mono text-xs tabular-nums text-zinc-400">142 of 200 connections</p>
+    </div>
+  </section>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    <div class="min-w-0 space-y-4 lg:col-span-2">
+
+      <section id="shards" class="min-w-0 rounded-md border border-zinc-800 bg-ink-900">
+        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3">
+          <h2 class="text-sm font-medium text-zinc-100">Query latency by shard</h2>
+          <p class="font-mono text-xs text-zinc-400">p95 ms, last 1h, 8 shards</p>
+        </header>
+        <div class="p-4">
+          <svg viewBox="0 0 600 200" class="h-auto w-full" role="img" aria-label="Bar chart of p95 latency per shard. shard-05 is 48.3 ms, above the 30 ms SLO.">
+            <g stroke="#27272a" stroke-width="1">
+              <line x1="40" x2="600" y1="30" y2="30"/>
+              <line x1="40" x2="600" y1="60" y2="60"/>
+              <line x1="40" x2="600" y1="120" y2="120"/>
+              <line x1="40" x2="600" y1="150" y2="150"/>
+              <line x1="40" x2="600" y1="180" y2="180"/>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="12" fill="#71717a" text-anchor="end">
+              <text x="32" y="184">0</text>
+              <text x="32" y="154">10</text>
+              <text x="32" y="124">20</text>
+              <text x="32" y="94">30</text>
+              <text x="32" y="64">40</text>
+              <text x="32" y="34">50</text>
+            </g>
+            <line x1="40" x2="600" y1="90" y2="90" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="4 4"/>
+            <text x="596" y="82" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="12" fill="#fbbf24">SLO 30 ms</text>
+            <g>
+              <rect x="40" y="137" width="40" height="43" rx="2" fill="#3f3f46"/>
+              <rect x="110" y="130" width="40" height="50" rx="2" fill="#3f3f46"/>
+              <rect x="180" y="141" width="40" height="39" rx="2" fill="#3f3f46"/>
+              <rect x="250" y="116" width="40" height="64" rx="2" fill="#3f3f46"/>
+              <rect x="320" y="35" width="40" height="145" rx="2" fill="#f87171"/>
+              <rect x="390" y="134" width="40" height="46" rx="2" fill="#3f3f46"/>
+              <rect x="460" y="126" width="40" height="54" rx="2" fill="#3f3f46"/>
+              <rect x="530" y="139" width="40" height="41" rx="2" fill="#3f3f46"/>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle">
+              <text x="60" y="130" fill="#d4d4d8">14.2</text>
+              <text x="130" y="123" fill="#d4d4d8">16.8</text>
+              <text x="200" y="134" fill="#d4d4d8">12.9</text>
+              <text x="270" y="109" fill="#d4d4d8">21.5</text>
+              <text x="340" y="28" fill="#fca5a5">48.3</text>
+              <text x="410" y="127" fill="#d4d4d8">15.4</text>
+              <text x="480" y="119" fill="#d4d4d8">18.1</text>
+              <text x="550" y="132" fill="#d4d4d8">13.7</text>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="12" fill="#a1a1aa" text-anchor="middle">
+              <text x="60" y="198">s01</text>
+              <text x="130" y="198">s02</text>
+              <text x="200" y="198">s03</text>
+              <text x="270" y="198">s04</text>
+              <text x="340" y="198">s05</text>
+              <text x="410" y="198">s06</text>
+              <text x="480" y="198">s07</text>
+              <text x="550" y="198">s08</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <section id="replication" class="min-w-0 rounded-md border border-zinc-800 bg-ink-900">
+        <header class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3">
+          <h2 class="text-sm font-medium text-zinc-100">Replication lag, primary to replicas</h2>
+          <p class="font-mono text-xs text-zinc-400">seconds, 5 min buckets</p>
+        </header>
+        <div class="p-4">
+          <svg viewBox="0 0 600 200" class="h-auto w-full" role="img" aria-label="Line chart of replication lag from 13:00 to 13:55. It peaks at 5.6 seconds around 13:35, above the 5 second threshold.">
+            <g stroke="#27272a" stroke-width="1">
+              <line x1="40" x2="600" y1="20" y2="20"/>
+              <line x1="40" x2="600" y1="60" y2="60"/>
+              <line x1="40" x2="600" y1="100" y2="100"/>
+              <line x1="40" x2="600" y1="140" y2="140"/>
+              <line x1="40" x2="600" y1="180" y2="180"/>
+            </g>
+            <g font-family="JetBrains Mono, monospace" font-size="12" fill="#71717a" text-anchor="end">
+              <text x="32" y="184">0 s</text>
+              <text x="32" y="144">2 s</text>
+              <text x="32" y="104">4 s</text>
+              <text x="32" y="64">6 s</text>
+              <text x="32" y="24">8 s</text>
+            </g>
+            <line x1="40" x2="600" y1="80" y2="80" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4 4"/>
+            <text x="596" y="72" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="12" fill="#fbbf24">5 s alert threshold</text>
+            <polyline fill="none" stroke="#5eead4" stroke-width="2" stroke-linejoin="round" points="40,164 90,162 140,158 190,160 240,154 290,156 340,132 390,68 440,98 490,148 540,156 590,158"/>
+            <circle cx="390" cy="68" r="4" fill="#fbbf24"/>
+            <text x="400" y="42" font-family="JetBrains Mono, monospace" font-size="12" fill="#e4e4e7">13:35 vacuum on shard-05</text>
+            <g font-family="JetBrains Mono, monospace" font-size="12" fill="#a1a1aa">
+              <text x="40" y="198" text-anchor="middle">13:00</text>
+              <text x="240" y="198" text-anchor="middle">13:20</text>
+              <text x="440" y="198" text-anchor="middle">13:40</text>
+              <text x="596" y="198" text-anchor="end">13:55</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+    </div>
+
+    <aside id="pools" class="min-w-0 self-start rounded-md border border-zinc-800 bg-ink-900">
+      <header class="border-b border-zinc-800 px-4 py-3">
+        <h2 class="text-sm font-medium text-zinc-100">Connection pools</h2>
+        <p class="font-mono text-xs text-zinc-400">used / max, per pool</p>
+      </header>
+      <ul class="space-y-4 p-4 font-mono text-xs tabular-nums">
+        <li>
+          <div class="flex justify-between"><span class="text-zinc-200">primary-rw</span><span class="text-warn">84 / 100</span></div>
+          <div class="mt-1.5 h-1.5 rounded-full bg-zinc-800"><div class="h-1.5 w-[84%] rounded-full bg-warn"></div></div>
+        </li>
+        <li>
+          <div class="flex justify-between"><span class="text-zinc-200">replica-ro</span><span class="text-zinc-400">38 / 60</span></div>
+          <div class="mt-1.5 h-1.5 rounded-full bg-zinc-800"><div class="h-1.5 w-[63%] rounded-full bg-signal"></div></div>
+        </li>
+        <li>
+          <div class="flex justify-between"><span class="text-zinc-200">analytics</span><span class="text-zinc-400">17 / 30</span></div>
+          <div class="mt-1.5 h-1.5 rounded-full bg-zinc-800"><div class="h-1.5 w-[57%] rounded-full bg-signal"></div></div>
+        </li>
+        <li>
+          <div class="flex justify-between"><span class="text-zinc-200">migrations</span><span class="text-zinc-400">3 / 10</span></div>
+          <div class="mt-1.5 h-1.5 rounded-full bg-zinc-800"><div class="h-1.5 w-[30%] rounded-full bg-signal"></div></div>
+        </li>
+      </ul>
+      <dl class="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-zinc-800 p-4 font-mono text-xs tabular-nums">
+        <div><dt class="text-zinc-400">Idle</dt><dd class="text-zinc-200">58</dd></div>
+        <div><dt class="text-zinc-400">Waiting</dt><dd class="text-zinc-200">0</dd></div>
+        <div><dt class="text-zinc-400">Checkouts/s</dt><dd class="text-zinc-200">412</dd></div>
+        <div><dt class="text-zinc-400">Timeouts, 1h</dt><dd class="text-zinc-200">2</dd></div>
+      </dl>
+    </aside>
+  </div>
+
+  <div id="queries" class="grid gap-4 lg:grid-cols-3">
+    <section class="min-w-0 rounded-md border border-zinc-800 bg-ink-900 lg:col-span-2">
+      <header class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3">
+        <h2 class="text-sm font-medium text-zinc-100">Slow queries over 100 ms</h2>
+        <p class="font-mono text-xs text-zinc-400">9 of 214, last 1h</p>
+      </header>
+      <div class="scroll-dark overflow-x-auto">
+        <table class="w-full min-w-[640px] text-left font-mono text-xs tabular-nums">
+          <thead class="text-zinc-400">
+            <tr class="border-b border-zinc-800">
+              <th scope="col" class="px-4 py-2 font-medium">ID</th>
+              <th scope="col" class="px-4 py-2 font-medium">Fingerprint</th>
+              <th scope="col" class="px-4 py-2 font-medium">Shard</th>
+              <th scope="col" class="px-4 py-2 text-right font-medium">Time</th>
+              <th scope="col" class="px-4 py-2 text-right font-medium">Rows</th>
+              <th scope="col" class="px-4 py-2 text-right font-medium">Calls</th>
+              <th scope="col" class="px-4 py-2 font-medium">Seen</th>
+            </tr>
+          </thead>
+          <tbody class="text-zinc-300">
+            <tr aria-current="true" class="border-b border-zinc-800 bg-ink-800 shadow-[inset_2px_0_0_#5eead4]">
+              <td class="px-4 py-2 text-zinc-100">sq_7f3a21</td>
+              <td class="px-4 py-2">orders JOIN line_items</td>
+              <td class="px-4 py-2">shard-05</td>
+              <td class="px-4 py-2 text-right text-crit">1,842 ms</td>
+              <td class="px-4 py-2 text-right">48,210</td>
+              <td class="px-4 py-2 text-right">3</td>
+              <td class="px-4 py-2">13:36:12</td>
+            </tr>
+            <tr class="border-b border-zinc-800">
+              <td class="px-4 py-2">sq_9c10b4</td>
+              <td class="px-4 py-2">users JOIN sessions</td>
+              <td class="px-4 py-2">shard-04</td>
+              <td class="px-4 py-2 text-right text-warn">412 ms</td>
+              <td class="px-4 py-2 text-right">9,120</td>
+              <td class="px-4 py-2 text-right">18</td>
+              <td class="px-4 py-2">13:41:03</td>
+            </tr>
+            <tr class="border-b border-zinc-800">
+              <td class="px-4 py-2">sq_2e6d88</td>
+              <td class="px-4 py-2">events GROUP BY day</td>
+              <td class="px-4 py-2">shard-02</td>
+              <td class="px-4 py-2 text-right text-warn">298 ms</td>
+              <td class="px-4 py-2 text-right">1,204</td>
+              <td class="px-4 py-2 text-right">6</td>
+              <td class="px-4 py-2">13:12:44</td>
+            </tr>
+            <tr class="border-b border-zinc-800">
+              <td class="px-4 py-2">sq_b41f07</td>
+              <td class="px-4 py-2">invoices WHERE status IN</td>
+              <td class="px-4 py-2">shard-06</td>
+              <td class="px-4 py-2 text-right text-warn">221 ms</td>
+              <td class="px-4 py-2 text-right">3,870</td>
+              <td class="px-4 py-2 text-right">41</td>
+              <td class="px-4 py-2">13:50:27</td>
+            </tr>
+            <tr class="border-b border-zinc-800">
+              <td class="px-4 py-2">sq_0a9c5e</td>
+              <td class="px-4 py-2">audit_log ORDER BY ts</td>
+              <td class="px-4 py-2">shard-01</td>
+              <td class="px-4 py-2 text-right">188 ms</td>
+              <td class="px-4 py-2 text-right">500</td>
+              <td class="px-4 py-2 text-right">112</td>
+              <td class="px-4 py-2">13:22:09</td>
+            </tr>
+            <tr class="border-b border-zinc-800">
+              <td class="px-4 py-2">sq_d73b19</td>
+              <td class="px-4 py-2">products ILIKE '%term%'</td>
+              <td class="px-4 py-2">shard-07</td>
+              <td class="px-4 py-2 text-right">164 ms</td>
+              <td class="px-4 py-2 text-right">2,310</td>
+              <td class="px-4 py-2 text-right">9</td>
+              <td class="px-4 py-2">13:44:51</td>
+            </tr>
+            <tr class="border-b border-zinc-800">
+              <td class="px-4 py-2">sq_56fe02</td>
+              <td class="px-4 py-2">payments UPDATE, lock wait</td>
+              <td class="px-4 py-2">shard-03</td>
+              <td class="px-4 py-2 text-right">147 ms</td>
+              <td class="px-4 py-2 text-right">1</td>
+              <td class="px-4 py-2 text-right">22</td>
+              <td class="px-4 py-2">13:18:33</td>
+            </tr>
+            <tr class="border-b border-zinc-800">
+              <td class="px-4 py-2">sq_c2a847</td>
+              <td class="px-4 py-2">tenants count(*) full scan</td>
+              <td class="px-4 py-2">shard-08</td>
+              <td class="px-4 py-2 text-right">131 ms</td>
+              <td class="px-4 py-2 text-right">88,004</td>
+              <td class="px-4 py-2 text-right">2</td>
+              <td class="px-4 py-2">13:05:16</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2">sq_8e1d4f</td>
+              <td class="px-4 py-2">sessions DELETE expired</td>
+              <td class="px-4 py-2">shard-02</td>
+              <td class="px-4 py-2 text-right">119 ms</td>
+              <td class="px-4 py-2 text-right">15,600</td>
+              <td class="px-4 py-2 text-right">1</td>
+              <td class="px-4 py-2">13:30:58</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="flex min-w-0 flex-col rounded-md border border-zinc-800 bg-ink-900">
+      <header class="flex items-center justify-between gap-2 border-b border-zinc-800 px-4 py-3">
+        <div class="min-w-0">
+          <h2 class="text-sm font-medium text-zinc-100">SQL snippet</h2>
+          <p class="truncate font-mono text-xs text-zinc-400">sq_7f3a21, shard-05</p>
+        </div>
+        <button type="button" id="copy-sql" class="h-9 shrink-0 rounded border border-zinc-700 px-3 font-mono text-xs text-zinc-300 hover:border-signal hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-signal">Copy SQL</button>
+      </header>
+      <pre id="sql-code" class="scroll-dark m-0 max-w-full overflow-x-auto whitespace-pre p-4 font-mono text-xs leading-relaxed text-zinc-300"><span class="text-signal">SELECT</span> o.id, o.tenant_id, o.total_cents, li.sku
+<span class="text-signal">FROM</span> orders o
+<span class="text-signal">JOIN</span> line_items li <span class="text-signal">ON</span> li.order_id = o.id
+<span class="text-signal">WHERE</span> o.created_at &gt;= now() - interval '30 days'
+  <span class="text-signal">AND</span> o.tenant_id = ANY($1)
+<span class="text-signal">ORDER BY</span> o.created_at <span class="text-signal">DESC</span>
+<span class="text-signal">LIMIT</span> 500;</pre>
+      <div class="border-t border-zinc-800 p-4">
+        <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">EXPLAIN excerpt</p>
+        <pre class="scroll-dark mt-2 max-w-full overflow-x-auto whitespace-pre rounded border border-zinc-800 bg-ink-950 p-3 font-mono text-xs leading-relaxed text-zinc-400">Hash Join  (actual time=1804.2..1839.7 rows=48210)
+  -&gt; Seq Scan on line_items  (rows=2194380)
+       Filter: (order_id IS NOT NULL)</pre>
+        <p class="mt-3 max-w-prose text-xs leading-relaxed text-zinc-400">Sequential scan on line_items. Suggested: <span class="font-mono text-zinc-200">CREATE INDEX CONCURRENTLY ON line_items (order_id)</span>.</p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy-sql');
+    var code = document.getElementById('sql-code');
+    if (!btn || !code) return;
+    btn.addEventListener('click', function () {
+      var text = code.textContent;
+      try {
+        navigator.clipboard.writeText(text).then(function () {
+          btn.textContent = 'Copied';
+        }, function () {
+          btn.textContent = 'Copy failed';
+        });
+      } catch (e) {
+        btn.textContent = 'Copy failed';
+      }
+    });
+  })();
+</script>
+</body>
+</html>

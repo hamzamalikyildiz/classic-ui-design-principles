@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ridge Trail Shoe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ink: '#0D100E',
+        moss: '#15201A',
+        lime: '#C8F24B',
+        ember: '#FF6A3D',
+        bone: '#EFEBE1',
+        mist: '#A9B3A8'
+      },
+      fontFamily: {
+        display: ['Anton', 'Impact', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif']
+      }
+    }
+  }
+};
+</script>
+<style>
+  body { background: #0D100E; color: #EFEBE1; }
+  .outline-text { color: transparent; -webkit-text-stroke: 2px #C8F24B; }
+  .glow { background: radial-gradient(circle at 70% 40%, rgba(200,242,75,.22), transparent 60%); }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .d1 { animation-delay: .1s; } .d2 { animation-delay: .25s; } .d3 { animation-delay: .4s; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body class="font-sans antialiased">
+
+<header class="flex items-center justify-between px-4 sm:px-8 py-5 max-w-6xl mx-auto">
+  <span class="font-display text-2xl tracking-wider">RIDGE</span>
+  <nav class="hidden sm:flex gap-6 text-sm text-mist">
+    <a href="#tech" class="hover:text-lime focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime">Tech</a>
+    <a href="#athletes" class="hover:text-lime focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime">Athletes</a>
+    <a href="#fit" class="hover:text-lime focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime">Fit</a>
+  </nav>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="glow absolute inset-0" aria-hidden="true"></div>
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-8 pt-12 pb-20 lg:pt-20 lg:pb-32 grid lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <p class="rise text-ember text-sm font-semibold tracking-[0.2em] uppercase">Trail shoe 03 / Pre-order open</p>
+        <h1 class="rise d1 font-display uppercase leading-[0.9] text-[64px] sm:text-[104px] mt-4">
+          Run the<br><span class="outline-text">ridgeline</span>
+        </h1>
+        <p class="rise d2 mt-6 max-w-md text-mist text-lg leading-relaxed">
+          Ridge grips wet slate, bites loose scree and holds its shape at mile forty. Built for the climbs nobody else wants to train on.
+        </p>
+        <div class="rise d3 mt-8 flex flex-wrap gap-4">
+          <a href="#preorder" class="bg-lime text-ink font-semibold px-7 py-4 rounded-xl min-h-[44px] inline-flex items-center hover:brightness-110 active:scale-[.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone">Pre-order for $165</a>
+          <a href="#tech" class="text-bone font-semibold px-6 py-4 min-h-[44px] inline-flex items-center underline underline-offset-4 decoration-ember hover:text-lime">See the tech</a>
+        </div>
+      </div>
+
+      <div class="rise d2 relative">
+        <svg viewBox="0 0 560 360" class="w-full h-auto" role="img" aria-label="Ridge trail shoe, side view, lime outsole and ember heel tab">
+          <ellipse cx="280" cy="318" rx="230" ry="14" fill="#C8F24B" opacity=".15"/>
+          <!-- upper -->
+          <path d="M60 250 C60 170 110 120 190 118 C250 116 270 150 300 170 C340 196 390 190 430 200 C490 214 515 240 512 268 L512 280 L60 280 Z" fill="#15201A" stroke="#C8F24B" stroke-width="6" stroke-linejoin="round"/>
+          <!-- lacing panel -->
+          <path d="M170 124 L238 150 L262 190 L210 180 Z" fill="#C8F24B"/>
+          <path d="M196 138 L214 146 M212 152 L230 160 M228 166 L246 174" stroke="#0D100E" stroke-width="5" stroke-linecap="round"/>
+          <!-- heel tab -->
+          <path d="M60 210 L60 262 L96 262 L96 226 Z" fill="#FF6A3D"/>
+          <!-- midsole -->
+          <path d="M52 280 L520 280 C528 280 532 290 526 300 L505 318 C500 322 494 324 486 324 L90 324 C70 324 58 318 54 306 Z" fill="#EFEBE1"/>
+          <path d="M120 296 L470 296" stroke="#FF6A3D" stroke-width="5" stroke-dasharray="14 10"/>
+          <!-- lug outsole -->
+          <path d="M70 324 L90 340 L120 324 L150 340 L180 324 L210 340 L240 324 L270 340 L300 324 L330 340 L360 324 L390 340 L420 324 L450 340 L480 324" fill="none" stroke="#C8F24B" stroke-width="5" stroke-linejoin="round"/>
+        </svg>
+        <div class="absolute bottom-2 left-0 bg-moss border border-lime/40 rounded-xl px-4 py-3 text-sm">
+          <p class="text-mist">Drop</p>
+          <p class="font-display text-2xl text-lime">6 MM</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech highlights -->
+  <section id="tech" class="bg-moss">
+    <div class="max-w-6xl mx-auto px-4 sm:px-8 py-20 lg:py-28">
+      <h2 class="font-display uppercase text-5xl sm:text-7xl leading-none">Three things<br>that hold</h2>
+      <div class="mt-12 grid md:grid-cols-3 gap-6">
+        <article class="bg-ink rounded-2xl p-7 border-t-4 border-lime md:row-span-2">
+          <p class="text-lime font-semibold text-sm tracking-widest">01</p>
+          <h3 class="font-display text-4xl uppercase mt-3">Ridge Grip 4.0</h3>
+          <p class="mt-4 max-w-prose text-mist leading-relaxed">Chevrons cut 4.2 mm deep, spaced to shed mud before it packs. Tested on wet granite at 38 degrees.</p>
+          <svg viewBox="0 0 200 120" class="mt-8 w-full" aria-hidden="true">
+            <path d="M10 100 L40 40 L70 100 L100 40 L130 100 L160 40 L190 100" fill="none" stroke="#C8F24B" stroke-width="8" stroke-linejoin="round"/>
+          </svg>
+        </article>
+        <article class="bg-ink rounded-2xl p-7">
+          <p class="text-ember font-semibold text-sm tracking-widest">02</p>
+          <h3 class="font-display text-3xl uppercase mt-3">Shelf Foam</h3>
+          <p class="mt-3 max-w-prose text-mist leading-relaxed">A 22 mm stack that stays firm on descents. Returns 71 percent of energy after 500 km.</p>
+        </article>
+        <article class="bg-ink rounded-2xl p-7">
+          <p class="text-ember font-semibold text-sm tracking-widest">03</p>
+          <h3 class="font-display text-3xl uppercase mt-3">Lock Heel Cup</h3>
+          <p class="mt-3 max-w-prose text-mist leading-relaxed">A rigid counter and a single lace lock keep the heel still on steep, loose ground.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Athlete quotes -->
+  <section id="athletes" class="py-20 lg:py-28">
+    <div class="max-w-6xl mx-auto px-4 sm:px-8">
+      <h2 class="font-display uppercase text-5xl sm:text-7xl leading-none">Out on<br><span class="text-ember">the edge</span></h2>
+      <div class="mt-12 grid md:grid-cols-2 gap-6">
+        <figure class="border-l-4 border-ember pl-6">
+          <blockquote class="text-2xl sm:text-3xl font-semibold leading-snug">"I stopped checking my feet on the Sierra descents. That is the highest praise I can give a shoe."</blockquote>
+          <figcaption class="mt-4 text-mist"><span class="text-bone font-semibold">Dana Okafor</span>, Ultra runner, 3x Hardrock finisher</figcaption>
+        </figure>
+        <figure class="border-l-4 border-lime pl-6 md:mt-16">
+          <blockquote class="text-2xl sm:text-3xl font-semibold leading-snug">"Wet slate, loose shale, then a mile of mud. Ridge didn't care. Neither did my ankles."</blockquote>
+          <figcaption class="mt-4 text-mist"><span class="text-bone font-semibold">Tomas Aranda</span>, Mountain guide, Picos de Europa</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sizing guide -->
+  <section id="fit" class="bg-moss">
+    <div class="max-w-6xl mx-auto px-4 sm:px-8 py-20 lg:py-28 grid lg:grid-cols-2 gap-12">
+      <div>
+        <h2 class="font-display uppercase text-5xl sm:text-6xl leading-none">Sizing guide</h2>
+        <p class="mt-6 text-mist leading-relaxed max-w-md">Ridge runs true to size with a snug midfoot. If you sit between two sizes, go up a half size for long descents.</p>
+      </div>
+      <div class="overflow-x-auto rounded-2xl bg-ink">
+        <table class="w-full text-left text-sm">
+          <thead class="text-mist">
+            <tr class="border-b border-mist/20">
+              <th scope="col" class="px-5 py-4 font-semibold">US</th>
+              <th scope="col" class="px-5 py-4 font-semibold">UK</th>
+              <th scope="col" class="px-5 py-4 font-semibold">EU</th>
+              <th scope="col" class="px-5 py-4 font-semibold">Foot length</th>
+            </tr>
+          </thead>
+          <tbody class="tabular-nums">
+            <tr class="border-b border-mist/10"><td class="px-5 py-3">8</td><td class="px-5 py-3">7</td><td class="px-5 py-3">41</td><td class="px-5 py-3">25.4 cm</td></tr>
+            <tr class="border-b border-mist/10"><td class="px-5 py-3">9</td><td class="px-5 py-3">8</td><td class="px-5 py-3">42.5</td><td class="px-5 py-3">26.7 cm</td></tr>
+            <tr class="border-b border-mist/10 bg-lime/10"><td class="px-5 py-3 font-semibold text-lime">10</td><td class="px-5 py-3 font-semibold text-lime">9</td><td class="px-5 py-3 font-semibold text-lime">44</td><td class="px-5 py-3 font-semibold text-lime">27.9 cm</td></tr>
+            <tr class="border-b border-mist/10"><td class="px-5 py-3">11</td><td class="px-5 py-3">10</td><td class="px-5 py-3">45</td><td class="px-5 py-3">28.6 cm</td></tr>
+            <tr><td class="px-5 py-3">12</td><td class="px-5 py-3">11</td><td class="px-5 py-3">46.5</td><td class="px-5 py-3">29.8 cm</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pre-order CTA band -->
+  <section id="preorder" class="bg-lime text-ink">
+    <div class="max-w-6xl mx-auto px-4 sm:px-8 py-16 lg:py-20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+      <div>
+        <h2 class="font-display uppercase text-5xl sm:text-7xl leading-none">Ships March 2027</h2>
+        <p class="mt-4 font-medium max-w-md">Pre-order now and lock in the launch price. Free returns for 60 days.</p>
+      </div>
+      <a href="#" class="bg-ink text-bone font-semibold px-8 py-5 rounded-xl min-h-[44px] inline-flex items-center justify-center hover:bg-moss active:scale-[.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">Pre-order Ridge, $165</a>
+    </div>
+  </section>
+</main>
+
+<footer class="max-w-6xl mx-auto px-4 sm:px-8 py-8 text-sm text-mist flex flex-wrap justify-between gap-4">
+  <span class="font-display text-lg text-bone tracking-wider">RIDGE</span>
+  <span>Made in small batches. Ships worldwide.</span>
+</footer>
+
+</body>
+</html>

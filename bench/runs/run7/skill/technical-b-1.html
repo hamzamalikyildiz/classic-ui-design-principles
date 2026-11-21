@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloudspend Ops: Cloud Cost Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: { fontFamily: {
+  sans: ['Inter', 'system-ui', 'sans-serif'],
+  mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+} } } };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  .chart-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.2s ease-out forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) { .chart-line { animation: none; stroke-dashoffset: 0; } }
+  .scroll-dark { scrollbar-width: thin; scrollbar-color: #3f3f46 #09090b; }
+</style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen">
+
+<header class="border-b border-zinc-800">
+  <div class="mx-auto max-w-7xl px-4 h-14 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3 min-w-0">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" class="shrink-0">
+        <rect x="1" y="1" width="20" height="20" rx="5" fill="none" stroke="#22d3ee" stroke-width="1.5"/>
+        <path d="M5 15 L9 10 L12 13 L17 6" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="font-semibold tracking-tight">Cloudspend</span>
+      <span class="font-mono text-xs text-zinc-400 truncate">ops / prod accounts (3)</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="hidden md:inline font-mono text-xs text-zinc-400">Updated 21 Nov 2026 09:14 UTC</span>
+      <span class="inline-flex items-center gap-1.5 h-6 px-2 rounded-md border border-zinc-800 font-mono text-xs text-emerald-400">
+        <span class="size-1.5 rounded-full bg-emerald-400" aria-hidden="true"></span>live
+      </span>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl px-4 py-6 space-y-4">
+
+  <!-- Title row -->
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-wider text-zinc-400">Cost overview</p>
+      <h1 class="text-xl font-semibold tracking-tight">Cloud spend, November 2026</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="h-8 inline-flex items-center px-3 rounded-md border border-zinc-800 bg-zinc-900 font-mono text-xs text-zinc-300">Last 14 days</span>
+      <button type="button" class="h-8 px-3 rounded-md border border-zinc-700 bg-zinc-800 text-xs font-medium text-zinc-100 hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">Set alert</button>
+      <button type="button" class="h-8 px-3 rounded-md bg-cyan-400 text-xs font-semibold text-zinc-950 hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">Export CSV</button>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  <section aria-label="Key figures" class="grid grid-cols-2 lg:grid-cols-4 border border-zinc-800 rounded-md divide-x divide-y lg:divide-y-0 divide-zinc-800 overflow-hidden bg-zinc-900">
+    <div class="p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">MTD spend</p>
+      <p class="mt-1 text-2xl font-semibold tabular-nums">$9,842.17</p>
+      <p class="mt-1 font-mono text-xs text-rose-400">+6.4% vs Oct pace</p>
+    </div>
+    <div class="p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Forecast, month end</p>
+      <p class="mt-1 text-2xl font-semibold tabular-nums">$12,470</p>
+      <p class="mt-1 font-mono text-xs text-zinc-400">96% of $13,000 budget</p>
+    </div>
+    <div class="p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Idle spend, est.</p>
+      <p class="mt-1 text-2xl font-semibold tabular-nums">$1,725<span class="text-sm text-zinc-400">/mo</span></p>
+      <p class="mt-1 font-mono text-xs text-amber-300">8 idle resources</p>
+    </div>
+    <div class="p-4">
+      <p class="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Tag coverage</p>
+      <p class="mt-1 text-2xl font-semibold tabular-nums">74.2%</p>
+      <p class="mt-1 font-mono text-xs text-rose-400">311 of 1,206 untagged</p>
+    </div>
+  </section>
+
+  <!-- Trend + alerts -->
+  <div class="grid lg:grid-cols-3 gap-4">
+    <section aria-labelledby="trend-title" class="lg:col-span-2 border border-zinc-800 rounded-md bg-zinc-900 p-4 min-w-0">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="trend-title" class="font-mono text-xs uppercase tracking-wider text-zinc-300">Daily spend, USD</h2>
+        <ul class="flex items-center gap-4 font-mono text-xs text-zinc-400">
+          <li class="flex items-center gap-1.5"><span class="inline-block w-4 h-0.5 bg-cyan-400" aria-hidden="true"></span>Daily spend</li>
+          <li class="flex items-center gap-1.5"><span class="inline-block w-4 border-t border-dashed border-rose-400" aria-hidden="true"></span>Budget $420/day</li>
+        </ul>
+      </div>
+      <svg viewBox="0 0 640 240" class="mt-3 w-full h-auto" role="img" aria-label="Line chart of daily spend, 8 to 21 November 2026, with a $420 budget line and a spike on 19 November">
+        <g font-family="JetBrains Mono, monospace" font-size="10" fill="#a1a1aa">
+          <text x="40" y="204" text-anchor="end">0</text>
+          <text x="40" y="167" text-anchor="end">100</text>
+          <text x="40" y="130" text-anchor="end">200</text>
+          <text x="40" y="93" text-anchor="end">300</text>
+          <text x="40" y="56" text-anchor="end">400</text>
+          <text x="40" y="20" text-anchor="end">500</text>
+        </g>
+        <g stroke="#27272a" stroke-width="1">
+          <line x1="48" y1="200" x2="624" y2="200"/>
+          <line x1="48" y1="163" x2="624" y2="163"/>
+          <line x1="48" y1="126" x2="624" y2="126"/>
+          <line x1="48" y1="89" x2="624" y2="89"/>
+          <line x1="48" y1="52" x2="624" y2="52"/>
+        </g>
+        <line x1="48" y1="45" x2="624" y2="45" stroke="#fb7185" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="52" y="38" font-family="JetBrains Mono, monospace" font-size="10" fill="#fda4af">Budget $420</text>
+        <polyline class="chart-line" pathLength="1" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round"
+          points="48,70.5 92.3,71.9 136.6,67.2 180.9,69.4 225.2,63.1 269.5,64.6 313.8,60.2 358.1,61.6 402.4,56.1 446.7,58 491,48.4 535.3,38.8 579.6,52.4 624,54.3"/>
+        <circle cx="535.3" cy="38.8" r="4" fill="#09090b" stroke="#fb7185" stroke-width="2"/>
+        <text x="528" y="24" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#fda4af">19 Nov spike +$38 (EC2)</text>
+        <g font-family="JetBrains Mono, monospace" font-size="10" fill="#a1a1aa" text-anchor="middle">
+          <text x="48" y="220">08</text>
+          <text x="136.6" y="220">10</text>
+          <text x="225.2" y="220">12</text>
+          <text x="313.8" y="220">14</text>
+          <text x="402.4" y="220">16</text>
+          <text x="491" y="220">18</text>
+          <text x="579.6" y="220">20</text>
+        </g>
+        <text x="336" y="236" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#71717a">November 2026</text>
+      </svg>
+    </section>
+
+    <section aria-labelledby="alerts-title" class="border border-zinc-800 rounded-md bg-zinc-900 p-4 min-w-0">
+      <div class="flex items-center justify-between">
+        <h2 id="alerts-title" class="font-mono text-xs uppercase tracking-wider text-zinc-300">Anomaly alerts</h2>
+        <span class="font-mono text-xs text-zinc-400">4 open</span>
+      </div>
+      <ul class="mt-3 divide-y divide-zinc-800">
+        <li class="py-3 flex gap-3">
+          <span class="shrink-0 h-5 px-1.5 rounded border border-rose-400/40 bg-rose-400/10 font-mono text-[11px] leading-5 text-rose-300">CRIT</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium">EC2 spend +38% day over day</p>
+            <p class="font-mono text-xs text-zinc-400 truncate">eu-west-1 · asg batch-workers 4 to 19 nodes</p>
+          </div>
+        </li>
+        <li class="py-3 flex gap-3">
+          <span class="shrink-0 h-5 px-1.5 rounded border border-amber-300/40 bg-amber-300/10 font-mono text-[11px] leading-5 text-amber-200">WARN</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium">Data transfer out 2.1x 14-day median</p>
+            <p class="font-mono text-xs text-zinc-400 truncate">us-east-1 · CloudFront origin shift</p>
+          </div>
+        </li>
+        <li class="py-3 flex gap-3">
+          <span class="shrink-0 h-5 px-1.5 rounded border border-amber-300/40 bg-amber-300/10 font-mono text-[11px] leading-5 text-amber-200">WARN</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium">NAT gateway processed 6.2 TB, 3x baseline</p>
+            <p class="font-mono text-xs text-zinc-400 truncate">eu-west-1 · nat-0c7f3e9a21</p>
+          </div>
+        </li>
+        <li class="py-3 flex gap-3">
+          <span class="shrink-0 h-5 px-1.5 rounded border border-cyan-400/40 bg-cyan-400/10 font-mono text-[11px] leading-5 text-cyan-300">INFO</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium">New RDS instance without owner tag</p>
+            <p class="font-mono text-xs text-zinc-400 truncate">eu-central-1 · db-analytics-stg</p>
+          </div>
+        </li>
+        <li class="py-3 flex gap-3">
+          <span class="shrink-0 h-5 px-1.5 rounded border border-cyan-400/40 bg-cyan-400/10 font-mono text-[11px] leading-5 text-cyan-300">INFO</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium">Savings Plan coverage 58%, target 70%</p>
+            <p class="font-mono text-xs text-zinc-400 truncate">all accounts · compute spend, 30d</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Service split + idle resources -->
+  <div class="grid lg:grid-cols-3 gap-4">
+    <section aria-labelledby="svc-title" class="border border-zinc-800 rounded-md bg-zinc-900 p-4 min-w-0">
+      <h2 id="svc-title" class="font-mono text-xs uppercase tracking-wider text-zinc-300">Spend by service</h2>
+      <ul class="mt-3 space-y-2.5 font-mono text-xs">
+        <li><div class="flex justify-between"><span class="text-zinc-300">EC2</span><span class="tabular-nums">$3,412.80</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-cyan-400" style="width:34.7%"></div></div></li>
+        <li><div class="flex justify-between"><span class="text-zinc-300">RDS</span><span class="tabular-nums">$1,905.44</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-cyan-400/80" style="width:19.4%"></div></div></li>
+        <li><div class="flex justify-between"><span class="text-zinc-300">S3</span><span class="tabular-nums">$1,122.09</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-cyan-400/70" style="width:11.4%"></div></div></li>
+        <li><div class="flex justify-between"><span class="text-zinc-300">EKS</span><span class="tabular-nums">$988.31</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-cyan-400/60" style="width:10%"></div></div></li>
+        <li><div class="flex justify-between"><span class="text-zinc-300">Lambda</span><span class="tabular-nums">$412.56</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-cyan-400/50" style="width:4.2%"></div></div></li>
+        <li><div class="flex justify-between"><span class="text-zinc-300">CloudFront</span><span class="tabular-nums">$366.20</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-cyan-400/50" style="width:3.7%"></div></div></li>
+        <li><div class="flex justify-between"><span class="text-zinc-300">NAT Gateway</span><span class="tabular-nums">$301.75</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-cyan-400/50" style="width:3.1%"></div></div></li>
+        <li><div class="flex justify-between"><span class="text-zinc-400">Other (11)</span><span class="tabular-nums">$1,333.02</span></div><div class="mt-1 h-1.5 rounded bg-zinc-800"><div class="h-1.5 rounded bg-zinc-500" style="width:13.5%"></div></div></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="idle-title" class="lg:col-span-2 border border-zinc-800 rounded-md bg-zinc-900 p-4 min-w-0">
+      <h2 id="idle-title" class="font-mono text-xs uppercase tracking-wider text-zinc-300">Top idle resources</h2>
+      <div class="mt-3 overflow-x-auto scroll-dark">
+        <table class="w-full min-w-[560px] text-left font-mono text-xs">
+          <thead class="text-zinc-400">
+            <tr class="h-8 border-b border-zinc-800">
+              <th scope="col" class="font-normal pr-3">Resource</th>
+              <th scope="col" class="font-normal pr-3">Type</th>
+              <th scope="col" class="font-normal pr-3">Region</th>
+              <th scope="col" class="font-normal pr-3">Idle</th>
+              <th scope="col" class="font-normal text-right">Est. $/mo</th>
+            </tr>
+          </thead>
+          <tbody class="text-zinc-200">
+            <tr class="h-8 border-b border-zinc-800/70"><td class="pr-3">i-0a94c1e7f2b3d8e61</td><td class="pr-3">m5.2xlarge</td><td class="pr-3">eu-west-1</td><td class="pr-3">CPU 2%, 23d</td><td class="text-right tabular-nums">486.40</td></tr>
+            <tr class="h-8 border-b border-zinc-800/70"><td class="pr-3">k8s-pool-batch-old</td><td class="pr-3">m6i.4xlarge x2</td><td class="pr-3">eu-west-1</td><td class="pr-3">CPU 1%, 9d</td><td class="text-right tabular-nums">552.00</td></tr>
+            <tr class="h-8 border-b border-zinc-800/70"><td class="pr-3">db-orders-replica-2</td><td class="pr-3">db.r5.large</td><td class="pr-3">eu-central-1</td><td class="pr-3">0 conns, 18d</td><td class="text-right tabular-nums">219.00</td></tr>
+            <tr class="h-8 border-b border-zinc-800/70"><td class="pr-3">snap-0be4a1f7c2d9</td><td class="pr-3">2.4 TiB snapshot</td><td class="pr-3">us-east-1</td><td class="pr-3">orphaned, 64d</td><td class="text-right tabular-nums">139.20</td></tr>
+            <tr class="h-8 border-b border-zinc-800/70"><td class="pr-3">lb-legacy-api</td><td class="pr-3">ALB</td><td class="pr-3">eu-west-1</td><td class="pr-3">0 healthy, 27d</td><td class="text-right tabular-nums">124.08</td></tr>
+            <tr class="h-8 border-b border-zinc-800/70"><td class="pr-3">vol-07de12ab94f0c3a18</td><td class="pr-3">gp2 1 TiB</td><td class="pr-3">eu-west-1</td><td class="pr-3">unattached, 41d</td><td class="text-right tabular-nums">102.40</td></tr>
+            <tr class="h-8 border-b border-zinc-800/70"><td class="pr-3">nat-0c7f3e9a21</td><td class="pr-3">NAT gateway</td><td class="pr-3">eu-west-1</td><td class="pr-3">0 B out, 12d</td><td class="text-right tabular-nums">98.55</td></tr>
+            <tr class="h-8"><td class="pr-3">eip-3.71.44.12</td><td class="pr-3">Elastic IP</td><td class="pr-3">us-east-1</td><td class="pr-3">unattached, 9d</td><td class="text-right tabular-nums">3.60</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Tag coverage -->
+  <section aria-labelledby="tag-title" class="border border-zinc-800 rounded-md bg-zinc-900 p-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 id="tag-title" class="font-mono text-xs uppercase tracking-wider text-zinc-300">Tag coverage by key</h2>
+      <span class="font-mono text-xs text-zinc-400">1,206 resources, 4 required keys</span>
+    </div>
+    <div class="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
+      <div>
+        <div class="flex justify-between"><span class="text-zinc-300">owner</span><span class="tabular-nums">91.2%</span></div>
+        <div class="mt-1.5 h-2 rounded bg-zinc-800"><div class="h-2 rounded bg-emerald-400" style="width:91.2%"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between"><span class="text-zinc-300">env</span><span class="tabular-nums">96.8%</span></div>
+        <div class="mt-1.5 h-2 rounded bg-zinc-800"><div class="h-2 rounded bg-emerald-400" style="width:96.8%"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between"><span class="text-zinc-300">cost-center</span><span class="tabular-nums">78.4%</span></div>
+        <div class="mt-1.5 h-2 rounded bg-zinc-800"><div class="h-2 rounded bg-amber-300" style="width:78.4%"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between"><span class="text-zinc-300">project</span><span class="tabular-nums">71.0%</span></div>
+        <div class="mt-1.5 h-2 rounded bg-zinc-800"><div class="h-2 rounded bg-rose-400" style="width:71%"></div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

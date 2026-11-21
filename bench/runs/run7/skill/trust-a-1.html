@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taxwell - Freelancer tax portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        forest: { 50:'#eef4f0', 100:'#d9e7de', 600:'#2f6b4f', 700:'#24553f', 900:'#14302a' },
+        brass: { 100:'#f5ecd7', 500:'#b08a3e', 700:'#7d5f22' },
+        ledger: { 50:'#fbf9f4', 100:'#f3efe4', 200:'#e4ddcb', 500:'#6b6758', 700:'#3d3a30', 900:'#1d1c17' },
+        alert: { 100:'#fbe9e4', 700:'#9a3412' }
+      },
+      fontFamily: {
+        display: ['Fraunces', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { background: #fbf9f4; color: #1d1c17; }
+  .ledger-lines { background-image: repeating-linear-gradient(to bottom, transparent 0 31px, #e4ddcb 31px 32px); }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise 500ms ease-out both; }
+  .rise-2 { animation: rise 500ms 120ms ease-out both; }
+  .rise-3 { animation: rise 500ms 240ms ease-out both; }
+  @media (prefers-reduced-motion: reduce) { .rise, .rise-2, .rise-3 { animation: none; } }
+</style>
+</head>
+<body class="font-sans antialiased">
+
+<header class="border-b border-ledger-200 bg-ledger-50">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+    <div class="flex items-center gap-2">
+      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="7" fill="#24553f"/><path d="M8 9h12M14 9v11" stroke="#f5ecd7" stroke-width="2.4" stroke-linecap="round"/><circle cx="14" cy="22" r="1.6" fill="#b08a3e"/></svg>
+      <h1 class="font-display text-xl font-semibold text-forest-900">Taxwell</h1>
+    </div>
+    <nav aria-label="Main" class="hidden gap-6 text-sm text-ledger-700 md:flex">
+      <a href="#refund" class="hover:text-forest-700">Overview</a>
+      <a href="#documents" class="hover:text-forest-700">Documents</a>
+      <a href="#deadlines" class="hover:text-forest-700">Deadlines</a>
+      <a href="#filings" class="hover:text-forest-700">Past filings</a>
+    </nav>
+    <span class="rounded-full bg-brass-100 px-3 py-1 text-xs font-medium text-brass-700">Tax year 2026</span>
+  </div>
+</header>
+
+<main class="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:px-6">
+
+  <section id="refund" class="rise grid gap-6 lg:grid-cols-3">
+    <div class="rounded-2xl bg-forest-700 p-6 text-white shadow-sm lg:col-span-2 sm:p-8">
+      <p class="text-sm text-forest-100/80">Estimated refund for Maya Okafor, Schedule C</p>
+      <p class="mt-2 font-display text-5xl font-semibold tabular-nums sm:text-6xl">$3,418<span class="text-2xl text-brass-100">.40</span></p>
+      <p class="mt-3 max-w-md text-sm leading-relaxed text-forest-100">Based on $84,200 net freelance income, $11,760 in logged expenses and $6,900 estimated payments. Final figure updates once your checklist is complete.</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button type="button" class="rounded-lg bg-brass-500 px-5 py-3 text-sm font-semibold text-ledger-900 hover:bg-brass-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Review estimate</button>
+        <button type="button" class="rounded-lg border border-forest-100/40 px-5 py-3 text-sm font-medium text-white hover:bg-forest-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Download summary</button>
+      </div>
+    </div>
+
+    <div class="rise-2 self-start rounded-2xl border-l-4 border-alert-700 bg-alert-100 p-6 shadow-sm">
+      <div class="flex items-start gap-3">
+        <svg aria-hidden="true" class="mt-0.5 shrink-0" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9a3412" stroke-width="2" stroke-linecap="round"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 10v5M12 18h.01"/></svg>
+        <div>
+          <p class="font-semibold text-alert-700">Flagged deduction</p>
+          <p class="mt-1 max-w-prose text-sm leading-relaxed text-ledger-900">Home office claim of $2,640 is above the typical range for your square footage. Add the lease or mortgage statement to keep it.</p>
+          <button type="button" class="mt-4 py-2 text-sm font-semibold text-alert-700 underline underline-offset-4 hover:text-ledger-900">Resolve by Dec 3</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rise-2 grid gap-6 lg:grid-cols-2">
+    <div id="documents" class="rounded-2xl bg-white p-6 shadow-sm">
+      <div class="flex items-baseline justify-between">
+        <h2 class="font-display text-2xl font-semibold text-forest-900">Document checklist</h2>
+        <p class="text-sm tabular-nums text-ledger-500">3 of 6 done</p>
+      </div>
+      <ul class="mt-4 divide-y divide-ledger-200">
+        <li class="flex items-center justify-between gap-4 py-3">
+          <label class="flex items-center gap-3"><input type="checkbox" checked class="h-4 w-4 accent-forest-700"><span class="text-sm line-through text-ledger-500">1099-NEC from Northwind Labs</span></label>
+          <span class="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-medium text-forest-700">Received</span>
+        </li>
+        <li class="flex items-center justify-between gap-4 py-3">
+          <label class="flex items-center gap-3"><input type="checkbox" checked class="h-4 w-4 accent-forest-700"><span class="text-sm line-through text-ledger-500">1099-K from Stripe</span></label>
+          <span class="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-medium text-forest-700">Received</span>
+        </li>
+        <li class="flex items-center justify-between gap-4 py-3">
+          <label class="flex items-center gap-3"><input type="checkbox" checked class="h-4 w-4 accent-forest-700"><span class="text-sm line-through text-ledger-500">Q4 estimated payment receipt</span></label>
+          <span class="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-medium text-forest-700">Received</span>
+        </li>
+        <li class="flex items-center justify-between gap-4 py-3">
+          <label class="flex items-center gap-3"><input type="checkbox" class="h-4 w-4 accent-forest-700"><span class="text-sm text-ledger-900">Home office lease statement</span></label>
+          <span class="rounded-full bg-brass-100 px-2.5 py-0.5 text-xs font-medium text-brass-700">Needed</span>
+        </li>
+        <li class="flex items-center justify-between gap-4 py-3">
+          <label class="flex items-center gap-3"><input type="checkbox" class="h-4 w-4 accent-forest-700"><span class="text-sm text-ledger-900">Software subscription invoices</span></label>
+          <span class="rounded-full bg-brass-100 px-2.5 py-0.5 text-xs font-medium text-brass-700">Needed</span>
+        </li>
+        <li class="flex items-center justify-between gap-4 py-3">
+          <label class="flex items-center gap-3"><input type="checkbox" class="h-4 w-4 accent-forest-700"><span class="text-sm text-ledger-900">Health insurance premium statement</span></label>
+          <span class="rounded-full bg-brass-100 px-2.5 py-0.5 text-xs font-medium text-brass-700">Needed</span>
+        </li>
+      </ul>
+    </div>
+
+    <div id="deadlines" class="rounded-2xl bg-ledger-100 p-6 shadow-sm ledger-lines">
+      <h2 class="font-display text-2xl font-semibold text-forest-900">Upcoming deadlines</h2>
+      <ol class="mt-4 space-y-4">
+        <li class="flex gap-4 rounded-xl bg-white p-4 shadow-sm">
+          <div class="w-16 shrink-0 rounded-lg bg-forest-700 py-2 text-center text-white">
+            <p class="text-xs uppercase tracking-wide text-forest-100">Dec</p>
+            <p class="font-display text-2xl font-semibold tabular-nums">3</p>
+          </div>
+          <div><p class="font-semibold text-ledger-900">Document upload cutoff</p><p class="text-sm text-ledger-500">Lease statement and software invoices</p></div>
+        </li>
+        <li class="flex gap-4 rounded-xl bg-white p-4 shadow-sm">
+          <div class="w-16 shrink-0 rounded-lg bg-brass-100 py-2 text-center text-brass-700">
+            <p class="text-xs uppercase tracking-wide">Jan</p>
+            <p class="font-display text-2xl font-semibold tabular-nums">15</p>
+          </div>
+          <div><p class="font-semibold text-ledger-900">Q4 estimated payment due</p><p class="text-sm text-ledger-500">Amount suggested: $1,850</p></div>
+        </li>
+        <li class="flex gap-4 rounded-xl bg-white p-4 shadow-sm">
+          <div class="w-16 shrink-0 rounded-lg bg-brass-100 py-2 text-center text-brass-700">
+            <p class="text-xs uppercase tracking-wide">Apr</p>
+            <p class="font-display text-2xl font-semibold tabular-nums">15</p>
+          </div>
+          <div><p class="font-semibold text-ledger-900">Federal return filing deadline</p><p class="text-sm text-ledger-500">Extension available on request</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="filings" class="rise-3 rounded-2xl bg-white p-6 shadow-sm">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 class="font-display text-2xl font-semibold text-forest-900">Past filings</h2>
+      <p class="text-sm text-ledger-500">Showing the last 4 tax years</p>
+    </div>
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full min-w-[560px] text-left text-sm">
+        <thead>
+          <tr class="border-b border-ledger-200 text-xs uppercase tracking-wide text-ledger-500">
+            <th scope="col" class="py-3 pr-4 font-medium">Tax year</th>
+            <th scope="col" class="py-3 pr-4 font-medium">Filed on</th>
+            <th scope="col" class="py-3 pr-4 text-right font-medium">Net income</th>
+            <th scope="col" class="py-3 pr-4 text-right font-medium">Refund / (owed)</th>
+            <th scope="col" class="py-3 font-medium">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-ledger-200">
+          <tr>
+            <td class="py-3 pr-4 font-medium text-ledger-900">2025</td>
+            <td class="py-3 pr-4 tabular-nums text-ledger-700">Apr 11, 2026</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-ledger-900">$79,450</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-forest-700">$2,905</td>
+            <td class="py-3"><span class="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-medium text-forest-700">Accepted</span></td>
+          </tr>
+          <tr>
+            <td class="py-3 pr-4 font-medium text-ledger-900">2024</td>
+            <td class="py-3 pr-4 tabular-nums text-ledger-700">Apr 14, 2025</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-ledger-900">$68,120</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-alert-700">($1,240)</td>
+            <td class="py-3"><span class="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-medium text-forest-700">Accepted</span></td>
+          </tr>
+          <tr>
+            <td class="py-3 pr-4 font-medium text-ledger-900">2023</td>
+            <td class="py-3 pr-4 tabular-nums text-ledger-700">Apr 9, 2024</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-ledger-900">$54,980</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-forest-700">$1,612</td>
+            <td class="py-3"><span class="rounded-full bg-forest-50 px-2.5 py-0.5 text-xs font-medium text-forest-700">Accepted</span></td>
+          </tr>
+          <tr>
+            <td class="py-3 pr-4 font-medium text-ledger-900">2022</td>
+            <td class="py-3 pr-4 tabular-nums text-ledger-700">Oct 16, 2023</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-ledger-900">$41,300</td>
+            <td class="py-3 pr-4 text-right tabular-nums text-forest-700">$940</td>
+            <td class="py-3"><span class="rounded-full bg-brass-100 px-2.5 py-0.5 text-xs font-medium text-brass-700">Amended</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mx-auto max-w-6xl px-4 pb-10 pt-4 text-xs text-ledger-500 sm:px-6">
+  Taxwell provides estimates for planning only. Confirm figures with a licensed preparer before filing.
+</footer>
+
+<script>
+  document.querySelectorAll('#documents input[type="checkbox"]').forEach(function (box) {
+    box.addEventListener('change', function () {
+      var done = document.querySelectorAll('#documents input[type="checkbox"]:checked').length;
+      var total = document.querySelectorAll('#documents input[type="checkbox"]').length;
+      document.querySelector('#documents p.tabular-nums').textContent = done + ' of ' + total + ' done';
+    });
+  });
+</script>
+</body>
+</html>

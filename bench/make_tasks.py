@@ -16,13 +16,13 @@ COMMON = ("Build one web page.\nBrief: {brief}\n\nOutput: single-file HTML, Tail
           "Save it to {out} and reply with that path only.\n\nDo NOT use the Skill tool.\n")
 SKILL = ("First read {skill_md} and the files it tells you to read (mood {mood}: {mood_md}, {vq_md}; "
          "{rules_md} when fixing findings). Follow it. Do not read anything else in the skill folder (bench/ is off limits).\n"
-         "When the page is done run (with PYTHONIOENCODING=utf-8 or python -X utf8):\n"
+         "When the page is done run (set the environment variable PYTHONIOENCODING=utf-8 first; the command starts with the python.exe path in quotes):\n"
          "  \"{py}\" \"{uitools}\" audit <file> --mood {mood}\n"
          "  \"{py}\" \"{render_py}\" <file> --out \"{png}\" --check\n"
          "Open the PNG with the Read tool. Fix every WARN and anything empty, clipped, overlapping or broken with the smallest edits. "
          "Repeat audit and render after fixes. At most {rounds} fix rounds.\n")
 NOSKILL = ("Do NOT read anything under {skill} or any skills folder.\n"
-           "When the page is done run (with PYTHONIOENCODING=utf-8 or python -X utf8):\n"
+           "When the page is done run (set the environment variable PYTHONIOENCODING=utf-8 first; the command starts with the python.exe path in quotes):\n"
            "  \"{py}\" \"{render_py}\" <file> --out \"{png}\"\n"
            "(no --check; use it only to render a screenshot). Open the PNG with the Read tool. "
            "Fix anything empty, clipped, overlapping, broken or ugly with the smallest edits. At most {rounds} fix rounds.\n")

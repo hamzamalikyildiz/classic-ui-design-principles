@@ -1,0 +1,10 @@
+cift1: B | 4 | B daha sade, daha büyük yazılı ve ne işe yaradığı hemen anlaşılıyor; A fazla yoğun ve küçük yazılı. | A 7/7/5/9 B 8/7/7/7
+cift2: A | 3 | A daha net ve büyük başlıklı, güçlü kontrastlı ve programı ayrıntılı bir sayfa; B de temiz ama içerik daha az ve karanlık bölüm yazıyı küçültüyor. | A 8/7/8/9 B 8/7/7/7
+cift3: A | 3 | A daha büyük punto, sade ve kontrastlı bir okuma düzeni sunuyor; B zengin ama yazısı küçük ve koyu yan kutu gözü yoruyor. | A 7/7/9/7 B 8/8/7/8
+cift4: B | 5 | B büyük başlıkla sayfanın ne işe yaradığını hemen söylüyor ve düğmeler ile yazılar daha büyük ve net; A küçük ve soluk. | A 6/6/6/6 B 8/8/9/8
+cift5: A | 3 | A daha sakin, düzenli ve okunaklı; B güzel ama bazı yerlerde yazılar sıkışık ve renk blokları fazla. | A 8/7/8/7 B 8/7/7/8
+cift6: B | 4 | B daha büyük başlık ve rakamlarla, daha az yoğun ve anlaşılır; A çok küçük monospace yazılarla dolu. | A 6/6/4/9 B 8/7/7/7
+cift7: B | 3 | B daha net, tutarlı ve güçlü kontrastlı; A deki içi boş çerçeveli başlık harfleri okumayı zorlaştırıyor. | A 7/7/6/7 B 8/7/8/8
+cift8: A | 4 | A tek sütunlu, düzenli ve rahat okunan metniyle sade; B de güzel ama garip çizim ve yarım genişlikte metin dengesiz duruyor. | A 8/7/9/7 B 7/7/7/8
+cift9: A | 2 | A nın büyük ve koyu zeminli tahmini iade bölümü ile uyarı kutusu ne yapılacağını hemen gösteriyor, B daha temiz ama yazıları daha küçük. | A 8/7/8/7 B 7/7/7/8
+cift10: B | 4 | B nin sans yazısı ve düzenli bölümleri daha rahat okunuyor ve içeriği zengin; A nın küçük monospace yazısı ve kenara yapışık düzeni yoruyor. | A 7/6/6/6 B 8/8/8/9

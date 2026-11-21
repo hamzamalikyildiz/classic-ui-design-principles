@@ -1,0 +1,72 @@
+{
+ "cift1": {
+  "orig": "cift2",
+  "skill": "A",
+  "mood": "playful",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift2": {
+  "orig": "cift7",
+  "skill": "B",
+  "mood": "playful",
+  "brief": "b",
+  "rep": "1"
+ },
+ "cift3": {
+  "orig": "cift5",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "b",
+  "rep": "1"
+ },
+ "cift4": {
+  "orig": "cift1",
+  "skill": "B",
+  "mood": "technical",
+  "brief": "b",
+  "rep": "1"
+ },
+ "cift5": {
+  "orig": "cift3",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift6": {
+  "orig": "cift6",
+  "skill": "A",
+  "mood": "bold",
+  "brief": "b",
+  "rep": "1"
+ },
+ "cift7": {
+  "orig": "cift4",
+  "skill": "B",
+  "mood": "trust",
+  "brief": "b",
+  "rep": "1"
+ },
+ "cift8": {
+  "orig": "cift9",
+  "skill": "B",
+  "mood": "bold",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift9": {
+  "orig": "cift10",
+  "skill": "B",
+  "mood": "trust",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift10": {
+  "orig": "cift8",
+  "skill": "A",
+  "mood": "technical",
+  "brief": "a",
+  "rep": "1"
+ }
+}

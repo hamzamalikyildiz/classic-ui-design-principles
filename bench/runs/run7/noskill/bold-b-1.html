@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Low Tide Festival</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Space Mono', monospace; background: #0b1f2a; color: #f4efe6; }
+  .display { font-family: 'Anton', sans-serif; letter-spacing: 0.02em; text-transform: uppercase; }
+  .wave {
+    background:
+      radial-gradient(circle at 50% 100%, #0b1f2a 0 60%, transparent 61%) 0 0 / 120px 60px repeat-x,
+      #ff6b35;
+  }
+  .stripe { background: repeating-linear-gradient(135deg, #0b1f2a 0 14px, #ff6b35 14px 28px); }
+</style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+<!-- Hero -->
+<header class="relative min-h-[90vh] flex flex-col justify-end px-4 sm:px-10 pb-16 pt-24 overflow-hidden"
+        style="background: linear-gradient(180deg, #0b1f2a 0%, #13405a 60%, #1d6a7a 100%);">
+  <svg class="absolute inset-x-0 top-10 w-full h-40 opacity-30" viewBox="0 0 1200 160" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 80 Q 150 20 300 80 T 600 80 T 900 80 T 1200 80 V160 H0 Z" fill="#7fd1c7"/>
+    <path d="M0 110 Q 150 60 300 110 T 600 110 T 900 110 T 1200 110 V160 H0 Z" fill="#2c8c9b"/>
+  </svg>
+  <div class="absolute -right-24 top-40 w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-[#ff6b35] opacity-90" aria-hidden="true"></div>
+  <nav class="absolute top-0 inset-x-0 flex items-center justify-between px-4 sm:px-10 py-6 text-sm uppercase tracking-widest">
+    <span class="display text-2xl text-[#f4efe6]">Low Tide</span>
+    <a href="#tickets" class="border-2 border-[#f4efe6] px-4 py-2 hover:bg-[#f4efe6] hover:text-[#0b1f2a]">Tickets</a>
+  </nav>
+  <div class="relative z-10 max-w-4xl">
+    <p class="uppercase tracking-[0.3em] text-[#ff6b35] font-bold mb-4">Indie Music Festival &middot; Est. 2019</p>
+    <h1 class="display text-[18vw] sm:text-[9rem] leading-[0.85]">Low<br>Tide</h1>
+    <p class="mt-6 text-lg sm:text-xl max-w-xl">Three days. Four stages. Forty-two bands who never made it to the big rooms, and the people who came to hear them anyway.</p>
+    <div class="mt-8 flex flex-wrap gap-4">
+      <a href="#tickets" class="bg-[#ff6b35] text-[#0b1f2a] font-bold px-6 py-4 uppercase tracking-wider hover:bg-[#f4efe6]">Get tickets</a>
+      <a href="#lineup" class="border-2 border-[#f4efe6] px-6 py-4 uppercase tracking-wider hover:bg-[#f4efe6] hover:text-[#0b1f2a]">See lineup</a>
+    </div>
+  </div>
+</header>
+
+<div class="wave h-[60px]" aria-hidden="true"></div>
+
+<!-- Lineup -->
+<section id="lineup" class="px-4 sm:px-10 py-20">
+  <h2 class="display text-5xl sm:text-7xl mb-10">Lineup</h2>
+  <ul class="grid gap-px bg-[#f4efe6]/20 border border-[#f4efe6]/20 sm:grid-cols-2 lg:grid-cols-3">
+    <li class="bg-[#0b1f2a] p-6"><p class="text-xs uppercase tracking-widest text-[#ff6b35]">Main Stage &middot; Sat 9pm</p><p class="display text-3xl mt-2">Paper Harbor</p></li>
+    <li class="bg-[#0b1f2a] p-6"><p class="text-xs uppercase tracking-widest text-[#ff6b35]">Tide Pool &middot; Fri 10pm</p><p class="display text-3xl mt-2">Salt &amp; Static</p></li>
+    <li class="bg-[#0b1f2a] p-6"><p class="text-xs uppercase tracking-widest text-[#ff6b35]">Main Stage &middot; Fri 8pm</p><p class="display text-3xl mt-2">The Quiet Pier</p></li>
+    <li class="bg-[#0b1f2a] p-6"><p class="text-xs uppercase tracking-widest text-[#ff6b35]">Driftwood Tent &middot; Sun 7pm</p><p class="display text-3xl mt-2">Mara Lowe</p></li>
+    <li class="bg-[#0b1f2a] p-6"><p class="text-xs uppercase tracking-widest text-[#ff6b35]">Tide Pool &middot; Sun 9pm</p><p class="display text-3xl mt-2">Night Kelp</p></li>
+    <li class="bg-[#0b1f2a] p-6"><p class="text-xs uppercase tracking-widest text-[#ff6b35]">Driftwood Tent &middot; Sat 6pm</p><p class="display text-3xl mt-2">Gull &amp; Gravel</p></li>
+  </ul>
+  <p class="mt-6 text-sm opacity-70">Full set times released 30 days before the gates open.</p>
+</section>
+
+<!-- Dates & venue -->
+<section class="px-4 sm:px-10 py-20 bg-[#f4efe6] text-[#0b1f2a]">
+  <h2 class="display text-5xl sm:text-7xl mb-10">Dates &amp; Venue</h2>
+  <div class="grid gap-10 lg:grid-cols-2">
+    <div>
+      <p class="display text-6xl sm:text-8xl leading-none">14&ndash;16</p>
+      <p class="display text-3xl mt-2">August 2027</p>
+      <p class="mt-4 text-base">Gates open 12pm daily. Last music 2am. Camping from Thursday.</p>
+    </div>
+    <div>
+      <p class="display text-3xl">Harbor Point Fields</p>
+      <p class="mt-2">Pier Road, Eastport Coast</p>
+      <p class="mt-4 text-sm">Free shuttle from the Eastport rail hub every 20 minutes. Step-free access to all stages.</p>
+      <div class="stripe h-24 mt-6 border-4 border-[#0b1f2a]" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Tickets -->
+<section id="tickets" class="px-4 sm:px-10 py-20">
+  <h2 class="display text-5xl sm:text-7xl mb-10">Tickets</h2>
+  <div class="grid gap-6 md:grid-cols-3">
+    <article class="border-2 border-[#f4efe6]/40 p-8 flex flex-col">
+      <p class="uppercase tracking-widest text-sm text-[#7fd1c7]">Tide Pass</p>
+      <p class="display text-6xl mt-3">$129</p>
+      <ul class="mt-6 space-y-2 text-sm flex-1">
+        <li>Three-day general admission</li>
+        <li>Access to all four stages</li>
+        <li>Shuttle access</li>
+      </ul>
+      <a href="#" class="mt-8 border-2 border-[#f4efe6] text-center py-3 uppercase tracking-wider hover:bg-[#f4efe6] hover:text-[#0b1f2a]">Choose Tide Pass</a>
+    </article>
+    <article class="bg-[#ff6b35] text-[#0b1f2a] p-8 flex flex-col relative">
+      <span class="absolute -top-3 right-6 bg-[#0b1f2a] text-[#f4efe6] text-xs uppercase tracking-widest px-3 py-1">Most popular</span>
+      <p class="uppercase tracking-widest text-sm font-bold">Riptide</p>
+      <p class="display text-6xl mt-3">$219</p>
+      <ul class="mt-6 space-y-2 text-sm flex-1">
+        <li>Everything in Tide Pass</li>
+        <li>Camping for three nights</li>
+        <li>Priority entry and shuttle lane</li>
+      </ul>
+      <a href="#" class="mt-8 bg-[#0b1f2a] text-[#f4efe6] text-center py-3 uppercase tracking-wider font-bold hover:bg-[#f4efe6] hover:text-[#0b1f2a]">Choose Riptide</a>
+    </article>
+    <article class="border-2 border-[#f4efe6]/40 p-8 flex flex-col">
+      <p class="uppercase tracking-widest text-sm text-[#7fd1c7]">Deep Water</p>
+      <p class="display text-6xl mt-3">$389</p>
+      <ul class="mt-6 space-y-2 text-sm flex-1">
+        <li>Everything in Riptide</li>
+        <li>Lounge deck and private bar</li>
+        <li>Meet-the-artists sessions</li>
+      </ul>
+      <a href="#" class="mt-8 border-2 border-[#f4efe6] text-center py-3 uppercase tracking-wider hover:bg-[#f4efe6] hover:text-[#0b1f2a]">Choose Deep Water</a>
+    </article>
+  </div>
+</section>
+
+<!-- Sponsor CTA -->
+<section class="px-4 sm:px-10 py-20 bg-[#1d6a7a]">
+  <div class="max-w-4xl">
+    <p class="uppercase tracking-[0.3em] text-[#f4efe6] font-bold mb-4">Partners</p>
+    <h2 class="display text-5xl sm:text-7xl leading-none">Sponsor the tide</h2>
+    <p class="mt-6 text-lg max-w-2xl">Put your brand on a stage, a shuttle or a bottle of water in front of 18,000 people who pay attention to what they care about.</p>
+    <a href="mailto:partners@lowtide.example" class="inline-block mt-8 bg-[#f4efe6] text-[#0b1f2a] font-bold px-8 py-4 uppercase tracking-wider hover:bg-[#ff6b35]">Become a sponsor</a>
+  </div>
+</section>
+
+<footer class="px-4 sm:px-10 py-10 text-sm flex flex-col sm:flex-row justify-between gap-4 border-t border-[#f4efe6]/20">
+  <span class="display text-xl">Low Tide</span>
+  <span class="opacity-70">Harbor Point Fields &middot; August 14&ndash;16, 2027</span>
+</footer>
+
+</body>
+</html>

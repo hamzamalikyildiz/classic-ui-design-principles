@@ -1,0 +1,10 @@
+cift1: A | 4 | A has a more considered shoe illustration, specific copy and a consistent mono-accent system, while B has a blobby shoe and templated cards with filler progress bars. | A 8/8/8/8 B 7/6/7/7
+cift2: A | 4 | A uses a serif display with a deep green hero and warm tones for a distinctive, finance-appropriate voice, whereas B is a generic SaaS dashboard. | A 8/8/8/8 B 7/6/8/7
+cift3: A | 2 | A has a fuller editorial typographic system with a serif body, pull quote, maker index and related list, though its odd illustration and left-hugging text column keep it close to B. | A 7/7/8/9 B 7/7/8/7
+cift4: B | 3 | B has a real mascot hero, a bento zone grid and a richer schedule with locations, which beats A abstract blob hero even though A keeps tighter edge alignment. | A 7/7/8/7 B 8/7/8/8
+cift5: A | 4 | A reads like a real ops tool with a disciplined monospace system, dense useful data and precise status tags, while B feels like a softer dashboard template. | A 8/8/8/9 B 7/6/7/7
+cift6: B | 4 | B adds a route figure and a richer dark itinerary with a well-set serif system, while A relies on empty gradient placeholder cards that look cheap. | A 7/6/8/6 B 8/8/8/8
+cift7: B | 4 | B has a serif headline, a pickup ticket card and a clear hierarchy that gives the pharmacy a voice, whereas A is a generic stat-card dashboard with a stray alert up top. | A 6/6/7/6 B 8/8/8/8
+cift8: A | 4 | A tells a focused story with one highlighted outlier shard, an SLO line and an annotated lag spike over restrained neutral bars, while B is a more generic blue-on-navy dashboard. | A 9/8/8/9 B 7/6/7/7
+cift9: B | 3 | B carries the tide concept through the hero chart, lineup hierarchy and water-times table with thoughtful detail, while A has strong poster character but a placeholder striped block and cramped 20px edges. | A 7/7/7/6 B 8/8/8/9
+cift10: B | 2 | B has the more characterful hero with a full-bleed colour band, bento box contents and sharper copy, but its overwide grown-ups card and cramped pricing buttons keep it close to the tidier but blander A. | A 7/7/8/7 B 8/7/7/8

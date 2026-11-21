@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Night Train to Trieste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#f6f1e7',
+          ink: '#17202e',
+          brass: '#8a5a1c',
+          gilt: '#d9a441',
+          muted: '#5b5a54',
+          rule: '#d8cfbd'
+        },
+        fontFamily: { serif: ['Newsreader', 'Georgia', 'serif'] }
+      }
+    }
+  }
+</script>
+<style>
+  body { background: #f6f1e7; color: #17202e; font-family: 'Newsreader', Georgia, serif; }
+  .drop-cap::first-letter { float: left; font-size: 4.6rem; line-height: 0.85; padding: 0.35rem 0.6rem 0 0; color: #8a5a1c; font-weight: 600; }
+  .rise { animation: rise 600ms ease-out both; }
+  .rise-2 { animation-delay: 120ms; }
+  .rise-3 { animation-delay: 240ms; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="border-b border-rule">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-5 flex items-center justify-between">
+    <a href="#" class="font-semibold tracking-tight text-lg">The Long Way Quarterly</a>
+    <nav aria-label="Sections" class="hidden sm:flex gap-6 text-sm text-muted">
+      <a href="#" class="hover:text-ink">Essays</a>
+      <a href="#" class="hover:text-ink">Travel</a>
+      <a href="#" class="hover:text-ink">Maps</a>
+      <a href="#" class="hover:text-ink">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 pt-16 pb-10">
+    <p class="rise text-sm uppercase tracking-[0.18em] text-brass">Travel essay</p>
+    <h1 class="rise rise-2 mt-4 text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.05] tracking-tight">Night Train to Trieste</h1>
+    <p class="rise rise-3 mt-6 max-w-prose text-xl sm:text-2xl leading-relaxed italic text-muted">There is a point, somewhere after the last lights of the mainland, when the carriage stops feeling like a room and starts feeling like a decision you already made.</p>
+    <p class="rise rise-3 mt-8 text-sm text-muted">By <span class="text-ink">Ilse Marrow</span> &middot; 9 min read &middot; Issue 14, Autumn</p>
+  </section>
+
+  <figure class="mx-auto max-w-5xl px-4 sm:px-6">
+    <svg viewBox="0 0 960 300" class="w-full h-auto rounded-md" role="img" aria-labelledby="route-title route-desc">
+      <title id="route-title">Overnight route from Venice to Trieste</title>
+      <desc id="route-desc">A schematic line running east from Venezia Santa Lucia through Portogruaro, Cervignano and Monfalcone to Trieste Centrale, under a gilt moon.</desc>
+      <rect width="960" height="300" fill="#17202e"/>
+      <circle cx="780" cy="70" r="28" fill="#d9a441"/>
+      <line x1="40" y1="250" x2="920" y2="250" stroke="#3a4558" stroke-width="1.5"/>
+      <path d="M80 200 Q300 110 480 180 T880 170" fill="none" stroke="#d9a441" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/>
+      <g fill="#f6f1e7">
+        <circle cx="80" cy="200" r="6"/>
+        <circle cx="290" cy="150" r="6"/>
+        <circle cx="480" cy="180" r="6"/>
+        <circle cx="670" cy="212" r="6"/>
+        <circle cx="880" cy="170" r="6"/>
+      </g>
+      <g font-family="Newsreader, Georgia, serif" fill="#f6f1e7" font-size="16">
+        <text x="80" y="236" text-anchor="middle">Venezia 21:48</text>
+        <text x="290" y="118" text-anchor="middle">Portogruaro 23:12</text>
+        <text x="480" y="222" text-anchor="middle">Cervignano 00:04</text>
+        <text x="670" y="186" text-anchor="middle">Monfalcone 04:38</text>
+        <text x="880" y="140" text-anchor="middle">Trieste 05:14</text>
+      </g>
+    </svg>
+    <figcaption class="mt-3 text-sm text-muted">Figure 1. Five stations on the overnight line, each marked with its departure or arrival time. Schematic, not to scale.</figcaption>
+  </figure>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 mt-16 grid gap-12 lg:grid-cols-[minmax(0,65ch)_280px]">
+    <article class="max-w-prose text-lg leading-[1.75]">
+      <p class="text-xl leading-relaxed">The 21:48 leaves Venice without ceremony. No announcement, no crowd at the barrier, only a conductor who checks the couchette list twice and then tells you to lock the door. I had planned to read on the way. Instead I watched the canal lamps slide off the window and listened to the wheels find their rhythm, a double knock every few seconds that sounds like someone patiently tapping a table.</p>
+
+      <p class="mt-8 drop-cap">Trieste is not on the way to anything, and that is most of its charm. The city sits with its back to Slovenia and its face to a gulf that has belonged to several empires in turn, so its streets carry three names for many squares. The night train is the only approach that feels like it respects this. You arrive while the country is still deciding whether to wake up.</p>
+
+      <p class="mt-6">The timetable is a small argument between old and new. The line still runs the way it did when the empire needed its ports connected, through flat fields of maize and poplar, past stations with more paint than passengers. Each stop is a single lit platform and a bench. At Cervignano, just after midnight, one man smoked under a sign and nodded at me as if I had been expected.</p>
+
+      <p class="mt-6">I slept badly, which is the honest way to take a night train. Each time I surfaced the window had changed: first the wide dark of the plain, then a faint smear of hills, then a sense that the air had grown colder and saltier before I could see any water at all. You smell the Adriatic before the train admits it is close.</p>
+    </article>
+
+    <aside class="rounded-md bg-ink text-paper p-6 h-fit lg:sticky lg:top-8">
+      <h2 class="text-2xl font-semibold">The itinerary</h2>
+      <p class="mt-1 text-sm text-paper/70">Overnight, Venezia to Trieste</p>
+      <ol class="mt-6 divide-y divide-paper/15 text-[15px] leading-snug">
+        <li class="py-3 grid grid-cols-[4.5rem_1fr] gap-3"><span class="tabular-nums text-gilt">21:48</span><span><strong class="font-medium">Venezia Santa Lucia</strong><br><span class="text-paper/70">Board early. Couchettes sit in the rear carriages.</span></span></li>
+        <li class="py-3 grid grid-cols-[4.5rem_1fr] gap-3"><span class="tabular-nums text-gilt">22:31</span><span><strong class="font-medium">Mestre</strong><br><span class="text-paper/70">The last of the mainland lights.</span></span></li>
+        <li class="py-3 grid grid-cols-[4.5rem_1fr] gap-3"><span class="tabular-nums text-gilt">23:12</span><span><strong class="font-medium">Portogruaro</strong><br><span class="text-paper/70">One lamp, one bench, one bell.</span></span></li>
+        <li class="py-3 grid grid-cols-[4.5rem_1fr] gap-3"><span class="tabular-nums text-gilt">00:04</span><span><strong class="font-medium">Cervignano</strong><br><span class="text-paper/70">Night stop. Stay in your berth.</span></span></li>
+        <li class="py-3 grid grid-cols-[4.5rem_1fr] gap-3"><span class="tabular-nums text-gilt">04:38</span><span><strong class="font-medium">Monfalcone</strong><br><span class="text-paper/70">Shipyard cranes and the first sea air.</span></span></li>
+        <li class="py-3 grid grid-cols-[4.5rem_1fr] gap-3"><span class="tabular-nums text-gilt">05:14</span><span><strong class="font-medium">Trieste Centrale</strong><br><span class="text-paper/70">Coffee on the platform, then walk to the water.</span></span></li>
+      </ol>
+      <div class="mt-6 border-t border-paper/15 pt-5 text-sm leading-relaxed text-paper/80">
+        <p><span class="text-gilt">Berth:</span> couchette, six to a compartment.</p>
+        <p class="mt-2"><span class="text-gilt">Tickets:</span> book the sleeper ahead; the supplement is the price of sleep.</p>
+        <p class="mt-2"><span class="text-gilt">Luggage:</span> keep one bag under the bunk.</p>
+      </div>
+    </aside>
+  </div>
+
+  <blockquote class="mx-auto max-w-5xl px-4 sm:px-6 mt-20">
+    <div class="border-y border-rule py-12 text-center">
+      <p class="mx-auto max-w-4xl text-4xl sm:text-5xl italic leading-[1.4] text-ink">&ldquo;A night train does not ask where you are going. It asks only whether you can stay awake long enough to notice the change.&rdquo;</p>
+      <footer class="mt-6 text-sm uppercase tracking-[0.18em] text-brass">From the journey, Cervignano</footer>
+    </div>
+  </blockquote>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 mt-16">
+    <div class="max-w-prose text-lg leading-[1.75]">
+      <p>By the time the carriage lights came up at five, I had stopped counting stations. The last stretch runs along the coast in grey half-light, past sheds, salt flats and the long concrete flank of the shipyard at Monfalcone. Then the track bends, the sea opens out on the left, and the platform at Trieste Centrale is full of people carrying coffee as if nothing unusual had happened at all.</p>
+      <p class="mt-6 max-w-prose">That is what I would tell anyone planning this trip. Book the couchette, not the seat. Pay for the sleep, because the sleep is the part you will remember. Arrive with nothing to do until the cafés open on the Piazza Unità, which they will, slowly, while the sun comes up over the water and the city remembers its own name.</p>
+    </div>
+  </div>
+
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 mt-20 pb-20" aria-labelledby="related-heading">
+    <h2 id="related-heading" class="text-sm uppercase tracking-[0.18em] text-brass">Related essays</h2>
+    <div class="mt-6 grid gap-10 md:grid-cols-3 border-t-2 border-ink pt-8">
+      <article>
+        <p class="text-sm text-muted">Travel &middot; 7 min</p>
+        <h3 class="mt-2 text-2xl font-semibold leading-snug"><a href="#" class="hover:underline underline-offset-4">The Ferry That Stopped Running</a></h3>
+        <p class="mt-3 max-w-prose text-base leading-relaxed text-muted">A season on the Lussino crossing, and what the islands do when the last boat leaves.</p>
+      </article>
+      <article>
+        <p class="text-sm text-muted">Places &middot; 5 min</p>
+        <h3 class="mt-2 text-2xl font-semibold leading-snug"><a href="#" class="hover:underline underline-offset-4">Salt, Bora and the Corniche</a></h3>
+        <p class="mt-3 text-base leading-relaxed text-muted">Walking the seafront in a wind that rearranges your plans and your hat.</p>
+      </article>
+      <article>
+        <p class="text-sm text-muted">Essays &middot; 11 min</p>
+        <h3 class="mt-2 text-2xl font-semibold leading-snug"><a href="#" class="hover:underline underline-offset-4">Reading Timetables Like Poetry</a></h3>
+        <p class="mt-3 text-base leading-relaxed text-muted">Why a printed schedule holds more of a country than any guidebook does.</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-rule">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-8 text-sm text-muted flex flex-wrap justify-between gap-4">
+    <span>The Long Way Quarterly &middot; Issue 14</span>
+    <span>Illustrations are schematic.</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbor Street Pharmacy - Account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#13211f',
+          mist: '#f3f6f5',
+          teal: { 50: '#e8f2f1', 600: '#0d6b64', 700: '#0a5650', 800: '#083f3b' },
+          alert: { bg: '#fff3d6', fg: '#5c3b00' }
+        },
+        fontFamily: {
+          serif: ['Newsreader', 'Georgia', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #f3f6f5; color: #13211f; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .rise { animation: rise 0.6s ease both; }
+  .rise-2 { animation-delay: 0.1s; }
+  .rise-3 { animation-delay: 0.2s; }
+  .route { stroke-dasharray: 300; stroke-dashoffset: 300; animation: draw 1.4s 0.4s ease forwards; }
+  @media (prefers-reduced-motion: reduce) {
+    .rise, .route { animation: none; }
+    .route { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body class="font-sans antialiased">
+
+<header class="bg-white shadow-sm">
+  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 lg:px-8">
+    <a href="#" class="flex items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">
+      <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-700 text-white">
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <span class="font-serif text-lg font-semibold">Harbor Street Pharmacy</span>
+    </a>
+    <nav aria-label="Account" class="hidden sm:flex items-center gap-1 text-sm font-medium text-ink/80">
+      <a href="#pickup" class="rounded-lg px-3 py-2.5 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">Pickup</a>
+      <a href="#refills" class="rounded-lg px-3 py-2.5 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">Refills</a>
+      <a href="#delivery" class="rounded-lg px-3 py-2.5 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">Delivery</a>
+      <a href="#insurance" class="rounded-lg px-3 py-2.5 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">Insurance</a>
+    </nav>
+  </div>
+</header>
+
+<main class="mx-auto max-w-6xl space-y-10 px-4 py-10 lg:px-8">
+
+  <!-- Hero: the one accent surface -->
+  <section class="rise grid gap-8 rounded-2xl bg-teal-700 p-6 text-white shadow-sm lg:grid-cols-[1.4fr_1fr] lg:items-center lg:p-10">
+    <div>
+      <p class="text-sm text-teal-50">Good morning, Elif. Tuesday 18 November</p>
+      <h1 class="mt-2 font-serif text-4xl leading-tight lg:text-5xl">3 prescriptions are ready for pickup</h1>
+      <p class="mt-4 max-w-prose text-base text-teal-50">Bring photo ID to Counter 2. The pickup desk is open until 9:00 pm today.</p>
+      <a href="#pickup" class="mt-6 inline-flex min-h-11 items-center rounded-lg bg-white px-4 py-3 sm:px-5 font-semibold text-teal-700 hover:bg-teal-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Choose pickup time</a>
+    </div>
+    <div class="rounded-xl bg-teal-800 p-5">
+      <p class="text-xs font-semibold uppercase tracking-wider text-white">Pickup ticket</p>
+      <p class="mt-3 flex items-baseline justify-between"><span class="text-sm text-white">Order</span><span class="font-semibold tabular-nums">#48213</span></p>
+      <p class="mt-2 flex items-baseline justify-between"><span class="text-sm text-white">Counter</span><span class="font-semibold">2</span></p>
+      <div class="my-4 border-t-2 border-dashed border-white/40"></div>
+      <p class="flex items-baseline justify-between"><span class="text-sm text-white">Items</span><span class="font-semibold tabular-nums">3 of 3</span></p>
+    </div>
+  </section>
+
+  <!-- Ready for pickup -->
+  <section id="pickup" aria-labelledby="pickup-title" class="rise rise-2">
+    <div class="flex items-end justify-between gap-4">
+      <h2 id="pickup-title" class="font-serif text-2xl">Ready for pickup</h2>
+      <p class="text-sm text-ink/70">3 orders</p>
+    </div>
+    <ul class="mt-4 divide-y divide-teal-50 rounded-2xl bg-white p-2 shadow-sm">
+      <li class="flex items-center gap-4 p-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="font-medium">Amoxicillin 500 mg, 21 capsules</p>
+          <p class="text-sm text-ink/70">Dr. A. Kaya · Ready since 8:40 am</p>
+        </div>
+        <span class="hidden rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800 sm:inline">Counter 2</span>
+      </li>
+      <li class="flex items-center gap-4 p-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="font-medium">Metformin 850 mg, 60 tablets</p>
+          <p class="text-sm text-ink/70">Dr. S. Demir · Ready since 9:15 am</p>
+        </div>
+        <span class="hidden rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800 sm:inline">Counter 2</span>
+      </li>
+      <li class="flex items-center gap-4 p-4">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="font-medium">Salbutamol inhaler 100 mcg</p>
+          <p class="text-sm text-ink/70">Dr. M. Oz · Ready since 10:02 am</p>
+        </div>
+        <span class="hidden rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800 sm:inline">Counter 1</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Refills due -->
+  <section id="refills" aria-labelledby="refills-title" class="rise rise-3">
+    <div class="flex items-end justify-between gap-4">
+      <h2 id="refills-title" class="font-serif text-2xl">Refills due</h2>
+      <p class="text-sm text-ink/70">2 due this week</p>
+    </div>
+    <div class="mt-4 overflow-x-auto rounded-2xl bg-white shadow-sm">
+      <table class="w-full text-left text-sm">
+        <thead class="text-xs uppercase tracking-wider text-ink/70">
+          <tr class="border-b border-teal-50">
+            <th scope="col" class="px-4 py-3 sm:px-5 font-semibold">Medicine</th>
+            <th scope="col" class="px-4 py-3 sm:px-5 font-semibold">Due</th>
+            <th scope="col" class="hidden px-4 py-3 font-semibold sm:table-cell sm:px-5">Refills left</th>
+            <th scope="col" class="px-4 py-3 sm:px-5 text-right font-semibold"><span class="sr-only">Action</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-teal-50">
+          <tr>
+            <td class="px-4 py-4 sm:px-5 font-medium">Lisinopril 10 mg</td>
+            <td class="px-4 py-4 sm:px-5 tabular-nums">20 Nov</td>
+            <td class="px-4 py-4 sm:px-5 hidden tabular-nums sm:table-cell">4</td>
+            <td class="px-4 py-4 sm:px-5 text-right"><button type="button" class="min-h-11 rounded-lg border border-teal-700 px-4 py-2 font-medium text-teal-700 hover:bg-teal-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">Request</button></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-4 sm:px-5 font-medium">Levothyroxine 75 mcg</td>
+            <td class="px-4 py-4 sm:px-5 tabular-nums">24 Nov</td>
+            <td class="px-4 py-4 sm:px-5 hidden tabular-nums sm:table-cell">2</td>
+            <td class="px-4 py-4 sm:px-5 text-right"><button type="button" class="min-h-11 rounded-lg border border-teal-700 px-4 py-2 font-medium text-teal-700 hover:bg-teal-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">Request</button></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-4 sm:px-5 font-medium">Atorvastatin 20 mg</td>
+            <td class="px-4 py-4 sm:px-5 tabular-nums">2 Dec</td>
+            <td class="px-4 py-4 sm:px-5 hidden tabular-nums sm:table-cell">5</td>
+            <td class="px-4 py-4 sm:px-5 text-right"><button type="button" class="min-h-11 rounded-lg border border-teal-700 px-4 py-2 font-medium text-teal-700 hover:bg-teal-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">Request</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Delivery tracking -->
+  <section id="delivery" aria-labelledby="delivery-title" class="rise rise-3">
+    <h2 id="delivery-title" class="font-serif text-2xl">Delivery tracking</h2>
+    <div class="mt-4 grid gap-6 rounded-2xl bg-white p-6 shadow-sm md:grid-cols-[1fr_1.4fr] md:items-center">
+      <div>
+        <p class="text-sm text-ink/70">Order #48213 · Arriving today</p>
+        <p class="mt-1 font-serif text-3xl tabular-nums">14:20 to 14:50</p>
+        <p class="mt-3 max-w-prose text-sm text-ink/80">Mert is on the bike with your insulin pens and two refills. He will call 10 minutes before he arrives.</p>
+      </div>
+      <div>
+        <svg viewBox="0 0 400 60" class="h-16 w-full" aria-hidden="true">
+          <path d="M50 30 H350" fill="none" stroke="#cfe3e0" stroke-width="4" stroke-linecap="round"/>
+          <path class="route" d="M50 30 H350" fill="none" stroke="#0a5650" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="50" cy="30" r="8" fill="#0a5650"/>
+          <circle cx="150" cy="30" r="8" fill="#0a5650"/>
+          <circle cx="250" cy="30" r="10" fill="#ffffff" stroke="#0a5650" stroke-width="4"/>
+          <circle cx="350" cy="30" r="8" fill="#ffffff" stroke="#8fb5b0" stroke-width="3"/>
+        </svg>
+        <ol class="mt-2 grid grid-cols-4 gap-2 text-center text-xs sm:text-sm">
+          <li><p class="font-semibold">Packed</p><p class="tabular-nums text-ink/70">10:12</p></li>
+          <li><p class="font-semibold">Collected</p><p class="tabular-nums text-ink/70">12:40</p></li>
+          <li><p class="font-semibold text-teal-700">On the way</p><p class="tabular-nums text-ink/70">Now</p></li>
+          <li><p class="font-semibold text-ink/70">Delivered</p><p class="text-ink/70">Pending</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insurance status alert -->
+  <section id="insurance" aria-labelledby="insurance-title" class="rise rise-3">
+    <div class="flex flex-col gap-4 rounded-2xl bg-alert-bg p-5 text-alert-fg sm:flex-row sm:items-center sm:justify-between lg:p-6">
+      <div class="flex gap-4">
+        <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/70" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.5v.5"/></svg>
+        </span>
+        <div>
+          <h2 id="insurance-title" class="font-semibold">Insurance needs one update</h2>
+          <p class="mt-1 max-w-prose text-sm">Your plan renewed on 1 Nov and member ID 7741-88-20 no longer matches. Confirm it before Thursday so your next refill is covered.</p>
+        </div>
+      </div>
+      <a href="#insurance" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-teal-700 px-4 py-3 sm:px-5 font-semibold text-white hover:bg-teal-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">Update insurance</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mx-auto max-w-6xl px-4 pb-10 pt-4 text-xs text-ink/70 lg:px-8">
+  Harbor Street Pharmacy · 14 Market Lane · Open daily 8:00 to 21:00
+</footer>
+
+</body>
+</html>

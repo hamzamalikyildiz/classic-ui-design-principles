@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discovery Days Weekend Festival</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Fredoka', 'sans-serif'],
+          body: ['Nunito', 'sans-serif'],
+        },
+        colors: {
+          sun: '#FFC93C',
+          sky: '#4CC9F0',
+          grape: '#7B2CBF',
+          leaf: '#2EC4B6',
+          coral: '#FF6B6B',
+          ink: '#22223B',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  body { background: #FFF8EC; }
+  .blob { border-radius: 58% 42% 61% 39% / 45% 55% 45% 55%; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  .bob { animation: bob 4s ease-in-out infinite; }
+  .spin-slow { animation: spin-slow 18s linear infinite; }
+  .dots { background-image: radial-gradient(#22223B22 1.5px, transparent 1.5px); background-size: 18px 18px; }
+</style>
+</head>
+<body class="font-body text-ink antialiased">
+
+<!-- Nav -->
+<header class="sticky top-0 z-20 bg-[#FFF8EC]/90 backdrop-blur border-b border-ink/10">
+  <div class="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
+    <a href="#top" class="font-display text-2xl font-bold flex items-center gap-2">
+      <span class="inline-block w-8 h-8 rounded-full bg-sun border-4 border-ink"></span>
+      Discovery Days
+    </a>
+    <nav class="hidden md:flex gap-6 font-semibold">
+      <a href="#zones" class="hover:text-grape">Zones</a>
+      <a href="#schedule" class="hover:text-grape">Schedule</a>
+      <a href="#tickets" class="hover:text-grape">Tickets</a>
+      <a href="#safety" class="hover:text-grape">Safety</a>
+    </nav>
+    <a href="#tickets" class="bg-coral text-white font-bold px-4 py-2 rounded-full border-2 border-ink shadow-[3px_3px_0_#22223B]">Get tickets</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="dots">
+    <div class="mx-auto max-w-6xl px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <p class="inline-block bg-leaf text-white font-bold px-3 py-1 rounded-full border-2 border-ink text-sm">Weekend festival, ages 3 to 12</p>
+        <h1 class="font-display text-5xl md:text-7xl font-bold leading-[1.05] mt-5">
+          Poke, build, <span class="text-grape">wonder</span> and <span class="text-coral">explode</span> things!
+        </h1>
+        <p class="mt-5 text-lg max-w-md">Two loud, messy, hands-on days at the museum. Robots, bubbles, bridges and a volcano that really erupts.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="#tickets" class="bg-sun font-bold text-lg px-6 py-3 rounded-full border-2 border-ink shadow-[4px_4px_0_#22223B]">Buy tickets</a>
+          <a href="#schedule" class="bg-white font-bold text-lg px-6 py-3 rounded-full border-2 border-ink">See schedule</a>
+        </div>
+      </div>
+      <div class="relative h-80 md:h-96">
+        <div class="blob absolute left-6 top-4 w-64 h-64 bg-sky border-4 border-ink bob"></div>
+        <div class="absolute right-0 top-0 w-28 h-28 rounded-full bg-sun border-4 border-ink bob" style="animation-delay:-1s"></div>
+        <svg class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 spin-slow" viewBox="0 0 100 100" aria-hidden="true">
+          <g fill="none" stroke="#22223B" stroke-width="3">
+            <circle cx="50" cy="50" r="42" stroke-dasharray="4 6"/>
+          </g>
+          <circle cx="50" cy="8" r="7" fill="#FF6B6B" stroke="#22223B" stroke-width="2"/>
+          <circle cx="92" cy="50" r="7" fill="#2EC4B6" stroke="#22223B" stroke-width="2"/>
+          <circle cx="50" cy="92" r="7" fill="#7B2CBF" stroke="#22223B" stroke-width="2"/>
+        </svg>
+        <div class="absolute left-0 bottom-6 bg-white border-4 border-ink rounded-2xl px-4 py-3 rotate-[-6deg] shadow-[5px_5px_0_#22223B]">
+          <p class="font-display font-bold text-xl">Sat &amp; Sun</p>
+          <p class="text-sm font-semibold">10:00 to 17:00</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Zones -->
+  <section id="zones" class="mx-auto max-w-6xl px-4 py-16">
+    <h2 class="font-display text-4xl md:text-5xl font-bold">Four zones to explore</h2>
+    <p class="mt-2 text-lg">Wander at your own pace. Every zone has a grown-up helper on the floor.</p>
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <article class="bg-sky/25 border-4 border-ink rounded-3xl p-6">
+        <div class="w-14 h-14 bg-sky border-4 border-ink rounded-xl rotate-12"></div>
+        <h3 class="font-display text-2xl font-bold mt-5">Bubble Lab</h3>
+        <p class="mt-2">Giant bubble wands, foam shapes and a tunnel you can walk through.</p>
+      </article>
+      <article class="bg-coral/20 border-4 border-ink rounded-3xl p-6">
+        <div class="w-14 h-14 bg-coral border-4 border-ink rounded-full"></div>
+        <h3 class="font-display text-2xl font-bold mt-5">Volcano Corner</h3>
+        <p class="mt-2">Baking soda eruptions at 11:30, 13:30 and 15:30 each day.</p>
+      </article>
+      <article class="bg-leaf/25 border-4 border-ink rounded-3xl p-6">
+        <div class="w-14 h-14 bg-leaf border-4 border-ink" style="clip-path: polygon(50% 0,100% 100%,0 100%)"></div>
+        <h3 class="font-display text-2xl font-bold mt-5">Build Bridge</h3>
+        <p class="mt-2">Stack blocks, test your bridge with weights and watch it stand or fall.</p>
+      </article>
+      <article class="bg-sun/40 border-4 border-ink rounded-3xl p-6">
+        <div class="w-14 h-14 bg-sun border-4 border-ink rounded-lg"></div>
+        <h3 class="font-display text-2xl font-bold mt-5">Robot Arena</h3>
+        <p class="mt-2">Program a small robot to dance, sort and race across the mat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section id="schedule" class="bg-ink text-[#FFF8EC] py-16">
+    <div class="mx-auto max-w-6xl px-4">
+      <h2 class="font-display text-4xl md:text-5xl font-bold">Weekend schedule</h2>
+      <p class="mt-2 text-lg text-[#FFF8EC]/80">Live shows run in the Main Hall. Arrive 10 minutes early for a good seat.</p>
+      <div class="mt-10 grid md:grid-cols-2 gap-8">
+        <div class="bg-white/5 border-2 border-sun rounded-3xl p-6">
+          <h3 class="font-display text-3xl font-bold text-sun">Saturday</h3>
+          <ul class="mt-5 space-y-4">
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">10:00</span><span>Doors open and zone walkabout</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">11:00</span><span>Robot Arena showdown</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">13:00</span><span>Bubble Lab mega-bubble show</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">15:00</span><span>Build Bridge challenge (ages 6+)</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">17:00</span><span>Closing sparkle parade</span></li>
+          </ul>
+        </div>
+        <div class="bg-white/5 border-2 border-leaf rounded-3xl p-6">
+          <h3 class="font-display text-3xl font-bold text-leaf">Sunday</h3>
+          <ul class="mt-5 space-y-4">
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">10:00</span><span>Doors open and rocket launch warm-up</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">12:00</span><span>Volcano Corner big eruption</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">13:30</span><span>Pond life with a real scientist</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">15:30</span><span>Family quiz in the Main Hall</span></li>
+            <li class="flex gap-4"><span class="font-bold w-16 text-sky">17:00</span><span>Goodbye and prize draw</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tickets -->
+  <section id="tickets" class="mx-auto max-w-6xl px-4 py-16">
+    <h2 class="font-display text-4xl md:text-5xl font-bold">Ticket tiers</h2>
+    <p class="mt-2 text-lg">Children under 3 enter free. Tickets are valid for one day.</p>
+    <div class="mt-10 grid md:grid-cols-3 gap-6 items-stretch">
+      <div class="bg-white border-4 border-ink rounded-3xl p-7 flex flex-col">
+        <h3 class="font-display text-2xl font-bold">Explorer</h3>
+        <p class="font-display text-5xl font-bold mt-3">$12</p>
+        <p class="mt-3 flex-1">All four zones and open-floor activities.</p>
+        <a href="#" class="mt-6 text-center bg-sky font-bold py-3 rounded-full border-2 border-ink">Choose Explorer</a>
+      </div>
+      <div class="bg-sun border-4 border-ink rounded-3xl p-7 flex flex-col shadow-[8px_8px_0_#22223B] md:-translate-y-4">
+        <span class="self-start bg-ink text-white text-sm font-bold px-3 py-1 rounded-full">Most popular</span>
+        <h3 class="font-display text-2xl font-bold mt-3">Family Pack</h3>
+        <p class="font-display text-5xl font-bold mt-3">$38</p>
+        <p class="mt-3 flex-1">Up to 2 adults and 2 children. Includes all live shows and a takeaway kit.</p>
+        <a href="#" class="mt-6 text-center bg-white font-bold py-3 rounded-full border-2 border-ink">Choose Family</a>
+      </div>
+      <div class="bg-white border-4 border-ink rounded-3xl p-7 flex flex-col">
+        <h3 class="font-display text-2xl font-bold">Scientist</h3>
+        <p class="font-display text-5xl font-bold mt-3">$18</p>
+        <p class="mt-3 flex-1">Explorer access plus a reserved spot in the Build Bridge and Robot Arena challenges.</p>
+        <a href="#" class="mt-6 text-center bg-leaf font-bold py-3 rounded-full border-2 border-ink">Choose Scientist</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Safety -->
+  <section id="safety" class="bg-leaf/15 border-y-4 border-ink py-16">
+    <div class="mx-auto max-w-6xl px-4 grid md:grid-cols-3 gap-8">
+      <div class="md:col-span-1">
+        <h2 class="font-display text-4xl font-bold">Safety first</h2>
+        <p class="mt-3 text-lg">Simple rules keep the fun going for everyone.</p>
+      </div>
+      <ul class="md:col-span-2 grid sm:grid-cols-2 gap-4">
+        <li class="bg-white border-2 border-ink rounded-2xl p-5"><strong class="block font-display text-xl">Stay with your child</strong>Children under 8 must be supervised at all times.</li>
+        <li class="bg-white border-2 border-ink rounded-2xl p-5"><strong class="block font-display text-xl">Goggles on</strong>Safety goggles are required near the volcano and bubble tunnel.</li>
+        <li class="bg-white border-2 border-ink rounded-2xl p-5"><strong class="block font-display text-xl">Allergy aware</strong>Our labs are nut free. Tell staff about any allergies at the door.</li>
+        <li class="bg-white border-2 border-ink rounded-2xl p-5"><strong class="block font-display text-xl">Lost? Find a helper</strong>Staff in yellow vests can reunite you in minutes.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Map teaser -->
+  <section class="mx-auto max-w-6xl px-4 py-16">
+    <div class="bg-sky/20 border-4 border-ink rounded-[2.5rem] p-8 md:p-12 grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <h2 class="font-display text-4xl font-bold">Find your way</h2>
+        <p class="mt-3 text-lg">Get the full festival map with toilets, nursing room, cafe and quiet corners marked.</p>
+        <a href="#" class="inline-block mt-6 bg-ink text-white font-bold px-6 py-3 rounded-full">Download the map</a>
+      </div>
+      <svg viewBox="0 0 320 200" class="w-full h-auto" aria-label="Festival map teaser" role="img">
+        <rect x="6" y="6" width="308" height="188" rx="18" fill="#FFF8EC" stroke="#22223B" stroke-width="4"/>
+        <path d="M20 40 H140 V100 H20 Z" fill="#4CC9F0" stroke="#22223B" stroke-width="3"/>
+        <path d="M170 30 H300 V110 H170 Z" fill="#FF6B6B" stroke="#22223B" stroke-width="3"/>
+        <path d="M20 130 H140 V180 H20 Z" fill="#2EC4B6" stroke="#22223B" stroke-width="3"/>
+        <path d="M170 130 H300 V180 H170 Z" fill="#FFC93C" stroke="#22223B" stroke-width="3"/>
+        <path d="M140 70 Q155 70 170 70" fill="none" stroke="#22223B" stroke-width="3" stroke-dasharray="6 6"/>
+        <circle cx="262" cy="98" r="10" fill="#7B2CBF" stroke="#22223B" stroke-width="3"/>
+        <text x="46" y="80" font-family="Fredoka, sans-serif" font-size="16" font-weight="700" fill="#22223B">Bubble Lab</text>
+        <text x="190" y="62" font-family="Fredoka, sans-serif" font-size="16" font-weight="700" fill="#22223B">Volcano</text>
+        <text x="46" y="162" font-family="Fredoka, sans-serif" font-size="16" font-weight="700" fill="#22223B">Bridge</text>
+        <text x="190" y="162" font-family="Fredoka, sans-serif" font-size="16" font-weight="700" fill="#22223B">Robots</text>
+      </svg>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bg-ink text-[#FFF8EC] py-10">
+  <div class="mx-auto max-w-6xl px-4 flex flex-col md:flex-row justify-between gap-4 items-center">
+    <p class="font-display text-xl font-bold">Discovery Days</p>
+    <p class="text-sm text-[#FFF8EC]/70">Questions? Email hello@discoverydays.example. Open weekends only, rain or shine.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pharmacy Account Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+<!-- Top bar -->
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="w-9 h-9 rounded-lg bg-teal-600 flex items-center justify-center">
+        <svg viewBox="0 0 24 24" class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <span class="font-semibold text-lg">CarePharm</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="hidden sm:block text-right leading-tight">
+        <p class="text-sm font-medium">Maria Lopez</p>
+        <p class="text-xs text-slate-500">Member since 2019</p>
+      </div>
+      <span class="w-9 h-9 rounded-full bg-teal-100 text-teal-700 font-semibold text-sm flex items-center justify-center">ML</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+  <!-- Insurance alert -->
+  <section class="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
+    <svg viewBox="0 0 24 24" class="w-5 h-5 mt-0.5 shrink-0 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg>
+    <div class="flex-1 min-w-0">
+      <p class="font-semibold text-amber-900">Insurance action needed</p>
+      <p class="text-sm text-amber-800">Your plan's coverage verification expires in 4 days. Update your card to avoid paying full price at pickup.</p>
+    </div>
+    <button class="shrink-0 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium px-3 py-1.5">Update</button>
+  </section>
+
+  <!-- Summary stats -->
+  <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="rounded-xl bg-white border border-slate-200 p-5">
+      <p class="text-sm text-slate-500">Ready for pickup</p>
+      <p class="mt-1 text-3xl font-bold">2</p>
+      <p class="text-xs text-slate-500 mt-1">Available until Nov 24</p>
+    </div>
+    <div class="rounded-xl bg-white border border-slate-200 p-5">
+      <p class="text-sm text-slate-500">Refills due</p>
+      <p class="mt-1 text-3xl font-bold">3</p>
+      <p class="text-xs text-slate-500 mt-1">Within the next 7 days</p>
+    </div>
+    <div class="rounded-xl bg-white border border-slate-200 p-5">
+      <p class="text-sm text-slate-500">Active deliveries</p>
+      <p class="mt-1 text-3xl font-bold">1</p>
+      <p class="text-xs text-slate-500 mt-1">Arriving Nov 22</p>
+    </div>
+  </section>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Left column: prescriptions -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Ready for pickup -->
+      <section class="rounded-xl bg-white border border-slate-200">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+          <h2 class="font-semibold">Ready for pickup</h2>
+          <span class="text-xs font-medium rounded-full bg-emerald-100 text-emerald-700 px-2.5 py-1">2 items</span>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          <li class="flex items-center gap-4 px-5 py-4">
+            <span class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+              <svg viewBox="0 0 24 24" class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M9 8V5h6v3"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="font-medium truncate">Amoxicillin 500 mg</p>
+              <p class="text-sm text-slate-500">Rx #48213 · Dr. Patel · 30 capsules</p>
+            </div>
+            <button class="rounded-lg border border-slate-300 hover:bg-slate-50 text-sm font-medium px-3 py-1.5">Schedule pickup</button>
+          </li>
+          <li class="flex items-center gap-4 px-5 py-4">
+            <span class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+              <svg viewBox="0 0 24 24" class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M9 8V5h6v3"/></svg>
+            </span>
+            <div class="flex-1 min-w-0">
+              <p class="font-medium truncate">Lisinopril 10 mg</p>
+              <p class="text-sm text-slate-500">Rx #51907 · Dr. Chen · 90 tablets</p>
+            </div>
+            <button class="rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-3 py-1.5">Pick up</button>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Refills due -->
+      <section class="rounded-xl bg-white border border-slate-200">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+          <h2 class="font-semibold">Refills due</h2>
+          <a href="#" class="text-sm text-teal-700 hover:underline">View all</a>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          <li class="flex items-center justify-between gap-4 px-5 py-4">
+            <div class="min-w-0">
+              <p class="font-medium truncate">Metformin 850 mg</p>
+              <p class="text-sm text-slate-500">Due Nov 23 · 2 refills left</p>
+            </div>
+            <button class="rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-3 py-1.5">Refill</button>
+          </li>
+          <li class="flex items-center justify-between gap-4 px-5 py-4">
+            <div class="min-w-0">
+              <p class="font-medium truncate">Atorvastatin 20 mg</p>
+              <p class="text-sm text-slate-500">Due Nov 25 · 1 refill left</p>
+            </div>
+            <button class="rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-3 py-1.5">Refill</button>
+          </li>
+          <li class="flex items-center justify-between gap-4 px-5 py-4">
+            <div class="min-w-0">
+              <p class="font-medium truncate">Levothyroxine 50 mcg</p>
+              <p class="text-sm text-slate-500">Due Nov 28 · 4 refills left</p>
+            </div>
+            <button class="rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-3 py-1.5">Refill</button>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Right column: delivery tracking -->
+    <aside class="rounded-xl bg-white border border-slate-200 p-5 h-fit">
+      <h2 class="font-semibold">Delivery tracking</h2>
+      <p class="text-sm text-slate-500 mt-0.5">Order #DL-70342 · Metformin, Lisinopril</p>
+
+      <ol class="mt-5 relative">
+        <li class="flex gap-3 pb-6 relative">
+          <span class="absolute left-[11px] top-6 bottom-0 w-0.5 bg-teal-600"></span>
+          <span class="w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center shrink-0 z-10">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>
+          </span>
+          <div>
+            <p class="text-sm font-medium">Order packed</p>
+            <p class="text-xs text-slate-500">Nov 20, 4:15 PM</p>
+          </div>
+        </li>
+        <li class="flex gap-3 pb-6 relative">
+          <span class="absolute left-[11px] top-6 bottom-0 w-0.5 bg-teal-600"></span>
+          <span class="w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center shrink-0 z-10">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>
+          </span>
+          <div>
+            <p class="text-sm font-medium">With courier</p>
+            <p class="text-xs text-slate-500">Nov 21, 9:02 AM</p>
+          </div>
+        </li>
+        <li class="flex gap-3 relative">
+          <span class="w-6 h-6 rounded-full border-2 border-teal-600 bg-white flex items-center justify-center shrink-0 z-10">
+            <span class="w-2 h-2 rounded-full bg-teal-600"></span>
+          </span>
+          <div>
+            <p class="text-sm font-medium">Out for delivery</p>
+            <p class="text-xs text-slate-500">Expected Nov 22, by 6 PM</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="mt-5 rounded-lg bg-slate-50 border border-slate-200 p-3 text-sm">
+        <p class="text-slate-500 text-xs">Delivering to</p>
+        <p class="font-medium">214 Maple Street, Apt 3B</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-slate-500">
+  Need help? Call your pharmacy at (555) 010-2040. Information shown is for account reference only.
+</footer>
+
+</body>
+</html>

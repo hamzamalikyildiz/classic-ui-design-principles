@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spark Weekend Science Festival</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { sun: '#FFC93C', coral: '#FF6B4A', sky: '#4CC9F0', mint: '#5BD6A3', ink: '#1B1446', cream: '#FFF8E7' },
+      fontFamily: { display: ['"Baloo 2"', 'cursive'], sans: ['Inter', 'system-ui', 'sans-serif'] }
+    }
+  }
+}
+</script>
+<style>
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+  .rise { animation: rise .6s ease-out both; }
+  .d1 { animation-delay: .1s; } .d2 { animation-delay: .2s; } .d3 { animation-delay: .3s; }
+  .wobble { animation: wobble 5s ease-in-out infinite; transform-origin: center; }
+  a:focus-visible, button:focus-visible { outline: 3px solid #1B1446; outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+</style>
+</head>
+<body class="bg-cream text-ink font-sans antialiased">
+
+<header class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5 sm:px-6">
+  <a href="#top" class="font-display text-2xl font-extrabold">Spark<span class="text-coral">!</span> Weekend</a>
+  <nav aria-label="Main" class="hidden gap-6 text-sm font-semibold md:flex">
+    <a href="#zones" class="underline-offset-4 hover:underline">Zones</a>
+    <a href="#schedule" class="underline-offset-4 hover:underline">Schedule</a>
+    <a href="#tickets" class="underline-offset-4 hover:underline">Tickets</a>
+    <a href="#safety" class="underline-offset-4 hover:underline">Safety</a>
+    <a href="#map" class="underline-offset-4 hover:underline">Map</a>
+  </nav>
+  <a href="#tickets" class="rounded-full bg-sun px-5 py-3 text-sm font-bold shadow-[0_4px_0_#1B1446] transition hover:-translate-y-0.5">Buy tickets</a>
+</header>
+
+<main id="top">
+
+<!-- Hero -->
+<section class="relative overflow-hidden bg-sun">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
+    <div>
+      <p class="rise inline-block rounded-full bg-ink px-4 py-2 text-sm font-bold text-sun">Sat 14 and Sun 15 March · Harbour Hall</p>
+      <h1 class="rise d1 font-display mt-6 text-6xl font-extrabold leading-[0.95] sm:text-8xl">
+        Go wild for <span class="inline-block -rotate-2 rounded-2xl bg-coral px-3 text-ink">science</span>!
+      </h1>
+      <p class="rise d2 mt-6 max-w-lg text-lg">Two days of splashing, building, launching and poking around with 40 hands-on activities for kids aged 3 to 12.</p>
+      <div class="rise d3 mt-8 flex flex-wrap gap-4">
+        <a href="#tickets" class="rounded-full bg-ink px-7 py-4 font-bold text-cream shadow-[0_6px_0_#FF6B4A] transition hover:-translate-y-0.5">Get your tickets</a>
+        <a href="#zones" class="rounded-full bg-white px-7 py-4 font-bold shadow-[0_6px_0_#1B1446]">See the zones</a>
+      </div>
+    </div>
+    <div class="rise d2 mx-auto h-72 w-72 sm:h-96 sm:w-96" aria-hidden="true">
+      <svg viewBox="0 0 400 400" class="wobble h-full w-full">
+        <ellipse cx="200" cy="372" rx="130" ry="14" fill="#1B1446" opacity=".18"/>
+        <ellipse cx="200" cy="200" rx="185" ry="60" fill="none" stroke="#1B1446" stroke-width="6" transform="rotate(-20 200 200)"/>
+        <ellipse cx="200" cy="200" rx="185" ry="60" fill="none" stroke="#4CC9F0" stroke-width="6" transform="rotate(50 200 200)"/>
+        <circle cx="200" cy="200" r="130" fill="#FF6B4A" stroke="#1B1446" stroke-width="8"/>
+        <circle cx="152" cy="178" r="36" fill="#fff" stroke="#1B1446" stroke-width="6"/>
+        <circle cx="248" cy="178" r="36" fill="#fff" stroke="#1B1446" stroke-width="6"/>
+        <circle cx="160" cy="186" r="13" fill="#1B1446"/>
+        <circle cx="256" cy="186" r="13" fill="#1B1446"/>
+        <circle cx="122" cy="236" r="14" fill="#FFC93C" opacity=".9"/>
+        <circle cx="278" cy="236" r="14" fill="#FFC93C" opacity=".9"/>
+        <path d="M162 252 Q200 292 238 252" fill="none" stroke="#1B1446" stroke-width="10" stroke-linecap="round"/>
+        <circle cx="352" cy="200" r="20" fill="#5BD6A3" stroke="#1B1446" stroke-width="5"/>
+        <circle cx="93" cy="200" r="16" fill="#FFC93C" stroke="#1B1446" stroke-width="5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Zones -->
+<section id="zones" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+  <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Four zones, one giant playground</h2>
+  <p class="mt-3 max-w-2xl text-lg">Every activity is run by a real scientist or a trained helper. Wander freely, nothing needs booking.</p>
+  <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <article class="rounded-3xl bg-sun p-8 shadow-[0_12px_30px_-10px_rgba(27,20,70,.35)] lg:col-span-2">
+      <svg viewBox="0 0 64 64" class="h-14 w-14" aria-hidden="true"><rect x="6" y="36" width="20" height="20" rx="4" fill="#FF6B4A" stroke="#1B1446" stroke-width="4"/><rect x="30" y="36" width="20" height="20" rx="4" fill="#4CC9F0" stroke="#1B1446" stroke-width="4"/><rect x="18" y="10" width="28" height="20" rx="4" fill="#5BD6A3" stroke="#1B1446" stroke-width="4"/></svg>
+      <h3 class="font-display mt-4 text-3xl font-extrabold">Build Lab</h3>
+      <p class="mt-2 max-w-md">Stack, balance and wire up cardboard robots. Kid-sized tools, and the bridge test ends in a splash.</p>
+      <p class="mt-4 text-sm font-bold">Ages 3 and up · Open all day</p>
+    </article>
+    <article class="rounded-3xl bg-sky p-8 shadow-[0_12px_30px_-10px_rgba(27,20,70,.35)]">
+      <svg viewBox="0 0 64 64" class="h-14 w-14" aria-hidden="true"><path d="M8 28 Q16 20 24 28 T40 28 T56 28" fill="none" stroke="#1B1446" stroke-width="5" stroke-linecap="round"/><path d="M8 44 Q16 36 24 44 T40 44 T56 44" fill="none" stroke="#1B1446" stroke-width="5" stroke-linecap="round"/></svg>
+      <h3 class="font-display mt-4 text-3xl font-extrabold">Splash Lab</h3>
+      <p class="mt-2">Dam rivers, sink boats and time how fast water rushes down a pipe.</p>
+      <p class="mt-4 text-sm font-bold">Ages 4 and up</p>
+    </article>
+    <article class="rounded-3xl bg-mint p-8 shadow-[0_12px_30px_-10px_rgba(27,20,70,.35)]">
+      <svg viewBox="0 0 64 64" class="h-14 w-14" aria-hidden="true"><path d="M32 6 L42 34 L22 34 Z" fill="#fff" stroke="#1B1446" stroke-width="4" stroke-linejoin="round"/><circle cx="32" cy="24" r="4" fill="#FF6B4A"/><path d="M22 34 L16 44 L22 40 M42 34 L48 44 L42 40" fill="none" stroke="#1B1446" stroke-width="4" stroke-linejoin="round"/></svg>
+      <h3 class="font-display mt-4 text-3xl font-extrabold">Sky Lab</h3>
+      <p class="mt-2 max-w-prose">Build foam rockets and launch them from the pad. Winners get a glow-in-the-dark badge.</p>
+      <p class="mt-4 text-sm font-bold">Ages 6 and up</p>
+    </article>
+    <article class="rounded-3xl bg-ink p-8 text-cream shadow-[0_12px_30px_-10px_rgba(27,20,70,.5)] lg:col-span-2">
+      <svg viewBox="0 0 64 64" class="h-14 w-14" aria-hidden="true"><circle cx="32" cy="34" r="16" fill="#FFC93C" stroke="#fff" stroke-width="4"/><circle cx="32" cy="16" r="8" fill="#FF6B4A" stroke="#fff" stroke-width="4"/><path d="M14 30 L4 24 M50 30 L60 24 M14 42 L4 48 M50 42 L60 48" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>
+      <h3 class="font-display mt-4 text-3xl font-extrabold">Bug Garden</h3>
+      <p class="mt-2 max-w-md text-cream">Meet stick insects, giant snails and a honeybee hive behind glass. Keepers answer every question.</p>
+      <p class="mt-4 text-sm font-bold text-sun">Ages 3 and up · Talks at 13:00 and 15:30</p>
+    </article>
+  </div>
+</section>
+
+<!-- Schedule -->
+<section id="schedule" class="bg-white px-4 py-16 sm:px-6 lg:py-20">
+  <div class="mx-auto max-w-6xl">
+    <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Weekend schedule</h2>
+    <p class="mt-3 max-w-prose text-lg">Times are set for the day. Live shows start on the dot, so arrive a few minutes early.</p>
+    <div class="mt-10 grid gap-6 md:grid-cols-2">
+      <div class="rounded-3xl bg-cream p-6 sm:p-8">
+        <h3 class="font-display text-3xl font-extrabold">Saturday</h3>
+        <ol class="mt-4 divide-y divide-ink/15">
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">09:30</time><span class="flex-1">Doors open and bubble warm-up<span class="block text-sm text-ink/80">Splash Lab</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">10:15</time><span class="flex-1">Build-a-bridge challenge<span class="block text-sm text-ink/80">Build Lab</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">11:00</time><span class="flex-1">First rocket launch<span class="block text-sm text-ink/80">Sky Lab</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">13:00</time><span class="flex-1">Keeper talk: the bee hive<span class="block text-sm text-ink/80">Bug Garden</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">14:30</time><span class="flex-1">Giant bubble show<span class="block text-sm text-ink/80">Splash Lab</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">16:00</time><span class="flex-1">Closing rocket launch<span class="block text-sm text-ink/80">Sky Lab</span></span></li>
+        </ol>
+      </div>
+      <div class="rounded-3xl bg-cream p-6 sm:p-8">
+        <h3 class="font-display text-3xl font-extrabold">Sunday</h3>
+        <ol class="mt-4 divide-y divide-ink/15">
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">09:30</time><span class="flex-1">Doors open and bug feeding<span class="block text-sm text-ink/80">Bug Garden</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">10:30</time><span class="flex-1">Robot battle, round one<span class="block text-sm text-ink/80">Build Lab</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">12:00</time><span class="flex-1">Lunch on the lawn<span class="block text-sm text-ink/80">Food trucks and picnic tables</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">13:30</time><span class="flex-1">Second rocket flight<span class="block text-sm text-ink/80">Sky Lab</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">15:00</time><span class="flex-1">Water rush finals<span class="block text-sm text-ink/80">Splash Lab</span></span></li>
+          <li class="flex justify-between gap-4 py-3"><time class="w-16 shrink-0 font-bold tabular-nums">16:30</time><span class="flex-1">Prize parade and lights down<span class="block text-sm text-ink/80">Main Stage</span></span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tickets -->
+<section id="tickets" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+  <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Pick your spark</h2>
+  <p class="mt-3 max-w-prose text-lg">Tickets include every zone. Children under 3 enter free.</p>
+  <div class="mt-10 grid gap-6 md:grid-cols-3">
+    <div class="rounded-3xl bg-white p-8 shadow-[0_8px_0_#1B1446]">
+      <h3 class="font-display text-2xl font-extrabold">Day Pass</h3>
+      <p class="mt-4 font-display text-5xl font-extrabold">$14</p>
+      <ul class="mt-6 space-y-3 text-sm"><li>One day, all four zones</li><li>Bubble show seating</li><li>Entry from 09:30</li></ul>
+      <a href="#" class="mt-8 block rounded-full bg-sun py-4 text-center font-bold shadow-[0_4px_0_#1B1446]">Choose Day Pass</a>
+    </div>
+    <div class="rounded-3xl bg-ink p-8 text-cream shadow-[0_8px_0_#FF6B4A] md:-translate-y-4">
+      <span class="inline-block rounded-full bg-coral px-3 py-1 text-xs font-bold text-ink">Most popular</span>
+      <h3 class="font-display mt-4 text-2xl font-extrabold">Family Four</h3>
+      <p class="mt-4 font-display text-5xl font-extrabold text-sun">$52</p>
+      <ul class="mt-6 space-y-3 text-sm"><li>Two adults and two children</li><li>Both days, all zones</li><li>Free lunch voucher for kids</li></ul>
+      <a href="#" class="mt-8 block rounded-full bg-sun py-4 text-center font-bold text-ink">Choose Family Four</a>
+    </div>
+    <div class="rounded-3xl bg-white p-8 shadow-[0_8px_0_#1B1446]">
+      <h3 class="font-display text-2xl font-extrabold">Weekend Pass</h3>
+      <p class="mt-4 font-display text-5xl font-extrabold">$24</p>
+      <ul class="mt-6 space-y-3 text-sm"><li>Both days, all zones</li><li>Priority queue at rockets</li><li>Entry from 08:45</li></ul>
+      <a href="#" class="mt-8 block rounded-full bg-sun py-4 text-center font-bold shadow-[0_4px_0_#1B1446]">Choose Weekend Pass</a>
+    </div>
+  </div>
+</section>
+
+<!-- Safety -->
+<section id="safety" class="bg-mint px-4 py-16 sm:px-6 lg:py-20">
+  <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
+    <div>
+      <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Safety first, fun second</h2>
+      <p class="mt-4 max-w-md text-lg">Our staff check every zone every 30 minutes. Here is what we do to keep little explorers safe.</p>
+    </div>
+    <ul class="grid gap-4 sm:grid-cols-2">
+      <li class="rounded-2xl bg-white p-5"><strong class="block font-bold">Wristbands for under-5s</strong><span class="text-sm">Parent contact details on every band.</span></li>
+      <li class="rounded-2xl bg-white p-5"><strong class="block font-bold">Lifeguard at the water</strong><span class="text-sm">Non-slip mats and a dry towel station.</span></li>
+      <li class="rounded-2xl bg-white p-5"><strong class="block font-bold">Allergy-labelled food</strong><span class="text-sm">Nut-free tent with ingredients on display.</span></li>
+      <li class="rounded-2xl bg-white p-5"><strong class="block font-bold">First aid by Sky Lab</strong><span class="text-sm">Staffed tent open for the whole weekend.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Map teaser -->
+<section id="map" class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-20">
+  <div>
+    <h2 class="font-display text-4xl font-extrabold sm:text-5xl">Find your way around</h2>
+    <p class="mt-4 max-w-prose text-lg">The full printed map is handed out at the door. This preview shows where each zone sits in Harbour Hall.</p>
+    <a href="#" class="mt-8 inline-block rounded-full bg-ink px-7 py-4 font-bold text-cream">Download the map</a>
+  </div>
+  <svg viewBox="0 0 600 360" class="w-full rounded-3xl bg-white shadow-[0_10px_0_#4CC9F0]" role="img" aria-label="Simplified map of Harbour Hall with four zones">
+    <path d="M0 300 Q150 260 300 300 T600 290 V360 H0 Z" fill="#4CC9F0"/>
+    <path d="M40 60 H560" stroke="#1B1446" stroke-width="3" stroke-dasharray="10 10" opacity=".3"/>
+    <rect x="40" y="90" width="180" height="120" rx="20" fill="#FFC93C" stroke="#1B1446" stroke-width="4"/>
+    <text x="130" y="158" text-anchor="middle" font-family="Baloo 2, cursive" font-size="22" font-weight="800" fill="#1B1446">Build Lab</text>
+    <rect x="250" y="90" width="150" height="120" rx="20" fill="#4CC9F0" stroke="#1B1446" stroke-width="4"/>
+    <text x="325" y="158" text-anchor="middle" font-family="Baloo 2, cursive" font-size="22" font-weight="800" fill="#1B1446">Splash</text>
+    <rect x="430" y="90" width="130" height="120" rx="20" fill="#5BD6A3" stroke="#1B1446" stroke-width="4"/>
+    <text x="495" y="158" text-anchor="middle" font-family="Baloo 2, cursive" font-size="22" font-weight="800" fill="#1B1446">Sky Lab</text>
+    <rect x="160" y="226" width="280" height="56" rx="20" fill="#FF6B4A" stroke="#1B1446" stroke-width="4"/>
+    <text x="300" y="262" text-anchor="middle" font-family="Baloo 2, cursive" font-size="22" font-weight="800" fill="#1B1446">Bug Garden</text>
+    <circle cx="300" cy="320" r="10" fill="#1B1446"/>
+    <text x="318" y="326" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#1B1446">You are here: Gate A</text>
+  </svg>
+</section>
+
+<!-- Closing band -->
+<section class="bg-coral px-4 py-16 text-center sm:px-6 lg:py-20">
+  <h2 class="font-display text-4xl font-extrabold sm:text-6xl">See you at the harbour!</h2>
+  <p class="mx-auto mt-4 max-w-xl text-lg">Tickets sell out for the Saturday rocket launch, so grab yours early.</p>
+  <a href="#tickets" class="mt-8 inline-block rounded-full bg-ink px-8 py-4 font-bold text-cream shadow-[0_6px_0_#FFC93C] transition hover:-translate-y-0.5">Get tickets now</a>
+</section>
+
+</main>
+
+<footer class="px-4 py-8 text-center text-sm sm:px-6">
+  Spark Weekend · Harbour Hall, Gate A · Questions? Email hello@sparkweekend.example
+</footer>
+
+</body>
+</html>
