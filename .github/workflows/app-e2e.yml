@@ -1,0 +1,59 @@
+name: app-e2e
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "examples/app-demo/**"
+      - "scripts/render.py"
+      - "scripts/checks/**"
+  pull_request:
+    paths:
+      - "examples/app-demo/**"
+      - "scripts/render.py"
+      - "scripts/checks/**"
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Playwright and Pillow
+        run: |
+          pip install playwright pillow
+          python -m playwright install --with-deps chromium
+      - name: Install and build app-demo
+        run: |
+          cd examples/app-demo
+          npm ci
+          npm run build
+      - name: Run visual & motion e2e checks
+        run: |
+          cd examples/app-demo
+          npx vite preview --port 5173 --strictPort &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          cd ../..
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:5173 >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://localhost:5173 >/dev/null
+          python scripts/render.py --routes examples/app-demo/routes.json --motion --out-dir shots --format json
+      - name: Upload shots artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-e2e-shots
+          path: shots/
