@@ -1,0 +1,31 @@
+{
+  "base_url": "http://localhost:5173",
+  "auth": {
+    "login_script": "login.py"
+  },
+  "viewports": ["desktop", "mobile"],
+  "states": ["default", "empty", "loading", "long-loading", "error"],
+  "api_pattern": "**/api/**",
+  "routes": [
+    {
+      "name": "login",
+      "path": "/login",
+      "wait_for": "[data-ready]"
+    },
+    {
+      "name": "cv-list",
+      "path": "/cv",
+      "wait_for": "[data-ready]"
+    },
+    {
+      "name": "cv-detail",
+      "path": "/cv/app_01",
+      "wait_for": "[data-ready]"
+    },
+    {
+      "name": "settings",
+      "path": "/settings",
+      "wait_for": "[data-ready]"
+    }
+  ]
+}
