@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.parse
 import urllib.request
 
@@ -464,10 +465,67 @@ def wait_for_hydration(page, wait_for=None, quiet_ms=500, max_wait_ms=5000):
         page.wait_for_selector(wait_for, state='visible', timeout=max_wait_ms)
 
 
-def run_actions(page, actions):
+def _resolve_action_screenshot_path(target, out_dir=None):
+    """Resolve screenshot_as target filename/path into the output directory."""
+    raw = str(target).strip()
+    if not raw:
+        raise ValueError('screenshot_as requires a non-empty filename or path')
+    if not raw.lower().endswith('.png'):
+        raw = f'{raw}.png'
+    dest = pathlib.Path(raw)
+    if not dest.is_absolute():
+        base = pathlib.Path(out_dir) if out_dir is not None else pathlib.Path('.')
+        dest = base / dest
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    return dest
+
+
+def _perform_scroll_to(page, target, act=None):
+    """Scroll to 'bottom', 'top', {x, y} coordinates, or a CSS selector."""
+    if target is None and isinstance(act, dict) and ('x' in act or 'y' in act):
+        target = {'x': act.get('x', 0), 'y': act.get('y', 0)}
+    if isinstance(target, str):
+        key = target.strip().lower()
+        if key == 'bottom':
+            if hasattr(page, 'evaluate'):
+                page.evaluate('window.scrollTo(0, Math.max(document.body.scrollHeight, document.documentElement.scrollHeight))')
+            return
+        if key == 'top':
+            if hasattr(page, 'evaluate'):
+                page.evaluate('window.scrollTo(0, 0)')
+            return
+        if hasattr(page, 'locator'):
+            try:
+                loc = page.locator(target)
+                first = getattr(loc, 'first', loc)
+                if hasattr(first, 'scroll_into_view_if_needed'):
+                    first.scroll_into_view_if_needed()
+                    return
+            except Exception:
+                pass
+        if hasattr(page, 'evaluate'):
+            page.evaluate(f"(() => {{ const el = document.querySelector({json.dumps(target)}); if (el) el.scrollIntoView({{block: 'center'}}); }})()")
+        return
+    if isinstance(target, dict):
+        if 'selector' in target and target['selector'] is not None:
+            _perform_scroll_to(page, target['selector'])
+            return
+        x = int(target.get('x', 0))
+        y = int(target.get('y', 0))
+        if hasattr(page, 'evaluate'):
+            page.evaluate(f'window.scrollTo({x}, {y})')
+        return
+    if isinstance(target, (list, tuple)) and len(target) >= 2:
+        x, y = int(target[0]), int(target[1])
+        if hasattr(page, 'evaluate'):
+            page.evaluate(f'window.scrollTo({x}, {y})')
+
+
+def run_actions(page, actions, out_dir=None):
     """Run optional pre-check interaction actions only after hydration and DOM stability settle."""
     if not actions:
-        return
+        return []
+    saved_screenshots = []
     wait_for_dom_stability(page, quiet_ms=300, max_wait_ms=3000)
     for act in actions:
         if callable(act):
@@ -477,7 +535,7 @@ def run_actions(page, actions):
             sel = act.get('selector')
             val = act.get('value', '')
             if not kind:
-                for k in ('click', 'fill', 'wait_for', 'hover', 'press', 'wait'):
+                for k in ('click', 'fill', 'wait_for', 'hover', 'press', 'wait', 'scroll_to', 'screenshot_as'):
                     if k in act:
                         kind = k
                         raw = act[k]
@@ -486,6 +544,11 @@ def run_actions(page, actions):
                         elif k == 'fill' and isinstance(raw, dict):
                             sel = raw.get('selector')
                             val = raw.get('value', '')
+                        elif k == 'press' and isinstance(raw, dict):
+                            sel = raw.get('selector')
+                            val = raw.get('key', raw.get('value', ''))
+                        elif k == 'screenshot_as' and isinstance(raw, dict):
+                            sel = raw.get('path') or raw.get('name') or raw.get('filename') or raw.get('value')
                         else:
                             sel = raw
                         break
@@ -497,30 +560,61 @@ def run_actions(page, actions):
                 page.wait_for_selector(sel, state='visible', timeout=act.get('timeout', 5000))
             elif kind == 'hover' and sel is not None and hasattr(page, 'hover'):
                 page.hover(sel)
-            elif kind == 'press' and sel is not None and hasattr(page, 'press'):
-                if isinstance(sel, (list, tuple)) and len(sel) >= 2:
+            elif kind == 'press':
+                if isinstance(sel, (list, tuple)) and len(sel) >= 2 and hasattr(page, 'press'):
                     page.press(sel[0], str(sel[1]))
-                elif 'key' in act:
-                    page.press(sel, str(act['key']))
-            elif kind == 'wait' and sel is not None and hasattr(page, 'wait_for_timeout'):
-                page.wait_for_timeout(int(sel))
+                else:
+                    key = act.get('key', val)
+                    if sel is not None and key and hasattr(page, 'press'):
+                        page.press(sel, str(key))
+                    elif sel is not None and not key and hasattr(page, 'keyboard') and hasattr(page.keyboard, 'press'):
+                        page.keyboard.press(str(sel))
+                    elif key and hasattr(page, 'keyboard') and hasattr(page.keyboard, 'press'):
+                        page.keyboard.press(str(key))
+            elif kind == 'wait' and hasattr(page, 'wait_for_timeout'):
+                wait_ms = act.get('ms', act.get('value', sel))
+                if wait_ms is not None:
+                    page.wait_for_timeout(int(wait_ms))
+            elif kind == 'scroll_to':
+                target = act.get('target', act.get('value', sel))
+                _perform_scroll_to(page, target, act=act)
+            elif kind == 'screenshot_as' and hasattr(page, 'screenshot'):
+                shot_name = act.get('path') or act.get('name') or act.get('filename') or act.get('value') or sel
+                dest = _resolve_action_screenshot_path(shot_name, out_dir=out_dir)
+                page.screenshot(path=str(dest), full_page=bool(act.get('full_page', True)))
+                saved_screenshots.append(str(dest))
         elif isinstance(act, (tuple, list)) and len(act) >= 2:
             kind, sel = act[0], act[1]
             if kind == 'fill' and hasattr(page, 'fill'):
                 page.fill(sel, str(act[2] if len(act) > 2 else ''))
             elif kind == 'click' and hasattr(page, 'click'):
                 page.click(sel)
+            elif kind == 'hover' and hasattr(page, 'hover'):
+                page.hover(sel)
+            elif kind == 'wait_for' and hasattr(page, 'wait_for_selector'):
+                page.wait_for_selector(sel, state='visible', timeout=5000)
+            elif kind == 'wait' and hasattr(page, 'wait_for_timeout'):
+                page.wait_for_timeout(int(sel))
+            elif kind == 'press' and len(act) >= 3 and hasattr(page, 'press'):
+                page.press(sel, str(act[2]))
+            elif kind == 'scroll_to':
+                _perform_scroll_to(page, sel)
+            elif kind == 'screenshot_as' and hasattr(page, 'screenshot'):
+                dest = _resolve_action_screenshot_path(sel, out_dir=out_dir)
+                page.screenshot(path=str(dest), full_page=True)
+                saved_screenshots.append(str(dest))
         wait_for_dom_stability(page, quiet_ms=300, max_wait_ms=3000)
+    return saved_screenshots
 
 
-def _prepare_page(page, uri, dark, wait_for=None, actions=None):
+def _prepare_page(page, uri, dark, wait_for=None, actions=None, out_dir=None):
     """Navigate to uri, wait for hydration/DOM stability, apply dark class, run actions, and scroll sweep."""
     page.goto(uri)
     wait_for_hydration(page, wait_for=wait_for, quiet_ms=500, max_wait_ms=5000)
     if dark:
         page.evaluate("document.documentElement.classList.add('dark')")
     if actions:
-        run_actions(page, actions)
+        run_actions(page, actions, out_dir=out_dir)
     page.evaluate(SCROLL_SWEEP_JS)
     page.wait_for_timeout(800)
 
@@ -729,7 +823,8 @@ def capture(browser_or_page, target_uri, opts=None):
     network_errors = []
     detach = _attach_error_listeners(page, console_errors, network_errors, online=online)
     try:
-        _prepare_page(page, target_uri, opts.dark, wait_for=opts.wait_for, actions=opts.actions)
+        shot_dir = pathlib.Path(opts.out).parent if opts.out is not None else None
+        _prepare_page(page, target_uri, opts.dark, wait_for=opts.wait_for, actions=opts.actions, out_dir=shot_dir)
         out_path = str(opts.out) if opts.out is not None else None
         if out_path is not None:
             page.screenshot(path=out_path, full_page=True)
@@ -752,6 +847,25 @@ def capture(browser_or_page, target_uri, opts=None):
             page.close()
         if owned_context is not None:
             owned_context.close()
+
+
+def _validate_api_pattern(val, label):
+    if isinstance(val, str):
+        if not val.strip():
+            raise ValueError(f'{label} must be a non-empty string')
+    elif isinstance(val, list):
+        if not val or not all(isinstance(p, str) and p.strip() for p in val):
+            raise ValueError(f'{label} must be a non-empty list of strings')
+    else:
+        raise ValueError(f'{label} must be a string or list of strings')
+
+
+def _validate_frames_ms(val, label):
+    if not isinstance(val, list) or not val:
+        raise ValueError(f'{label} must be a non-empty list of positive numbers')
+    for item in val:
+        if isinstance(item, bool) or not isinstance(item, (int, float)) or item <= 0:
+            raise ValueError(f'{label} entries must be positive numbers')
 
 
 def validate_routes_config(cfg):
@@ -781,6 +895,12 @@ def validate_routes_config(cfg):
         sts = _normalize_list_arg(cfg['states'])
         if not sts or not all(isinstance(s, str) and s.strip() for s in sts):
             raise ValueError("'states' in routes config must be a non-empty list of strings")
+    if cfg.get('api_pattern') is not None:
+        _validate_api_pattern(cfg['api_pattern'], "'api_pattern' in routes config")
+    if cfg.get('state_mocks') is not None and not isinstance(cfg['state_mocks'], dict):
+        raise ValueError("'state_mocks' in routes config must be an object")
+    if cfg.get('long_loading_frames_ms') is not None:
+        _validate_frames_ms(cfg['long_loading_frames_ms'], "'long_loading_frames_ms' in routes config")
 
     seen_names = set()
     for idx, route in enumerate(routes):
@@ -810,6 +930,12 @@ def validate_routes_config(cfg):
             raise ValueError(f"route {name!r} 'actions' must be a list")
         if route.get('wait_for') is not None and not isinstance(route['wait_for'], str):
             raise ValueError(f"route {name!r} 'wait_for' must be a string")
+        if route.get('api_pattern') is not None:
+            _validate_api_pattern(route['api_pattern'], f"route {name!r} 'api_pattern'")
+        if route.get('state_mocks') is not None and not isinstance(route['state_mocks'], dict):
+            raise ValueError(f"route {name!r} 'state_mocks' must be an object")
+        if route.get('long_loading_frames_ms') is not None:
+            _validate_frames_ms(route['long_loading_frames_ms'], f"route {name!r} 'long_loading_frames_ms'")
     return cfg
 
 
@@ -928,10 +1054,201 @@ def _build_route_url(base_uri, route_cfg, state_name='default'):
     return target
 
 
-def _apply_route_state(context, page, route_cfg, state_name):
-    """Hook for applying route state (state init markers, state_overrides, and İP-B5 network mocks).
+DEFAULT_API_PATTERN = '**/api/**'
+DEFAULT_LOADING_DELAY_MS = 2000
+DEFAULT_LOADING_CAPTURE_MS = 300
+DEFAULT_LONG_LOADING_DELAY_MS = 20000
+DEFAULT_LONG_LOADING_FRAMES_MS = [500, 4000, 12000]
+BUILTIN_STATES = ('loading', 'long-loading', 'error', 'empty', 'partial', 'offline', 'locked')
 
-    May optionally return a cleanup callable or dict (e.g. {'target_uri': ...}).
+
+def _format_frame_label(ms):
+    """Format millisecond offset into compact second label (e.g. 500 -> '0.5s', 4000 -> '4s')."""
+    sec = float(ms) / 1000.0
+    if sec.is_integer():
+        return f'{int(sec)}s'
+    return f'{sec:g}s'
+
+
+def _null_optional_field(obj):
+    """Return a shallow copy of dict obj with one optional/secondary field set to None."""
+    if not isinstance(obj, dict) or not obj:
+        return obj
+    out = dict(obj)
+    preferred = (
+        'summary', 'subtitle', 'description', 'details', 'notes', 'meta',
+        'metadata', 'avatar', 'thumbnail', 'badge', 'updated_at', 'secondary',
+        'optional', 'extra', 'score', 'stats', 'pagination', 'email',
+    )
+    for k in preferred:
+        if k in out and out[k] is not None:
+            out[k] = None
+            return out
+    protected = {'id', 'name', 'title', 'status', 'error', 'items', 'data', 'results', 'rows'}
+    candidates = [k for k in out if k not in protected and out[k] is not None and not isinstance(out[k], list)]
+    if candidates:
+        out[candidates[-1]] = None
+        return out
+    fallback = [k for k in out if k not in {'id', 'items', 'data', 'results', 'rows'} and out[k] is not None]
+    if fallback:
+        out[fallback[-1]] = None
+    return out
+
+
+def _make_partial_payload(data):
+    """Halve list payloads and null out an optional field to simulate a partial API response."""
+    if isinstance(data, list):
+        half_len = max(1, len(data) // 2) if len(data) > 1 else len(data)
+        return [_null_optional_field(item) if isinstance(item, dict) else item for item in data[:half_len]]
+    if isinstance(data, dict):
+        out = dict(data)
+        for k, v in list(out.items()):
+            if isinstance(v, list):
+                half_len = max(1, len(v) // 2) if len(v) > 1 else len(v)
+                out[k] = [
+                    _null_optional_field(item) if isinstance(item, dict) else item
+                    for item in v[:half_len]
+                ]
+        return _null_optional_field(out)
+    return data
+
+
+def _resolve_mock_body(spec, base_dir=None):
+    """Resolve mock response (body_text, content_type, parsed_json_or_None) from spec dict."""
+    if not isinstance(spec, dict):
+        return None, None, None
+    body_file = spec.get('body_file')
+    if body_file is not None:
+        p = pathlib.Path(str(body_file))
+        if not p.is_absolute() and base_dir is not None and (base_dir / p).is_file():
+            p = base_dir / p
+        if not p.is_file():
+            raise FileNotFoundError(f'mock body_file not found: {body_file}')
+        text = p.read_text(encoding='utf-8')
+        ctype = spec.get('content_type') or ('application/json' if p.suffix.lower() == '.json' else 'text/plain; charset=utf-8')
+        parsed = None
+        try:
+            parsed = json.loads(text)
+        except Exception:
+            pass
+        return text, ctype, parsed
+
+    if 'body' in spec or 'mock_body' in spec:
+        val = spec['body'] if 'body' in spec else spec['mock_body']
+        if isinstance(val, (dict, list, bool, int, float)) or val is None:
+            return json.dumps(val), spec.get('content_type') or 'application/json', val
+        text = str(val)
+        parsed = None
+        try:
+            parsed = json.loads(text)
+        except Exception:
+            pass
+        return text, spec.get('content_type') or 'text/plain; charset=utf-8', parsed
+    return None, None, None
+
+
+def _resolve_api_patterns(spec, route_cfg, cfg):
+    """Return list of Playwright route patterns from mock spec, route config, global config, or default."""
+    raw = None
+    if isinstance(spec, dict):
+        raw = spec.get('pattern') if spec.get('pattern') is not None else spec.get('api_pattern')
+    if raw is None and isinstance(route_cfg, dict):
+        raw = route_cfg.get('api_pattern')
+    if raw is None and isinstance(cfg, dict):
+        raw = cfg.get('api_pattern')
+    if raw is None:
+        return [DEFAULT_API_PATTERN]
+    if isinstance(raw, str):
+        return [raw.strip()] if raw.strip() else [DEFAULT_API_PATTERN]
+    if isinstance(raw, list):
+        out = [str(p).strip() for p in raw if isinstance(p, str) and p.strip()]
+        return out or [DEFAULT_API_PATTERN]
+    return [DEFAULT_API_PATTERN]
+
+
+def _collect_state_mock_specs(route_cfg, state_name, cfg=None):
+    """Collect custom mock spec dicts for state_name from global cfg, route state_mocks, and state_overrides."""
+    specs = []
+    for source in (
+        (cfg or {}).get('state_mocks', {}).get(state_name) if isinstance((cfg or {}).get('state_mocks'), dict) else None,
+        route_cfg.get('state_mocks', {}).get(state_name) if isinstance(route_cfg.get('state_mocks'), dict) else None,
+    ):
+        if isinstance(source, dict):
+            specs.append(dict(source))
+        elif isinstance(source, list):
+            specs.extend(dict(s) for s in source if isinstance(s, dict))
+
+    overrides = route_cfg.get('state_overrides')
+    state_ov = overrides.get(state_name) if isinstance(overrides, dict) and isinstance(overrides.get(state_name), dict) else {}
+    if isinstance(state_ov.get('mock'), dict):
+        specs.append(dict(state_ov['mock']))
+    if isinstance(state_ov.get('mocks'), list):
+        specs.extend(dict(s) for s in state_ov['mocks'] if isinstance(s, dict))
+    mock_keys = ('pattern', 'api_pattern', 'delay_ms', 'capture_at_ms', 'status', 'body', 'mock_body',
+                 'body_file', 'headers', 'content_type', 'offline_before_goto', 'long_loading_frames_ms', 'halve')
+    direct = {k: state_ov[k] for k in mock_keys if k in state_ov}
+    if direct:
+        specs.append(direct)
+    return specs
+
+
+def _sleep_cancelable(page, delay_ms, state_flags):
+    """Sleep in small chunks via page.wait_for_timeout so cleanup/close aborts promptly."""
+    remaining = max(0, int(delay_ms))
+    while remaining > 0 and not state_flags.get('cancelled'):
+        chunk = min(250, remaining)
+        if hasattr(page, 'wait_for_timeout'):
+            page.wait_for_timeout(chunk)
+        else:
+            time.sleep(chunk / 1000.0)
+        remaining -= chunk
+
+
+def _register_route_handler(page, pattern, handler, registered):
+    if not hasattr(page, 'route'):
+        return
+    page.route(pattern, handler)
+    registered.append((pattern, handler))
+
+
+def _make_mock_handler(page, spec, state_flags, base_dir=None, default_status=200, default_body=None):
+    """Create a Playwright route handler supporting delay_ms, body/body_file, status, and headers."""
+    delay_ms = int(spec.get('delay_ms') or 0)
+    body_text, content_type, _ = _resolve_mock_body(spec, base_dir=base_dir)
+    has_explicit_response = body_text is not None or 'status' in spec or default_body is not None
+    status = int(spec.get('status', default_status))
+    if body_text is None and default_body is not None:
+        body_text = json.dumps(default_body) if isinstance(default_body, (dict, list)) else str(default_body)
+        content_type = content_type or 'application/json'
+    headers = dict(spec['headers']) if isinstance(spec.get('headers'), dict) else None
+
+    def handler(route):
+        try:
+            if delay_ms > 0:
+                _sleep_cancelable(page, delay_ms, state_flags)
+            if state_flags.get('cancelled'):
+                return
+            if has_explicit_response:
+                kw = {'status': status}
+                if content_type:
+                    kw['content_type'] = content_type
+                if body_text is not None:
+                    kw['body'] = body_text
+                if headers:
+                    kw['headers'] = headers
+                route.fulfill(**kw)
+            else:
+                route.continue_()
+        except Exception:
+            pass
+
+    return handler
+
+
+def _apply_route_state(context, page, route_cfg, state_name, cfg=None, base_dir=None):
+    """Apply route state init markers, built-in 7 states (page.route / set_offline), and custom network mocks.
+
+    Returns a dict with cleanup callable, capture mode, and timing parameters.
     """
     state_name = state_name or 'default'
     if hasattr(page, 'add_init_script'):
@@ -948,17 +1265,224 @@ def _apply_route_state(context, page, route_cfg, state_name):
             )
         except Exception:
             pass
-    return None
+
+    registered = []
+    state_flags = {'cancelled': False, 'offline_ready': False, 'offline_used': False}
+    specs = _collect_state_mock_specs(route_cfg, state_name, cfg=cfg)
+    primary_spec = specs[0] if specs else {}
+    mode = 'normal'
+    capture_at_ms = int(primary_spec.get('capture_at_ms', DEFAULT_LOADING_CAPTURE_MS))
+    frames_ms = list(
+        primary_spec.get('long_loading_frames_ms')
+        or route_cfg.get('long_loading_frames_ms')
+        or (cfg or {}).get('long_loading_frames_ms')
+        or DEFAULT_LONG_LOADING_FRAMES_MS
+    )
+    offline_before_goto = bool(primary_spec.get('offline_before_goto', False))
+
+    if state_name == 'loading':
+        mode = 'loading'
+        eff_specs = specs or [{'delay_ms': DEFAULT_LOADING_DELAY_MS}]
+        for sp in eff_specs:
+            sp_copy = dict(sp)
+            sp_copy.setdefault('delay_ms', DEFAULT_LOADING_DELAY_MS)
+            for pat in _resolve_api_patterns(sp_copy, route_cfg, cfg):
+                _register_route_handler(page, pat, _make_mock_handler(page, sp_copy, state_flags, base_dir=base_dir), registered)
+
+    elif state_name == 'long-loading':
+        mode = 'long-loading'
+        eff_specs = specs or [{'delay_ms': DEFAULT_LONG_LOADING_DELAY_MS}]
+        for sp in eff_specs:
+            sp_copy = dict(sp)
+            sp_copy.setdefault('delay_ms', DEFAULT_LONG_LOADING_DELAY_MS)
+            for pat in _resolve_api_patterns(sp_copy, route_cfg, cfg):
+                _register_route_handler(page, pat, _make_mock_handler(page, sp_copy, state_flags, base_dir=base_dir), registered)
+
+    elif state_name == 'error':
+        eff_specs = specs or [{}]
+        for sp in eff_specs:
+            sp_copy = dict(sp)
+            sp_copy.setdefault('status', 500)
+            for pat in _resolve_api_patterns(sp_copy, route_cfg, cfg):
+                _register_route_handler(
+                    page,
+                    pat,
+                    _make_mock_handler(
+                        page,
+                        sp_copy,
+                        state_flags,
+                        base_dir=base_dir,
+                        default_status=500,
+                        default_body={'error': 'Internal Server Error'},
+                    ),
+                    registered,
+                )
+
+    elif state_name == 'locked':
+        eff_specs = specs or [{}]
+        for sp in eff_specs:
+            sp_copy = dict(sp)
+            sp_copy.setdefault('status', 403)
+            for pat in _resolve_api_patterns(sp_copy, route_cfg, cfg):
+                _register_route_handler(
+                    page,
+                    pat,
+                    _make_mock_handler(
+                        page,
+                        sp_copy,
+                        state_flags,
+                        base_dir=base_dir,
+                        default_status=403,
+                        default_body={'error': 'Forbidden'},
+                    ),
+                    registered,
+                )
+
+    elif state_name == 'empty':
+        eff_specs = specs or [{}]
+        for sp in eff_specs:
+            sp_copy = dict(sp)
+            if 'body' not in sp_copy and 'mock_body' not in sp_copy and 'body_file' not in sp_copy:
+                route_mb = route_cfg.get('mock_body')
+                if route_mb in ([], {}) or (isinstance(route_mb, dict) and route_mb.get('items') == []):
+                    sp_copy['mock_body'] = route_mb
+            for pat in _resolve_api_patterns(sp_copy, route_cfg, cfg):
+                _register_route_handler(
+                    page,
+                    pat,
+                    _make_mock_handler(
+                        page,
+                        sp_copy,
+                        state_flags,
+                        base_dir=base_dir,
+                        default_status=200,
+                        default_body={'items': []},
+                    ),
+                    registered,
+                )
+
+    elif state_name == 'partial':
+        eff_specs = specs or [{}]
+        for sp in eff_specs:
+            sp_copy = dict(sp)
+            body_text, ctype, parsed = _resolve_mock_body(sp_copy, base_dir=base_dir)
+            use_explicit = body_text is not None and not sp_copy.get('halve')
+            if use_explicit:
+                for pat in _resolve_api_patterns(sp_copy, route_cfg, cfg):
+                    _register_route_handler(page, pat, _make_mock_handler(page, sp_copy, state_flags, base_dir=base_dir), registered)
+            else:
+                route_body_text, _, route_parsed = _resolve_mock_body(route_cfg, base_dir=base_dir)
+
+                def _make_partial_handler(fallback_data):
+                    def partial_handler(route):
+                        try:
+                            if state_flags.get('cancelled'):
+                                return
+                            data = None
+                            status_code = 200
+                            if hasattr(route, 'fetch'):
+                                try:
+                                    resp = route.fetch()
+                                    status_code = resp.status
+                                    raw_text = resp.text()
+                                    data = json.loads(raw_text)
+                                except Exception:
+                                    data = None
+                            if data is None and fallback_data is not None:
+                                data = fallback_data
+                            if data is not None:
+                                partial_data = _make_partial_payload(data)
+                                route.fulfill(
+                                    status=status_code,
+                                    content_type='application/json',
+                                    body=json.dumps(partial_data),
+                                )
+                            else:
+                                route.continue_()
+                        except Exception:
+                            pass
+                    return partial_handler
+
+                fb = parsed if parsed is not None else route_parsed
+                for pat in _resolve_api_patterns(sp_copy, route_cfg, cfg):
+                    _register_route_handler(page, pat, _make_partial_handler(fb), registered)
+
+    elif state_name == 'offline':
+        mode = 'offline'
+        state_flags['offline_used'] = True
+        if offline_before_goto:
+            state_flags['offline_ready'] = True
+            if hasattr(context, 'set_offline'):
+                context.set_offline(True)
+        else:
+            def offline_abort_handler(route):
+                try:
+                    waited = 0
+                    while not state_flags.get('offline_ready') and not state_flags.get('cancelled') and waited < 500:
+                        if hasattr(page, 'wait_for_timeout'):
+                            page.wait_for_timeout(15)
+                        else:
+                            time.sleep(0.015)
+                        waited += 15
+                    if state_flags.get('cancelled'):
+                        return
+                    try:
+                        route.abort('internetdisconnected')
+                    except TypeError:
+                        route.abort()
+                except Exception:
+                    pass
+
+            for pat in _resolve_api_patterns(primary_spec, route_cfg, cfg):
+                _register_route_handler(page, pat, offline_abort_handler, registered)
+
+    elif specs:
+        for sp in specs:
+            for pat in _resolve_api_patterns(sp, route_cfg, cfg):
+                _register_route_handler(page, pat, _make_mock_handler(page, sp, state_flags, base_dir=base_dir), registered)
+
+    def activate_offline():
+        state_flags['offline_ready'] = True
+        if hasattr(context, 'set_offline'):
+            context.set_offline(True)
+
+    def cleanup():
+        state_flags['cancelled'] = True
+        for pat, fn in reversed(registered):
+            if hasattr(page, 'unroute'):
+                try:
+                    page.unroute(pat, fn)
+                except Exception:
+                    pass
+        if state_flags.get('offline_used') and hasattr(context, 'set_offline'):
+            try:
+                context.set_offline(False)
+            except Exception:
+                pass
+
+    return {
+        'cleanup': cleanup,
+        'mode': mode,
+        'capture_at_ms': capture_at_ms,
+        'frames_ms': frames_ms,
+        'offline_before_goto': offline_before_goto,
+        'activate_offline': activate_offline if mode == 'offline' else None,
+    }
 
 
-def _run_viewport_checks(page, vp_width, console_errors, network_errors):
-    """Run viewport-appropriate DOM checks: desktop/tablet (CHECK_JS+axe+INTERACT_JS) or mobile<=480 (CHECK_JS+MOBILE_JS+axe)."""
+def _run_readonly_viewport_checks(page, vp_width):
+    """Run read-only DOM checks (CHECK_JS, MOBILE_JS when mobile, and axe)."""
     found = list(page.evaluate(CHECK_JS) or [])
     if vp_width <= 480:
         found += list(page.evaluate(MOBILE_JS) or [])
-        found += run_axe(page)
-    else:
-        found += run_axe(page)
+    found += run_axe(page)
+    return found
+
+
+def _finalize_viewport_checks(page, vp_width, console_errors, network_errors, pre_findings=None):
+    """Complete viewport checks with INTERACT_JS (desktop/tablet) and console/network error aggregation."""
+    found = list(pre_findings) if pre_findings is not None else _run_readonly_viewport_checks(page, vp_width)
+    if vp_width > 480:
         try:
             wait_for_dom_stability(page, quiet_ms=200, max_wait_ms=2000)
             found += list(page.evaluate(INTERACT_JS) or [])
@@ -980,6 +1504,11 @@ def _run_viewport_checks(page, vp_width, console_errors, network_errors):
     if not found:
         found = [['INFO', 'dom-check', 'no defects found']]
     return found
+
+
+def _run_viewport_checks(page, vp_width, console_errors, network_errors):
+    """Run viewport-appropriate DOM checks: desktop/tablet (CHECK_JS+axe+INTERACT_JS) or mobile<=480 (CHECK_JS+MOBILE_JS+axe)."""
+    return _finalize_viewport_checks(page, vp_width, console_errors, network_errors)
 
 
 def _count_severities(findings):
@@ -1093,6 +1622,16 @@ def _build_contact_sheet(results, out_path, cols=4, thumb_width=320, thumb_heigh
     return out_file
 
 
+def _goto_page(page, uri, wait_until=None):
+    """Navigate page to uri, passing wait_until when supported by the Page implementation."""
+    if wait_until is not None:
+        try:
+            return page.goto(uri, wait_until=wait_until)
+        except TypeError:
+            pass
+    return page.goto(uri)
+
+
 def render_routes(opts, browser=None):
     """Execute multi-route × state × viewport capture and checks from routes.json and RenderOptions."""
     opts = _coerce_options(opts)
@@ -1167,8 +1706,17 @@ def render_routes(opts, browser=None):
                         network_errors = []
                         detach = _attach_error_listeners(page, console_errors, network_errors, online=online)
                         hook_cleanup = None
+                        state_mode = 'normal'
+                        capture_at_ms = DEFAULT_LOADING_CAPTURE_MS
+                        frames_ms = list(DEFAULT_LONG_LOADING_FRAMES_MS)
+                        offline_before_goto = False
+                        activate_offline = None
+                        extra_shots = []
+                        frame_shots = []
                         try:
-                            hook_res = _apply_route_state(context, page, route_cfg, state_name)
+                            hook_res = _apply_route_state(
+                                context, page, route_cfg, state_name, cfg=cfg, base_dir=base_dir,
+                            )
                             if callable(hook_res):
                                 hook_cleanup = hook_res
                             elif isinstance(hook_res, dict):
@@ -1176,19 +1724,79 @@ def render_routes(opts, browser=None):
                                     target_uri = hook_res.get('target_uri') or hook_res.get('url')
                                 if callable(hook_res.get('cleanup')):
                                     hook_cleanup = hook_res['cleanup']
+                                state_mode = hook_res.get('mode', 'normal')
+                                capture_at_ms = int(hook_res.get('capture_at_ms', DEFAULT_LOADING_CAPTURE_MS))
+                                if hook_res.get('frames_ms'):
+                                    frames_ms = list(hook_res['frames_ms'])
+                                offline_before_goto = bool(hook_res.get('offline_before_goto', False))
+                                activate_offline = hook_res.get('activate_offline')
 
-                            page.goto(target_uri)
-                            wait_for_hydration(page, wait_for=wait_for, quiet_ms=150, max_wait_ms=5000)
-                            if dark:
-                                page.evaluate("document.documentElement.classList.add('dark')")
-                            if actions:
-                                run_actions(page, actions)
-                            page.evaluate(SCROLL_SWEEP_JS)
-                            page.wait_for_timeout(150)
+                            if state_mode == 'loading':
+                                _goto_page(page, target_uri, wait_until='domcontentloaded')
+                                t0 = time.monotonic()
+                                if dark:
+                                    page.evaluate("document.documentElement.classList.add('dark')")
+                                rem = int(round(capture_at_ms - (time.monotonic() - t0) * 1000.0))
+                                if rem > 0:
+                                    page.wait_for_timeout(rem)
+                                if actions:
+                                    extra_shots = run_actions(page, actions, out_dir=route_dir) or []
+                                page.screenshot(path=str(shot_path), full_page=True)
+                                scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                                findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
 
-                            page.screenshot(path=str(shot_path), full_page=True)
-                            scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
-                            findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
+                            elif state_mode == 'long-loading':
+                                _goto_page(page, target_uri, wait_until='domcontentloaded')
+                                t0 = time.monotonic()
+                                if dark:
+                                    page.evaluate("document.documentElement.classList.add('dark')")
+                                if actions:
+                                    extra_shots = run_actions(page, actions, out_dir=route_dir) or []
+                                sorted_frames = sorted(float(f) for f in frames_ms)
+                                primary_idx = sorted_frames.index(4000.0) if 4000.0 in sorted_frames else len(sorted_frames) // 2
+                                pre_findings = None
+                                scroll_h = vp_h
+                                for idx, f_ms in enumerate(sorted_frames):
+                                    rem = int(round(f_ms - (time.monotonic() - t0) * 1000.0))
+                                    if rem > 0:
+                                        page.wait_for_timeout(rem)
+                                    label = _format_frame_label(f_ms)
+                                    frame_path = route_dir / f'{state_name}-{label}-{vp_name}.png'
+                                    page.screenshot(path=str(frame_path), full_page=True)
+                                    frame_shots.append(str(frame_path))
+                                    if idx == primary_idx:
+                                        shutil.copy2(frame_path, shot_path)
+                                        scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                                        pre_findings = _run_readonly_viewport_checks(page, vp_w)
+                                findings = _finalize_viewport_checks(
+                                    page, vp_w, console_errors, network_errors, pre_findings=pre_findings,
+                                )
+
+                            else:
+                                if state_mode == 'offline':
+                                    if offline_before_goto:
+                                        try:
+                                            _goto_page(page, target_uri, wait_until='domcontentloaded')
+                                        except Exception:
+                                            pass
+                                    else:
+                                        _goto_page(page, target_uri, wait_until='domcontentloaded')
+                                        if callable(activate_offline):
+                                            activate_offline()
+                                        wait_for_dom_stability(page, quiet_ms=150, max_wait_ms=2000)
+                                else:
+                                    page.goto(target_uri)
+                                    wait_for_hydration(page, wait_for=wait_for, quiet_ms=150, max_wait_ms=5000)
+                                if dark:
+                                    page.evaluate("document.documentElement.classList.add('dark')")
+                                if actions:
+                                    extra_shots = run_actions(page, actions, out_dir=route_dir) or []
+                                page.evaluate(SCROLL_SWEEP_JS)
+                                page.wait_for_timeout(150)
+
+                                page.screenshot(path=str(shot_path), full_page=True)
+                                scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                                findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
 
                             entry = {
                                 'route': route_name,
@@ -1204,6 +1812,10 @@ def render_routes(opts, browser=None):
                                 'console_errors': console_errors,
                                 'network_errors': network_errors,
                             }
+                            if frame_shots:
+                                entry['frames'] = frame_shots
+                            if extra_shots:
+                                entry['extra_screenshots'] = extra_shots
                             route_results.append(entry)
                             all_results.append(entry)
                         finally:
