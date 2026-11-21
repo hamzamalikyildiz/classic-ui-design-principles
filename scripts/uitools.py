@@ -6,6 +6,7 @@ _SCRIPTS_DIR = str(pathlib.Path(__file__).resolve().parent)
 if _SCRIPTS_DIR not in sys.path:
     sys.path.insert(0, _SCRIPTS_DIR)
 
+from uiignore import apply_ignores
 from uicolor import (
     HEX,
     NAMED,
@@ -511,7 +512,7 @@ def mood_specific(txt, nodes, mood):
     return out
 
 
-def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None):
+def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None, return_suppressed=False):
     if txt is None:
         txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
     masked = mask_non_markup(txt)
@@ -724,7 +725,11 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None):
     if mood in EXPRESSIVE:
         issues = [(('INFO', r, m + ' [relaxed in expressive moods]') if sev != 'INFO' and r in RELAXED else (sev, r, m))
                   for sev, r, m in issues]
-    return issues
+    kept, suppressed, meta = apply_ignores(txt, issues)
+    final_issues = kept + meta
+    if return_suppressed:
+        return final_issues, suppressed
+    return final_issues
 
 
 def cmd_audit(a):
@@ -736,16 +741,25 @@ def cmd_audit(a):
     css_texts = [pathlib.Path(p).read_text(encoding='utf-8', errors='ignore') for p in (a.css or [])]
     shared_tokens, shared_dark = css_tokens(css_texts), css_tokens(css_texts, r'\.dark')
     total = {'FAIL': 0, 'WARN': 0, 'INFO': 0}
+    total_suppressed = 0
+    show_suppressed = getattr(a, 'show_suppressed', False)
     for p in a.files:
         p_txt = pathlib.Path(p).read_text(encoding='utf-8', errors='ignore')
         tokens = {**shared_tokens, **css_tokens([p_txt])}
         dark_tokens = {**shared_dark, **css_tokens([p_txt], r'\.dark')}
-        iss = audit(p, a.grid, tokens, dark_tokens, a.mood, txt=p_txt)
+        iss, suppressed = audit(p, a.grid, tokens, dark_tokens, a.mood, txt=p_txt, return_suppressed=True)
+        total_suppressed += len(suppressed)
         print(f"== {p}: {len(iss)} issue(s)")
         for sev, rule, msg in iss:
             total[sev] += 1
             print(f"  [{sev}] {rule}: {msg}")
-    print(f"\nSUMMARY FAIL={total['FAIL']} WARN={total['WARN']} INFO={total['INFO']}")
+        if show_suppressed and suppressed:
+            for sev, rule, msg, reason in suppressed:
+                print(f"  [SUPPRESSED] [{sev}] {rule}: {msg} — reason: {reason}")
+    summary = f"\nSUMMARY FAIL={total['FAIL']} WARN={total['WARN']} INFO={total['INFO']}"
+    if total_suppressed > 0 or show_suppressed:
+        summary += f" SUPPRESSED={total_suppressed}"
+    print(summary)
     sys.exit(1 if total['FAIL'] else 0)
 
 
@@ -766,6 +780,8 @@ def main(argv=None):
     d.add_argument('--css', nargs='*', help='CSS files with :root tokens, e.g. app/globals.css for shadcn')
     d.add_argument('--mood', choices=['playful', 'trust', 'bold', 'editorial', 'technical'],
                    help='enable mood checks: color presence and hero surface')
+    d.add_argument('--show-suppressed', action='store_true',
+                   help='list suppressed issues with their ignore reasons')
     d.set_defaults(f=cmd_audit)
     a = ap.parse_args(argv)
     a.f(a)
