@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Negative Motion — Unpausable Infinite Animation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 2rem;
+    }
+    main { max-width: 38rem; margin: 0 auto; }
+    /* Anti-pattern: infinite animation on a non-loading badge and feature card with no pause control */
+    .promo-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      animation: float-card 2s ease-in-out infinite;
+    }
+    .promo-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      background: #e0e7ff;
+      color: #1e40af;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      animation: bounce-badge 1s ease-in-out infinite;
+    }
+    @keyframes float-card {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    @keyframes bounce-badge {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.12); }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="promo-card" id="promo-card">
+      <span class="promo-badge" id="promo-badge">NEW FEATURE</span>
+      <h1 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Perpetually Bouncing Card</h1>
+      <p style="color: #334155;">Both the badge and card run <code>animation: ... infinite</code> outside any loading state.</p>
+    </div>
+  </main>
+</body>
+</html>

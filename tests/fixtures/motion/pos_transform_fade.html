@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Positive Motion — Transform &amp; Opacity Fade</title>
+  <style>
+    :root {
+      --dur-instant: 80ms;
+      --dur-fast: 150ms;
+      --dur-base: 220ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+      --ease-enter: cubic-bezier(0, 0, .2, 1);
+      --ease-exit: cubic-bezier(.4, 0, 1, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 2rem;
+      line-height: 1.5;
+    }
+    main { max-width: 40rem; margin: 0 auto; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    p.lead { color: #334155; margin-bottom: 1.5rem; font-size: 1rem; }
+    .controls { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    .btn {
+      min-height: 2.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #0f172a;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform var(--dur-instant) var(--ease-standard), opacity var(--dur-fast) var(--ease-standard);
+    }
+    .btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+    .btn:active { transform: scale(0.98); }
+    .slot {
+      min-height: 9rem;
+      position: relative;
+      border-radius: 0.75rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 1.25rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+    .pane {
+      transition: transform var(--dur-base) var(--ease-enter), opacity var(--dur-base) var(--ease-enter);
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .pane[aria-hidden="true"] {
+      opacity: 0;
+      transform: translateY(6px);
+      pointer-events: none;
+      position: absolute;
+      inset: 1.25rem;
+    }
+    .sk-line {
+      height: 0.875rem;
+      border-radius: 0.25rem;
+      background: #e2e8f0;
+      margin-bottom: 0.75rem;
+    }
+    .sk-line.short { width: 60%; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 120ms !important;
+        transition-property: opacity !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Candidate Evaluation Summary</h1>
+    <p class="lead">Skeleton crossfades to loaded content within a locked container height (CLS = 0).</p>
+    <div class="controls">
+      <button type="button" class="btn" id="toggle-btn" aria-controls="summary-slot" aria-expanded="true">
+        Toggle Loaded State
+      </button>
+    </div>
+    <section class="slot" id="summary-slot" aria-live="polite" aria-busy="false">
+      <div class="pane" id="content-pane" aria-hidden="false">
+        <h2 style="font-size: 1.125rem; margin-bottom: 0.5rem;">Senior Systems Architect — 92% Match</h2>
+        <p style="color: #334155; font-size: 0.9375rem;">
+          Verified 8 years of distributed storage leadership, Go/Rust production services, and on-call incident ownership.
+        </p>
+      </div>
+      <div class="pane" id="skeleton-pane" aria-hidden="true">
+        <div class="sk-line" style="width: 55%; height: 1.125rem;"></div>
+        <div class="sk-line"></div>
+        <div class="sk-line short"></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const btn = document.getElementById('toggle-btn');
+    const slot = document.getElementById('summary-slot');
+    const content = document.getElementById('content-pane');
+    const skeleton = document.getElementById('skeleton-pane');
+    let loaded = true;
+    btn.addEventListener('click', () => {
+      loaded = !loaded;
+      slot.setAttribute('aria-busy', String(!loaded));
+      btn.setAttribute('aria-expanded', String(loaded));
+      content.setAttribute('aria-hidden', String(!loaded));
+      skeleton.setAttribute('aria-hidden', String(loaded));
+      btn.textContent = loaded ? 'Toggle Loaded State' : 'Show Loaded Summary';
+    });
+  </script>
+</body>
+</html>

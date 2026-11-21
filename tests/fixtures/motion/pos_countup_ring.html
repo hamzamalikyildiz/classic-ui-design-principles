@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Positive Motion — Count-Up &amp; Score Ring Fill</title>
+  <style>
+    :root {
+      --dur-instant: 80ms;
+      --dur-deliberate: 500ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+      --ease-enter: cubic-bezier(0, 0, .2, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 2rem;
+    }
+    main { max-width: 36rem; margin: 0 auto; }
+    .card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }
+    .ring-wrap { position: relative; width: 6rem; height: 6rem; flex-shrink: 0; }
+    .ring-bg { fill: none; stroke: #e2e8f0; stroke-width: 8; }
+    .ring-fg {
+      fill: none;
+      stroke: #059669;
+      stroke-width: 8;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      stroke-dasharray: 226.2;
+      stroke-dashoffset: 70.1;
+      transition: stroke-dashoffset var(--dur-deliberate) var(--ease-enter);
+    }
+    .metric {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #0f172a;
+    }
+    .btn {
+      margin-top: 1rem;
+      min-height: 2.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: #047857;
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform var(--dur-instant) var(--ease-standard);
+    }
+    .btn:focus-visible { outline: 2px solid #047857; outline-offset: 2px; }
+    .btn:active { transform: scale(0.98); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        transform: none !important;
+      }
+      .ring-fg { transform: rotate(-90deg) !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="card">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 88 88" width="96" height="96" aria-hidden="true">
+          <circle class="ring-bg" cx="44" cy="44" r="36"></circle>
+          <circle class="ring-fg" id="score-ring" cx="44" cy="44" r="36"></circle>
+        </svg>
+        <div class="metric" id="score-value" aria-live="polite">69</div>
+      </div>
+      <div>
+        <h1 style="font-size: 1.25rem; margin-bottom: 0.25rem;">CV Alignment Score</h1>
+        <p style="color: #334155; font-size: 0.875rem;">Tabular numbers and smooth ring stroke transition.</p>
+        <button type="button" class="btn" id="boost-btn">Accept Suggestion (+4 pts)</button>
+      </div>
+    </div>
+  </main>
+  <script>
+    const ring = document.getElementById('score-ring');
+    const valEl = document.getElementById('score-value');
+    const btn = document.getElementById('boost-btn');
+    const circumference = 226.2;
+    let score = 69;
+    btn.addEventListener('click', () => {
+      score = score === 69 ? 73 : 69;
+      valEl.textContent = String(score);
+      const offset = circumference * (1 - score / 100);
+      ring.style.strokeDashoffset = offset.toFixed(1);
+      btn.setAttribute('data-score', String(score));
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Negative Motion — Layout Property Animation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 2rem;
+    }
+    main { max-width: 40rem; margin: 0 auto; }
+    h1 { font-size: 1.375rem; margin-bottom: 1rem; }
+    .bad-card {
+      position: relative;
+      top: 0;
+      width: 22rem;
+      height: 8rem;
+      margin-left: 0;
+      padding: 1.25rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.75rem;
+      /* Anti-pattern: animating layout properties directly */
+      transition: width 350ms ease, height 350ms ease, margin-left 350ms ease, top 350ms ease, padding 350ms ease;
+      animation: pulse-width 1.5s ease-in-out infinite alternate;
+    }
+    .bad-card.expanded {
+      width: 32rem;
+      height: 11rem;
+      margin-left: 2rem;
+      top: 1rem;
+      padding: 2rem;
+    }
+    @keyframes pulse-width {
+      0%   { width: 22rem; margin-left: 0px; top: 0px; }
+      100% { width: 26rem; margin-left: 16px; top: 8px; }
+    }
+    .bad-btn {
+      margin-top: 1rem;
+      min-height: 2.75rem;
+      width: 11rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: width 300ms ease, margin-left 300ms ease;
+    }
+    .bad-btn:hover, .bad-btn.expanded {
+      width: 15rem;
+      margin-left: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Layout Thrashing Card</h1>
+    <div class="bad-card" id="bad-card">
+      <p>This card transitions and animates <code>width</code>, <code>height</code>, <code>margin-left</code>, and <code>top</code>.</p>
+    </div>
+    <button type="button" class="bad-btn" id="trigger-btn">Expand Layout Box</button>
+  </main>
+  <script>
+    const card = document.getElementById('bad-card');
+    const btn = document.getElementById('trigger-btn');
+    btn.addEventListener('click', () => {
+      card.classList.toggle('expanded');
+      btn.classList.toggle('expanded');
+    });
+  </script>
+</body>
+</html>
