@@ -170,6 +170,8 @@ CHECK_JS = _load_check_js('check.js')
 MOBILE_JS = _load_check_js('mobile.js')
 INTERACT_JS = _load_check_js('interact.js')
 SCROLL_SWEEP_JS = _load_check_js('sweep.js')
+MOTION_JS = _load_check_js('motion.js')
+MOTION_FILMSTRIP_MS = [0, 80, 160, 320, 640, 1000]
 
 
 def find_axe():
@@ -296,6 +298,8 @@ class RenderOptions:
     out_dir: str = 'shots'
     viewports: list | None = None
     states: list | None = None
+    motion: bool = False
+    motion_trigger: str | None = None
 
 
 def _coerce_options(opts):
@@ -798,6 +802,118 @@ def _new_page(factory, viewport):
         return page
 
 
+def _build_filmstrip(frame_items, out_path, thumb_width=240, thumb_height=180):
+    """Combine motion filmstrip frames [(ms, path), ...] side-by-side into filmstrip.png."""
+    try:
+        from PIL import Image, ImageDraw
+    except ImportError:
+        log('PIL (Pillow) unavailable; skipping filmstrip.png')
+        return None
+
+    valid = [(ms, pathlib.Path(p)) for ms, p in frame_items if pathlib.Path(p).is_file()]
+    if not valid:
+        return None
+
+    pad = 12
+    label_h = 26
+    cell_w = thumb_width
+    cell_h = thumb_height + label_h
+    strip_w = pad + len(valid) * (cell_w + pad)
+    strip_h = pad * 2 + cell_h
+
+    strip = Image.new('RGB', (strip_w, strip_h), (24, 24, 27))
+    draw = ImageDraw.Draw(strip)
+    resample = getattr(getattr(Image, 'Resampling', Image), 'LANCZOS', Image.BICUBIC)
+
+    for idx, (ms, fpath) in enumerate(valid):
+        x0 = pad + idx * (cell_w + pad)
+        y0 = pad
+        draw.rectangle([x0, y0, x0 + cell_w - 1, y0 + label_h - 1], fill=(39, 39, 42))
+        draw.text((x0 + 8, y0 + 6), f'{int(ms)}ms', fill=(244, 244, 245))
+        tile_y = y0 + label_h
+        draw.rectangle([x0, tile_y, x0 + cell_w - 1, tile_y + thumb_height - 1], fill=(255, 255, 255))
+        try:
+            with Image.open(fpath) as im:
+                im_rgb = im.convert('RGB')
+                scale = cell_w / max(1, im_rgb.width)
+                scaled_h = max(1, int(round(im_rgb.height * scale)))
+                resized = im_rgb.resize((cell_w, scaled_h), resample=resample)
+                cropped = resized.crop((0, 0, cell_w, min(thumb_height, resized.height)))
+                strip.paste(cropped, (x0, tile_y))
+        except Exception:
+            draw.text((x0 + 12, tile_y + 16), 'preview unavailable', fill=(113, 113, 122))
+        draw.rectangle([x0, y0, x0 + cell_w - 1, y0 + cell_h - 1], outline=(63, 63, 70))
+
+    out_file = pathlib.Path(out_path)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    strip.save(str(out_file), format='PNG')
+    return out_file
+
+
+def run_motion_checks(page, out_dir=None, trigger_selector=None, capture_filmstrip=True):
+    """Run motion & animation checks (including reduced-motion pass) and optionally capture filmstrip frames."""
+    found = []
+    film_dir = pathlib.Path(out_dir) if (capture_filmstrip and out_dir is not None) else None
+
+    if film_dir is not None and hasattr(page, 'screenshot'):
+        film_dir.mkdir(parents=True, exist_ok=True)
+        frames = []
+        frame0 = film_dir / 'filmstrip-0.png'
+        page.screenshot(path=str(frame0), full_page=False)
+        frames.append((MOTION_FILMSTRIP_MS[0], frame0))
+
+        t0 = time.monotonic()
+        page.evaluate(MOTION_JS, {'action': 'probe', 'triggerSelector': trigger_selector})
+        for idx, ms in enumerate(MOTION_FILMSTRIP_MS[1:], start=1):
+            rem = int(round(ms - (time.monotonic() - t0) * 1000.0))
+            if rem > 0 and hasattr(page, 'wait_for_timeout'):
+                page.wait_for_timeout(rem)
+            fpath = film_dir / f'filmstrip-{idx}.png'
+            page.screenshot(path=str(fpath), full_page=False)
+            frames.append((ms, fpath))
+
+        _build_filmstrip(frames, film_dir / 'filmstrip.png')
+        normal_res = page.evaluate(
+            MOTION_JS,
+            {'mode': 'normal', 'skipTrigger': True, 'triggerSelector': trigger_selector},
+        )
+    else:
+        normal_res = page.evaluate(
+            MOTION_JS,
+            {'mode': 'normal', 'skipTrigger': False, 'triggerSelector': trigger_selector},
+        )
+
+    if normal_res:
+        found.extend(normal_res)
+
+    if hasattr(page, 'emulate_media'):
+        try:
+            page.emulate_media(reduced_motion='reduce')
+            if hasattr(page, 'wait_for_timeout'):
+                page.wait_for_timeout(50)
+            reduced_res = page.evaluate(
+                MOTION_JS,
+                {'mode': 'reduced', 'skipTrigger': True, 'triggerSelector': trigger_selector},
+            )
+            if reduced_res:
+                found.extend(reduced_res)
+        finally:
+            try:
+                page.emulate_media(reduced_motion='no-preference')
+            except Exception:
+                pass
+
+    deduped = []
+    seen = set()
+    for item in found:
+        entry = list(item)
+        key = (entry[0], entry[1], entry[2])
+        if key not in seen:
+            seen.add(key)
+            deduped.append(entry)
+    return deduped
+
+
 def capture(browser_or_page, target_uri, opts=None):
     """Capture a single target URI (file:// or http(s)://) and optionally run DOM checks.
 
@@ -824,15 +940,32 @@ def capture(browser_or_page, target_uri, opts=None):
     detach = _attach_error_listeners(page, console_errors, network_errors, online=online)
     try:
         shot_dir = pathlib.Path(opts.out).parent if opts.out is not None else None
+        if opts.out_dir and opts.out_dir != 'shots':
+            motion_dir = pathlib.Path(opts.out_dir)
+        elif shot_dir is not None:
+            motion_dir = shot_dir
+        else:
+            motion_dir = pathlib.Path(opts.out_dir or 'shots')
         _prepare_page(page, target_uri, opts.dark, wait_for=opts.wait_for, actions=opts.actions, out_dir=shot_dir)
         out_path = str(opts.out) if opts.out is not None else None
         if out_path is not None:
             page.screenshot(path=out_path, full_page=True)
         scroll_h = page.evaluate('document.documentElement.scrollHeight')
+        motion_found = []
+        if opts.motion:
+            motion_found = run_motion_checks(
+                page,
+                out_dir=motion_dir,
+                trigger_selector=opts.motion_trigger,
+            )
         found = []
         if opts.check:
             found = _run_dom_checks(page, mobile_factory, target_uri, opts,
                                     console_errors, network_errors)
+            if motion_found:
+                found = [f for f in found if f[1] != 'dom-check'] + motion_found
+        elif opts.motion:
+            found = motion_found
         return {
             'out': out_path,
             'width': opts.width,
@@ -1743,7 +1876,14 @@ def render_routes(opts, browser=None):
                                     extra_shots = run_actions(page, actions, out_dir=route_dir) or []
                                 page.screenshot(path=str(shot_path), full_page=True)
                                 scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                                motion_found = run_motion_checks(
+                                    page,
+                                    out_dir=route_dir,
+                                    trigger_selector=route_cfg.get('motion_trigger') or opts.motion_trigger,
+                                ) if opts.motion else []
                                 findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
+                                if motion_found:
+                                    findings = [f for f in findings if f[1] != 'dom-check'] + motion_found
 
                             elif state_mode == 'long-loading':
                                 _goto_page(page, target_uri, wait_until='domcontentloaded')
@@ -1768,9 +1908,16 @@ def render_routes(opts, browser=None):
                                         shutil.copy2(frame_path, shot_path)
                                         scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
                                         pre_findings = _run_readonly_viewport_checks(page, vp_w)
+                                motion_found = run_motion_checks(
+                                    page,
+                                    out_dir=route_dir,
+                                    trigger_selector=route_cfg.get('motion_trigger') or opts.motion_trigger,
+                                ) if opts.motion else []
                                 findings = _finalize_viewport_checks(
                                     page, vp_w, console_errors, network_errors, pre_findings=pre_findings,
                                 )
+                                if motion_found:
+                                    findings = [f for f in findings if f[1] != 'dom-check'] + motion_found
 
                             else:
                                 if state_mode == 'offline':
@@ -1796,7 +1943,14 @@ def render_routes(opts, browser=None):
 
                                 page.screenshot(path=str(shot_path), full_page=True)
                                 scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                                motion_found = run_motion_checks(
+                                    page,
+                                    out_dir=route_dir,
+                                    trigger_selector=route_cfg.get('motion_trigger') or opts.motion_trigger,
+                                ) if opts.motion else []
                                 findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
+                                if motion_found:
+                                    findings = [f for f in findings if f[1] != 'dom-check'] + motion_found
 
                             entry = {
                                 'route': route_name,
@@ -1899,6 +2053,10 @@ def build_parser():
                     help='wait for this CSS selector to become visible after hydration/DOM stability before capturing or interacting')
     ap.add_argument('--check', action='store_true',
                     help='also print defects found in the rendered page: layout (clipped text, blank/half-empty panels, hidden content), axe accessibility, console errors, 375px mobile, dead buttons, focus rings')
+    ap.add_argument('--motion', action='store_true',
+                    help='run motion & animation audit (layout properties, reduced-motion, CLS, feedback latency, long UI transitions, infinite motion) and capture filmstrip frames')
+    ap.add_argument('--motion-trigger', metavar='SELECTOR',
+                    help='CSS selector of interactive element to trigger during --motion audit (defaults to first visible [data-motion-trigger], button, [role=tab])')
     ap.epilog = (
         'Record a session:  python -m playwright codegen --save-storage=auth.json http://localhost:3000/login\n'
         'then:              python scripts/render.py --url http://localhost:3000/dashboard --storage-state auth.json --out p.png\n'
@@ -1942,6 +2100,8 @@ def parse_options(argv=None):
             out_dir=a.out_dir or 'shots',
             viewports=viewports,
             states=states,
+            motion=a.motion,
+            motion_trigger=a.motion_trigger,
         )
 
     if bool(a.html) == bool(a.url):
@@ -1969,6 +2129,8 @@ def parse_options(argv=None):
         wait_for=a.wait_for,
         viewports=viewports,
         states=states,
+        motion=a.motion,
+        motion_trigger=a.motion_trigger,
     )
 
 
@@ -2022,7 +2184,7 @@ def main(argv=None):
             print(f"CONTACT_SHEET: {summary['contact_sheet']}")
         return
     result = render(opts)
-    if opts.check:
+    if opts.check or opts.motion:
         for sev, rule, msg in result['findings']:
             print(f"  [{sev}] {rule}: {msg}")
     print(f"{result['out']} ({result['width']}x{result['scroll_height']})")
