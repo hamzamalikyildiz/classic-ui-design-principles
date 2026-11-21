@@ -10,10 +10,11 @@ Works with Claude (claude.ai, Claude Code) and any agent that reads `SKILL.md` f
 
 ## What it covers
 
-- **Color:** 60-30-10, WCAG AA contrast, semantic status colors
+- **Modes:** **Component** (fast path), **Page** (single screen), and **App** (multi-screen P0/P1/P2 inventory, shared foundation, and 9-state coverage matrix)
+- **Color:** 60-30-10, WCAG AA contrast (hex, Tailwind v3/v4, `oklch`/`oklab`/`color-mix`, shadcn tokens), semantic status colors
 - **Layout:** 8pt grid, law of proximity, nested border radius, Z/F patterns, bento grid
-- **Typography:** modular type scale, 45–75 character line length, max 2 fonts (up to 3 in expressive moods)
-- **UX laws:** Fitts, Hick, Jakob, Miller, single primary CTA, skeleton and empty states
+- **Typography & locale:** modular type scale, 45–75ch line length, `text-balance`/`text-pretty`, `tabular-nums`, `Intl` formatting, Turkish `lang="tr"` uppercase safety, dark-mode toggle
+- **UX, 9-state matrix & motion:** Fitts, Hick, Jakob, Miller, single primary CTA, 9-state coverage (Empty, Loading, Long-loading >3s, Error, Partial, Locked, Success, Offline, Stale), `transform`/`opacity`-only micro-moments & `prefers-reduced-motion`
 - **Character:** mood profiles (Playful, Trust, Bold, Editorial, Technical), one hero surface per screen, depth over borders, same-hue contrast fixes, categorical chart colors
 
 Rules are selected per page type: landing, dashboard, form, content, mobile, e-commerce, settings, nav and card/modal components.
@@ -22,21 +23,32 @@ Rules are selected per page type: landing, dashboard, form, content, mobile, e-c
 
 ```
 classic-ui-design-principles/
-├── SKILL.md              # core: flow, mood table, hard rules, tooling (~8.5 KB)
+├── SKILL.md              # core: Component/Page/App modes, mood table, hard rules, tooling (< 11 KB)
 ├── moods/                # per-mood notes: expressive (Playful/Bold), editorial, technical, trust
 ├── reference/
+│   ├── app-flow.md       # multi-screen App mode inventory & coverage report
+│   ├── motion.md         # motion tokens, micro-moments, reduced-motion fallback
 │   ├── page-types.md     # page-type matrix and mood mapping
 │   ├── rules.md          # rule values, anti-patterns, conflict resolution
-│   ├── tooling.md        # audit and render.py check details
+│   ├── sample-data.md    # realistic copy & domain-specific seed guidelines
+│   ├── shadcn-baseline.md# shadcn/ui token & component baseline
+│   ├── states.md         # 9-state coverage matrix
+│   ├── tooling.md        # uitools.py & render.py flags, rules, routes.json schema
+│   ├── typography-locale.md # scale, balance/pretty, tabular-nums, Intl, tr-uppercase
 │   └── visual-quality.md # palette recipe, typography voice, product UI, rhythm
+├── examples/
+│   └── app-demo/         # reference multi-route Vite + React app with routes.json & login.py
 ├── bench/                # blind A/B benchmark: briefs, pair builder, scorer
 │   └── runs/             # archived benchmark runs (run2–run8; see bench/runs/README.md)
 ├── scripts/
 │   ├── uitools.py        # contrast, scale, radius, snap, audit (Python 3 stdlib only)
-│   └── render.py         # offline full-page screenshot + --check (Playwright + Chromium)
-└── tests/
-    ├── test_uitools.py   # audit & rule regression tests (unittest, stdlib only)
-    └── test_render.py    # render.py & JS payload tests (unittest)
+│   ├── render.py         # screenshot, --url/--routes/--motion/--check (Playwright + Chromium)
+│   ├── uicolor.py        # hex/oklch/oklab/color-mix & Tailwind v4 color engine
+│   ├── uiparse.py        # HTML/JSX/Vue/CSS/cva parser
+│   ├── uiroute.py        # cross-file route & tsconfig alias resolution
+│   ├── uiignore.py       # reasoned uitools-ignore suppression & baseline
+│   └── checks/           # browser check payloads (check.js, mobile.js, interact.js, motion.js, sweep.js)
+└── tests/                # unittest suite (static rules, route/ignore/baseline, render/motion/states)
 ```
 
 ## Install
@@ -49,7 +61,9 @@ git clone https://github.com/hamzamalikyildiz/classic-ui-design-principles ~/.cl
 
 **claude.ai:** zip the `classic-ui-design-principles` folder and upload it in the Skills section of Settings.
 
-`uitools.py` runs standalone with zero dependencies (Python 3 stdlib only). For screenshots and `--check`, `render.py` needs Playwright, Chromium/Chrome, and `node`/`npm` (for `axe-core` and offline Tailwind/font fallback):
+`uitools.py` runs standalone with zero dependencies (Python 3 stdlib only). **Copying scripts into another repo?** Copy the entire `scripts/` folder (`uitools.py`, `render.py`, `uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`, and `checks/*.js`) together — `uitools.py` and `render.py` import those modules and JS payloads directly.
+
+For screenshots, `--url`, `--routes`, `--motion`, and `--check`, `render.py` needs Playwright, Chromium/Chrome, and `node`/`npm` (for `axe-core` and offline Tailwind/font fallback):
 
 ```bash
 pip install playwright && python -m playwright install chromium
@@ -114,17 +128,39 @@ The agent ends with a short summary: page type, mood and stack, the rules it app
 The script works on its own:
 
 ```bash
-# Is this color pair readable?
+# Is this color pair readable? (supports hex, Tailwind names, oklch, oklab, color-mix)
 python3 scripts/uitools.py contrast slate-400 white
+python3 scripts/uitools.py contrast "oklch(0.70 0.18 250)" white
 
-# Audit a shadcn project, including dark-theme tokens
-python3 scripts/uitools.py audit src/app/page.tsx src/components/*.tsx --css src/app/globals.css
+# Audit a route with cross-file component inlining and a baseline file
+python3 scripts/uitools.py audit --route app/cv/page.tsx --css app/globals.css --baseline .uitools-baseline.json
 ```
 
-To run the audit on every pull request, add a step to your project's workflow. The job fails on any FAIL:
+#### Recording an authenticated session (Playwright `storageState`)
+
+For pages behind login, record a session once and pass it to `render.py`:
+
+```bash
+python -m playwright codegen --save-storage=auth.json http://localhost:3000/login
+python scripts/render.py --url http://localhost:3000/dashboard --storage-state auth.json --out dashboard.png --check
+```
+
+> **Privacy note:** `auth.json` contains live session cookies and tokens. Add `auth.json` to `.gitignore` and never commit or share it.
+
+#### CI workflow (static audit + multi-route visual & motion E2E)
+
+To run the static audit on every pull request (exits 1 on FAIL):
 
 ```yaml
 - run: python3 path/to/classic-ui-design-principles/scripts/uitools.py audit $(git ls-files '*.tsx') --css src/app/globals.css
+```
+
+To run multi-route rendered, state, and motion checks against a built app (see [examples/app-demo/](examples/app-demo/) and [.github/workflows/app-e2e.yml](.github/workflows/app-e2e.yml)):
+
+```yaml
+- name: Run visual & motion e2e checks
+  run: |
+    python scripts/render.py --routes examples/app-demo/routes.json --motion --out-dir shots --format json --fail-on fail
 ```
 
 ## Script reference
@@ -140,7 +176,10 @@ python3 scripts/uitools.py scale --base 16 --ratio perfect-fourth
 python3 scripts/uitools.py radius 24 8
 python3 scripts/uitools.py snap 13 22 --grid 8
 python3 scripts/uitools.py audit index.html src/App.tsx --css app/globals.css --mood trust
+python3 scripts/uitools.py audit --routes-glob "app/**/page.tsx" --root . --tsconfig tsconfig.json --write-baseline
 python3 scripts/render.py index.html --out shot.png --check [--dark] [--width 1440]
+python3 scripts/render.py --url http://localhost:3000/cv --storage-state auth.json --out cv.png --check --motion
+python3 scripts/render.py --routes examples/app-demo/routes.json --out-dir shots/ --check --motion --format json
 ```
 
 The audit works per element, not per file:
