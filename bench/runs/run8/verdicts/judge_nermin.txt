@@ -1,0 +1,6 @@
+cift1: A | 3 | Büyük rakamları, daha yüksek kontrastlı başlıkları ve alıntı bölümündeki net başlığı sayesinde gözlükle takip etmesi daha rahat ve düzenli. | A 7/7/8/7 B 7/7/6/7
+cift2: B | 4 | Koyu yeşil bakiye kartı ve tek sütunlu ferah akışı sayesinde aradığımı hiç yorulmadan buluyorum, ayrıca sigorta ve kendi payımı ayrı göstermesi çok güven verici. | A 8/8/8/8 B 9/9/8/9
+cift3: A | 3 | Başlıkları daha büyük ve koyu, alt başlığı düz ve belirgin olduğu için kitap okur gibi hiç gözümü yormadan okuyabiliyorum; B'nin ince yazı tipi gözümü biraz zorladı. | A 8/9/9/8 B 8/8/7/9
+cift4: A | 4 | Gözü yormayan açık zemini, her bölümün net başlığı ve 1'den 4'e sıralı düzenli kartlarıyla sayfanın amacı ilk bakışta anlaşılıyor. | A 9/8/9/9 B 8/8/7/8
+cift5: B | 4 | Grafikteki etiketler çizginin üstüne binmeden tertemiz yazılmış, ayrıca metnin ara başlıklarla bölünmesi ve net yazı tipi okumayı çok kolaylaştırıyor. | A 7/7/6/7 B 9/9/9/9
+cift6: A | 4 | Yazıları ve rakamları belirgin biçimde daha büyük, OK ve HIGH gibi durum etiketleri sayesinde hangi kısımda sorun olduğu gözlükle bile anında seçiliyor. | A 8/8/9/8 B 7/7/6/7

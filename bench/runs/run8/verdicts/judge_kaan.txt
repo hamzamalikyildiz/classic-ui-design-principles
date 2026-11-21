@@ -1,0 +1,6 @@
+cift1: B | 4 | B seçeneği koyu bakiye kartı, tedavi maliyeti hesaplayıcısı ve faturalarda sigorta ile hasta payını ayrı göstermesiyle daha profesyonel, şeffaf ve güven verici görünüyor. | A 8/8/8/8 B 9/9/9/9
+cift2: B | 5 | B seçeneği yazar bilgisi, ara başlıklar ve çizgiyle çakışmayan temiz grafik etiketleriyle gerçek bir uzman yayını hissi veriyor. | A 7/7/7/7 B 9/9/9/9
+cift3: A | 3 | A seçeneği ön sipariş depozito bilgisini en üstte net vermesi, büyük rakamlarla taranabilir teknik kartları ve başlıklı kullanıcı yorumlarıyla daha derli toplu ve güvenilir duruyor. | A 8/8/9/8 B 7/8/8/8
+cift4: B | 4 | B seçeneği dört mevsimi eksiksiz sunması, net fiyat karşılaştırması ve ebeveynlerin asıl önemsediği güvenlik ile yağmurlu hava planı gibi somut detaylarıyla daha profesyonel ve ikna edici. | A 8/8/8/8 B 9/9/9/9
+cift5: B | 4 | B seçeneği basit çizimlerle dikkat dağıtmadan kusursuz dergi tipografisi, dengeli ara başlıkları ve sade düzeniyle çok daha gerçek ve profesyonel bir yayın hissi veriyor. | A 8/8/8/8 B 9/9/9/8
+cift6: A | 4 | A seçeneği havuz boşaltma ve YAML kopyalama gibi gerçek operasyon kontrolleri, eksen değerleri net SLO grafiği ve anında okunan durum kartlarıyla gerçek bir iş aracı güveni veriyor. | A 8/9/9/9 B 8/7/8/8

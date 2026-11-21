@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprout Club — Kids Weekend Backyard Gardening</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFFDF5',
+            forest: '#1F3B28',
+            leaf: '#2D7A47',
+            sun: '#FFD84D',
+            coral: '#C43816',
+            sage: '#F2F7EE',
+            butter: '#FFF4D2'
+          },
+          fontFamily: {
+            display: ['"Baloo 2"', 'cursive'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+    .mascot-float {
+      animation: floatSlow 4s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mascot-float { animation: none; }
+    }
+  </style>
+</head>
+<body class="bg-cream text-forest font-sans antialiased selection:bg-sun selection:text-forest">
+  <!-- Header -->
+  <header class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-leaf rounded-full px-2 py-1">
+      <svg class="w-9 h-9 text-leaf" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="18" fill="#FFD84D" />
+        <path d="M20 30V16M20 18C20 12 27 10 29 14C31 18 24 22 20 18ZM20 21C20 15 13 13 11 17C9 21 16 25 20 21Z" stroke="#1F3B28" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="#2D7A47" />
+      </svg>
+      <span class="font-display font-extrabold text-2xl tracking-tight text-forest">Sprout Club</span>
+    </a>
+    <nav aria-label="Primary" class="hidden md:flex items-center gap-7 text-base font-semibold text-forest">
+      <a href="#projects" class="hover:text-leaf focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-leaf rounded-lg px-2 py-1">Projects</a>
+      <a href="#kit" class="hover:text-leaf focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-leaf rounded-lg px-2 py-1">Seed Kit</a>
+      <a href="#pricing" class="hover:text-leaf focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-leaf rounded-lg px-2 py-1">Pricing</a>
+      <a href="#parents" class="hover:text-leaf focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-leaf rounded-lg px-2 py-1">For Parents</a>
+    </nav>
+    <a href="#pricing" class="inline-flex items-center justify-center min-h-[44px] px-5 rounded-full bg-leaf text-white font-bold text-sm shadow-md hover:bg-forest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-leaf">
+      Start Growing
+    </a>
+  </header>
+
+  <main>
+    <!-- Hero Stage -->
+    <section class="max-w-6xl mx-auto px-6 pt-2 pb-14">
+      <div class="bg-sun rounded-[28px] p-8 md:p-12 lg:p-14 shadow-lg grid md:grid-cols-12 gap-8 items-center relative overflow-hidden">
+        <div class="md:col-span-7 relative z-10">
+          <span class="inline-block px-3.5 py-1.5 rounded-full bg-forest text-sun font-bold text-xs tracking-wide uppercase mb-4">
+            Ages 5–11 · Weekend Backyard Club
+          </span>
+          <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] text-forest mb-5">
+            Muddy hands, big harvests, zero screens.
+          </h1>
+          <p class="text-lg text-forest/90 max-w-xl leading-relaxed mb-7 font-medium">
+            Every month, Sprout Club mails a real backyard gardening mission—heirloom seeds, kid-sized tools, and a 45-minute weekend field guide.
+          </p>
+          <div class="flex flex-wrap items-center gap-4">
+            <a href="#pricing" class="inline-flex items-center justify-center min-h-[48px] px-7 rounded-full bg-leaf text-white font-bold text-base shadow-md hover:bg-forest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-forest">
+              Claim First Seed Box — $18
+            </a>
+            <span class="text-sm font-bold text-forest">Ships free · Cancel anytime</span>
+          </div>
+        </div>
+
+        <!-- Drawn Mascot: Pip the Radish -->
+        <div class="md:col-span-5 flex justify-center">
+          <svg class="w-64 h-64 sm:w-72 sm:h-72 mascot-float" viewBox="0 0 260 260" fill="none" aria-label="Pip the Sprout Club radish mascot wearing a sun hat and holding a watering can">
+            <!-- Ground shadow -->
+            <ellipse cx="130" cy="236" rx="74" ry="12" fill="#E6B822" />
+            <!-- Leafy Sprout Hair -->
+            <path d="M130 68C115 35 80 35 86 58C90 72 115 74 130 68Z" fill="#2D7A47" stroke="#1F3B28" stroke-width="4" stroke-linejoin="round" />
+            <path d="M130 68C145 32 182 36 174 60C169 73 145 74 130 68Z" fill="#3B9658" stroke="#1F3B28" stroke-width="4" stroke-linejoin="round" />
+            <!-- Straw Hat -->
+            <ellipse cx="130" cy="76" rx="56" ry="13" fill="#FFF4D2" stroke="#1F3B28" stroke-width="4" />
+            <path d="M96 74C96 52 164 52 164 74" fill="#FFF4D2" stroke="#1F3B28" stroke-width="4" />
+            <path d="M98 69H162" stroke="#E65C3A" stroke-width="6" stroke-linecap="round" />
+            <!-- Radish Body -->
+            <path d="M72 135C72 95 98 78 130 78C162 78 188 95 188 135C188 178 152 212 130 222C108 212 72 178 72 135Z" fill="#E65C3A" stroke="#1F3B28" stroke-width="4.5" stroke-linejoin="round" />
+            <!-- Cream Belly -->
+            <ellipse cx="130" cy="172" rx="34" ry="26" fill="#FFFDF5" />
+            <!-- Face -->
+            <circle cx="109" cy="124" r="6" fill="#1F3B28" />
+            <circle cx="151" cy="124" r="6" fill="#1F3B28" />
+            <circle cx="111" cy="122" r="2" fill="#FFFFFF" />
+            <circle cx="153" cy="122" r="2" fill="#FFFFFF" />
+            <path d="M118 138C124 146 136 146 142 138" stroke="#1F3B28" stroke-width="4" stroke-linecap="round" />
+            <!-- Rosy Cheeks -->
+            <circle cx="96" cy="133" r="6" fill="#FFD84D" opacity="0.85" />
+            <circle cx="164" cy="133" r="6" fill="#FFD84D" opacity="0.85" />
+            <!-- Watering Can in Left Hand -->
+            <path d="M76 148C56 148 48 162 56 172" stroke="#1F3B28" stroke-width="4.5" stroke-linecap="round" />
+            <rect x="26" y="158" width="34" height="28" rx="6" fill="#3B9658" stroke="#1F3B28" stroke-width="4" />
+            <path d="M26 174L12 162" stroke="#1F3B28" stroke-width="4" stroke-linecap="round" />
+            <circle cx="10" cy="160" r="4" fill="#FFD84D" stroke="#1F3B28" stroke-width="3" />
+            <!-- Right Arm Waving -->
+            <path d="M184 144C204 138 212 122 204 112" stroke="#1F3B28" stroke-width="4.5" stroke-linecap="round" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seasonal Projects (Lopsided Rhythm) -->
+    <section id="projects" class="max-w-6xl mx-auto px-6 py-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <p class="text-sm font-bold uppercase tracking-wider text-coral mb-1">Seasonal Missions</p>
+          <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-forest">What kids grow all year</h2>
+        </div>
+        <p class="text-base text-forest/80 max-w-md">
+          Each kit matches your local frost dates so every seed actually sprouts.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-12 gap-6">
+        <!-- Featured Wide Card -->
+        <article class="md:col-span-7 bg-sage rounded-3xl p-7 shadow-sm flex flex-col justify-between">
+          <div>
+            <span class="inline-block px-3 py-1 rounded-full bg-leaf text-white text-xs font-bold mb-4">Spring · April</span>
+            <h3 class="font-display font-bold text-2xl text-forest mb-2">The Pizza Topping Patch</h3>
+            <p class="text-base text-forest/85 leading-relaxed mb-6">
+              Plant sweet Genovese basil, cherry tomatoes, and rainbow radishes in one sunny corner—then harvest your own Friday pizza toppings in 45 days.
+            </p>
+          </div>
+          <div class="flex items-center gap-4 text-sm font-bold text-leaf">
+            <span>45-day harvest</span>
+            <span aria-hidden="true">•</span>
+            <span>Includes 3 seed packets</span>
+          </div>
+        </article>
+
+        <!-- Stacked Right Cards -->
+        <div class="md:col-span-5 flex flex-col gap-6">
+          <article class="bg-butter rounded-3xl p-6 shadow-sm">
+            <span class="inline-block px-3 py-1 rounded-full bg-coral text-white text-xs font-bold mb-3">Summer · July</span>
+            <h3 class="font-display font-bold text-xl text-forest mb-1.5">Giant Sunflower Fort</h3>
+            <p class="text-sm text-forest/85 leading-relaxed">
+              Build a 7-foot living teepee with Mammoth Sunflowers and climbing runner beans.
+            </p>
+          </article>
+          <article class="bg-white rounded-3xl p-6 shadow-sm">
+            <span class="inline-block px-3 py-1 rounded-full bg-forest text-sun text-xs font-bold mb-3">Autumn · October</span>
+            <h3 class="font-display font-bold text-xl text-forest mb-1.5">Underground Root Detectives</h3>
+            <p class="text-sm text-forest/85 leading-relaxed">
+              Grow purple carrots and sugar snap peas, plus a compost worm observation jar.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seed Kit Contents -->
+    <section id="kit" class="bg-sage py-14 my-4">
+      <div class="max-w-6xl mx-auto px-6">
+        <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-forest mb-8">Inside every monthly crate</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-cream rounded-3xl p-6 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-sun flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <path d="M12 22V12M12 12C12 7 17 4 20 6C20 11 16 13 12 12ZM12 14C12 9 7 6 4 8C4 13 8 15 12 14Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3 class="font-display font-bold text-lg text-forest mb-1">3 Heirloom Seed Packs</h3>
+            <p class="text-sm text-forest/80 leading-relaxed">Non-GMO, fast-sprouting varieties picked for impatient young gardeners.</p>
+          </div>
+
+          <div class="bg-cream rounded-3xl p-6 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-sun flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <path d="M14 4L20 10L10 20H4V14L14 4Z" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3 class="font-display font-bold text-lg text-forest mb-1">Kid-Sized Steel Tools</h3>
+            <p class="text-sm text-forest/80 leading-relaxed">Real bamboo-handle trowel, watering spout, and washable garden gloves.</p>
+          </div>
+
+          <div class="bg-cream rounded-3xl p-6 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-sun flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <rect x="4" y="3" width="16" height="18" rx="3" />
+                <path d="M8 8H16M8 12H16M8 16H12" stroke-linecap="round" />
+              </svg>
+            </div>
+            <h3 class="font-display font-bold text-lg text-forest mb-1">Waterproof Field Guide</h3>
+            <p class="text-sm text-forest/80 leading-relaxed">Illustrated step-by-step cards with bug hunts and harvest recipes.</p>
+          </div>
+
+          <div class="bg-cream rounded-3xl p-6 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-sun flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-forest" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20L16 16" stroke-linecap="round" />
+              </svg>
+            </div>
+            <h3 class="font-display font-bold text-lg text-forest mb-1">Explorer Badge &amp; Lens</h3>
+            <p class="text-sm text-forest/80 leading-relaxed">Iron-on merit patch for every completed mission plus a pocket magnifier.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing & Parents Split -->
+    <section id="pricing" class="max-w-6xl mx-auto px-6 py-14 grid lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-7 grid sm:grid-cols-2 gap-6">
+        <div class="bg-white rounded-3xl p-7 shadow-md flex flex-col justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-leaf mb-2">1 Kid · Monthly</p>
+            <h3 class="font-display font-extrabold text-2xl text-forest">Weekend Sprout</h3>
+            <p class="font-display font-extrabold text-4xl text-forest my-4">$18<span class="text-base font-sans font-semibold text-forest/70">/mo</span></p>
+            <ul class="space-y-2.5 text-sm text-forest/85 mb-6">
+              <li>• 3 seasonal seed packets</li>
+              <li>• 1 kid-sized tool or gear item</li>
+              <li>• Waterproof mission cards</li>
+            </ul>
+          </div>
+          <a href="#join" class="inline-flex items-center justify-center min-h-[44px] w-full rounded-full bg-leaf text-white font-bold text-sm hover:bg-forest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-leaf">
+            Choose Weekend Sprout
+          </a>
+        </div>
+
+        <div class="bg-butter rounded-3xl p-7 shadow-md flex flex-col justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-coral mb-2">2+ Kids · Best Value</p>
+            <h3 class="font-display font-extrabold text-2xl text-forest">Sibling Patch</h3>
+            <p class="font-display font-extrabold text-4xl text-forest my-4">$29<span class="text-base font-sans font-semibold text-forest/70">/mo</span></p>
+            <ul class="space-y-2.5 text-sm text-forest/85 mb-6">
+              <li>• Double seed packets &amp; 2 badges</li>
+              <li>• 2 pairs of gloves &amp; 2 trowels</li>
+              <li>• Shared weekend family recipe</li>
+            </ul>
+          </div>
+          <a href="#join" class="inline-flex items-center justify-center min-h-[44px] w-full rounded-full bg-forest text-sun font-bold text-sm hover:bg-leaf hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest">
+            Choose Sibling Patch
+          </a>
+        </div>
+      </div>
+
+      <!-- Parents Section -->
+      <div id="parents" class="lg:col-span-5 bg-sage rounded-3xl p-7">
+        <p class="text-xs font-bold uppercase tracking-wider text-leaf mb-2">Built for Busy Parents</p>
+        <h2 class="font-display font-extrabold text-2xl text-forest mb-4">No green thumb required.</h2>
+        <div class="space-y-4 text-sm text-forest/85 leading-relaxed">
+          <p><strong class="text-forest">45-minute weekend rhythm:</strong> Clear picture steps let kids lead the planting while you sip your Saturday coffee.</p>
+          <p><strong class="text-forest">Works on balconies too:</strong> Every mission includes a 5-gallon pot option if you don't have a yard.</p>
+          <p><strong class="text-forest">100% organic &amp; safe:</strong> Certified organic seeds, zero synthetic fertilizers, and rounded tool edges.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA Band -->
+    <section id="join" class="max-w-6xl mx-auto px-6 pb-16">
+      <div class="bg-forest text-cream rounded-[28px] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
+        <div>
+          <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-sun mb-2">Ready for Saturday morning dirt?</h2>
+          <p class="text-base text-cream/90 max-w-xl">Join 4,200+ families growing their own backyard snacks. Pause or cancel in two clicks.</p>
+        </div>
+        <a href="#pricing" class="inline-flex items-center justify-center min-h-[48px] px-8 rounded-full bg-sun text-forest font-extrabold text-base shadow-md hover:bg-white transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sun">
+          Get Your First Crate
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 py-8 border-t border-forest/10 text-sm text-forest/75 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p>© 2026 Sprout Club · Backyard Gardening for Kids</p>
+    <p>Questions? hello@sproutclub.example</p>
+  </footer>
+</body>
+</html>

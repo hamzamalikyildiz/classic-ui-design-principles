@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Roasting Curve — Small-Batch Coffee Roasting Explained</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            crema: '#FBF8F3',
+            espresso: '#1C1613',
+            roast: '#7A3E1D',
+            chaff: '#70655C',
+            parchment: '#EFE8DC',
+            line: '#E2D8C8',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #FBF8F3;
+      color: #1C1613;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body class="font-sans selection:bg-roast/15 selection:text-espresso">
+  <!-- Top Bar -->
+  <header class="border-b border-line">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-xs tracking-[0.16em] uppercase text-chaff">
+      <span class="font-semibold text-espresso">Origin &amp; Heat</span>
+      <span>Process Essay &middot; Vol. 09</span>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 pt-12 pb-20">
+    <!-- Headline & Introduction -->
+    <div class="max-w-3xl mb-12">
+      <p class="text-xs tracking-[0.2em] uppercase text-roast font-medium mb-4">
+        Thermodynamics &amp; Craft
+      </p>
+      <h1 class="font-serif text-5xl sm:text-6xl font-normal tracking-tight text-espresso leading-[1.05] mb-5">
+        The Roasting Curve
+      </h1>
+      <p class="text-lg sm:text-xl text-chaff leading-relaxed">
+        Twelve minutes inside a cast-iron drum separates grassy green seed from caramelized sweetness. Understanding how heat, airflow, and rate of rise shape every cup.
+      </p>
+    </div>
+
+    <!-- Main 2-Column Layout: Essay + Roast-Stage Temperature/Time Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <!-- Left Column: Essay & Curve Diagram -->
+      <div class="lg:col-span-8 space-y-8">
+        <!-- Inline SVG Roasting Curve Chart -->
+        <figure class="bg-parchment/70 border border-line p-6 sm:p-8">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs tracking-[0.14em] uppercase text-chaff font-medium">
+              Batch Profile &middot; 12 kg Drum
+            </span>
+            <span class="font-mono text-xs text-roast">
+              Charge 198&deg;C &rarr; Drop 206&deg;C
+            </span>
+          </div>
+          <svg viewBox="0 0 640 240" class="w-full h-auto" role="img" aria-label="Temperature over time roasting curve showing turning point, yellowing, Maillard phase, and first crack">
+            <!-- Grid lines -->
+            <g stroke="#DFD4C3" stroke-width="1">
+              <line x1="50" y1="30" x2="610" y2="30" />
+              <line x1="50" y1="80" x2="610" y2="80" />
+              <line x1="50" y1="130" x2="610" y2="130" />
+              <line x1="50" y1="180" y2="180" />
+            </g>
+            <!-- Y-axis labels -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#70655C">
+              <text x="10" y="34">210&deg;C</text>
+              <text x="10" y="84">180&deg;C</text>
+              <text x="10" y="134">140&deg;C</text>
+              <text x="10" y="184">100&deg;C</text>
+            </g>
+            <!-- X-axis labels -->
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#70655C">
+              <text x="50" y="215">0:00</text>
+              <text x="190" y="215">3:30</text>
+              <text x="330" y="215">7:00</text>
+              <text x="470" y="215">9:30</text>
+              <text x="580" y="215">11:30</text>
+            </g>
+            <!-- Roasting Curve Path -->
+            <path d="M55 55 C85 160, 115 182, 135 178 C195 165, 290 120, 380 82 C445 55, 515 40, 595 32"
+                  fill="none" stroke="#7A3E1D" stroke-width="2.6" stroke-linecap="round" />
+            <!-- Key Milestones -->
+            <circle cx="135" cy="178" r="4" fill="#1C1613" />
+            <text x="143" y="173" font-family="Inter, sans-serif" font-size="10" fill="#1C1613">Turning Point</text>
+
+            <circle cx="265" cy="132" r="4" fill="#7A3E1D" />
+            <text x="273" y="127" font-family="Inter, sans-serif" font-size="10" fill="#1C1613">Yellowing</text>
+
+            <circle cx="465" cy="50" r="4.5" fill="#7A3E1D" />
+            <text x="474" y="47" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#7A3E1D">First Crack</text>
+
+            <circle cx="595" cy="32" r="4" fill="#1C1613" />
+            <text x="556" y="22" font-family="Inter, sans-serif" font-size="10" fill="#1C1613">Drop</text>
+          </svg>
+        </figure>
+
+        <!-- Essay Body -->
+        <article class="space-y-6 text-[16.5px] leading-[1.8] text-espresso/90">
+          <p>
+            Green coffee arrives at the roastery dense, pale, and smelling faintly of cut hay. Inside each seed sits roughly eleven percent moisture bound within a tight cellulose matrix. When the roaster drops a twelve-kilogram charge into a preheated drum, the bean temperature plummets as cold seeds absorb ambient heat, reaching a turning point around ninety seconds in.
+          </p>
+          <p>
+            From that trough, the craft is a balancing act of momentum. During the drying phase, water must leave the bean evenly before surface sugars begin to brown. Rush this stage with too much gas, and the exterior scorches while the center stays raw and astringent.
+          </p>
+
+          <!-- Pull Quote -->
+          <blockquote class="my-8 py-5 px-6 border-l-2 border-roast bg-parchment/60">
+            <p class="font-serif italic text-2xl sm:text-[26px] leading-snug text-espresso mb-2">
+              &ldquo;First crack is not the finish line; it is the moment the bean finally tells you how much energy it has left.&rdquo;
+            </p>
+            <cite class="not-italic text-xs tracking-[0.15em] uppercase text-chaff">
+              — Roastery Floor Notes, Portland
+            </cite>
+          </blockquote>
+
+          <p>
+            Past 150&deg;C, the Maillard reaction accelerates: amino acids and reducing sugars recombine into hundreds of aromatic compounds, shifting the seed from pale yellow to warm cinnamon. Around 196&deg;C, trapped steam ruptures the cell walls in an audible chorus known as first crack. From there, every ten seconds of development time trades bright, floral acidity for deeper body and chocolate sweetness.
+          </p>
+        </article>
+      </div>
+
+      <!-- Right Column: Roast-Stage Temperature / Time Sidebar -->
+      <aside class="lg:col-span-4 bg-parchment border border-line p-6 lg:sticky lg:top-8">
+        <p class="text-xs tracking-[0.18em] uppercase text-roast font-medium mb-1">
+          Telemetry Log
+        </p>
+        <h2 class="font-serif text-2xl text-espresso font-normal mb-5 pb-3 border-b border-line">
+          Roast Stages
+        </h2>
+        <ol class="space-y-5">
+          <li class="border-b border-line/70 pb-4">
+            <div class="flex items-baseline justify-between mb-1">
+              <span class="font-medium text-sm text-espresso">1. Drying Phase</span>
+              <span class="font-mono text-xs text-roast">0:00 – 4:15</span>
+            </div>
+            <p class="font-mono text-xs text-chaff mb-1.5">95&deg;C &rarr; 150&deg;C</p>
+            <p class="text-xs text-chaff leading-relaxed">
+              Moisture evaporates; beans shift from emerald green to pale hay.
+            </p>
+          </li>
+          <li class="border-b border-line/70 pb-4">
+            <div class="flex items-baseline justify-between mb-1">
+              <span class="font-medium text-sm text-espresso">2. Maillard Browning</span>
+              <span class="font-mono text-xs text-roast">4:15 – 8:45</span>
+            </div>
+            <p class="font-mono text-xs text-chaff mb-1.5">150&deg;C &rarr; 195&deg;C</p>
+            <p class="text-xs text-chaff leading-relaxed">
+              Sugars and amino acids caramelize; toasted-bread aroma emerges.
+            </p>
+          </li>
+          <li class="border-b border-line/70 pb-4">
+            <div class="flex items-baseline justify-between mb-1">
+              <span class="font-medium text-sm text-espresso">3. First Crack</span>
+              <span class="font-mono text-xs text-roast">8:45 – 9:40</span>
+            </div>
+            <p class="font-mono text-xs text-chaff mb-1.5">196&deg;C &rarr; 200&deg;C</p>
+            <p class="text-xs text-chaff leading-relaxed">
+              Exothermic steam release fractures bean structure; chaff sheds.
+            </p>
+          </li>
+          <li>
+            <div class="flex items-baseline justify-between mb-1">
+              <span class="font-medium text-sm text-espresso">4. Development &amp; Drop</span>
+              <span class="font-mono text-xs text-roast">9:40 – 11:30</span>
+            </div>
+            <p class="font-mono text-xs text-chaff mb-1.5">200&deg;C &rarr; 206&deg;C</p>
+            <p class="text-xs text-chaff leading-relaxed">
+              Airflow rises, gas tapers; beans cool rapidly on the perforated tray.
+            </p>
+          </li>
+        </ol>
+      </aside>
+    </div>
+
+    <!-- Related Essays -->
+    <section class="mt-20 pt-10 border-t border-line">
+      <div class="flex items-baseline justify-between mb-7">
+        <h2 class="font-serif text-2xl sm:text-3xl font-normal text-espresso">Related Essays</h2>
+        <span class="text-xs tracking-[0.16em] uppercase text-chaff">Further Reading</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="#" class="group block p-6 bg-parchment/50 border border-line hover:border-roast/50 transition-colors">
+          <p class="text-[11px] tracking-[0.18em] uppercase text-roast mb-2">Water Chemistry</p>
+          <h3 class="font-serif text-xl text-espresso group-hover:text-roast transition-colors mb-2">
+            Magnesium &amp; Extraction
+          </h3>
+          <p class="text-sm text-chaff leading-relaxed">
+            How mineral balance in brew water unlocks fruit clarity or flattens a washed Ethiopian lot.
+          </p>
+        </a>
+        <a href="#" class="group block p-6 bg-parchment/50 border border-line hover:border-roast/50 transition-colors">
+          <p class="text-[11px] tracking-[0.18em] uppercase text-roast mb-2">Processing</p>
+          <h3 class="font-serif text-xl text-espresso group-hover:text-roast transition-colors mb-2">
+            Raised Beds in Huila
+          </h3>
+          <p class="text-sm text-chaff leading-relaxed">
+            Slow-drying honey-processed cherries under shade cloth at 1,800 meters.
+          </p>
+        </a>
+        <a href="#" class="group block p-6 bg-parchment/50 border border-line hover:border-roast/50 transition-colors">
+          <p class="text-[11px] tracking-[0.18em] uppercase text-roast mb-2">Equipment</p>
+          <h3 class="font-serif text-xl text-espresso group-hover:text-roast transition-colors mb-2">
+            Cast Iron vs. Fluid Bed
+          </h3>
+          <p class="text-sm text-chaff leading-relaxed">
+            Comparing conductive drum heat against convective air roasting in small batches.
+          </p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-line py-7 text-center text-xs text-chaff tracking-wide">
+    &copy; 2026 Origin &amp; Heat &middot; Small-Batch Roastery Journal
+  </footer>
+</body>
+</html>

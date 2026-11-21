@@ -1,0 +1,62 @@
+[
+ {
+  "arm": "skill",
+  "page": "playful-a-1",
+  "task": "<WORKDIR>\\tasks\\skill-playful-a-1.txt"
+ },
+ {
+  "arm": "skill",
+  "page": "bold-a-1",
+  "task": "<WORKDIR>\\tasks\\skill-bold-a-1.txt"
+ },
+ {
+  "arm": "skill",
+  "page": "trust-a-1",
+  "task": "<WORKDIR>\\tasks\\skill-trust-a-1.txt"
+ },
+ {
+  "arm": "skill",
+  "page": "technical-a-1",
+  "task": "<WORKDIR>\\tasks\\skill-technical-a-1.txt"
+ },
+ {
+  "arm": "skill",
+  "page": "editorial-a-1",
+  "task": "<WORKDIR>\\tasks\\skill-editorial-a-1.txt"
+ },
+ {
+  "arm": "skill",
+  "page": "editorial-b-1",
+  "task": "<WORKDIR>\\tasks\\skill-editorial-b-1.txt"
+ },
+ {
+  "arm": "noskill",
+  "page": "playful-a-1",
+  "task": "<WORKDIR>\\tasks\\noskill-playful-a-1.txt"
+ },
+ {
+  "arm": "noskill",
+  "page": "bold-a-1",
+  "task": "<WORKDIR>\\tasks\\noskill-bold-a-1.txt"
+ },
+ {
+  "arm": "noskill",
+  "page": "trust-a-1",
+  "task": "<WORKDIR>\\tasks\\noskill-trust-a-1.txt"
+ },
+ {
+  "arm": "noskill",
+  "page": "technical-a-1",
+  "task": "<WORKDIR>\\tasks\\noskill-technical-a-1.txt"
+ },
+ {
+  "arm": "noskill",
+  "page": "editorial-a-1",
+  "task": "<WORKDIR>\\tasks\\noskill-editorial-a-1.txt"
+ },
+ {
+  "arm": "noskill",
+  "page": "editorial-b-1",
+  "task": "<WORKDIR>\\tasks\\noskill-editorial-b-1.txt"
+ }
+]

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spruce and Varnish — The Craft of Violin Restoration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#FAF7F2',
+            parchment: '#F2ECE1',
+            ink: '#1E1915',
+            muted: '#5C5248',
+            varnish: '#8C3F19',
+            'varnish-dark': '#6E3011',
+            hairline: '#DDD4C6',
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-enter {
+      animation: fadeUp 550ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .hero-enter-delay {
+      animation: fadeUp 550ms cubic-bezier(0.22, 1, 0.36, 1) 100ms both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-enter, .hero-enter-delay { animation: none; }
+    }
+    .drop-cap::first-letter {
+      float: left;
+      font-size: 3.75rem;
+      line-height: 0.85;
+      padding-right: 0.65rem;
+      padding-top: 0.25rem;
+      font-weight: 500;
+      color: #8C3F19;
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-serif antialiased selection:bg-varnish/15 selection:text-varnish-dark">
+  <header class="border-b border-hairline">
+    <div class="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="#top" class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-ink hover:text-varnish transition-colors">
+        The Cremona Ledger
+      </a>
+      <nav aria-label="Primary" class="flex items-center gap-6 font-sans text-xs uppercase tracking-[0.12em] text-muted">
+        <a href="#story" class="hover:text-ink transition-colors">Profile</a>
+        <a href="#related" class="hover:text-ink transition-colors">Related</a>
+        <a href="#newsletter" class="hover:text-ink transition-colors">Subscribe</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="py-12 md:py-16">
+    <article id="story">
+      <!-- Wide centered header frame -->
+      <div class="max-w-4xl mx-auto px-6 text-center hero-enter">
+        <p class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-varnish mb-4">
+          Master Craft &middot; Profile
+        </p>
+        <h1 class="text-5xl sm:text-6xl md:text-[4.25rem] font-normal tracking-tight leading-[1.06] text-ink mb-6">
+          Spruce and Varnish
+        </h1>
+        <p class="max-w-2xl mx-auto text-xl md:text-2xl text-muted leading-relaxed mb-8">
+          Inside Matteo Bellini’s quiet Milanese workshop, where three-hundred-year-old instruments are coaxed back to voice with hide glue, bone dust, and patience.
+        </p>
+        <div class="hero-enter-delay inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-sans text-sm text-muted border-t border-b border-hairline py-3 px-4">
+          <span>By <strong class="font-medium text-ink">Elena Marchetti</strong></span>
+          <span aria-hidden="true">&middot;</span>
+          <time datetime="2026-10-14">October 14, 2026</time>
+          <span aria-hidden="true">&middot;</span>
+          <span>9 min read</span>
+        </div>
+      </div>
+
+      <!-- Centered reading column -->
+      <div class="max-w-prose mx-auto px-6 mt-12 text-lg leading-[1.78] text-ink space-y-6">
+        <p class="drop-cap">
+          Every morning at seven, before the trams begin rattling down Via Solferino, Matteo Bellini opens the tall wooden shutters of his third-floor studio and checks the hygrometer on the north wall. Forty-eight percent relative humidity. Anything higher, and the Alpine spruce top of a 1715 Cremonese violin will swell by fractions of a millimeter; anything lower, and an old seam along the bass bar might whisper open overnight.
+        </p>
+        <p>
+          Bellini has spent thirty-four years repairing instruments that have outlived empires. On his bench today rests a Venetian cello with a hairline soundpost crack—the most delicate fracture in string restoration. Unlike modern woodworking, where strength is the sole metric, a restorer’s repair must remain invisible, reversible, and acoustically transparent.
+        </p>
+
+        <h2 class="text-2xl md:text-3xl font-normal tracking-tight text-ink pt-6 pb-1 border-b border-hairline">
+          The Ethics of the Invisible Seam
+        </h2>
+        <p>
+          To close a crack in aged spruce, Bellini never reaches for synthetic resin. Instead, he warms a small pot of rabbit-skin hide glue in a water bath until it reaches sixty degrees Celsius. The glue’s protein chains bond with the wood fibers yet can be softened decades later with a damp cloth and gentle heat, allowing future luthiers to undo his work without scarring the original plate.
+        </p>
+        <p>
+          Once the crack is aligned using custom-carved counter-forms cast in plaster, he reinforces the underside with tiny diamond-shaped spruce cleats, each planed to a thickness of less than a millimeter and oriented so their grain crosses the fracture at a slight angle.
+        </p>
+      </div>
+
+      <!-- Wide pull quote -->
+      <figure class="max-w-3xl mx-auto px-6 my-12 py-8 border-t border-b border-hairline text-center">
+        <blockquote class="text-2xl md:text-3xl italic leading-[1.42] text-ink">
+          “You are never restoring the wood for yourself. You are borrowing it for a few weeks so that someone a century from now can still hear what the maker intended.”
+        </blockquote>
+        <figcaption class="mt-4 font-sans text-sm uppercase tracking-[0.12em] text-muted">
+          Matteo Bellini, Master Restorer
+        </figcaption>
+      </figure>
+
+      <!-- Centered reading column resumed -->
+      <div class="max-w-prose mx-auto px-6 text-lg leading-[1.78] text-ink space-y-6">
+        <h2 class="text-2xl md:text-3xl font-normal tracking-tight text-ink pt-2 pb-1 border-b border-hairline">
+          Amber, Oil, and Patience
+        </h2>
+        <p>
+          Varnish work is the final test of restraint. A retouched patch on a worn maple rib cannot look freshly lacquered; it must match the oxidized patina of linseed oil, Baltic amber, and Venetian turpentine laid down three centuries ago. Bellini mixes dry mineral pigments on a glass slab with a palette knife, testing each tint under north daylight before touching a sable brush to the wood.
+        </p>
+        <p>
+          By late afternoon, the cello’s seam has disappeared to the naked eye. Bellini sets the instrument back in its velvet-lined cradle, wipes his chisels with camellia oil, and lets the glue cure until morning.
+        </p>
+      </div>
+    </article>
+
+    <!-- Related Stories (typographic, hairline-divided) -->
+    <section id="related" aria-labelledby="related-heading" class="max-w-4xl mx-auto px-6 mt-16 pt-12 border-t border-hairline">
+      <h2 id="related-heading" class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-muted mb-8">
+        Related Stories
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <article class="border-t border-hairline pt-4">
+          <p class="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-varnish mb-2">Materials</p>
+          <h3 class="text-xl font-normal leading-snug text-ink mb-2">
+            <a href="#top" class="hover:text-varnish transition-colors">The Singing Trees of Val di Fiemme</a>
+          </h3>
+          <p class="text-base text-muted leading-relaxed">
+            How high-altitude red spruce acquires the tight, resonant grain prized by Italian luthiers.
+          </p>
+        </article>
+        <article class="border-t border-hairline pt-4">
+          <p class="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-varnish mb-2">Archive</p>
+          <h3 class="text-xl font-normal leading-snug text-ink mb-2">
+            <a href="#top" class="hover:text-varnish transition-colors">A Catalogue of Forgotten Bows</a>
+          </h3>
+          <p class="text-base text-muted leading-relaxed">
+            Inside a Paris conservator’s vault of nineteenth-century pernambuco sticks and ivory frogs.
+          </p>
+        </article>
+        <article class="border-t border-hairline pt-4">
+          <p class="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-varnish mb-2">Acoustics</p>
+          <h3 class="text-xl font-normal leading-snug text-ink mb-2">
+            <a href="#top" class="hover:text-varnish transition-colors">Listening to the Soundpost</a>
+          </h3>
+          <p class="text-base text-muted leading-relaxed">
+            Why shifting a pencil-thin dowel by half a millimeter transforms a violin’s projection.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section id="newsletter" aria-labelledby="newsletter-heading" class="max-w-4xl mx-auto px-6 mt-16">
+      <div class="bg-parchment border border-hairline rounded px-6 py-10 md:px-12 md:py-12">
+        <div class="max-w-xl mx-auto text-center">
+          <p class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-varnish mb-2">
+            Weekly Dispatch
+          </p>
+          <h2 id="newsletter-heading" class="text-2xl md:text-3xl font-normal text-ink mb-3">
+            Notes from the Workshop
+          </h2>
+          <p class="text-base text-muted leading-relaxed mb-6">
+            Receive one quiet long-read every Sunday morning on traditional craft, restoration, and the people who keep old things alive.
+          </p>
+          <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <label for="email-input" class="sr-only">Email address</label>
+            <input
+              id="email-input"
+              type="email"
+              required
+              placeholder="you@example.com"
+              class="flex-1 min-h-[44px] px-4 bg-paper border border-hairline rounded font-sans text-base text-ink placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-varnish focus:border-varnish"
+            />
+            <button
+              type="submit"
+              class="min-h-[44px] px-6 bg-varnish hover:bg-varnish-dark text-paper font-sans text-sm font-medium tracking-wide rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-varnish"
+            >
+              Subscribe
+            </button>
+          </form>
+          <p id="newsletter-status" class="mt-3 font-sans text-sm text-varnish-dark hidden" role="status"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-hairline py-8 mt-8">
+    <div class="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans text-sm text-muted">
+      <span>&copy; 2026 The Cremona Ledger</span>
+      <span>Milan &middot; Cremona</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('newsletter-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = document.getElementById('email-input');
+      var status = document.getElementById('newsletter-status');
+      if (input.value.trim()) {
+        status.textContent = 'Thank you. Your first Sunday dispatch will arrive this weekend.';
+        status.classList.remove('hidden');
+        input.value = '';
+      }
+    });
+  </script>
+</body>
+</html>

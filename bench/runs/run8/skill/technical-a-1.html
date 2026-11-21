@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ForgeGrid — CI/CD Runner &amp; Pipeline Telemetry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    pre { scrollbar-color: #3f3f46 #18181b; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen">
+  <header class="border-b border-zinc-800 bg-zinc-950/95 sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded bg-amber-500 text-zinc-950 flex items-center justify-center font-mono font-bold text-sm shrink-0" aria-hidden="true">FG</div>
+        <span class="font-semibold text-base tracking-tight text-zinc-50">ForgeGrid</span>
+        <span class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono text-emerald-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true"></span>
+          us-east-1
+        </span>
+      </div>
+      <nav aria-label="Primary" class="hidden md:flex items-center gap-6 text-sm text-zinc-400">
+        <a href="#telemetry" class="text-zinc-100 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">Telemetry</a>
+        <a href="#failures" class="hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">Failed Jobs</a>
+        <a href="#nodes" class="hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">Workers</a>
+        <a href="#config" class="hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">Runner YAML</a>
+      </nav>
+      <div class="flex items-center gap-2.5 shrink-0">
+        <button id="pauseBtn" type="button" class="h-9 px-3 rounded-md bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-sm font-medium text-zinc-200 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">
+          Pause Stream
+        </button>
+        <button id="drainBtn" type="button" class="h-10 px-3.5 rounded-md bg-amber-500 hover:bg-amber-400 text-zinc-950 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">
+          Drain Pool
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <!-- Queue Latency by Pool -->
+    <section aria-label="Queue latency by pool" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-mono text-sm font-medium text-zinc-200">linux-x64-lg</span>
+          <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/60">OK</span>
+        </div>
+        <p class="font-mono text-2xl font-semibold text-zinc-50 mt-2 tabular-nums">410 ms</p>
+        <p class="text-sm text-zinc-400 mt-1 font-mono tabular-nums">p95 queue &middot; 14 queued</p>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-mono text-sm font-medium text-zinc-200">linux-arm64</span>
+          <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/60">OK</span>
+        </div>
+        <p class="font-mono text-2xl font-semibold text-zinc-50 mt-2 tabular-nums">285 ms</p>
+        <p class="text-sm text-zinc-400 mt-1 font-mono tabular-nums">p95 queue &middot; 6 queued</p>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-mono text-sm font-medium text-zinc-200">macos-m3</span>
+          <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700/60">HIGH</span>
+        </div>
+        <p class="font-mono text-2xl font-semibold text-amber-400 mt-2 tabular-nums">3,820 ms</p>
+        <p class="text-sm text-zinc-400 mt-1 font-mono tabular-nums">p95 queue &middot; 29 queued</p>
+      </div>
+      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-mono text-sm font-medium text-zinc-200">gpu-t4</span>
+          <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/60">OK</span>
+        </div>
+        <p class="font-mono text-2xl font-semibold text-zinc-50 mt-2 tabular-nums">640 ms</p>
+        <p class="text-sm text-zinc-400 mt-1 font-mono tabular-nums">p95 queue &middot; 3 queued</p>
+      </div>
+    </section>
+
+    <!-- Focal Telemetry: Runner Utilization Chart -->
+    <section id="telemetry" class="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h1 class="text-lg font-semibold text-zinc-50">Runner Utilization (Last 60m)</h1>
+          <p class="text-sm text-zinc-400">Active vCPU saturation across primary Linux &amp; macOS runner pools</p>
+        </div>
+        <div class="flex items-center gap-4 text-sm font-mono">
+          <span class="inline-flex items-center gap-2 text-zinc-200"><span class="w-3 h-0.5 bg-amber-400 inline-block"></span>linux-x64-lg</span>
+          <span class="inline-flex items-center gap-2 text-zinc-200"><span class="w-3 h-0.5 bg-cyan-400 inline-block"></span>macos-m3</span>
+          <span class="inline-flex items-center gap-2 text-rose-400"><span class="w-3 h-0.5 border-t border-dashed border-rose-400 inline-block"></span>85% SLO</span>
+        </div>
+      </div>
+      <div class="w-full overflow-x-auto">
+        <svg viewBox="0 0 760 220" class="w-full min-w-[540px] h-56" role="img" aria-label="Runner utilization chart showing linux-x64-lg and macos-m3 utilization over 60 minutes">
+          <!-- Y-axis grid & labels -->
+          <line x1="56" y1="24" x2="736" y2="24" stroke="#27272a" stroke-width="1" />
+          <line x1="56" y1="68" x2="736" y2="68" stroke="#27272a" stroke-width="1" />
+          <line x1="56" y1="112" x2="736" y2="112" stroke="#27272a" stroke-width="1" />
+          <line x1="56" y1="156" x2="736" y2="156" stroke="#27272a" stroke-width="1" />
+          <line x1="56" y1="184" x2="736" y2="184" stroke="#3f3f46" stroke-width="1" />
+
+          <text x="44" y="28" text-anchor="end" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">100%</text>
+          <text x="44" y="72" text-anchor="end" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">75%</text>
+          <text x="44" y="116" text-anchor="end" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">50%</text>
+          <text x="44" y="160" text-anchor="end" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">25%</text>
+
+          <!-- 85% Threshold -->
+          <line x1="56" y1="48" x2="736" y2="48" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5 5" />
+          <text x="732" y="42" text-anchor="end" fill="#fb7185" font-size="12" font-family="JetBrains Mono">85% autoscale</text>
+
+          <!-- Series 1: linux-x64-lg -->
+          <polyline fill="none" stroke="#fbbf24" stroke-width="2.5" points="56,118 140,104 225,96 310,110 395,88 480,74 565,82 650,68 736,72" />
+          <!-- Series 2: macos-m3 -->
+          <polyline fill="none" stroke="#22d3ee" stroke-width="2.5" points="56,84 140,76 225,62 310,54 395,42 480,38 565,44 650,36 736,40" />
+
+          <!-- X-axis labels -->
+          <text x="56" y="206" text-anchor="start" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">-60m</text>
+          <text x="225" y="206" text-anchor="middle" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">-45m</text>
+          <text x="395" y="206" text-anchor="middle" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">-30m</text>
+          <text x="565" y="206" text-anchor="middle" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">-15m</text>
+          <text x="736" y="206" text-anchor="end" fill="#a1a1aa" font-size="12" font-family="JetBrains Mono">now</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Failed Jobs Table -->
+    <section id="failures" class="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <h2 class="text-base font-semibold text-zinc-50">Recent Failed Jobs</h2>
+        <span class="text-sm font-mono text-zinc-400">Last 24h &middot; 5 failures</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-zinc-800 text-zinc-400 font-mono">
+              <th class="py-2.5 pr-4 font-medium">Job ID</th>
+              <th class="py-2.5 px-4 font-medium">Pipeline / Branch</th>
+              <th class="py-2.5 px-4 font-medium">Pool</th>
+              <th class="py-2.5 px-4 font-medium">Exit</th>
+              <th class="py-2.5 px-4 font-medium text-right">Duration</th>
+              <th class="py-2.5 pl-4 font-medium text-right">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-800/80 font-mono tabular-nums">
+            <tr>
+              <td class="py-3 pr-4 text-amber-400">#fg-98412</td>
+              <td class="py-3 px-4 font-sans text-zinc-100">core-api / <span class="font-mono text-zinc-300">feat/grpc-pool</span></td>
+              <td class="py-3 px-4 text-zinc-300">linux-x64-lg</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/60">137 OOM</span></td>
+              <td class="py-3 px-4 text-right text-zinc-300">04m 18s</td>
+              <td class="py-3 pl-4 text-right text-zinc-400">15:38:12Z</td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-amber-400">#fg-98407</td>
+              <td class="py-3 px-4 font-sans text-zinc-100">ios-shell / <span class="font-mono text-zinc-300">main</span></td>
+              <td class="py-3 px-4 text-zinc-300">macos-m3</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/60">65 SIGN</span></td>
+              <td class="py-3 px-4 text-right text-zinc-300">09m 42s</td>
+              <td class="py-3 pl-4 text-right text-zinc-400">15:24:05Z</td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-amber-400">#fg-98399</td>
+              <td class="py-3 px-4 font-sans text-zinc-100">billing-worker / <span class="font-mono text-zinc-300">fix/tax-round</span></td>
+              <td class="py-3 px-4 text-zinc-300">linux-arm64</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/60">1 TEST</span></td>
+              <td class="py-3 px-4 text-right text-zinc-300">02m 09s</td>
+              <td class="py-3 pl-4 text-right text-zinc-400">14:51:44Z</td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-amber-400">#fg-98385</td>
+              <td class="py-3 px-4 font-sans text-zinc-100">ml-embed / <span class="font-mono text-zinc-300">exp/v4-quant</span></td>
+              <td class="py-3 px-4 text-zinc-300">gpu-t4</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/60">124 TIMED</span></td>
+              <td class="py-3 px-4 text-right text-zinc-300">30m 00s</td>
+              <td class="py-3 pl-4 text-right text-zinc-400">14:12:30Z</td>
+            </tr>
+            <tr>
+              <td class="py-3 pr-4 text-amber-400">#fg-98371</td>
+              <td class="py-3 px-4 font-sans text-zinc-100">web-console / <span class="font-mono text-zinc-300">chore/deps</span></td>
+              <td class="py-3 px-4 text-zinc-300">linux-x64-lg</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800/60">2 LINT</span></td>
+              <td class="py-3 px-4 text-right text-zinc-300">01m 14s</td>
+              <td class="py-3 pl-4 text-right text-zinc-400">13:47:19Z</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Active Worker Nodes + YAML Config Snippet -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div id="nodes" class="lg:col-span-6 bg-zinc-900 border border-zinc-800 rounded-lg p-5 min-w-0 max-w-full">
+        <h2 class="text-base font-semibold text-zinc-50 mb-4">Active Worker Nodes</h2>
+        <ul class="divide-y divide-zinc-800 text-sm font-mono tabular-nums">
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0" aria-hidden="true"></span>
+              <span class="text-zinc-100">wrk-use1-x64-014</span>
+            </div>
+            <span class="text-zinc-400">14/16 vCPU &middot; 48 GiB</span>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0" aria-hidden="true"></span>
+              <span class="text-zinc-100">wrk-use1-x64-019</span>
+            </div>
+            <span class="text-zinc-400">12/16 vCPU &middot; 41 GiB</span>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0" aria-hidden="true"></span>
+              <span class="text-zinc-100">wrk-use1-m3-004</span>
+            </div>
+            <span class="text-amber-300">12/12 vCPU &middot; SATURATED</span>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0" aria-hidden="true"></span>
+              <span class="text-zinc-100">wrk-use1-arm-008</span>
+            </div>
+            <span class="text-zinc-400">6/16 vCPU &middot; 22 GiB</span>
+          </li>
+        </ul>
+      </div>
+
+      <div id="config" class="lg:col-span-6 bg-zinc-900 border border-zinc-800 rounded-lg p-5 min-w-0 max-w-full">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <h2 class="text-base font-semibold text-zinc-50">Runner Pool Config (<span class="font-mono text-zinc-300">forgegrid.yaml</span>)</h2>
+          <button id="copyYamlBtn" type="button" class="h-8 px-3 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-xs font-mono text-zinc-200 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">
+            Copy YAML
+          </button>
+        </div>
+        <pre id="yamlBlock" class="bg-zinc-950 border border-zinc-800 rounded-md p-4 text-sm font-mono text-zinc-200 overflow-x-auto leading-relaxed">pools:
+  linux-x64-lg:
+    instance: c6i.4xlarge
+    min_warm: 6
+    max_scale: 40
+    autoscale_cpu_pct: 85
+    job_timeout: 45m</pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('pauseBtn').addEventListener('click', function () {
+      const paused = this.dataset.paused === '1';
+      this.dataset.paused = paused ? '0' : '1';
+      this.textContent = paused ? 'Pause Stream' : 'Resume Stream';
+    });
+    document.getElementById('drainBtn').addEventListener('click', function () {
+      this.textContent = 'Draining...';
+    });
+    document.getElementById('copyYamlBtn').addEventListener('click', function () {
+      const text = document.getElementById('yamlBlock').textContent;
+      if (navigator.clipboard) navigator.clipboard.writeText(text);
+      this.textContent = 'Copied';
+    });
+  </script>
+</body>
+</html>

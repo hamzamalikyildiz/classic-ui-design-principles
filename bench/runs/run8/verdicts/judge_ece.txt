@@ -1,0 +1,6 @@
+cift1: B | 4 | B'nin kocaman sarı hero kartı, sevimli karakteri ve asimetrik mevsim kartları ilk üç saniyede çok daha canlı, cesur ve akılda kalıcı bir enerji veriyor. | A 7/7/8/8 B 9/8/8/8
+cift2: A | 4 | A'nın koyu yeşil bakiye kartı ve karakterli yazı tipi, sıkıcı olabilecek bir diş kliniği portalını ilk bakışta çok daha havalı ve dikkat çekici kılıyor. | A 8/8/8/8 B 6/7/8/8
+cift3: A | 3 | A grafiği hemen en üste koyup modern yazı tipi ve kartlı düzen kullandığı için B'deki ders kitabı havasındaki uzun metin yığınından daha ilgi çekici duruyor. | A 7/7/8/7 B 6/8/7/8
+cift4: B | 4 | B'deki bisiklet kartının arka ışık efekti, turuncu detaylar ve büyük rakamlı asimetrik özellik kartları sayfayı A'ya göre çok daha havalı ve enerjik gösteriyor. | A 8/8/8/8 B 9/9/9/8
+cift5: B | 4 | B'nin renkli ilerleme çubukları, parlak camgöbeği alan grafiği ve renkli kod bloğu sayfayı A'ya göre çok daha canlı, modern ve havalı gösteriyor. | A 7/8/8/8 B 9/9/9/8
+cift6: B | 5 | B üstteki keman çizimi, modern gövde fontu ve çerçeveli kartlarıyla estetik bir dergi gibi dururken A tamamen düz metin olduğu için sıkıcı bir ders kitabı hissi veriyor. | A 5/7/7/7 B 8/9/8/8
