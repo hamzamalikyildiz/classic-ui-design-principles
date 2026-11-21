@@ -61,11 +61,14 @@ from uiparse import (
     VOID,
     WIDE_FRAME,
     WIDE_XL,
+    ClassCombination,
+    ClassSet,
     _has_row_flex,
     _strip_all_comments,
     _strip_at_blocks,
     _strip_css_blocks,
     classes,
+    expand_combinations,
     height_px,
     line_of,
     mask_non_markup,
@@ -161,32 +164,348 @@ def is_dark_page(txt, tokens=None):
     return False
 
 
+def _is_solid_bg_cls(cls, dark_page=False, tokens=None):
+    if 'bg-clip-text' in cls:
+        return False
+    bg = pick(cls, 'bg')
+    if dark_page and bg and DARK_NEUTRAL.fullmatch(bg):
+        return False  # dark neutral on a dark page is a secondary surface
+    if bg:
+        if bg in ('primary', 'destructive') or bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg)):
+            return True
+        hx = re.fullmatch(r'\[(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\]', bg)
+        if hx:
+            h = hx.group(1)
+            if not dark_page and not is_chromatic(h) and lum(h) > 0.7:
+                return False  # light neutral hex on light page is a secondary/card fill
+            if dark_page and not is_chromatic(h) and lum(h) < 0.15:
+                return False  # dark neutral hex on dark page is a secondary surface
+            return True
+        if tokens and bg.split('/')[0] in tokens and is_chromatic(tokens[bg.split('/')[0]]):
+            return True
+    return any(is_gradient(c) for c in cls)
+
+
 def is_solid_cta(tag, attrs, cls, dark_page=False, tokens=None):
     if tag in ('button', 'a'):
-        if 'bg-clip-text' in cls:
-            return False
-        bg = pick(cls, 'bg')
-        if dark_page and bg and DARK_NEUTRAL.fullmatch(bg):
-            return False  # dark neutral on a dark page is a secondary surface
-        if bg:
-            if bg in ('primary', 'destructive') or bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg)):
-                return True
-            hx = re.fullmatch(r'\[(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\]', bg)
-            if hx:
-                h = hx.group(1)
-                if not dark_page and not is_chromatic(h) and lum(h) > 0.7:
-                    return False  # light neutral hex on light page is a secondary/card fill
-                if dark_page and not is_chromatic(h) and lum(h) < 0.15:
-                    return False  # dark neutral hex on dark page is a secondary surface
-                return True
-            if tokens and bg.split('/')[0] in tokens and is_chromatic(tokens[bg.split('/')[0]]):
-                return True
-        return any(is_gradient(c) for c in cls)
+        return _is_solid_bg_cls(cls, dark_page, tokens)
     if tag == 'Button':
         var = re.search(r"""variant\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*["']([^"']*)["']\s*\})""", attrs)
-        v = ''.join(g or '' for g in var.groups()) if var else 'default'
-        return v in ('default', 'destructive', 'primary')
+        if var:
+            v = ''.join(g or '' for g in var.groups())
+            return v in ('default', 'destructive', 'primary')
+        if _is_solid_bg_cls(cls, dark_page, tokens):
+            return True
+        bg = pick(cls, 'bg')
+        if bg in BG_PASSTHROUGH or bg in ('background', 'secondary', 'muted', 'accent') or any(
+            c == 'border' or c.startswith(('border-', 'hover:bg-', 'underline')) for c in cls
+        ):
+            return False
+        if re.search(r'variant\s*=\s*\{', attrs):
+            m = re.search(r'variant\s*=\s*(\{(?:[^{}]|\{[^{}]*\})*\})', attrs)
+            if m:
+                lits = [a or b for a, b in re.findall(r'"([^"]*)"|\'([^\']*)\'', m.group(1))]
+                if lits:
+                    return any(v in ('default', 'destructive', 'primary') for v in lits)
+        return True
     return False
+
+
+def _strip_outer_parens(s):
+    s = s.strip()
+    while s.startswith('(') and s.endswith(')'):
+        depth = 0
+        ok = True
+        for idx, ch in enumerate(s):
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0 and idx < len(s) - 1:
+                    ok = False
+                    break
+        if ok and depth == 0:
+            s = s[1:-1].strip()
+        else:
+            break
+    return s
+
+
+def _split_label_atoms(label_str):
+    if not label_str:
+        return []
+    atoms = []
+    buf = []
+    depth = 0
+    quote = None
+    for ch in label_str:
+        if quote:
+            buf.append(ch)
+            if ch == quote:
+                quote = None
+            continue
+        if ch in ('"', "'"):
+            quote = ch
+            buf.append(ch)
+            continue
+        if ch in ('(', '[', '{'):
+            depth += 1
+        elif ch in (')', ']', '}'):
+            depth = max(0, depth - 1)
+        elif ch == ',' and depth == 0:
+            s = ''.join(buf).strip()
+            if s:
+                atoms.append(s)
+            buf = []
+            continue
+        buf.append(ch)
+    s = ''.join(buf).strip()
+    if s:
+        atoms.append(s)
+    return atoms
+
+
+def _extract_cond_bindings(labels_iter):
+    """Parse condition labels into canonical bindings dict; return (bindings, is_consistent)."""
+    bindings = {}
+
+    def _bind(k, v):
+        if k in bindings and bindings[k] != v:
+            return False
+        bindings[k] = v
+        return True
+
+    for lbl in labels_iter:
+        for atom in _split_label_atoms(lbl):
+            parts = re.split(r'(?<![!=<>])=(?!=)', atom, maxsplit=1)
+            if len(parts) == 2:
+                raw_cond, raw_val = _strip_outer_parens(parts[0]), parts[1].strip()
+            else:
+                raw_cond, raw_val = _strip_outer_parens(atom), 'true'
+            while raw_cond.startswith('!') and not raw_cond.startswith('!='):
+                raw_cond = _strip_outer_parens(raw_cond[1:])
+                if raw_val == 'true':
+                    raw_val = 'false'
+                elif raw_val == 'false':
+                    raw_val = 'true'
+                else:
+                    break
+            m = re.fullmatch(r'(.+?)\s*(===|==|!==|!=)\s*(.+)', raw_cond)
+            if m:
+                lhs = _strip_outer_parens(m.group(1))
+                op = m.group(2)
+                rhs = _strip_outer_parens(m.group(3)).strip('\'"')
+                is_eq = op in ('===', '==')
+                eff_true = (raw_val == 'true') if is_eq else (raw_val == 'false')
+                eff_false = (raw_val == 'false') if is_eq else (raw_val == 'true')
+                if eff_true:
+                    if not _bind(('eq_pair', lhs, rhs), 'true'):
+                        return bindings, False
+                    if not _bind(('eq_val', lhs), rhs):
+                        return bindings, False
+                    if rhs in ('true', 'false') and not _bind(('bool', lhs), rhs):
+                        return bindings, False
+                elif eff_false:
+                    if not _bind(('eq_pair', lhs, rhs), 'false'):
+                        return bindings, False
+                    if rhs in ('true', 'false'):
+                        flipped = 'false' if rhs == 'true' else 'true'
+                        if not _bind(('bool', lhs), flipped):
+                            return bindings, False
+                else:
+                    if not _bind(('raw', raw_cond), raw_val):
+                        return bindings, False
+                continue
+            if raw_val in ('true', 'false'):
+                if not _bind(('bool', raw_cond), raw_val):
+                    return bindings, False
+                if not _bind(('eq_pair', raw_cond, 'true'), raw_val):
+                    return bindings, False
+            elif raw_val in ('empty', 'set'):
+                if not _bind(('fallback', raw_cond), raw_val):
+                    return bindings, False
+            else:
+                clean_val = raw_val.strip('\'"')
+                if not _bind(('eq_pair', raw_cond, clean_val), 'true'):
+                    return bindings, False
+                if not _bind(('eq_val', raw_cond), clean_val):
+                    return bindings, False
+
+    for (kind, *rest), val in list(bindings.items()):
+        if kind == 'eq_val':
+            lhs = rest[0]
+            if bindings.get(('eq_pair', lhs, val)) == 'false':
+                return bindings, False
+    return bindings, True
+
+
+def _branch_affects_contrast(alts):
+    for alt in alts:
+        for c in alt:
+            base_c = c.rsplit(':', 1)[-1]
+            if base_c.startswith(('bg-', 'from-', 'via-', 'to-')):
+                return True
+            if base_c.startswith('text-'):
+                val = base_c[5:]
+                if not TEXT_NON_COLOR.fullmatch(val) or base_c in BIG_TEXT or base_c == 'text-xl':
+                    return True
+            if base_c in BOLD:
+                return True
+    return False
+
+
+def _branch_affects_bg(alts):
+    for alt in alts:
+        for c in alt:
+            base_c = c.rsplit(':', 1)[-1]
+            if base_c.startswith(('bg-', 'from-', 'via-', 'to-')):
+                return True
+    return False
+
+
+def _get_node_combos(elem, cls_fallback, combos_cache, limit=8):
+    key = id(elem)
+    if key in combos_cache:
+        return combos_cache[key]
+    cs = getattr(elem, 'classset', None)
+    if cs is None:
+        cs = ClassSet(base=list(cls_fallback))
+    combos = expand_combinations(cs, limit=limit)
+    combos_cache[key] = (cs, combos)
+    return cs, combos
+
+
+def _iter_chain_combinations(node, anc, combos_cache, limit=8):
+    """Yield `(chain_classes, branch_label)` for consistent combinations of `node` and `anc`."""
+    node_cs, node_combos = _get_node_combos(node, node[2], combos_cache, limit=limit)
+    rev_anc = list(reversed(anc))
+
+    anc_entries = []
+    any_anc_branches = False
+    for a in rev_anc:
+        a_cs = getattr(a, 'classset', None)
+        if a_cs and a_cs.branches and any(_branch_affects_bg(alts) for _, alts in a_cs.branches):
+            _, a_combos = _get_node_combos(a, a[2], combos_cache, limit=limit)
+            bg_gids = {gid for gid, alts in a_cs.branches if _branch_affects_bg(alts)}
+            anc_entries.append((a_cs, a_combos, bg_gids))
+            if len(a_combos) > 1 or (a_combos and a_combos[0].labels):
+                any_anc_branches = True
+        else:
+            anc_entries.append((None, [ClassCombination(list(a[2]), '', labels=(), choices={})], set()))
+
+    if len(node_combos) == 1 and not node_combos[0].labels and not any_anc_branches:
+        return [([node_combos[0].classes] + [ae[1][0].classes for ae in anc_entries], '')]
+
+    node_contrast_gids = {gid for gid, alts in (node_cs.branches if node_cs else ()) if _branch_affects_contrast(alts)}
+    all_entries = [(node_cs, node_combos, node_contrast_gids)] + anc_entries
+
+    jsx_labels = []
+    for elem in [node] + rev_anc:
+        bl = getattr(elem, 'branch_label', None)
+        if bl and '=' in bl:
+            jsx_labels.append(bl)
+    base_bindings, ok = _extract_cond_bindings(jsx_labels)
+    if not ok:
+        base_bindings = {}
+
+    def _search(initial_bindings):
+        out = []
+        n_levels = len(all_entries)
+
+        def _dfs(idx, acc_classes, acc_labels, cur_bindings):
+            if len(out) >= limit:
+                return
+            if idx == n_levels:
+                out.append((list(acc_classes), ', '.join(acc_labels)))
+                return
+            cs_i, combos_i, rel_gids = all_entries[idx]
+            if len(combos_i) == 1 and not combos_i[0].labels:
+                acc_classes.append(combos_i[0].classes)
+                _dfs(idx + 1, acc_classes, acc_labels, cur_bindings)
+                acc_classes.pop()
+                return
+            for combo in combos_i:
+                if len(out) >= limit:
+                    return
+                c_bindings, c_ok = _extract_cond_bindings(combo.labels)
+                if not c_ok:
+                    continue
+                if any(k in cur_bindings and cur_bindings[k] != v for k, v in c_bindings.items()):
+                    continue
+                nxt_bindings = {**cur_bindings, **c_bindings}
+                conflict = False
+                if cur_bindings and c_bindings:
+                    for (kind, *rest), val in nxt_bindings.items():
+                        if kind == 'eq_val' and nxt_bindings.get(('eq_pair', rest[0], val)) == 'false':
+                            conflict = True
+                            break
+                if conflict:
+                    continue
+                nxt_labels = list(acc_labels)
+                if rel_gids and combo.choices:
+                    for gid, _ in (cs_i.branches if cs_i else ()):
+                        if gid in rel_gids and gid in combo.choices:
+                            lbl = combo.choices[gid][1]
+                            if lbl and lbl not in nxt_labels:
+                                nxt_labels.append(lbl)
+                acc_classes.append(combo.classes)
+                _dfs(idx + 1, acc_classes, nxt_labels, nxt_bindings)
+                acc_classes.pop()
+
+        _dfs(0, [], [], initial_bindings)
+        return out
+
+    results = _search(base_bindings)
+    if not results and base_bindings:
+        results = _search({})
+    if not results:
+        results = [([node_combos[0].classes] + [ae[1][0].classes for ae in anc_entries], node_combos[0].label)]
+    return results
+
+
+def _max_simultaneous_ctas(items):
+    """Return list of line numbers for the largest subset of CTA items visible simultaneously."""
+    if len(items) <= 1:
+        return [it[0] for it in items]
+    if all(not it[1] and it[2] == [{}] for it in items):
+        return [it[0] for it in items]
+
+    m = len(items)
+    best = []
+    steps = [0]
+    max_steps = 512
+
+    def _dfs(idx, chosen_lines, reg_map, cond_map):
+        nonlocal best
+        if len(chosen_lines) > len(best):
+            best = list(chosen_lines)
+        if idx >= m or len(chosen_lines) + (m - idx) <= len(best) or steps[0] >= max_steps:
+            return
+        steps[0] += 1
+        line_no, b_regs, c_opts = items[idx]
+        reg_ok = all(rid not in reg_map or reg_map[rid] == bidx for rid, bidx in b_regs)
+        if reg_ok:
+            nxt_reg = {**reg_map, **dict(b_regs)} if b_regs else reg_map
+            for opt in c_opts:
+                if all(k not in cond_map or cond_map[k] == v for k, v in opt.items()):
+                    nxt_cond = {**cond_map, **opt} if opt else cond_map
+                    conflict = False
+                    if opt and cond_map:
+                        for (kind, *rest), val in nxt_cond.items():
+                            if kind == 'eq_val' and nxt_cond.get(('eq_pair', rest[0], val)) == 'false':
+                                conflict = True
+                                break
+                    if not conflict:
+                        chosen_lines.append(line_no)
+                        _dfs(idx + 1, chosen_lines, nxt_reg, nxt_cond)
+                        chosen_lines.pop()
+                        if len(chosen_lines) + (m - idx) <= len(best) or steps[0] >= max_steps:
+                            return
+        if len(chosen_lines) + (m - idx - 1) > len(best) and steps[0] < max_steps:
+            _dfs(idx + 1, chosen_lines, reg_map, cond_map)
+
+    _dfs(0, [], {}, {})
+    return best
 
 
 GENERIC_FONTS = {
@@ -253,11 +572,19 @@ def character_checks(txt, nodes, mood, tokens=None):
             children.setdefault(anc[-1][3], []).append(n)
 
     # primary CTA too small (Fitts)
-    for tag, attrs, cls, anc, s, e in nodes:
-        if is_solid_cta(tag, attrs, cls, dark, tokens):
-            h = height_px(cls)
-            if h is not None and h < 40:
-                out.append(('WARN', 'fitts-primary', f"L{line_of(txt, s)} primary CTA is {h:g}px tall; use >=44px (h-11+), hero CTA h-12..h-14"))
+    for node in nodes:
+        tag, attrs, cls, anc, s, e = node
+        cs = getattr(node, 'classset', None)
+        combos = expand_combinations(cs, limit=8) if cs and cs.branches else [ClassCombination(list(cls), '')]
+        for combo in combos:
+            if combo.labels and not _extract_cond_bindings(combo.labels)[1]:
+                continue
+            c_cls = combo.classes
+            if is_solid_cta(tag, attrs, c_cls, dark, tokens):
+                h = height_px(c_cls)
+                if h is not None and h < 40:
+                    out.append(('WARN', 'fitts-primary', f"L{line_of(txt, s)} primary CTA is {h:g}px tall; use >=44px (h-11+), hero CTA h-12..h-14"))
+                    break
 
     # frame wrappers: rounded padded box whose only child is another rounded surface
     frames = []
@@ -584,6 +911,14 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None, return_supp
                 add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
                     f"L{line_of(css_for_wcag, blk.start())} {fg_h} on {bg_h} = {r:.2f}:1 (fix -> {fix_color(fg_h, bg_h, need)})")
 
+    # conditional branch combinations (>8 branch explosion check, at most once per node)
+    combos_cache = {}
+    for node in nodes:
+        tag, attrs, cls, anc, s, e = node
+        cs, _ = _get_node_combos(node, cls, combos_cache, limit=8)
+        if cs.exploded:
+            add('INFO', 'branch-explosion', f"L{line_of(txt, s)} >8 conditional class combinations; auditing first 8 branches")
+
     # contrast: Tailwind palette, arbitrary hex and shadcn tokens; background composited from ancestors
     seen = set()
     page = 'background' if 'background' in tokens else (f'[{cbg}]' if (cbg := css_page_bg(txt, tokens)) else 'white')
@@ -591,83 +926,130 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None, return_supp
     if dark_tokens:  # shadcn .dark theme: same classes re-evaluated with dark token values
         passes.append(('', '[.dark] ', {**tokens, **dark_tokens}, 'background' if 'background' in dark_tokens else None, dark_tokens))
     for variant, label, tokens, page_bg, only in passes:
-        for tag, attrs, cls, anc, s, e in nodes:
-            fg = pick(cls, 'text', variant)
-            if not fg:
-                continue
-            res = backdrop([cls] + [a[2] for a in reversed(anc)], variant, tokens, page_bg,
-                           [attrs] + [a[1] for a in reversed(anc)])
-            if res is None:
-                continue  # gradient, image or unknown color behind the text
-            bh, bg = res
-            bg_names = {part.removeprefix('bg-').split('/')[0] for part in bg.split(' over ')}
-            if only is not None and fg.split('/')[0] not in only and not (bg_names & set(only)):
-                continue  # theme-independent pair, already checked in the light pass
-            fh = tw_hex(fg, tokens)
-            if not fh:
-                continue
-            fa = alpha_of(fg)
-            if fa < 1:
-                fh = blend(fh, bh, fa)
-            r = ratio(fh, bh)
-            big = bool(BIG_TEXT & set(cls)) or ('text-xl' in cls and bool(BOLD & set(cls)))
-            need = 3.0 if big else 4.5
-            key = (label, fg, bg, need)
-            if r < need and key not in seen:
-                seen.add(key)
-                tw = tw_same_hue(fg, bh, need)
-                bg_fix = tw_bg_same_hue(bg.split(' over ')[0][3:], fh, need) if not tw else None
-                fix = f"text-{tw}" if tw else (f"bg-{bg_fix}" if bg_fix else fix_color(fh, bh, need))
-                add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
-                    f"L{line_of(txt, s)} {label}text-{fg} on {bg} = {r:.2f}:1 (need {need:g}, fix -> {fix}, keep the hue)")
+        for node in nodes:
+            tag, attrs, cls, anc, s, e = node
+            styles_chain = [attrs] + [a[1] for a in reversed(anc)]
+            for chain_cls, branch_lbl in _iter_chain_combinations(node, anc, combos_cache, limit=8):
+                c_cls = chain_cls[0]
+                fg = pick(c_cls, 'text', variant)
+                if not fg:
+                    continue
+                res = backdrop(chain_cls, variant, tokens, page_bg, styles_chain)
+                if res is None:
+                    continue  # gradient, image or unknown color behind the text
+                bh, bg = res
+                bg_names = {part.removeprefix('bg-').split('/')[0] for part in bg.split(' over ')}
+                if only is not None and fg.split('/')[0] not in only and not (bg_names & set(only)):
+                    continue  # theme-independent pair, already checked in the light pass
+                fh = tw_hex(fg, tokens)
+                if not fh:
+                    continue
+                fa = alpha_of(fg)
+                if fa < 1:
+                    fh = blend(fh, bh, fa)
+                r = ratio(fh, bh)
+                big = bool(BIG_TEXT & set(c_cls)) or ('text-xl' in c_cls and bool(BOLD & set(c_cls)))
+                need = 3.0 if big else 4.5
+                key = (label, fg, bg, need)
+                if r < need and key not in seen:
+                    seen.add(key)
+                    tw = tw_same_hue(fg, bh, need)
+                    bg_fix = tw_bg_same_hue(bg.split(' over ')[0][3:], fh, need) if not tw else None
+                    fix = f"text-{tw}" if tw else (f"bg-{bg_fix}" if bg_fix else fix_color(fh, bh, need))
+                    b_prefix = f"[{branch_lbl}] " if branch_lbl else ""
+                    add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
+                        f"L{line_of(txt, s)} {b_prefix}{label}text-{fg} on {bg} = {r:.2f}:1 (need {need:g}, fix -> {fix}, keep the hue)")
 
     tokens = passes[0][2]
 
     # contrast on gradients: text must pass against every color stop of the nearest gradient
     gseen = set()
-    for tag, attrs, cls, anc, s, e in nodes:
-        fg = pick(cls, 'text')
-        if not fg:
-            continue
-        g = None
-        for c in [cls] + [a[2] for a in reversed(anc)]:
-            if any(is_gradient(x) for x in c if ':' not in x):
-                g = c
-                break
-            b = pick(c, 'bg')
-            if b and b not in BG_PASSTHROUGH and alpha_of(b) >= 1:
-                break  # an opaque solid layer sits between the text and any gradient
-        if g is None:
-            continue
-        fh = tw_hex(fg, tokens)
-        if not fh or alpha_of(fg) < 1:
-            continue
-        big = bool(BIG_TEXT & set(cls)) or ('text-xl' in cls and bool(BOLD & set(cls)))
-        need = 3.0 if big else 4.5
-        for x in g:
-            m = re.fullmatch(r'(?:from|via|to)-([\w.\[\]#-]+)', x)
-            if not m or alpha_of(m.group(1)) < 1 or m.group(1) in BG_PASSTHROUGH:
+    for node in nodes:
+        tag, attrs, cls, anc, s, e = node
+        for chain_cls, branch_lbl in _iter_chain_combinations(node, anc, combos_cache, limit=8):
+            c_cls = chain_cls[0]
+            fg = pick(c_cls, 'text')
+            if not fg:
                 continue
-            sh = tw_hex(m.group(1), tokens)
-            if not sh:
+            g = None
+            for c in chain_cls:
+                if any(is_gradient(x) for x in c if ':' not in x):
+                    g = c
+                    break
+                b = pick(c, 'bg')
+                if b and b not in BG_PASSTHROUGH and alpha_of(b) >= 1:
+                    break  # an opaque solid layer sits between the text and any gradient
+            if g is None:
                 continue
-            r = ratio(fh, sh)
-            key = (fg, m.group(1), need)
-            if r < need and key not in gseen:
-                gseen.add(key)
-                add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
-                    f"L{line_of(txt, s)} text-{fg} on gradient stop {x} = {r:.2f}:1 (need {need:g}); text must pass against every stop, darken that stop within its hue")
+            fh = tw_hex(fg, tokens)
+            if not fh or alpha_of(fg) < 1:
+                continue
+            big = bool(BIG_TEXT & set(c_cls)) or ('text-xl' in c_cls and bool(BOLD & set(c_cls)))
+            need = 3.0 if big else 4.5
+            for x in g:
+                m = re.fullmatch(r'(?:from|via|to)-([\w.\[\]#-]+)', x)
+                if not m or alpha_of(m.group(1)) < 1 or m.group(1) in BG_PASSTHROUGH:
+                    continue
+                sh = tw_hex(m.group(1), tokens)
+                if not sh:
+                    continue
+                r = ratio(fh, sh)
+                key = (fg, m.group(1), need)
+                if r < need and key not in gseen:
+                    gseen.add(key)
+                    b_prefix = f"[{branch_lbl}] " if branch_lbl else ""
+                    add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
+                        f"L{line_of(txt, s)} {b_prefix}text-{fg} on gradient stop {x} = {r:.2f}:1 (need {need:g}); text must pass against every stop, darken that stop within its hue")
 
     # single primary CTA per block: raw buttons with solid bg, and shadcn <Button> default/destructive
     dark_page = is_dark_page(txt, tokens)
     counts = {}
-    for tag, attrs, cls, anc, s, e in nodes:
-        if not is_solid_cta(tag, attrs, cls, dark_page, tokens):
+    for node in nodes:
+        tag, attrs, cls, anc, s, e = node
+        if tag not in ('button', 'a', 'Button'):
             continue
+        cs, raw_combos = _get_node_combos(node, cls, combos_cache, limit=8)
+        if cs.branches:
+            consistent_combos = []
+            for c in raw_combos:
+                b_map, c_ok = _extract_cond_bindings(c.labels)
+                if c_ok:
+                    consistent_combos.append((c, b_map))
+            if not consistent_combos:
+                consistent_combos = [(c, {}) for c in raw_combos]
+            solid_envs = [b_map for c, b_map in consistent_combos if is_solid_cta(tag, attrs, c.classes, dark_page, tokens)]
+            if not solid_envs:
+                continue
+            if len(solid_envs) == len(consistent_combos):
+                solid_envs = [{}]
+        else:
+            if not is_solid_cta(tag, attrs, cls, dark_page, tokens):
+                continue
+            solid_envs = [{}]
+
+        b_regions = getattr(node, 'branch_regions', ()) or ()
+        jsx_lbls = [
+            getattr(x, 'branch_label', None)
+            for x in ([node] + list(anc))
+            if getattr(x, 'branch_label', None) and '=' in getattr(x, 'branch_label', '')
+        ]
+        jsx_env, j_ok = _extract_cond_bindings(jsx_lbls)
+        if not j_ok:
+            jsx_env = {}
+        cond_options = []
+        for s_env in solid_envs:
+            if all(k not in jsx_env or jsx_env[k] == v for k, v in s_env.items()):
+                merged = {**jsx_env, **s_env}
+                if merged not in cond_options:
+                    cond_options.append(merged)
+        if not cond_options:
+            cond_options = [jsx_env]
+
         idx = next((i for i in range(len(anc) - 1, -1, -1) if BLOCK.match(anc[i][0])), None)
         key = anc[idx][3] if idx is not None else -1
-        counts.setdefault(key, []).append(line_of(txt, s))
-    for lines in counts.values():
+        counts.setdefault(key, []).append((line_of(txt, s), b_regions, cond_options))
+    for block_items in counts.values():
+        lines = _max_simultaneous_ctas(block_items)
         if len(lines) > 1:
             add('WARN', 'single-primary-cta', f"{len(lines)} solid buttons in one block (lines {lines}); keep 1 solid, rest outline/ghost")
 
