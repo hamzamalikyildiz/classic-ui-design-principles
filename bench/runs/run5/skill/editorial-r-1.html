@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quiet Return of the Paper Map</title>
+<meta name="description" content="Phones were supposed to end paper maps. A generation that never learned to fold an atlas is buying them again.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        paper: '#F5F0E6',
+        map: '#EADFC8',
+        ink: '#1F2A2E',
+        muted: '#5B6265',
+        rust: '#B5472B',
+        tide: '#5E7F7A'
+      },
+      fontFamily: {
+        display: ['Fraunces', 'Georgia', 'serif'],
+        body: ['"Source Serif 4"', 'Georgia', 'serif']
+      }
+    }
+  }
+};
+</script>
+<style>
+  body { background: #F5F0E6; color: #1F2A2E; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise 600ms ease-out both; }
+  .rise-2 { animation-delay: 120ms; }
+  .rise-3 { animation-delay: 240ms; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<header class="border-b border-ink/20">
+  <div class="mx-auto max-w-4xl px-6 pt-8 pb-4 text-center">
+    <p class="text-xs uppercase tracking-[0.3em] text-muted">Est. 1961 &middot; Autumn 2026</p>
+    <p class="font-display text-4xl sm:text-5xl font-bold mt-2 tracking-tight">The Longitude Review</p>
+  </div>
+  <nav aria-label="Sections" class="border-t border-ink/20">
+    <ul class="mx-auto max-w-4xl flex flex-wrap justify-center gap-x-8 gap-y-2 px-6 py-3 text-sm uppercase tracking-widest">
+      <li><a href="#" class="hover:text-rust hover:underline underline-offset-4">Features</a></li>
+      <li><a href="#" class="hover:text-rust hover:underline underline-offset-4">Maps</a></li>
+      <li><a href="#" class="hover:text-rust hover:underline underline-offset-4">Travel</a></li>
+      <li><a href="#" class="hover:text-rust hover:underline underline-offset-4">Essays</a></li>
+      <li><a href="#" class="hover:text-rust hover:underline underline-offset-4">Archive</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="mx-auto max-w-4xl px-6">
+  <article class="pt-14 pb-16">
+
+    <header class="text-center rise">
+      <p class="text-sm uppercase tracking-[0.25em] text-rust font-semibold">Long read &middot; Cartography</p>
+      <h1 class="font-display text-5xl sm:text-6xl font-bold leading-[1.05] tracking-tight mt-5">The Quiet Return of the Paper Map</h1>
+      <p class="font-display italic text-xl sm:text-2xl text-ink/85 leading-relaxed mt-6 max-w-[65ch] mx-auto">Phones were supposed to end the folded atlas. A generation that never learned to refold one is now buying them again.</p>
+      <p class="text-sm text-muted mt-8">By <span class="text-ink font-semibold">Nadia Okafor</span> &middot; November 2026 &middot; 14 min read</p>
+    </header>
+
+    <figure class="mt-12 rise rise-2">
+      <svg viewBox="0 0 800 460" role="img" aria-labelledby="fig-title" class="w-full h-auto border border-ink/20">
+        <title id="fig-title">Illustrated survey sheet with contour lines, a river, and a dashed walking route from start to finish</title>
+        <rect width="800" height="460" fill="#EADFC8"/>
+        <g fill="none" stroke="#1F2A2E" stroke-opacity=".16" stroke-width="2" stroke-dasharray="6 6" aria-hidden="true">
+          <path d="M400 0V460"/>
+          <path d="M0 230H800"/>
+        </g>
+        <g fill="none" stroke="#8A6A3F" stroke-width="1.5" stroke-opacity=".75" aria-hidden="true">
+          <path d="M90 380C160 300 200 320 260 270S380 200 430 250S560 380 640 330S740 240 760 300"/>
+          <path d="M120 420C190 350 240 370 300 330S420 280 470 320S580 420 660 390"/>
+          <path d="M200 200C250 150 330 140 380 170S470 230 430 250"/>
+          <path d="M60 290C110 250 150 200 220 210S300 260 340 300"/>
+          <path d="M520 430C560 380 610 360 650 380S720 420 780 400"/>
+        </g>
+        <path d="M0 120C120 150 180 90 300 120S520 180 620 110S740 60 800 90" fill="none" stroke="#5E7F7A" stroke-width="10" stroke-linecap="round" stroke-opacity=".55" aria-hidden="true"/>
+        <path d="M130 360C210 320 250 250 320 250S470 180 560 220S650 300 690 150" fill="none" stroke="#B5472B" stroke-width="4" stroke-dasharray="2 10" stroke-linecap="round" aria-hidden="true"/>
+        <circle cx="130" cy="360" r="9" fill="#B5472B" stroke="#EADFC8" stroke-width="3"/>
+        <circle cx="690" cy="150" r="9" fill="#B5472B" stroke="#EADFC8" stroke-width="3"/>
+        <text x="150" y="398" font-family="Fraunces, Georgia, serif" font-size="15" letter-spacing="2" fill="#1F2A2E">START</text>
+        <text x="600" y="136" font-family="Fraunces, Georgia, serif" font-size="15" letter-spacing="2" fill="#1F2A2E">FINISH</text>
+        <text x="300" y="72" font-family="Fraunces, Georgia, serif" font-style="italic" font-size="16" fill="#1F2A2E">Hebden Pass 412 m</text>
+        <g transform="translate(720 390)" aria-hidden="true">
+          <circle r="38" fill="none" stroke="#1F2A2E" stroke-width="1.5"/>
+          <path d="M0 -34L8 0L0 34L-8 0Z" fill="#B5472B"/>
+          <text y="-44" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="14" fill="#1F2A2E">N</text>
+        </g>
+        <g aria-hidden="true" stroke="#1F2A2E" stroke-width="2">
+          <path d="M40 432H160"/>
+          <path d="M40 425V439M160 425V439"/>
+        </g>
+        <text x="40" y="418" font-family="Source Serif 4, Georgia, serif" font-size="13" fill="#1F2A2E">1 km</text>
+      </svg>
+      <figcaption class="text-sm text-muted mt-3 leading-relaxed">Fig. 1. A survey sheet of the Calder Valley, redrawn by hand. Contours, river and the route the author walked in March.</figcaption>
+    </figure>
+
+    <div class="mt-14 mx-auto max-w-[65ch] font-body text-lg leading-[1.75] text-ink/90 space-y-6">
+      <p class="first-letter:float-left first-letter:font-display first-letter:font-bold first-letter:text-[4.25rem] first-letter:leading-[0.85] first-letter:mr-3 first-letter:mt-2 first-letter:text-rust">The map on the kitchen table was creased in eight places, and every crease had a history. One fold had soaked up tea in 1998. Another had been worn soft by a thumb tracing a ridge line on a coach journey nobody remembers. For most of the twentieth century a folded sheet was how a person found the way, and it was also a record of everywhere they had already been.</p>
+      <p>The phone took that job so completely that few people noticed it leave. Blue dots now mark where we are, and a calm voice says when to turn. Ask a teenager to open a road atlas and you may get a careful look, as if the object were a piece of equipment from a museum with no labels. Publishers of printed maps reported falling sales for almost a decade. Several closed their cartography departments and sold their archives.</p>
+
+    </div>
+
+    <h2 class="font-display text-[2.5rem] font-bold leading-tight text-center mt-16">Why people are unfolding again</h2>
+
+    <div class="mt-8 mx-auto max-w-[65ch] font-body text-lg leading-[1.75] text-ink/90 space-y-6">
+      <p>Something shifted in the years after the pandemic. Walkers on the long-distance paths began carrying paper again, partly because batteries die on exposed ridges and partly because a sheet shows the whole country at once. A phone shows the next turn. A map shows the pass you will cross at four in the afternoon, the stream you will need to cross before it, and the farm track that cuts a corner you had not noticed.</p>
+      <p>Small publishers have noticed. Survey sheets that once sat in dusty shop drawers now sell out in a season, and a few independent cartographers have built waiting lists for hand-drawn editions. Their buyers are rarely the people who grew up with paper. They are often people who came to it late and found that the paper map asks for something the phone does not: a decision about direction, made before the first step.</p>
+
+      <blockquote class="my-12 border-y border-rust/60 py-8 text-center">
+        <p class="font-display italic text-2xl sm:text-3xl leading-[1.4] text-rust">A map asks you to be somewhere in your head before you are somewhere on the ground.</p>
+        <footer class="text-sm uppercase tracking-widest text-muted mt-5">Tomasz Veld, surveyor and printer</footer>
+      </blockquote>
+
+      <p>Veld runs a small press in a converted mill and prints forty sheets a year, each one checked by hand against the original survey. He does not expect the phone to disappear. He expects the paper map to become a choice, the way a mechanical watch became one. The paper is slower to read, harder to carry in the rain, and impossible to update. Those qualities, he argues, are exactly what some readers want back.</p>
+      <p>There is a quiet pleasure in the scale that screens rarely give. A paper sheet covers a valley with the whole valley in view, so the eye can wander between a summit and a village without a zoom gesture. Readers describe planning a route on the kitchen floor, weights on the corners, pencil in hand. The map becomes a shared object for a household, not a private screen in a pocket.</p>
+    </div>
+
+    <section aria-labelledby="related" class="mt-20 border-t-2 border-ink pt-8">
+      <h2 id="related" class="font-display text-3xl font-bold">Related reading</h2>
+      <ol class="mt-6 divide-y divide-ink/20">
+        <li class="flex gap-6 py-5">
+          <span class="font-display text-4xl font-bold text-rust leading-none" aria-hidden="true">01</span>
+          <div>
+            <a href="#" class="font-display text-xl font-bold hover:underline underline-offset-4">The surveyors who walked every field in England</a>
+            <p class="text-muted mt-1">An archive of field books shows how measurement became a craft.</p>
+          </div>
+        </li>
+        <li class="flex gap-6 py-5">
+          <span class="font-display text-4xl font-bold text-rust leading-none" aria-hidden="true">02</span>
+          <div>
+            <a href="#" class="font-display text-xl font-bold hover:underline underline-offset-4">Why the best trail maps are never fully accurate</a>
+            <p class="text-muted mt-1">Cartographers on the trade-offs between legibility and truth.</p>
+          </div>
+        </li>
+        <li class="flex gap-6 py-5">
+          <span class="font-display text-4xl font-bold text-rust leading-none" aria-hidden="true">03</span>
+          <div>
+            <a href="#" class="font-display text-xl font-bold hover:underline underline-offset-4">A week on foot with no signal and one good atlas</a>
+            <p class="text-muted mt-1">A travel diary written in pencil along the Pennine Way.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </article>
+</main>
+
+<section aria-labelledby="signup" class="bg-ink text-paper">
+  <div class="mx-auto max-w-4xl px-6 py-16 text-center">
+    <p class="text-sm uppercase tracking-[0.25em] text-paper/80">The Longitude Letter</p>
+    <h2 id="signup" class="font-display text-3xl sm:text-4xl font-bold mt-4 leading-tight">One long read every Sunday, folded neatly into your inbox</h2>
+    <form class="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row" onsubmit="event.preventDefault();">
+      <label for="email" class="sr-only">Email address</label>
+      <input id="email" type="email" required placeholder="you@example.com" class="flex-1 min-h-[44px] rounded-md bg-paper/10 border border-paper/40 px-4 text-paper placeholder:text-paper/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper">
+      <button type="submit" class="min-h-[44px] rounded-md bg-rust px-6 font-semibold text-paper hover:bg-rust/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper">Subscribe</button>
+    </form>
+    <p class="text-sm text-paper/80 mt-4">No more than one email a week. Unsubscribe in a single click.</p>
+  </div>
+</section>
+
+<footer class="mx-auto max-w-4xl px-6 py-8 text-center text-sm text-muted">
+  <p class="max-w-[65ch] mx-auto">&copy; 2026 The Longitude Review. All maps reproduced by permission of the surveyors.</p>
+</footer>
+
+</body>
+</html>

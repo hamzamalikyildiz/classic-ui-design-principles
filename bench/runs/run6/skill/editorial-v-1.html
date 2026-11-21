@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Map Is Never the Territory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#F6F1E7',
+          paperDeep: '#EDE5D3',
+          ink: '#1E2A2F',
+          inkSoft: '#4A5559',
+          rule: '#CFC4AE',
+          vermilion: '#B8402A',
+          sea: '#5E8489',
+          night: '#162226'
+        },
+        fontFamily: {
+          display: ['Fraunces', 'Georgia', 'serif'],
+          body: ['"Source Serif 4"', 'Georgia', 'serif']
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .fade-up { animation: fadeUp 600ms ease-out both; }
+  .fade-up-2 { animation: fadeUp 600ms 120ms ease-out both; }
+  .fade-up-3 { animation: fadeUp 700ms 240ms ease-out both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade-up, .fade-up-2, .fade-up-3 { animation: none; } }
+  .drop-cap::first-letter {
+    font-family: 'Fraunces', Georgia, serif;
+    float: left; font-size: 4.6rem; line-height: 0.85; padding: 0.35rem 0.6rem 0 0; color: #B8402A; font-weight: 700;
+  }
+</style>
+</head>
+<body class="bg-paper text-ink font-body antialiased">
+
+<header class="border-b border-rule">
+  <div class="mx-auto max-w-5xl px-6 py-5 flex flex-wrap items-center justify-between gap-4">
+    <a href="#" class="font-display text-2xl font-bold tracking-tight">The Plotline</a>
+    <nav aria-label="Sections" class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-inkSoft">
+      <a href="#" class="py-2.5 hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Essays</a>
+      <a href="#" class="py-2.5 hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Field Notes</a>
+      <a href="#" class="py-2.5 hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Archive</a>
+      <a href="#" class="py-2.5 hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="mx-auto max-w-5xl px-6 pt-16 pb-12">
+    <p class="fade-up text-sm font-semibold uppercase tracking-[0.18em] text-vermilion text-center">Cartography &middot; Essay</p>
+    <h1 class="fade-up-2 font-display text-5xl md:text-6xl leading-[1.2] font-bold tracking-tight text-center mt-5">
+      The Map Is Never the Territory, and Never Quite Neutral
+    </h1>
+    <p class="fade-up-2 font-body italic text-xl md:text-2xl leading-relaxed text-inkSoft text-center mt-6 mx-auto max-w-prose">
+      Every coastline we trust was drawn by someone who wanted a particular route to look inevitable.
+    </p>
+    <p class="fade-up-3 text-sm text-inkSoft text-center mt-8">
+      By <span class="font-semibold text-ink">Miriam Okafor</span> &middot; 9 min read
+    </p>
+
+    <figure class="fade-up-3 mt-12">
+      <svg viewBox="0 0 800 420" role="img" aria-labelledby="map-title map-desc" class="w-full h-auto rounded-sm">
+        <title id="map-title">Coastal survey sketch with a dashed route</title>
+        <desc id="map-desc">A stylised coastline with a river and a dashed vermilion route linking three marked points.</desc>
+        <rect width="800" height="420" fill="#EDE5D3"/>
+        <g stroke="#CFC4AE" stroke-width="1" aria-hidden="true">
+          <line x1="0" y1="105" x2="800" y2="105"/>
+          <line x1="0" y1="210" x2="800" y2="210"/>
+          <line x1="0" y1="315" x2="800" y2="315"/>
+          <line x1="160" y1="0" x2="160" y2="420"/>
+          <line x1="320" y1="0" x2="320" y2="420"/>
+          <line x1="480" y1="0" x2="480" y2="420"/>
+          <line x1="640" y1="0" x2="640" y2="420"/>
+        </g>
+        <path d="M60 300 C120 220 180 250 240 180 C300 110 380 120 430 70 C500 40 600 80 680 60 L740 140 C700 200 720 260 680 320 C620 370 540 340 470 380 C380 410 300 370 230 390 C160 405 90 380 60 300 Z" fill="#F6F1E7" stroke="#1E2A2F" stroke-width="1.5"/>
+        <path d="M250 120 C300 170 320 230 380 250 C440 270 470 320 520 340 C560 355 600 350 640 380" fill="none" stroke="#5E8489" stroke-width="3"/>
+        <path d="M120 300 L200 250 L300 262 L390 200 L480 180 L600 130 L690 110" fill="none" stroke="#B8402A" stroke-width="3" stroke-dasharray="9 7"/>
+        <g fill="#B8402A" stroke="#F6F1E7" stroke-width="2">
+          <circle cx="120" cy="300" r="7"/>
+          <circle cx="390" cy="200" r="7"/>
+          <circle cx="690" cy="110" r="7"/>
+        </g>
+        <g font-family="Source Serif 4, Georgia, serif" font-size="15" fill="#1E2A2F">
+          <text x="134" y="332">Harbour</text>
+          <text x="404" y="232">Ford</text>
+          <text x="560" y="96">Summit</text>
+        </g>
+        <g aria-hidden="true" transform="translate(724 360)">
+          <circle r="22" fill="none" stroke="#1E2A2F" stroke-width="1"/>
+          <path d="M0 -18 L5 0 L0 -4 L-5 0 Z" fill="#B8402A"/>
+          <text x="0" y="-26" text-anchor="middle" font-family="Source Serif 4, Georgia, serif" font-size="13" fill="#1E2A2F">N</text>
+        </g>
+        <text x="40" y="400" font-family="Source Serif 4, Georgia, serif" font-size="13" fill="#4A5559">0 &mdash; 50 km</text>
+      </svg>
+      <figcaption class="max-w-5xl text-sm text-inkSoft mt-4 leading-relaxed">
+        Figure 1. A survey sketch: the dashed line is the chosen route, the blue line a river that the sketch did not need to cross.
+      </figcaption>
+    </figure>
+
+    <div class="max-w-prose mx-auto mt-16 font-body text-lg leading-[1.75]">
+      <p class="drop-cap max-w-prose">Open any atlas and the coastline looks like a fact. It has the calm authority of ink on good paper, and it asks nothing of the reader. Yet every line on that page is a decision: what to include, what to leave blank, which river gets a name and which marsh is simply erased.</p>
+      <p class="mt-6 max-w-prose">Early surveyors worked with rope, compass bearings and the patience of people who walked the same ground twice. Their results were rough, and they knew it. The pressure to produce a clean sheet came later, from patrons who wanted routes to look inevitable and harbours to look ready for trade.</p>
+      <p class="mt-6 max-w-prose">The result is a document that performs certainty. A dashed line across a blank sheet implies that the way is clear. A river drawn with a steady hand implies it can be forded. Neither claim may be true, and neither is marked as a guess.</p>
+    </div>
+
+    <blockquote class="max-w-5xl mx-auto mt-14 border-y border-rule py-10 text-center">
+      <p class="max-w-prose mx-auto font-display text-3xl md:text-4xl leading-relaxed font-medium">&ldquo;A map tells you where someone once wanted you to go, which is useful, but not the same as where the land will let you walk.&rdquo;</p>
+      <footer class="text-sm text-inkSoft mt-5">&mdash; From the survey logbook, 1794</footer>
+    </blockquote>
+
+    <h2 class="max-w-5xl mx-auto mt-14 font-display text-4xl font-bold leading-snug">Reading the blank spaces</h2>
+    <div class="max-w-prose mx-auto mt-6 font-body text-lg leading-[1.75]">
+      <p class="mt-0 max-w-prose">Historians of cartography have learned to read the blanks as carefully as the lines. A margin left empty can mean that no one went there, that the surveyor was refused entry, or that the information was too dangerous to publish. Each reason tells a different story about power.</p>
+      <p class="mt-6 max-w-prose">Modern digital maps hide their blanks well. Tiles load smoothly, labels resolve on demand, and the gaps are filled with plausible grey. The interface feels complete, which is exactly why it deserves the same questions we once asked of a hand-drawn sheet.</p>
+      <p class="mt-6 max-w-prose">The practical habit is simple. Before trusting a route, ask what the map was made to show, who paid for it, and what it leaves out on purpose. A good navigator keeps the paper map in the pack and checks the ground.</p>
+    </div>
+  </article>
+
+  <aside class="border-t border-rule bg-paperDeep" aria-labelledby="related-title">
+    <div class="mx-auto max-w-5xl px-6 py-14">
+      <h2 id="related-title" class="font-display text-2xl font-bold">Related stories</h2>
+      <ul class="mt-8 grid gap-8 md:grid-cols-3">
+        <li class="border-t-2 border-vermilion pt-4">
+          <p class="text-xs uppercase tracking-[0.15em] text-inkSoft">Field Notes</p>
+          <a href="#" class="font-display text-xl font-semibold leading-snug block mt-2 hover:text-vermilion">Mapping a marsh that moves every spring</a>
+          <p class="text-sm text-inkSoft mt-2 leading-relaxed">Tide tables, boot prints and a surveyor who stopped trusting the tide.</p>
+        </li>
+        <li class="border-t-2 border-sea pt-4">
+          <p class="text-xs uppercase tracking-[0.15em] text-inkSoft">Archive</p>
+          <a href="#" class="font-display text-xl font-semibold leading-snug block mt-2 hover:text-vermilion">The margin notes nobody was meant to read</a>
+          <p class="max-w-prose text-sm text-inkSoft mt-2 leading-relaxed">Pencilled corrections found inside a bound atlas from a northern printing house.</p>
+        </li>
+        <li class="border-t-2 border-ink pt-4">
+          <p class="text-xs uppercase tracking-[0.15em] text-inkSoft">Essays</p>
+          <a href="#" class="font-display text-xl font-semibold leading-snug block mt-2 hover:text-vermilion">Scale is a promise you can break</a>
+          <p class="max-w-prose text-sm text-inkSoft mt-2 leading-relaxed">Why a one-to-fifty-thousand sheet can still lie about the distance you walk.</p>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <section class="bg-night text-paper" aria-labelledby="letter-title">
+    <div class="mx-auto max-w-5xl px-6 py-16 text-center">
+      <h2 id="letter-title" class="font-display text-3xl md:text-4xl font-bold leading-snug">Get the Sheet, once a month</h2>
+      <p class="mt-4 mx-auto max-w-prose text-lg leading-relaxed text-paper/85">Long reads on old maps, new surveys and the blanks between them. No tracking pixels, one letter a month.</p>
+      <form class="mt-8 flex flex-col sm:flex-row gap-3 justify-center" action="#" method="post">
+        <label for="email" class="sr-only">Email address</label>
+        <input id="email" type="email" required placeholder="you@example.com" class="w-full sm:w-80 rounded-md bg-paper text-ink px-4 py-3 placeholder:text-inkSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">
+        <button type="submit" class="rounded-md bg-vermilion px-6 py-3 font-semibold text-paper hover:brightness-110 active:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="mx-auto max-w-5xl px-6 py-8 text-sm text-inkSoft flex flex-wrap justify-between gap-4 border-t border-rule">
+  <p>&copy; 2026 The Plotline</p>
+  <p>Corrections, sources and the survey archive are listed on the about page.</p>
+</footer>
+
+</body>
+</html>

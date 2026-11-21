@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Map Is Not the Territory</title>
+  <meta name="description" content="How maps shape what we believe about the world, from portolan charts to the projection on your phone.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#f5f0e6',
+            ink: '#211e18',
+            muted: '#5f584b',
+            rule: '#d9cfbb',
+            ochre: '#9a4f12',
+            sea: '#2e5e66',
+            deep: '#1f2a2e'
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    .fade-up { animation: fadeUp 0.6s ease-out both; }
+    .fade-up-2 { animation: fadeUp 0.6s 0.15s ease-out both; }
+    .fade-up-3 { animation: fadeUp 0.6s 0.3s ease-out both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .fade-up, .fade-up-2, .fade-up-3 { animation: none; } }
+    .drop-cap::first-letter { float: left; font-size: 4.25rem; line-height: 0.9; padding: 0.35rem 0.6rem 0 0; color: #9a4f12; font-weight: 700; }
+  </style>
+</head>
+<body class="bg-paper text-ink font-serif antialiased">
+
+  <header class="border-b border-rule">
+    <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+      <a href="#" class="font-serif text-xl font-semibold tracking-tight">The Meridian Review</a>
+      <nav aria-label="Sections" class="hidden gap-6 font-sans text-sm text-muted sm:flex">
+        <a href="#" class="hover:text-ink">Essays</a>
+        <a href="#" class="hover:text-ink">Science</a>
+        <a href="#" class="hover:text-ink">Travel</a>
+        <a href="#" class="hover:text-ink">Archive</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <article class="mx-auto max-w-5xl px-6 pb-16 pt-16 lg:pt-20">
+
+      <div class="mx-auto max-w-4xl text-center">
+        <p class="fade-up font-sans text-xs font-semibold uppercase tracking-[0.2em] text-ochre">Cartography &middot; Essay</p>
+        <h1 class="fade-up mt-5 font-serif text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">The Map Is Not the Territory, and Neither Is the Screen in Your Hand</h1>
+        <p class="fade-up-2 mx-auto mt-6 max-w-2xl text-xl italic leading-relaxed text-muted">Every map is a decision about what to leave out. The history of cartography is a history of those decisions, and of the people who were quietly wrong about them.</p>
+        <p class="fade-up-3 mt-8 font-sans text-sm text-muted">By Elena Varga &middot; 11 min read</p>
+      </div>
+
+      <figure class="fade-up-3 mx-auto mt-14 max-w-5xl">
+        <svg viewBox="0 0 800 420" role="img" aria-labelledby="fig-title fig-desc" class="h-auto w-full">
+          <title id="fig-title">A sketch of a coastline with a dashed sea route</title>
+          <desc id="fig-desc">A drawn coastline with a compass rose and a dashed ochre route linking two port markers.</desc>
+          <rect width="800" height="420" fill="#ebe3d1"/>
+          <g stroke="#d4c9af" stroke-width="1" aria-hidden="true">
+            <line x1="80" y1="0" x2="80" y2="420"/><line x1="160" y1="0" x2="160" y2="420"/>
+            <line x1="240" y1="0" x2="240" y2="420"/><line x1="320" y1="0" x2="320" y2="420"/>
+            <line x1="400" y1="0" x2="400" y2="420"/><line x1="480" y1="0" x2="480" y2="420"/>
+            <line x1="560" y1="0" x2="560" y2="420"/><line x1="640" y1="0" x2="640" y2="420"/>
+            <line x1="720" y1="0" x2="720" y2="420"/>
+            <line x1="0" y1="84" x2="800" y2="84"/><line x1="0" y1="168" x2="800" y2="168"/>
+            <line x1="0" y1="252" x2="800" y2="252"/><line x1="0" y1="336" x2="800" y2="336"/>
+          </g>
+          <path d="M0 300 C 90 260, 150 330, 230 300 S 330 170, 420 200 S 520 90, 600 120 S 720 60, 800 40 L 800 420 L 0 420 Z" fill="#e4d6b4" stroke="#8a7a5c" stroke-width="2"/>
+          <path d="M120 390 C 220 350, 300 380, 380 360 S 560 330, 700 370" fill="none" stroke="#2e5e66" stroke-width="1.5" stroke-dasharray="2 5" opacity="0.7"/>
+          <path d="M170 332 C 300 300, 420 260, 560 210" fill="none" stroke="#9a4f12" stroke-width="2.5" stroke-dasharray="9 6"/>
+          <circle cx="170" cy="332" r="7" fill="#211e18"/>
+          <circle cx="560" cy="210" r="7" fill="#9a4f12"/>
+          <text x="186" y="352" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#211e18">Lisbon</text>
+          <text x="576" y="232" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#9a4f12">Bristol</text>
+          <g transform="translate(680 90)" aria-hidden="true">
+            <circle r="34" fill="none" stroke="#211e18" stroke-width="1.5"/>
+            <path d="M0 -34 L7 0 L0 34 L-7 0 Z" fill="#211e18"/>
+            <text y="-42" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#211e18">N</text>
+          </g>
+        </svg>
+        <figcaption class="mt-4 max-w-3xl font-sans text-sm leading-relaxed text-muted">Figure 1. A portolan-style sketch: a straight rhumb route crosses the chart as a sailor would have drawn it, ignoring the curve of the earth.</figcaption>
+      </figure>
+
+      <div class="mx-auto mt-16 max-w-prose">
+        <p class="drop-cap text-lg leading-[1.75]">Ask most people where Greenland sits relative to Africa and they will point to something close to equal size. On the common world projection, Greenland looks roughly the size of the entire continent. In reality Africa is about fourteen times larger. The error is not a mistake of arithmetic. It is a consequence of trying to flatten a sphere onto a rectangle, and it has shaped how generations of readers understood their place in the world.</p>
+
+      </div>
+      <div class="mx-auto mt-12 max-w-4xl text-center">
+        <h2 class="font-serif text-3xl font-semibold tracking-tight">A Chart Built for Sailors</h2>
+      </div>
+      <div class="mx-auto max-w-prose">
+        <p class="mt-5 text-lg leading-[1.75]">The medieval portolan charts that guided Mediterranean sailors were not built on any projection at all. They were webs of rhumb lines radiating from compass roses, good for plotting a course by ruler and dividers and nothing more. Their coastlines were remarkably accurate, because the people who used them would drown if they were not.</p>
+        <p class="mt-5 text-lg leading-[1.75]">Ptolemy, writing centuries earlier, had tried something grander: a grid of latitude and longitude across the known inhabited world. His coordinates were often wrong, and his maps inherited the mistakes of their sources, but the idea that a map could be a mathematical object rather than a sketch was the seed of everything that followed.</p>
+      </div>
+
+      <blockquote class="mx-auto mt-14 max-w-4xl border-y border-rule py-10 text-center">
+        <p class="mx-auto max-w-3xl font-serif text-3xl italic leading-[1.4] text-ink sm:text-4xl">A map is an argument about the world, presented as if it were a window onto it.</p>
+        <footer class="mt-5 font-sans text-sm text-muted">Editorial note on the essay's central claim</footer>
+      </blockquote>
+
+      <div class="mx-auto mt-14 max-w-4xl text-center">
+        <h2 class="font-serif text-3xl font-semibold tracking-tight">The Projection Problem</h2>
+      </div>
+      <div class="mx-auto max-w-prose">
+        <p class="mt-5 text-lg leading-[1.75]">In 1569 Gerardus Mercator published a world map that solved a practical problem for navigators: a straight line on the chart was a course of constant compass bearing. The trade-off was that land near the poles swelled dramatically. The map was superb for plotting a voyage and poor at telling you how big anything was.</p>
+        <p class="mt-5 text-lg leading-[1.75]">Every projection is a compromise. Some preserve area, some preserve shape, some keep distances honest along a few chosen routes. None preserves everything, which is why a reasonable cartographer picks a projection for a purpose and says so on the page.</p>
+        <p class="mt-5 text-lg leading-[1.75]">The screen in your pocket has made the choice invisible. The default web map is a single projection, rendered at every zoom level, and most people never see the seam. That invisibility is the real danger: a choice that no longer looks like a choice.</p>
+      </div>
+
+      <div class="mx-auto mt-16 grid max-w-4xl gap-10 border-t border-rule pt-12 sm:grid-cols-3">
+        <section>
+          <p class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-sea">Related</p>
+          <h3 class="mt-3 font-serif text-xl font-semibold leading-snug">Why blank spaces on old maps were a kind of honesty</h3>
+          <p class="mt-2 font-sans text-sm leading-relaxed text-muted">Unknown coastlines were left empty rather than invented.</p>
+        </section>
+        <section>
+          <p class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-sea">Science</p>
+          <h3 class="mt-3 font-serif text-xl font-semibold leading-snug">Surveying a coast with a chain, a compass and patience</h3>
+          <p class="mt-2 font-sans text-sm leading-relaxed text-muted">The field methods behind the first accurate harbour charts.</p>
+        </section>
+        <section>
+          <p class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-sea">Travel</p>
+          <h3 class="mt-3 font-serif text-xl font-semibold leading-snug">Getting lost on purpose in a city with no street names</h3>
+          <p class="mt-2 font-sans text-sm leading-relaxed text-muted">A walk guided by sound, slope and smell instead of a blue dot.</p>
+        </section>
+      </div>
+    </article>
+
+    <section class="bg-deep text-paper" aria-labelledby="news-title">
+      <div class="mx-auto max-w-4xl px-6 py-16 text-center">
+        <p class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-[#de721a]">Weekly letter</p>
+        <h2 id="news-title" class="mt-3 font-serif text-3xl font-semibold leading-tight">Essays on how we draw the world, once a week</h2>
+        <p class="mx-auto mt-3 max-w-prose font-sans text-sm leading-relaxed text-rule">One long read every Thursday. No tracking pixels, and you can leave at any time.</p>
+        <form class="mx-auto mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row" action="#" method="post">
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com" class="min-h-11 flex-1 rounded-md border border-rule/40 bg-deep px-4 font-sans text-sm text-paper placeholder:text-rule/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-ochre">
+          <button type="submit" class="min-h-11 rounded-md bg-ochre px-6 font-sans text-sm font-semibold text-paper hover:bg-[#843f0c] focus-visible:ring-2 focus-visible:ring-paper">Subscribe</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mx-auto max-w-5xl px-6 py-8 font-sans text-xs text-muted">
+    <p>&copy; The Meridian Review. Figures drawn for this article.</p>
+  </footer>
+
+</body>
+</html>

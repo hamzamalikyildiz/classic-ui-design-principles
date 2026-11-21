@@ -1,0 +1,6 @@
+cift1: A | 4 | A has finer typographic hierarchy, a more considered illustration with legend and compass, and richer related stories, while B leaves blank color blocks as placeholders. | A 8/8/8/8 B 7/6/7/6
+cift2: A | 3 | A is a tidy single-column layout with a clean ingredients table and consistent numbered method, while B has stray floating labels in the hero and a large dead column beside the method. | A 8/7/8/7 B 7/7/6/7
+cift3: B | 3 | B has a more editorial structure with a section index, pull quote, comparison panel and questions list that give real content depth, though A has a stronger hero and closing. | A 8/7/8/6 B 8/8/8/8
+cift4: A | 2 | A stays consistent in palette and keeps related stories typographic, while B breaks its own system with cheap off-palette gradient thumbnails despite a nicer hero map. | A 7/7/8/7 B 7/6/8/7
+cift5: B | 3 | B delivers a more crafted map with labels and compass plus a complete related-stories and newsletter ending, whereas A is solid but a flatter schematic and ends abruptly on a plain reading list. | A 7/7/8/7 B 8/8/8/7
+cift6: A | 3 | A has a more deliberate editorial layout with ingredients beside the method, a bold hero lockup and a consistent set of abstract cards, while B is competent but more conventional with a thin related list. | A 8/8/8/8 B 7/7/8/7

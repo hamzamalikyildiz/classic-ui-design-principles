@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quiet Power of Maps</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Source Serif 4', Georgia, serif; }
+  .display { font-family: 'Playfair Display', Georgia, serif; }
+  .ui { font-family: 'Inter', system-ui, sans-serif; }
+  .dropcap::first-letter {
+    font-family: 'Playfair Display', Georgia, serif;
+    float: left; font-size: 4.6rem; line-height: 0.85;
+    padding: 0.35rem 0.6rem 0 0; color: #9a3412; font-weight: 800;
+  }
+</style>
+</head>
+<body class="bg-[#f7f3ea] text-stone-900 antialiased">
+
+<header class="border-b border-stone-900">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-3 flex items-center justify-between ui text-xs uppercase tracking-[0.2em]">
+    <span class="font-semibold">The Long Read</span>
+    <span class="text-stone-500">Essay &middot; 12 min</span>
+  </div>
+</header>
+
+<main class="mx-auto max-w-5xl px-4 sm:px-6">
+
+  <!-- Hero -->
+  <section class="pt-10 sm:pt-16 pb-10 grid md:grid-cols-12 gap-8 items-end">
+    <div class="md:col-span-7">
+      <p class="ui text-xs font-semibold uppercase tracking-[0.2em] text-orange-800 mb-4">Cartography</p>
+      <h1 class="display text-5xl sm:text-6xl leading-[1.02] font-extrabold tracking-tight">The Quiet Power of Maps</h1>
+      <p class="mt-6 text-xl sm:text-2xl leading-snug text-stone-700 italic">Every map is a decision about what to leave out, and that choice has always shaped who we think we are.</p>
+      <p class="mt-6 ui text-sm text-stone-500">By the Desk &middot; November 2026</p>
+    </div>
+    <div class="md:col-span-5">
+      <!-- Inline SVG graphic: a stylised grid with a route -->
+      <svg viewBox="0 0 400 300" class="w-full h-auto border border-stone-900 bg-[#efe7d4]" role="img" aria-label="Abstract map with a dashed route">
+        <g stroke="#d6cbb4" stroke-width="1">
+          <line x1="0" y1="50" x2="400" y2="50"/><line x1="0" y1="100" x2="400" y2="100"/>
+          <line x1="0" y1="150" x2="400" y2="150"/><line x1="0" y1="200" x2="400" y2="200"/>
+          <line x1="0" y1="250" x2="400" y2="250"/>
+          <line x1="50" y1="0" x2="50" y2="300"/><line x1="100" y1="0" x2="100" y2="300"/>
+          <line x1="150" y1="0" x2="150" y2="300"/><line x1="200" y1="0" x2="200" y2="300"/>
+          <line x1="250" y1="0" x2="250" y2="300"/><line x1="300" y1="0" x2="300" y2="300"/>
+          <line x1="350" y1="0" x2="350" y2="300"/>
+        </g>
+        <path d="M30 240 C 90 180, 120 230, 180 160 S 290 90, 370 60" fill="none" stroke="#9a3412" stroke-width="4" stroke-dasharray="10 7"/>
+        <circle cx="30" cy="240" r="9" fill="#1c1917"/>
+        <circle cx="370" cy="60" r="9" fill="#9a3412"/>
+        <rect x="150" y="120" width="70" height="46" fill="#1c1917" opacity="0.08"/>
+        <text x="30" y="272" font-family="Inter, sans-serif" font-size="13" fill="#1c1917">START</text>
+        <text x="300" y="46" font-family="Inter, sans-serif" font-size="13" fill="#9a3412">ARRIVAL</text>
+      </svg>
+      <p class="ui text-xs text-stone-500 mt-2">Fig. 1 &mdash; A route drawn on a grid, which is how most maps begin.</p>
+    </div>
+  </section>
+
+  <hr class="border-stone-900">
+
+  <!-- Body -->
+  <article class="grid md:grid-cols-12 gap-8 py-12">
+    <aside class="md:col-span-3 md:order-last">
+      <div class="md:sticky md:top-8 border-t-4 border-orange-800 pt-4 ui">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-500 mb-3">In this essay</p>
+        <ol class="space-y-2 text-sm text-stone-800 list-decimal list-inside">
+          <li>The mapmaker's bargain</li>
+          <li>Projections and their lies</li>
+          <li>Whose borders are drawn</li>
+          <li>Maps in the phone era</li>
+        </ol>
+        <div class="mt-8 bg-stone-900 text-[#f7f3ea] p-5">
+          <p class="display text-2xl leading-tight">A map is never the territory.</p>
+          <p class="mt-2 text-sm text-stone-300">Alfred Korzybski, 1931</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="md:col-span-8 text-lg leading-[1.75] text-stone-800 space-y-6">
+      <h2 class="display text-3xl font-bold pt-2">The mapmaker's bargain</h2>
+      <p class="dropcap">A good map tells you less than the world does, and that is the point. Reality is too dense to carry around. So the cartographer makes a bargain: keep the rivers, drop the pebbles; keep the road, drop the field behind it. Each deletion is small. Added together, they become a worldview.</p>
+      <p>Early maps were practical documents. Sailors needed coastlines, merchants needed ports, and rulers needed to know where their soldiers could march before winter. Nobody expected a map to be neutral, and nobody thought it was. It was a tool with a purpose, and its purpose showed in every line.</p>
+
+      <blockquote class="my-10 border-y border-stone-900 py-8 text-center">
+        <p class="display text-3xl sm:text-4xl leading-snug italic text-orange-900">&ldquo;The most dangerous map is the one that looks like nothing has been chosen.&rdquo;</p>
+      </blockquote>
+
+      <h2 class="display text-3xl font-bold pt-2">Projections and their lies</h2>
+      <p>Flattening a round planet onto a rectangle means something has to give. Distance, shape, area or direction will be distorted, and no projection keeps all four. The familiar wall map makes Greenland look close to the size of Africa. It is not. Africa is roughly fourteen times larger. The distortion is mathematically unavoidable, yet most of us have never been told.</p>
+
+      <div class="my-10 bg-[#efe7d4] border border-stone-900 p-6 ui">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-stone-600 mb-4">Where the distortion lands</p>
+        <div class="space-y-4 text-sm">
+          <div>
+            <div class="flex justify-between mb-1"><span>Mercator (shape and direction)</span><span class="text-stone-600">High at poles</span></div>
+            <div class="h-3 bg-stone-900/10"><div class="h-3 w-[85%] bg-orange-800"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1"><span>Equal-area (size)</span><span class="text-stone-600">Shape is warped</span></div>
+            <div class="h-3 bg-stone-900/10"><div class="h-3 w-[60%] bg-stone-900"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1"><span>Gall-Peters (size)</span><span class="text-stone-600">Strong vertical stretch</span></div>
+            <div class="h-3 bg-stone-900/10"><div class="h-3 w-[40%] bg-stone-500"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="display text-3xl font-bold pt-2">Whose borders are drawn</h2>
+      <p>Borders look permanent on a page, but they are the most contested lines a cartographer ever draws. A dotted line can mean a dispute, a solid line a settled claim, and a missing line a question nobody wants to answer. Publishers in different countries have shown different versions of the same disputed coast for generations, each version quietly agreeing with its government.</p>
+      <p>The lesson is not that maps lie. It is that they argue. A reader who understands that a map has an author, a purpose and a set of omissions can read it far better than one who takes the lines as given.</p>
+
+      <h2 class="display text-3xl font-bold pt-2">Maps in the phone era</h2>
+      <p>Today the map is less a picture than a service. It reroutes you around traffic, ranks restaurants by distance, and decides which street is worth showing at all. The choices are no longer printed once and reviewed for decades. They update every night, invisibly, according to rules few of us can inspect.</p>
+      <p>That makes the old question more urgent, not less. When the map in your pocket tells you where to go, it is worth asking what it has chosen to leave out, and who benefits from the omission.</p>
+
+      <h2 class="display text-3xl font-bold pt-2">A short list of questions</h2>
+      <ul class="ui text-base leading-relaxed space-y-3 border-l-4 border-orange-800 pl-5">
+        <li>Who drew this map, and what were they trying to get me to do?</li>
+        <li>What is shown at the same size that should not be compared?</li>
+        <li>Which places are labelled, and which are left blank?</li>
+        <li>What would this map look like to someone on the other side of the border?</li>
+      </ul>
+      <p class="ui text-sm text-stone-500 pt-6 border-t border-stone-300">Further reading: the history of cartography is best approached through the primary atlases themselves, many of which are digitised by national libraries.</p>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="border-t border-stone-900 py-8 ui text-xs text-stone-500 flex flex-col sm:flex-row justify-between gap-2">
+    <span>&copy; The Long Read</span>
+    <span>Illustrations are original diagrams.</span>
+  </footer>
+
+</main>
+</body>
+</html>

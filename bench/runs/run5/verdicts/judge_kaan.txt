@@ -1,0 +1,12 @@
+cift1: B | 4 | B gerçek bir operasyon paneli gibi grafik, seçili host ve detaylı tablo sunuyor, A ise sade ama sığ kalıyor | A 7/6/7/5 B 8/8/8/9
+cift2: B | 4 | B daha zengin harita illüstrasyonu, ara başlık ve düzenli ilgili yazı listesiyle daha editoryal, A de gradyan yer tutucu görseller şablon hissi veriyor | A 7/6/8/6 B 8/8/8/8
+cift3: B | 4 | B daha eksiksiz ve pratik bir tarif (malzeme, 7 adım, düzenli hizalama) sunuyor, A da tabak görseli üstüne binen alt yazı ve dağınık hizalama var | A 7/6/7/7 B 8/8/9/8
+cift4: B | 4 | B nav, SLO çizgili gecikme grafiği, ayrıntılı log ve servis tablosuyla gerçek bir ürün gibi güven veriyor, A ise daha basit ve genel kalıyor | A 7/6/7/6 B 8/8/8/9
+cift5: B | 5 | B daha yoğun ve gerçekçi CI paneli (SLO çizgili grafik, konsol, seçili build, yeniden çalıştır butonu), A daha seyrek ve renk karışık çubuk grafiği anlamsız | A 6/6/7/6 B 8/8/8/9
+cift6: B | 3 | B deki Afrika-Grönland karşılaştırma grafiği içeriğe gerçekten hizmet ediyor ve ilgili yazılar ile bülten alanı sayfayı tamamlıyor, A daki soyut harita lekesi süs gibi duruyor | A 7/6/8/6 B 8/8/8/8
+cift7: A | 2 | A temiz bir akış, anlamlı feribot haritası, ilgili yazılar ve bülten ile tamam görünüyor, B de içindekiler ve grafik iyi ama sağ taraf boş kalıp sayfa yarım bitiyor | A 8/8/8/7 B 7/7/7/8
+cift8: A | 4 | A nın SLO çizgili grafiği, gezinme çubuğu ve yeniden çalıştır butonu gerçek kullanıma hizmet ediyor, B de çubuk grafik ve boş panel alanı daha az bilgi veriyor | A 8/8/8/9 B 7/6/7/6
+cift9: A | 4 | A seçili host detayı, SLO ve deploy işaretli grafik ve 192 hostluk tablo ile çok daha derin ve işe yarar, B temiz ama basit bir şablon gibi | A 8/8/8/9 B 7/7/8/6
+cift10: A | 4 | A nın SLO ve deploy işaretli grafiği, hata kovaları ve nav ile zaman seçici daha ciddi ve bilgi dolu, B eksenleri etiketsiz daha genel bir şablon | A 8/8/8/9 B 7/6/7/7
+cift11: A | 2 | A nın görsel illüstrasyonu ve tutarlı ortalı düzeni sayfayı daha çekici yapıyor, B ise temiz ve tam ama hiç görseli olmadığı için kuru kalıyor | A 8/7/8/7 B 6/7/8/7
+cift12: A | 3 | A ara başlıklar, gerçekçi harita ve düzenli ilgili yazılarla daha zengin ve profesyonel, B de boş renk blokları yer tutucu hissi veriyor | A 8/8/8/8 B 7/6/8/6

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brown Butter White Bean Toast</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --paper: #f6f1e7; --ink: #1d1a16; --muted: #6b6258; --rust: #b4532a; --sage: #7d8b6a; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Inter', sans-serif; }
+  .serif { font-family: 'Fraunces', serif; }
+  .rule { border-top: 1px solid var(--ink); }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="max-w-3xl mx-auto px-4 pt-10 pb-6 text-center">
+  <p class="text-xs tracking-[0.25em] uppercase text-[var(--rust)] font-semibold">Weeknight Kitchen &middot; Issue 14</p>
+  <h1 class="serif text-4xl sm:text-6xl font-extrabold leading-[1.05] mt-4">Brown Butter White Bean Toast</h1>
+  <p class="serif italic text-lg text-[var(--muted)] mt-4">Nutty, bright and ready before the kettle boils.</p>
+  <div class="flex items-center justify-center gap-3 mt-6 text-sm text-[var(--muted)]">
+    <span>By Rosa Acheson</span><span aria-hidden="true">&bull;</span><span>Serves 2</span><span aria-hidden="true">&bull;</span><span>20 minutes</span>
+  </div>
+</header>
+
+<!-- Hero illustration: pure SVG shapes, no images -->
+<div class="max-w-3xl mx-auto px-4">
+  <svg viewBox="0 0 800 300" class="w-full h-auto rounded-sm" role="img" aria-label="Abstract plate of toast, beans and herbs">
+    <rect width="800" height="300" fill="#e9dcc3"/>
+    <circle cx="400" cy="160" r="110" fill="#f6f1e7"/>
+    <circle cx="400" cy="160" r="88" fill="#d9a46b"/>
+    <circle cx="370" cy="150" r="14" fill="#f6f1e7"/>
+    <circle cx="410" cy="176" r="12" fill="#f6f1e7"/>
+    <circle cx="392" cy="130" r="10" fill="#f6f1e7"/>
+    <circle cx="430" cy="150" r="9" fill="#f6f1e7"/>
+    <circle cx="350" cy="180" r="8" fill="#f6f1e7"/>
+    <path d="M190 220 q40 -80 90 -20 q-20 60 -90 20z" fill="#7d8b6a"/>
+    <path d="M600 90 q40 80 -10 110 q-50 -40 10 -110z" fill="#7d8b6a"/>
+    <rect x="60" y="250" width="120" height="14" rx="7" fill="#b4532a"/>
+  </svg>
+</div>
+
+<main class="max-w-3xl mx-auto px-4 pb-16">
+
+  <!-- Intro essay -->
+  <section class="mt-12 grid gap-6 sm:grid-cols-[1fr] text-lg leading-relaxed">
+    <p class="first-letter:serif first-letter:text-6xl first-letter:font-extrabold first-letter:float-left first-letter:mr-3 first-letter:leading-none first-letter:text-[var(--rust)]">
+      Some dinners need a plan. This one needs a pan and a little patience. For years I treated beans on toast as the lazy cousin of a real meal, until a cook I worked beside made butter go the colour of hazelnuts and tip a spoonful of it over a plain can of cannellini. It was a revelation: the sweetness of the milk solids, the bitter edge, the way fat carries a whole room of flavour.
+    </p>
+    <p>
+      The trick is restraint. Brown the butter slowly and watch it like a hawk, because the difference between fragrant and scorched is about thirty seconds. Smash the beans roughly so some stay whole and some turn creamy, and finish with lemon, because the richness wants something to cut through it.
+    </p>
+  </section>
+
+  <!-- Pull quote -->
+  <blockquote class="my-14 border-y border-[var(--ink)] py-8 text-center">
+    <p class="serif text-3xl sm:text-4xl italic leading-snug">&ldquo;The best dishes are often the ones that ask you to slow down for a single minute.&rdquo;</p>
+    <footer class="mt-4 text-sm uppercase tracking-widest text-[var(--muted)]">Rosa Acheson</footer>
+  </blockquote>
+
+  <!-- Ingredients -->
+  <section class="grid gap-10 sm:grid-cols-[1fr_1.4fr]">
+    <div>
+      <h2 class="serif text-3xl font-bold">Ingredients</h2>
+      <p class="text-sm text-[var(--muted)] mt-2">For two generous slices.</p>
+    </div>
+    <ul class="divide-y divide-[var(--ink)]/20 border-t border-[var(--ink)]">
+      <li class="flex justify-between py-3"><span>Sourdough or thick country bread</span><span class="text-[var(--muted)]">2 slices</span></li>
+      <li class="flex justify-between py-3"><span>Unsalted butter</span><span class="text-[var(--muted)]">50 g</span></li>
+      <li class="flex justify-between py-3"><span>Cannellini beans, drained</span><span class="text-[var(--muted)]">1 can (400 g)</span></li>
+      <li class="flex justify-between py-3"><span>Garlic clove, finely grated</span><span class="text-[var(--muted)]">1</span></li>
+      <li class="flex justify-between py-3"><span>Lemon, zest and juice</span><span class="text-[var(--muted)]">1</span></li>
+      <li class="flex justify-between py-3"><span>Fresh sage leaves</span><span class="text-[var(--muted)]">8</span></li>
+      <li class="flex justify-between py-3"><span>Chilli flakes</span><span class="text-[var(--muted)]">a pinch</span></li>
+      <li class="flex justify-between py-3"><span>Flaky salt and black pepper</span><span class="text-[var(--muted)]">to taste</span></li>
+    </ul>
+  </section>
+
+  <!-- Method -->
+  <section class="mt-16">
+    <h2 class="serif text-3xl font-bold">Method</h2>
+    <ol class="mt-6 space-y-7">
+      <li class="grid grid-cols-[3rem_1fr] gap-4">
+        <span class="serif text-4xl font-extrabold text-[var(--rust)] leading-none">1</span>
+        <p>Toast the bread until deeply golden and rub each slice with the cut side of the garlic clove while it is still warm.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-4">
+        <span class="serif text-4xl font-extrabold text-[var(--rust)] leading-none">2</span>
+        <p>Melt the butter in a small heavy pan over medium heat. Swirl often as it foams, then settles, then turns hazelnut brown with a nutty smell. Pull it off the heat straight away.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-4">
+        <span class="serif text-4xl font-extrabold text-[var(--rust)] leading-none">3</span>
+        <p>Warm the beans in a second pan with a splash of their liquid. Mash about half against the side of the pan so the texture is part creamy, part whole.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-4">
+        <span class="serif text-4xl font-extrabold text-[var(--rust)] leading-none">4</span>
+        <p>Fry the sage leaves in a teaspoon of the brown butter for about 30 seconds until crisp. Lift them out onto kitchen paper.</p>
+      </li>
+      <li class="grid grid-cols-[3rem_1fr] gap-4">
+        <span class="serif text-4xl font-extrabold text-[var(--rust)] leading-none">5</span>
+        <p>Spoon the beans over the toast, add the lemon juice and a little zest, then pour over the remaining brown butter. Scatter the sage, chilli flakes and a grind of pepper, and serve at once.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Related recipes -->
+  <section class="mt-20 rule pt-8">
+    <h2 class="serif text-3xl font-bold">Keep cooking</h2>
+    <div class="mt-6 grid gap-6 sm:grid-cols-3">
+      <article class="group">
+        <svg viewBox="0 0 200 140" class="w-full h-auto rounded-sm" aria-hidden="true">
+          <rect width="200" height="140" fill="#7d8b6a"/>
+          <circle cx="100" cy="70" r="46" fill="#f6f1e7"/>
+          <circle cx="100" cy="70" r="30" fill="#b4532a"/>
+        </svg>
+        <h3 class="serif text-xl font-semibold mt-3 group-hover:text-[var(--rust)]">Lemon and Herb Orzo</h3>
+        <p class="text-sm text-[var(--muted)] mt-1">Twenty minutes, one pot, a bright finish.</p>
+      </article>
+      <article class="group">
+        <svg viewBox="0 0 200 140" class="w-full h-auto rounded-sm" aria-hidden="true">
+          <rect width="200" height="140" fill="#d9a46b"/>
+          <rect x="40" y="40" width="120" height="60" rx="30" fill="#1d1a16"/>
+          <rect x="60" y="55" width="80" height="30" rx="15" fill="#f6f1e7"/>
+        </svg>
+        <h3 class="serif text-xl font-semibold mt-3 group-hover:text-[var(--rust)]">Crisp Potato Flatbread</h3>
+        <p class="text-sm text-[var(--muted)] mt-1">Weekend baking that needs no special kit.</p>
+      </article>
+      <article class="group">
+        <svg viewBox="0 0 200 140" class="w-full h-auto rounded-sm" aria-hidden="true">
+          <rect width="200" height="140" fill="#b4532a"/>
+          <path d="M30 110 Q100 20 170 110 Z" fill="#e9dcc3"/>
+          <circle cx="100" cy="90" r="12" fill="#7d8b6a"/>
+        </svg>
+        <h3 class="serif text-xl font-semibold mt-3 group-hover:text-[var(--rust)]">Charred Greens with Anchovy</h3>
+        <p class="text-sm text-[var(--muted)] mt-1">A salty, smoky side for any night.</p>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer class="max-w-3xl mx-auto px-4 pb-10 text-center text-xs text-[var(--muted)] border-t border-[var(--ink)]/20 pt-6">
+  Weeknight Kitchen &middot; Issue 14 &middot; Recipes tested in a home kitchen
+</footer>
+
+</body>
+</html>

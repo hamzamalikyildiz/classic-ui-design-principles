@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracewise - Observability</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0b0f17; color: #e2e8f0; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+  <!-- Header -->
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0b0f17" stroke-width="2.5"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-semibold leading-tight">Tracewise</h1>
+        <p class="text-xs text-slate-400">production &middot; api-gateway</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 text-xs">
+      <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300">Last 1h</span>
+      <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live
+      </span>
+    </div>
+  </header>
+
+  <!-- KPI row -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">p95 latency</p>
+      <p class="mt-1 text-2xl font-semibold mono">182<span class="text-sm text-slate-400"> ms</span></p>
+      <p class="text-xs text-emerald-400 mt-1">&darr; 12% vs prior hour</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">Requests / min</p>
+      <p class="mt-1 text-2xl font-semibold mono">4,215</p>
+      <p class="text-xs text-cyan-400 mt-1">&uarr; 3% vs prior hour</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">Error rate</p>
+      <p class="mt-1 text-2xl font-semibold mono text-rose-400">1.84<span class="text-sm text-slate-400">%</span></p>
+      <p class="text-xs text-rose-400 mt-1">&uarr; 0.6 pts vs prior hour</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs text-slate-400">Services healthy</p>
+      <p class="mt-1 text-2xl font-semibold mono">7<span class="text-sm text-slate-400"> / 8</span></p>
+      <p class="text-xs text-amber-400 mt-1">1 degraded</p>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="grid lg:grid-cols-3 gap-4">
+    <div class="card p-5 lg:col-span-2">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold">Latency (p50 / p95)</h2>
+        <div class="flex gap-3 text-xs text-slate-400">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-cyan-400"></span>p95</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-violet-400"></span>p50</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 600 200" class="w-full h-52" preserveAspectRatio="none">
+        <g stroke="#1f2937" stroke-width="1">
+          <line x1="0" y1="40" x2="600" y2="40"/><line x1="0" y1="90" x2="600" y2="90"/><line x1="0" y1="140" x2="600" y2="140"/><line x1="0" y1="190" x2="600" y2="190"/>
+        </g>
+        <defs>
+          <linearGradient id="fill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <polygon fill="url(#fill)" points="0,150 40,132 80,140 120,110 160,122 200,96 240,104 280,88 320,112 360,80 400,92 440,70 480,84 520,62 560,74 600,58 600,200 0,200"/>
+        <polyline fill="none" stroke="#22d3ee" stroke-width="2" points="0,150 40,132 80,140 120,110 160,122 200,96 240,104 280,88 320,112 360,80 400,92 440,70 480,84 520,62 560,74 600,58"/>
+        <polyline fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="4 4" points="0,172 40,166 80,170 120,160 160,164 200,156 240,160 280,150 320,162 360,148 400,154 440,142 480,150 520,138 560,146 600,136"/>
+      </svg>
+      <div class="flex justify-between text-[10px] text-slate-500 mono mt-2">
+        <span>13:00</span><span>13:15</span><span>13:30</span><span>13:45</span><span>14:00</span>
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="text-sm font-semibold mb-4">Error rate by minute</h2>
+      <div class="h-40 flex items-end gap-1">
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[18%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[22%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[12%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[30%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[26%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[41%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[35%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[52%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[46%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[38%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[28%]"></div>
+        <div class="flex-1 bg-rose-500/70 rounded-t h-[24%]"></div>
+      </div>
+      <div class="flex justify-between text-[10px] text-slate-500 mono mt-2">
+        <span>-12m</span><span>now</span>
+      </div>
+      <p class="text-xs text-slate-400 mt-4">Top cause: <span class="text-slate-200 mono">HTTP 502</span> from <span class="text-slate-200 mono">payments</span></p>
+    </div>
+  </section>
+
+  <!-- Log tail + services -->
+  <section class="grid lg:grid-cols-3 gap-4">
+    <div class="card p-5 lg:col-span-2">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold">Live log tail</h2>
+        <span class="text-xs text-slate-500 mono">streaming</span>
+      </div>
+      <pre class="mono text-xs leading-6 bg-black/40 rounded-lg p-4 overflow-x-auto h-72 whitespace-pre"><span class="text-slate-500">14:00:01</span> <span class="text-cyan-400">INFO </span> gateway   GET /v1/orders 200 42ms
+<span class="text-slate-500">14:00:02</span> <span class="text-cyan-400">INFO </span> auth      token verified user=u_8231
+<span class="text-slate-500">14:00:03</span> <span class="text-rose-400">ERROR</span> payments  502 upstream timeout req=9f2c
+<span class="text-slate-500">14:00:03</span> <span class="text-amber-400">WARN </span> payments  retry 1/3 req=9f2c
+<span class="text-slate-500">14:00:04</span> <span class="text-cyan-400">INFO </span> gateway   POST /v1/charge 201 118ms
+<span class="text-slate-500">14:00:05</span> <span class="text-rose-400">ERROR</span> payments  502 upstream timeout req=9f31
+<span class="text-slate-500">14:00:06</span> <span class="text-cyan-400">INFO </span> search    query ok hits=24 31ms
+<span class="text-slate-500">14:00:07</span> <span class="text-amber-400">WARN </span> ledger    slow write 640ms shard=3
+<span class="text-slate-500">14:00:08</span> <span class="text-cyan-400">INFO </span> gateway   GET /v1/users/me 200 19ms</pre>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="text-sm font-semibold mb-3">Services</h2>
+      <ul class="divide-y divide-slate-800 text-sm">
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>api-gateway</span><span class="mono text-xs text-slate-400">38ms</span></li>
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>auth</span><span class="mono text-xs text-slate-400">12ms</span></li>
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400"></span>payments</span><span class="mono text-xs text-amber-400">410ms</span></li>
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>search</span><span class="mono text-xs text-slate-400">31ms</span></li>
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>ledger</span><span class="mono text-xs text-slate-400">64ms</span></li>
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>notifications</span><span class="mono text-xs text-slate-400">22ms</span></li>
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>cache</span><span class="mono text-xs text-slate-400">1ms</span></li>
+        <li class="flex items-center justify-between py-2.5"><span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-500"></span>batch-jobs</span><span class="mono text-xs text-slate-500">paused</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SDK install -->
+  <section class="card p-5">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <h2 class="text-sm font-semibold">Install the SDK</h2>
+      <span class="text-xs text-slate-500">Node.js 18+</span>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-4">
+      <pre class="mono text-xs leading-6 bg-black/40 rounded-lg p-4 overflow-x-auto"><span class="text-slate-500"># install</span>
+<span class="text-emerald-400">npm</span> install @tracewise/sdk</pre>
+      <pre class="mono text-xs leading-6 bg-black/40 rounded-lg p-4 overflow-x-auto"><span class="text-violet-400">import</span> { init } <span class="text-violet-400">from</span> <span class="text-amber-300">"@tracewise/sdk"</span>;
+
+init({ apiKey: process.env.TRACEWISE_KEY, service: <span class="text-amber-300">"api-gateway"</span> });</pre>
+    </div>
+  </section>
+
+  <footer class="text-xs text-slate-500 text-center pb-4">Tracewise &middot; v2.4.1</footer>
+</div>
+</body>
+</html>

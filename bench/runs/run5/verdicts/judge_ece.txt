@@ -1,0 +1,12 @@
+cift1: B | 3 | B daha canlı renkli illüstrasyonla açılıyor ama A daha dolu ve düzenli, yine de B ilk bakışta daha akılda kalıcı. | A 7/7/8/8 B 8/7/8/7
+cift2: B | 3 | B daha detaylı ve gerçek ürün gibi (SLO çizgisi, deploy işareti, renkli çubuklar) ve daha sofistike duruyor. | A 7/6/7/7 B 8/8/8/8
+cift3: B | 4 | B daha zengin: büyük grafik, seçili host paneli ve log; A düz bir tablo ve kartlardan ibaret kalıyor. | A 6/6/7/5 B 8/8/8/8
+cift4: A | 4 | A nin detaylı harita çizimi ve numaralı okuma listesi özgün duruyor, B nin renkli gradyan küçük resimleri şablon gibi. | A 8/8/8/8 B 7/6/8/7
+cift5: A | 3 | A nın Grönland-Afrika çubuk görseli akılda kalıyor ve bülten ile ilgili yazı kartlarıyla sayfa daha tam bitiyor, B nin sonu düz metin listesi. | A 8/8/8/8 B 7/7/8/7
+cift6: B | 2 | A renkli çubuklarla canlı ama sağ panelde boşluk var, B daha dolu ve düzenli (SLO çizgisi, rozetler, log, Re-run düğmesi). | A 7/7/7/7 B 8/8/8/8
+cift7: A | 2 | A nın SLO çizgili büyük grafiği, seçili host paneli ve düğmeleri daha zengin, B nin mini çubuk ve sparkline fikri güzel ama daha az içerik var. | A 8/8/8/8 B 7/7/8/6
+cift8: B | 4 | B nin harita illüstrasyonu ve ara başlıkları daha özenli, A nın ilgili yazı kutuları boş renkli dikdörtgenler olduğu için yarım kalmış görünüyor. | A 7/6/8/7 B 8/8/8/8
+cift9: A | 4 | A nın illüstrasyonlu üst görseli ve renkli tarif kartları canlı, B tamamen metin ve görselsiz kalıyor. | A 8/7/8/8 B 6/7/8/7
+cift10: B | 3 | B nin yan sütunu, koyu alıntı kartı ve çubuk grafiği sayfayı daha hareketli ve zengin yapıyor, A daha düz bir makale gibi. | A 7/7/8/7 B 8/8/8/8
+cift11: B | 4 | B çok daha dolu ve gerçek bir ürün paneli gibi (çizgi grafik, konsol, seçili build), A daha az içerikli ve basit kalıyor. | A 7/6/7/6 B 8/8/8/9
+cift12: A | 2 | A nın SLO çizgisi, deploy işareti ve Copy snippet düğmesiyle daha zengin ve gerçekçi, B nin dolgulu grafiği güzel ama daha sade. | A 8/8/7/9 B 8/7/8/7

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quiet Return of the Paper Map</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { background: #f7f3ea; color: #1d1b18; font-family: 'Source Serif 4', Georgia, serif; }
+  .display { font-family: 'Playfair Display', Georgia, serif; }
+  .ui { font-family: 'Inter', system-ui, sans-serif; }
+  .dropcap::first-letter {
+    float: left; font-family: 'Playfair Display', Georgia, serif;
+    font-size: 4.6rem; line-height: .85; padding: .4rem .6rem 0 0; color: #9b2c1f;
+  }
+</style>
+</head>
+<body class="bg-[#f7f3ea] text-[#1d1b18]">
+
+<!-- Masthead -->
+<header class="border-b border-[#1d1b18]">
+  <div class="mx-auto max-w-5xl px-4 pt-6 text-center">
+    <p class="ui text-[11px] tracking-[.25em] uppercase text-[#6b645a]">Est. 1971 &middot; Issue 212 &middot; Autumn</p>
+    <h1 class="display text-5xl sm:text-6xl font-bold tracking-tight mt-2">The Long Read</h1>
+  </div>
+  <nav class="ui mx-auto max-w-5xl px-4 mt-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-semibold uppercase tracking-wider border-t border-[#1d1b18] pt-3 pb-3">
+    <a href="#" class="text-[#9b2c1f] border-b-2 border-[#9b2c1f]">Culture</a>
+    <a href="#" class="hover:text-[#9b2c1f]">Science</a>
+    <a href="#" class="hover:text-[#9b2c1f]">Travel</a>
+    <a href="#" class="hover:text-[#9b2c1f]">Design</a>
+    <a href="#" class="hover:text-[#9b2c1f]">Essays</a>
+    <a href="#" class="hover:text-[#9b2c1f]">Archive</a>
+  </nav>
+</header>
+
+<main class="mx-auto max-w-3xl px-4">
+  <!-- Kicker + headline -->
+  <section class="pt-12 text-center">
+    <p class="ui text-xs font-bold tracking-[.2em] uppercase text-[#9b2c1f]">Travel &middot; Feature</p>
+    <h2 class="display text-4xl sm:text-6xl font-bold leading-[1.05] mt-4">The Quiet Return of the Paper Map</h2>
+    <p class="text-xl sm:text-2xl leading-snug italic text-[#4a443c] mt-6">
+      Phones promised to make folded paper obsolete. Instead, a generation that never needed one is buying them by the armful, and learning to read them.
+    </p>
+    <p class="ui mt-6 text-sm text-[#6b645a]">
+      By <span class="font-semibold text-[#1d1b18]">Elena Marsh</span> &middot; 14 min read &middot; November 2026
+    </p>
+  </section>
+
+  <!-- Hero illustration -->
+  <figure class="mt-10">
+    <svg viewBox="0 0 800 440" class="w-full h-auto rounded-sm border border-[#1d1b18]" role="img" aria-label="Illustration of a folded paper map with a compass rose and a red route">
+      <rect width="800" height="440" fill="#e9dfc8"/>
+      <!-- map land shapes -->
+      <path d="M40 60 L220 40 L300 110 L270 200 L330 300 L200 390 L70 360 L30 230 Z" fill="#d7c9a3" stroke="#8a7a58" stroke-width="2"/>
+      <path d="M380 50 L560 70 L760 40 L780 180 L700 300 L560 340 L430 300 L390 180 Z" fill="#cdbf98" stroke="#8a7a58" stroke-width="2"/>
+      <path d="M430 300 L560 340 L620 410 L470 420 Z" fill="#b9d3c0" stroke="#5e8a6c" stroke-width="2"/>
+      <!-- grid lines -->
+      <g stroke="#8a7a58" stroke-opacity=".35" stroke-width="1">
+        <line x1="0" y1="110" x2="800" y2="110"/><line x1="0" y1="220" x2="800" y2="220"/><line x1="0" y1="330" x2="800" y2="330"/>
+        <line x1="160" y1="0" x2="160" y2="440"/><line x1="320" y1="0" x2="320" y2="440"/><line x1="480" y1="0" x2="480" y2="440"/><line x1="640" y1="0" x2="640" y2="440"/>
+      </g>
+      <!-- fold creases -->
+      <line x1="400" y1="0" x2="400" y2="440" stroke="#1d1b18" stroke-opacity=".25" stroke-width="3" stroke-dasharray="10 6"/>
+      <!-- route -->
+      <path d="M90 300 Q 170 220 250 180 T 420 150 T 620 120 T 720 210" fill="none" stroke="#9b2c1f" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 12"/>
+      <circle cx="90" cy="300" r="10" fill="#9b2c1f"/>
+      <circle cx="720" cy="210" r="10" fill="#1d1b18"/>
+      <!-- compass rose -->
+      <g transform="translate(700 380)">
+        <circle r="36" fill="#f7f3ea" stroke="#1d1b18" stroke-width="2"/>
+        <polygon points="0,-30 7,0 0,30 -7,0" fill="#9b2c1f"/>
+        <polygon points="-30,0 0,7 30,0 0,-7" fill="#1d1b18" opacity=".8"/>
+        <text y="-42" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#1d1b18">N</text>
+      </g>
+    </svg>
+    <figcaption class="ui mt-3 text-sm leading-relaxed text-[#6b645a]">
+      A route traced across a 1968 road atlas, photographed on a kitchen table in Lisbon. Illustration: studio staff.
+    </figcaption>
+  </figure>
+
+  <!-- Body -->
+  <article class="mt-12 text-lg leading-[1.75] space-y-6">
+    <p class="dropcap">Nobody in the transit office at Kiel station had asked for a paper map in years. Then, one wet morning last spring, a queue formed at the kiosk by the platform, and the clerk ran out of the regional sheet by noon.</p>
+    <p>Maps did not disappear so much as they stopped being necessary. A blue dot on a screen is patient and never wrong about where you are, and it will reroute you before you notice the turn you missed. For most of the 2010s that was enough. Paper became a souvenir, a thing you took from a hotel lobby and never unfolded.</p>
+    <p>What has changed is the reason people reach for one. Travelers describe a feeling that is hard to put in an app review: a sheet spread across a table shows the whole shape of a place at once, and the phone shows only the next step. Cartographers who once drew for a living say the same thing with more precision. Scale, edges and the spaces between streets become visible again.</p>
+
+    <blockquote class="my-10 border-y-2 border-[#9b2c1f] py-8 text-center">
+      <p class="display text-3xl sm:text-4xl italic leading-snug text-[#1d1b18]">&ldquo;A phone tells you where you are. A map tells you where you could go.&rdquo;</p>
+      <footer class="ui mt-4 text-xs font-bold tracking-[.2em] uppercase text-[#6b645a]">Hanne Vogel, retired cartographer</footer>
+    </blockquote>
+
+    <p>Publishers have noticed. Small print runs of city and regional maps now sell out within weeks, and a handful of independent shops keep whole walls of folded sheets for customers who have never owned one. The buyers are mostly under thirty. Many of them learned to read a map from a school exercise they barely remember, and they are relearning the skill on purpose.</p>
+    <p>There is a practical case as well. A paper sheet does not run out of battery, does not lose signal in a tunnel, and does not ask for permission to know where you have been. Several hikers interviewed for this piece carried one as a backup for exactly those reasons, then discovered they preferred it for planning the day before.</p>
+    <p>None of this is nostalgia, or not only nostalgia. It is closer to attention. A paper map asks you to slow down, to pick a route with your finger and to be a little wrong for a while. In a city built to make every decision for you, that small friction has started to feel like a kind of freedom.</p>
+  </article>
+
+  <!-- Related stories -->
+  <section class="mt-16 border-t border-[#1d1b18] pt-8">
+    <h3 class="ui text-xs font-bold tracking-[.2em] uppercase text-[#9b2c1f] mb-6">Related stories</h3>
+    <div class="grid gap-8 sm:grid-cols-3">
+      <a href="#" class="group">
+        <div class="h-28 bg-[#d7c9a3] rounded-sm"></div>
+        <p class="ui text-[11px] font-bold uppercase tracking-wider text-[#6b645a] mt-3">Science</p>
+        <h4 class="display text-xl font-bold leading-snug mt-1 group-hover:text-[#9b2c1f]">The cartographer who mapped the seafloor by hand</h4>
+      </a>
+      <a href="#" class="group">
+        <div class="h-28 bg-[#b9d3c0] rounded-sm"></div>
+        <p class="ui text-[11px] font-bold uppercase tracking-wider text-[#6b645a] mt-3">Travel</p>
+        <h4 class="display text-xl font-bold leading-snug mt-1 group-hover:text-[#9b2c1f]">Eleven villages you can only reach on foot</h4>
+      </a>
+      <a href="#" class="group">
+        <div class="h-28 bg-[#cdbf98] rounded-sm"></div>
+        <p class="ui text-[11px] font-bold uppercase tracking-wider text-[#6b645a] mt-3">Design</p>
+        <h4 class="display text-xl font-bold leading-snug mt-1 group-hover:text-[#9b2c1f]">Why the best transit maps look like subway diagrams</h4>
+      </a>
+    </div>
+  </section>
+
+  <!-- Newsletter signup -->
+  <section class="mt-16 mb-16 bg-[#1d1b18] text-[#f7f3ea] p-8 sm:p-10 rounded-sm">
+    <p class="ui text-xs font-bold tracking-[.2em] uppercase text-[#e6a79c]">The Long Read Weekly</p>
+    <h3 class="display text-3xl font-bold mt-2 leading-tight">One essay, every Sunday.</h3>
+    <p class="mt-3 text-[#d9d2c3] leading-relaxed">Longform writing on places, objects and ideas, delivered before breakfast. Unsubscribe in one click.</p>
+    <form class="ui mt-6 flex flex-col sm:flex-row gap-3" onsubmit="return false">
+      <label for="email" class="sr-only">Email address</label>
+      <input id="email" type="email" placeholder="you@example.com" class="flex-1 min-w-0 px-4 py-3 bg-[#f7f3ea] text-[#1d1b18] rounded-sm placeholder:text-[#8a8377] focus:outline-none focus:ring-2 focus:ring-[#e6a79c]">
+      <button type="submit" class="px-6 py-3 bg-[#9b2c1f] hover:bg-[#b8382a] font-semibold rounded-sm">Subscribe</button>
+    </form>
+  </section>
+</main>
+
+<footer class="ui border-t border-[#1d1b18] py-6 text-center text-xs text-[#6b645a]">
+  &copy; 2026 The Long Read &middot; About &middot; Contact &middot; Privacy
+</footer>
+
+</body>
+</html>

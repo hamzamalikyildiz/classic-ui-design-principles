@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CI/CD Pipeline Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0b1020; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .card { background: #111830; border: 1px solid #1f2a4d; border-radius: 12px; }
+  tr.row { cursor: pointer; transition: background .15s; }
+  tr.row:hover { background: #17213f; }
+  tr.row.sel { background: #1d2a52; }
+</style>
+</head>
+<body class="text-slate-200 min-h-screen">
+<div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-white">CI/CD Pipeline</h1>
+      <p class="text-sm text-slate-400">main &middot; api-gateway &middot; last 12 builds</p>
+    </div>
+    <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full sm:w-auto"></div>
+  </header>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+
+    <section class="card lg:col-span-2 overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <h2 class="font-semibold text-white">Recent builds</h2>
+        <span class="text-xs text-slate-500">click a row to inspect</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="px-5 py-3">Build</th>
+              <th class="px-3 py-3">Status</th>
+              <th class="px-3 py-3">Branch</th>
+              <th class="px-3 py-3">Commit</th>
+              <th class="px-3 py-3 text-right">Duration</th>
+              <th class="px-5 py-3 text-right">Started</th>
+            </tr>
+          </thead>
+          <tbody id="builds" class="divide-y divide-slate-800"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card p-5">
+      <h2 class="font-semibold text-white mb-1">Build duration</h2>
+      <p class="text-xs text-slate-500 mb-4">minutes per build, newest right</p>
+      <svg id="chart" viewBox="0 0 360 330" class="w-full h-auto"></svg>
+    </section>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+
+    <section class="card p-5">
+      <h2 class="font-semibold text-white mb-4">Flaky tests</h2>
+      <ul id="flaky" class="space-y-3"></ul>
+    </section>
+
+    <section class="card p-5">
+      <h2 class="font-semibold text-white mb-4">Deploy history</h2>
+      <ol id="deploys" class="relative border-l border-slate-700 ml-2 space-y-4"></ol>
+    </section>
+
+    <section class="card p-5 flex flex-col">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold text-white">Log</h2>
+        <span id="logTitle" class="mono text-xs text-slate-500"></span>
+      </div>
+      <pre id="log" class="mono text-xs leading-5 bg-black/60 rounded-lg p-4 h-72 overflow-auto whitespace-pre-wrap text-emerald-300"></pre>
+    </section>
+  </div>
+</div>
+
+<script>
+const builds = [
+  { id: 1048, status: 'passed', branch: 'main', sha: 'a13f9c2', dur: 412, ago: '08:12', tests: 1284, failed: 0 },
+  { id: 1047, status: 'failed', branch: 'feat/cache', sha: '7be02d1', dur: 298, ago: '07:40', tests: 1281, failed: 3 },
+  { id: 1046, status: 'passed', branch: 'main', sha: 'e4c18aa', dur: 388, ago: '06:55', tests: 1279, failed: 0 },
+  { id: 1045, status: 'running', branch: 'fix/auth', sha: '3d90b6f', dur: 164, ago: '08:20', tests: 640, failed: 0 },
+  { id: 1044, status: 'passed', branch: 'main', sha: '5fa2e81', dur: 401, ago: '05:30', tests: 1277, failed: 1 },
+  { id: 1043, status: 'passed', branch: 'release/2.4', sha: 'c09d7e4', dur: 455, ago: 'Yesterday', tests: 1270, failed: 0 },
+  { id: 1042, status: 'cancelled', branch: 'feat/search', sha: '81b4f0d', dur: 96, ago: 'Yesterday', tests: 0, failed: 0 },
+  { id: 1041, status: 'passed', branch: 'main', sha: '2ea7c35', dur: 379, ago: 'Yesterday', tests: 1266, failed: 0 },
+  { id: 1040, status: 'failed', branch: 'feat/billing', sha: 'f61d8b0', dur: 310, ago: 'Yesterday', tests: 1264, failed: 7 },
+  { id: 1039, status: 'passed', branch: 'main', sha: '9c4e2a7', dur: 392, ago: 'Mon', tests: 1258, failed: 0 },
+  { id: 1038, status: 'passed', branch: 'main', sha: 'd7b3f10', dur: 405, ago: 'Mon', tests: 1255, failed: 1 },
+  { id: 1037, status: 'passed', branch: 'chore/deps', sha: '40ea6cd', dur: 367, ago: 'Sun', tests: 1252, failed: 0 },
+];
+
+const flaky = [
+  { name: 'checkout.spec: retries payment webhook', rate: 34, runs: 58 },
+  { name: 'search.e2e: suggestions debounce', rate: 21, runs: 58 },
+  { name: 'auth.integration: refresh token race', rate: 12, runs: 58 },
+  { name: 'cache.unit: TTL eviction under load', rate: 7, runs: 58 },
+];
+
+const deploys = [
+  { env: 'production', ver: 'v2.4.1', by: 'hamza', when: '2h ago', ok: true },
+  { env: 'staging', ver: 'v2.4.1-rc2', by: 'ci-bot', when: '3h ago', ok: true },
+  { env: 'production', ver: 'v2.4.0', by: 'ci-bot', when: 'Yesterday', ok: false },
+  { env: 'production', ver: 'v2.3.9', by: 'ci-bot', when: 'Mon', ok: true },
+];
+
+const statusStyle = {
+  passed: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30',
+  failed: 'bg-rose-500/15 text-rose-300 ring-rose-500/30',
+  running: 'bg-sky-500/15 text-sky-300 ring-sky-500/30',
+  cancelled: 'bg-slate-500/15 text-slate-300 ring-slate-500/30',
+};
+const dotColor = { passed: '#34d399', failed: '#fb7185', running: '#38bdf8', cancelled: '#94a3b8' };
+
+const fmt = s => `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
+
+function renderStats() {
+  const passed = builds.filter(b => b.status === 'passed').length;
+  const done = builds.filter(b => ['passed', 'failed'].includes(b.status)).length;
+  const avg = Math.round(builds.reduce((a, b) => a + b.dur, 0) / builds.length);
+  const items = [
+    ['Success rate', Math.round(passed / done * 100) + '%'],
+    ['Avg duration', fmt(avg)],
+    ['Running', builds.filter(b => b.status === 'running').length],
+    ['Flaky tests', flaky.length],
+  ];
+  document.getElementById('stats').innerHTML = items.map(([k, v]) =>
+    `<div class="card px-4 py-3"><div class="text-xs text-slate-500">${k}</div><div class="text-lg font-semibold text-white">${v}</div></div>`
+  ).join('');
+}
+
+function renderBuilds(selectedId) {
+  document.getElementById('builds').innerHTML = builds.map(b => `
+    <tr class="row ${b.id === selectedId ? 'sel' : ''}" data-id="${b.id}">
+      <td class="px-5 py-3 mono text-white">#${b.id}</td>
+      <td class="px-3 py-3"><span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs ring-1 ${statusStyle[b.status]}">${b.status}</span></td>
+      <td class="px-3 py-3 mono text-slate-400">${b.branch}</td>
+      <td class="px-3 py-3 mono text-slate-400">${b.sha}</td>
+      <td class="px-3 py-3 text-right mono">${fmt(b.dur)}</td>
+      <td class="px-5 py-3 text-right text-slate-500">${b.ago}</td>
+    </tr>`).join('');
+}
+
+function renderChart(selectedId) {
+  const svg = document.getElementById('chart');
+  const W = 360, H = 330, pad = 28, max = Math.max(...builds.map(b => b.dur)) * 1.1;
+  const bw = (W - pad) / builds.length;
+  const ordered = [...builds].reverse();
+  let out = '';
+  [0, 0.5, 1].forEach(t => {
+    const y = H - 20 - t * (H - 40);
+    out += `<line x1="${pad}" x2="${W}" y1="${y}" y2="${y}" stroke="#1f2a4d"/>`;
+    out += `<text x="${pad - 6}" y="${y + 4}" text-anchor="end" font-size="9" fill="#64748b">${Math.round(max * t / 60)}m</text>`;
+  });
+  ordered.forEach((b, i) => {
+    const h = b.dur / max * (H - 40);
+    const x = pad + i * bw + 4, y = H - 20 - h;
+    const sel = b.id === selectedId;
+    out += `<rect data-id="${b.id}" x="${x}" y="${y}" width="${bw - 8}" height="${h}" rx="3"
+      fill="${dotColor[b.status]}" opacity="${sel ? 1 : 0.55}" style="cursor:pointer"><title>#${b.id} ${fmt(b.dur)}</title></rect>`;
+  });
+  svg.innerHTML = out;
+}
+
+function renderFlaky() {
+  document.getElementById('flaky').innerHTML = flaky.map(f => `
+    <li>
+      <div class="flex justify-between text-sm gap-3"><span class="mono text-slate-300">${f.name}</span><span class="text-amber-300 shrink-0">${f.rate}%</span></div>
+      <div class="h-1.5 bg-slate-800 rounded mt-1.5"><div class="h-1.5 rounded bg-amber-400" style="width:${f.rate * 2.5}%"></div></div>
+      <div class="text-xs text-slate-500 mt-1">failed ${Math.round(f.rate * f.runs / 100)} of ${f.runs} runs</div>
+    </li>`).join('');
+}
+
+function renderDeploys() {
+  document.getElementById('deploys').innerHTML = deploys.map(d => `
+    <li class="ml-5">
+      <span class="absolute -left-1.5 mt-1.5 w-3 h-3 rounded-full ring-4 ring-[#111830] ${d.ok ? 'bg-emerald-400' : 'bg-rose-400'}"></span>
+      <div class="flex justify-between text-sm"><span class="font-medium text-white">${d.env}</span><span class="text-slate-500 text-xs">${d.when}</span></div>
+      <div class="text-xs text-slate-400 mono">${d.ver} &middot; ${d.by} &middot; ${d.ok ? 'succeeded' : 'rolled back'}</div>
+    </li>`).join('');
+}
+
+function renderLog(b) {
+  document.getElementById('logTitle').textContent = `build #${b.id} / ${b.sha}`;
+  const lines = [
+    `$ ci run --branch ${b.branch} --sha ${b.sha}`,
+    `[setup]   node 20.11.1, cache ${b.status === 'failed' ? 'miss' : 'hit'}`,
+    `[install] 412 packages in 18s`,
+    `[lint]    ok`,
+    `[test]    ${b.tests} tests, ${b.failed} failed`,
+  ];
+  if (b.failed) lines.push(`[test]    FAIL  ${flaky[0].name}`, `           expected 200, received 503`);
+  lines.push(`[build]   bundle 1.8 MB (gzip 412 kB)`);
+  lines.push(`[status]  ${b.status.toUpperCase()} after ${fmt(b.dur)}`);
+  document.getElementById('log').textContent = lines.join('\n');
+}
+
+let selected = builds[0].id;
+function selectBuild(id) {
+  selected = id;
+  const b = builds.find(x => x.id === id);
+  renderBuilds(id);
+  renderChart(id);
+  renderLog(b);
+}
+
+document.getElementById('builds').addEventListener('click', e => {
+  const row = e.target.closest('tr[data-id]');
+  if (row) selectBuild(Number(row.dataset.id));
+});
+document.getElementById('chart').addEventListener('click', e => {
+  const r = e.target.closest('rect[data-id]');
+  if (r) selectBuild(Number(r.dataset.id));
+});
+
+renderStats();
+renderFlaky();
+renderDeploys();
+selectBuild(selected);
+</script>
+</body>
+</html>

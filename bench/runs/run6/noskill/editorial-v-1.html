@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Quiet Power of Maps</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f0e6;
+    --ink: #1d1b18;
+    --muted: #6b645a;
+    --rule: #cfc6b4;
+    --accent: #b5452b;
+    --sea: #9fb8b0;
+    --land: #e4dccb;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+  }
+  .display { font-family: 'Playfair Display', Georgia, serif; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .drop-cap::first-letter {
+    font-family: 'Playfair Display', Georgia, serif;
+    float: left;
+    font-size: 4.2rem;
+    line-height: 0.85;
+    padding: 0.35rem 0.6rem 0 0;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="border-b border-[--rule]">
+  <div class="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between mono text-xs uppercase tracking-widest text-[--muted]">
+    <span>Field Notes</span>
+    <span>Essay No. 12</span>
+  </div>
+</header>
+
+<main class="mx-auto max-w-3xl px-4">
+
+  <section class="pt-14 pb-10 text-center">
+    <p class="mono text-xs uppercase tracking-[0.25em] text-[--accent]">Cartography &amp; Power</p>
+    <h1 class="display text-5xl sm:text-6xl font-extrabold leading-[1.05] mt-4">The Quiet Power of Maps</h1>
+    <p class="mt-5 text-xl italic text-[--muted] max-w-xl mx-auto">Every map is an argument about what matters, what can be left out, and who gets to stand at the center.</p>
+    <div class="mt-8 flex items-center justify-center gap-3 mono text-xs text-[--muted]">
+      <span>By the Editors</span><span aria-hidden="true">/</span><span>9 min read</span>
+    </div>
+  </section>
+
+  <!-- Inline SVG figure: a stylised coastline with a projection grid -->
+  <figure class="mb-12">
+    <svg viewBox="0 0 640 300" class="w-full h-auto rounded-sm border border-[--rule]" role="img" aria-label="Abstract map with grid lines and a highlighted region">
+      <rect width="640" height="300" fill="var(--sea)"></rect>
+      <g stroke="#ffffff" stroke-opacity="0.35" stroke-width="1">
+        <line x1="0" y1="60" x2="640" y2="60"/>
+        <line x1="0" y1="120" x2="640" y2="120"/>
+        <line x1="0" y1="180" x2="640" y2="180"/>
+        <line x1="0" y1="240" x2="640" y2="240"/>
+        <line x1="80" y1="0" x2="80" y2="300"/>
+        <line x1="160" y1="0" x2="160" y2="300"/>
+        <line x1="240" y1="0" x2="240" y2="300"/>
+        <line x1="320" y1="0" x2="320" y2="300"/>
+        <line x1="400" y1="0" x2="400" y2="300"/>
+        <line x1="480" y1="0" x2="480" y2="300"/>
+        <line x1="560" y1="0" x2="560" y2="300"/>
+      </g>
+      <path d="M40 210 C 90 150, 140 190, 190 130 S 300 70, 350 120 S 450 210, 520 150 S 600 80, 610 110 L 610 250 C 560 270, 500 240, 450 262 S 340 280, 290 250 S 150 290, 100 262 S 30 250, 40 210 Z" fill="var(--land)" stroke="var(--ink)" stroke-width="1.5"/>
+      <path d="M250 150 C 280 130, 320 140, 330 165 S 300 205, 262 195 S 230 170, 250 150 Z" fill="var(--accent)" fill-opacity="0.85"/>
+      <circle cx="292" cy="172" r="5" fill="var(--ink)"/>
+      <line x1="292" y1="172" x2="360" y2="82" stroke="var(--ink)" stroke-width="1"/>
+      <rect x="364" y="62" width="168" height="26" fill="var(--paper)" stroke="var(--ink)"/>
+      <text x="372" y="80" class="mono" font-size="12" fill="var(--ink)">Region of interest</text>
+      <text x="16" y="284" font-size="11" fill="#ffffff" class="mono">FIG. 1 — Schematic projection, not to scale</text>
+    </svg>
+    <figcaption class="mt-3 text-sm text-[--muted] italic">Figure 1. A schematic coastline. Shading and placement are choices, not facts.</figcaption>
+  </figure>
+
+  <article class="prose-like text-[1.125rem] leading-[1.75] space-y-6">
+    <p class="drop-cap">A map looks like a window. It seems to show the world as it is, neutral and measured, drawn to scale by people who had no particular stake in the outcome. That appearance is the map's most powerful trick. Every line on a sheet of paper or a glowing screen is the result of a decision, and most of those decisions were made long before anyone opened the file.</p>
+
+    <h2 class="display text-3xl font-bold pt-6">Choosing what to leave out</h2>
+    <p>Consider the simplest question a cartographer faces: what goes on the page? A road network can be drawn as a dense tangle of every lane, or as a few confident arteries. A river can be a thread or a ribbon. Each choice reduces the planet to something a human eye can read, and each reduction hides a great deal. The map you hold is a summary written in a language of omission.</p>
+    <p>That omission is not inherently sinister. A transit map that drew every street would be useless to a commuter. But the same logic, applied carelessly or deliberately, can erase a neighbourhood, shrink a border, or make a remote settlement disappear altogether.</p>
+
+    <blockquote class="border-l-4 border-[--accent] pl-6 py-2 my-10 display text-2xl italic leading-snug">
+      &ldquo;The projection you choose decides which countries look large and which look small, long before anyone asks what they are worth.&rdquo;
+    </blockquote>
+
+    <h2 class="display text-3xl font-bold pt-2">The problem of the flat world</h2>
+    <p>Flattening a sphere onto a rectangle requires distortion. There is no escape from this geometry. A projection that keeps shapes accurate will stretch distances; one that preserves areas will skew angles. Mercator, the sixteenth-century projection still common on wall charts and web tiles, keeps directions true for navigation and inflates the high latitudes until they seem to rival continents. The distortion was a feature for sailors. For everyone else it quietly rearranged the sense of how big the world is.</p>
+    <p>There is no innocent projection. There are only projections whose distortions we have learned to stop noticing.</p>
+
+    <h2 class="display text-3xl font-bold pt-2">Who gets the center</h2>
+    <p>Maps have a center, and the center is rarely a neutral point. Many world maps place the prime meridian and the equator at the heart of the sheet, which puts a particular set of nations at the middle of the story and pushes others to the edges. Reversing the orientation, or centering on the Pacific, is an act that takes a moment to feel strange. That strangeness is information about how much of the world's self-image is built into the grid.</p>
+
+    <!-- Pull stat row -->
+    <div class="grid grid-cols-3 gap-4 my-12 text-center">
+      <div class="border-t-2 border-[--ink] pt-4">
+        <p class="display text-4xl font-bold">1569</p>
+        <p class="mono text-[11px] uppercase tracking-wider text-[--muted] mt-2">Mercator publishes</p>
+      </div>
+      <div class="border-t-2 border-[--ink] pt-4">
+        <p class="display text-4xl font-bold">3</p>
+        <p class="mono text-[11px] uppercase tracking-wider text-[--muted] mt-2">Common distortions</p>
+      </div>
+      <div class="border-t-2 border-[--ink] pt-4">
+        <p class="display text-4xl font-bold">0</p>
+        <p class="mono text-[11px] uppercase tracking-wider text-[--muted] mt-2">Perfectly neutral maps</p>
+      </div>
+    </div>
+
+    <h2 class="display text-3xl font-bold pt-2">Reading a map against the grain</h2>
+    <p>The practical lesson is not to distrust maps wholesale. It is to read them the way one reads any careful argument: ask what is being emphasised, what has been reduced, and what the scale is quietly assuming. Check the projection in the small print. Notice which countries are drawn large. Look for what is missing before admiring what is shown.</p>
+    <p>Good cartographers have always known this. The best maps of the last century often announce their own limits, with dashed borders for contested land, insets that correct scale, and legends that explain their symbols. They treat the reader as a participant rather than a recipient.</p>
+
+    <h2 class="display text-3xl font-bold pt-2">A window with a frame</h2>
+    <p>The map will keep its authority, and it should. Navigation, disaster response and urban planning all depend on it. But authority is not the same as truth. A map is a frame placed around a view, and the frame is always someone's hand. Once you can see the frame, the view becomes far more interesting.</p>
+  </article>
+
+  <footer class="mt-16 mb-20 border-t border-[--rule] pt-8">
+    <p class="mono text-xs uppercase tracking-widest text-[--muted]">Further reading</p>
+    <ul class="mt-4 space-y-3 text-[1.02rem]">
+      <li>Projections and their trade-offs, in plain language.</li>
+      <li>Essays on the history of colonial cartography.</li>
+      <li>A guide to reading legends, scales and insets.</li>
+    </ul>
+  </footer>
+
+</main>
+
+</body>
+</html>

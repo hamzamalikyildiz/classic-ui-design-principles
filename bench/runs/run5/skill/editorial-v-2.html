@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every Map Is a Promise</title>
+<meta name="description" content="An essay on what cartographers choose to leave out, and why a coastline is never only a coastline.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        paper: '#f6f3ec',
+        ink: '#1f2622',
+        rust: '#9c4522',
+        moss: '#2a3a33',
+        mist: '#5e6a63',
+        sea: '#d6e0da',
+        land: '#ece6d6'
+      },
+      fontFamily: {
+        display: ['Fraunces', 'Georgia', 'serif'],
+        body: ['"Source Serif 4"', 'Georgia', 'serif']
+      }
+    }
+  }
+};
+</script>
+<style>
+  :root { color-scheme: light; }
+  body { background: #f6f3ec; color: #1f2622; }
+  .drop-cap::first-letter {
+    font-family: Fraunces, Georgia, serif;
+    float: left;
+    font-size: 4.6rem;
+    line-height: .85;
+    font-weight: 800;
+    color: #9c4522;
+    padding: .45rem .6rem 0 0;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+  .rise-2 { animation-delay: .12s; }
+  .rise-3 { animation-delay: .24s; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<header class="border-b border-ink/15">
+  <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-5 sm:px-6" aria-label="Primary">
+    <a href="#" class="font-display text-xl font-extrabold tracking-tight">The Margin Journal</a>
+    <ul class="hidden gap-6 text-sm text-mist sm:flex">
+      <li><a href="#" class="hover:text-ink">Essays</a></li>
+      <li><a href="#" class="hover:text-ink">Cartography</a></li>
+      <li><a href="#" class="hover:text-ink">Atlas</a></li>
+      <li><a href="#" class="hover:text-ink">Letters</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <article class="rise mx-auto max-w-5xl px-4 pt-16 sm:px-6">
+    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-rust">Cartography &middot; Essay</p>
+    <h1 class="font-display mt-4 text-5xl font-extrabold leading-[1.02] tracking-tight sm:text-7xl">Every map is a promise about what to leave out</h1>
+    <p class="font-display mt-6 max-w-2xl text-2xl italic leading-relaxed text-mist">Paper atlases were argued over for centuries, and the arguments were rarely about accuracy. They were about who got to sit at the center of the sheet.</p>
+    <p class="mt-8 text-sm text-mist">By Ines Halvorsen &middot; 11 min read</p>
+  </article>
+
+  <figure class="rise rise-2 mx-auto mt-14 max-w-5xl px-4 sm:px-6">
+    <div class="border-y border-ink/15 py-6">
+      <svg viewBox="0 0 720 300" class="h-auto w-full" role="img" aria-labelledby="fig1-title">
+        <title id="fig1-title">Coastline with a labeled ferry route, scale bar and north arrow</title>
+        <rect width="720" height="300" fill="#d6e0da"/>
+        <g stroke="#2a3a33" stroke-opacity=".12" stroke-width="1">
+          <path d="M60 0V300M120 0V300M180 0V300M240 0V300M300 0V300M360 0V300M420 0V300M480 0V300M540 0V300M600 0V300M660 0V300"/>
+          <path d="M0 40H720M0 84H720M0 128H720"/>
+        </g>
+        <path d="M0 210 C60 190 110 240 170 215 S280 160 340 185 S430 250 500 225 S610 170 720 200 L720 300 L0 300 Z" fill="#ece6d6"/>
+        <path d="M0 210 C60 190 110 240 170 215 S280 160 340 185 S430 250 500 225 S610 170 720 200" fill="none" stroke="#2a3a33" stroke-width="1.6"/>
+        <path d="M170 215 Q335 90 500 225" fill="none" stroke="#9c4522" stroke-width="2.4" stroke-dasharray="7 6"/>
+        <circle cx="170" cy="215" r="5" fill="#9c4522"/>
+        <circle cx="500" cy="225" r="5" fill="#9c4522"/>
+        <text x="158" y="196" text-anchor="end" font-family="Source Serif 4, Georgia, serif" font-size="15" fill="#1f2622">Harbor</text>
+        <text x="514" y="262" font-family="Source Serif 4, Georgia, serif" font-size="15" fill="#1f2622">Point Lenn</text>
+        <text x="335" y="128" text-anchor="middle" font-family="Source Serif 4, Georgia, serif" font-size="15" font-style="italic" fill="#9c4522">Ferry route, 14.2 km</text>
+        <g stroke="#1f2622" stroke-width="2">
+          <path d="M40 282H140"/>
+          <path d="M40 276V288M90 278V286M140 276V288"/>
+        </g>
+        <text x="40" y="268" font-family="Source Serif 4, Georgia, serif" font-size="13" fill="#1f2622">0</text>
+        <text x="140" y="268" text-anchor="end" font-family="Source Serif 4, Georgia, serif" font-size="13" fill="#1f2622">10 km</text>
+        <g transform="translate(662 56)" fill="#1f2622">
+          <path d="M0 -24 L9 8 L0 2 L-9 8 Z"/>
+          <text y="28" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="14" font-weight="700">N</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption class="mt-3 text-sm leading-relaxed text-mist">Figure 1. One shoreline drawn from a survey at 1:10,000. A dashed route connects two points that look close on a harbor chart and far apart once the sea between them is measured.</figcaption>
+  </figure>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6"><div class="rise rise-3 max-w-prose pt-14 font-body text-lg leading-[1.75]">
+    <p class="drop-cap">A map begins as a decision about what to leave out. The cartographer who draws a coastline has to choose which of its thousands of inlets survive the reduction, and every choice is a small argument about what matters to the person who will eventually unfold the sheet on a kitchen table.</p>
+
+    <p class="mt-6">Consider the harbor in Figure 1. On the survey plan its breakwater is a jagged line, and a navigator needs every notch of it. On a coastal atlas the same breakwater shrinks to a single stroke, and the small bays beside it vanish. The shore has not changed. What changed is the reader, and what the reader was expected to do with the paper.</p>
+
+    <h2 class="font-body mt-12 text-2xl font-bold leading-tight">The problem of the straight line</h2>
+    <p class="mt-5">Distance is the first casualty. A chart drawn at one scale tells the truth about the water between two points only so long as the scale is honest about itself. Once a sheet is folded, reprinted or projected onto a curved globe, the printed ratio becomes a rough suggestion. Sailors learned this early. They trusted the coast more than the grid, and they carried tables of their own.</p>
+    <p class="mt-5">The route in the figure runs through open water, and its length depends on which map you trust. A straight ruler laid across the harbor chart gives a comfortable number. Follow the arc of the ferry through the swell and the number grows, which is why the timetable and the chart rarely agree.</p>
+
+    <h2 class="font-body mt-12 text-2xl font-bold leading-tight">Who sits at the center</h2>
+    <p class="mt-5">Every projection picks a place to be correct. Most of the famous ones put the equator or a prime meridian at the heart of the sheet, and the rest of the world bends to fit. The bending is not neutral. Countries near the edges look smaller and more distant, and generations of schoolchildren absorbed that proportion before they ever questioned it.</p>
+    <p class="mt-5">None of this requires bad faith. A projection is a trade, and each trade gives something up. The honest question is never whether a map distorts, because all of them do. The better question is which distortion the mapmaker chose, and whether anyone told the reader it was there.</p>
+  </div></div>
+
+  <blockquote class="rise mx-auto mt-16 max-w-4xl border-y border-rust/40 px-4 py-10 text-center font-display text-3xl font-semibold leading-snug text-rust sm:px-6 sm:text-4xl">
+    &ldquo;A map is the only document that asks you to trust its silences as much as its lines.&rdquo;
+  </blockquote>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6"><div class="max-w-prose font-body text-lg leading-[1.75]">
+    <h2 class="font-body mt-4 text-2xl font-bold leading-tight">Reading the silence</h2>
+    <p class="mt-5">Practice the habit on the figure. The grid behind the coastline is not decoration; it marks where the surveyor took readings, and the places where the lines run thin are where the surveyor was least sure. A careful reader asks what was measured, what was inferred and what was simply drawn to look finished.</p>
+    <p class="mt-5">That habit travels. A transit map, a flood zone diagram and a political border all make the same kind of promise, and each one is easier to trust once you know what it chose to omit.</p>
+  </div></div>
+
+  <section class="mx-auto mt-20 max-w-5xl px-4 sm:px-6" aria-labelledby="related">
+    <h2 id="related" class="font-display text-2xl font-bold">Related in the Journal</h2>
+    <ol class="mt-6 divide-y divide-ink/15 border-t border-ink/15">
+      <li class="grid gap-2 py-5 sm:grid-cols-[3rem_1fr] sm:gap-6">
+        <span class="font-display text-2xl font-bold text-rust">01</span>
+        <div><a href="#" class="font-display text-xl font-semibold hover:text-rust">The atlas that refused to shrink its islands</a><p class="text-sm text-mist">Essay &middot; 8 min</p></div>
+      </li>
+      <li class="grid gap-2 py-5 sm:grid-cols-[3rem_1fr] sm:gap-6">
+        <span class="font-display text-2xl font-bold text-rust">02</span>
+        <div><a href="#" class="font-display text-xl font-semibold hover:text-rust">Sounding the harbor: a letter from a pilot</a><p class="text-sm text-mist">Letter &middot; 5 min</p></div>
+      </li>
+      <li class="grid gap-2 py-5 sm:grid-cols-[3rem_1fr] sm:gap-6">
+        <span class="font-display text-2xl font-bold text-rust">03</span>
+        <div><a href="#" class="font-display text-xl font-semibold hover:text-rust">Why the scale bar is the most honest line on any map</a><p class="text-sm text-mist">Explainer &middot; 4 min</p></div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="mt-20 bg-moss text-paper" aria-labelledby="letters">
+    <div class="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-16 sm:flex-row sm:items-end sm:justify-between sm:px-6">
+      <div>
+        <h2 id="letters" class="font-display text-3xl font-bold leading-tight sm:text-5xl">Get the Sunday letter</h2>
+        <p class="mt-3 max-w-md text-base leading-relaxed text-paper/80">One long read on cartography each week, with a new figure and a note on what it left out.</p>
+      </div>
+      <div class="flex w-full max-w-sm flex-col gap-3 sm:flex-row">
+        <label class="sr-only" for="email">Email address</label>
+        <input id="email" type="email" placeholder="you@example.com" class="h-12 flex-1 rounded-md bg-paper px-4 text-ink placeholder:text-mist">
+        <button type="button" class="h-12 rounded-md bg-rust px-6 font-semibold text-paper hover:bg-[#843a1c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper">Subscribe</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="mx-auto max-w-5xl px-4 py-10 text-sm text-mist sm:px-6">
+  <p class="max-w-prose">The Margin Journal &middot; Essays on maps, charts and the places they leave out.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+cift1: B | 3 | B daha zengin ve işe yarar içerik sunuyor (içindekiler, grafik, sorular) ve düzeni dengeli, A ise zarif ama daha seyrek ve boş hissettiriyor. | A 8/7/8/6 B 8/8/8/8
+cift2: B | 2 | B daha cilalı görünüyor, malzeme kutusu, gezinme ve bülten bölümüyle daha eksiksiz, A temiz ve kullanışlı ama daha sade. | A 7/7/8/7 B 8/8/7/8
+cift3: A | 4 | A daha bitmiş bir yayın sitesi gibi duruyor, gezinme, çizim, ilgili yazılar ve bülten var, B ise metin ağırlıklı ve sonu çıplak. | A 8/8/8/7 B 7/7/8/6
+cift4: B | 2 | B daha dolu ve bütün parçalar (büyük görsel, malzeme yan paneli, ilgili tarifler, bülten) yerli yerinde, A pratik ama görseli küçük ve sonu daha ince. | A 7/8/8/7 B 8/8/8/8
+cift5: B | 4 | B tutarlı ve ciddi bir yayın kimliği taşıyor, A içindeki renkli gradyan yer tutucu görseller paletten kopuk ve şablon hissi veriyor. | A 7/6/8/7 B 8/8/8/8
+cift6: A | 4 | A efsaneli harita, ara başlıklar ve açıklamalı ilgili yazılarla daha zengin ve işe yarar, B daha düz ve boş renk blokları kullanıyor. | A 8/8/8/8 B 7/7/7/6

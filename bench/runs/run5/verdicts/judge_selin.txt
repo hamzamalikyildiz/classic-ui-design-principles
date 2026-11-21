@@ -1,0 +1,12 @@
+cift1: A | 4 | A gerçek bir operasyon panosu gibi: SLO çizgisi, deploy işareti, log akışı ve host tablosuyla özenli, B ise düzgün ama tipik bir panel şablonu. | A 8/8/8/9 B 6/6/7/6
+cift2: A | 4 | A nin el çizimi haritası, pusulası ve numaralı ilgili okumaları özgün, B nin gradient boş kart üçlüsü ve sade haritası şablon kokuyor. | A 8/8/8/8 B 7/6/8/7
+cift3: B | 3 | B nin tam malzeme listesi, yedi adımlı yöntem ve dengeli yerleşimi daha kullanışlı ve cilalı, A da tabak çizimi ile altyazı çakışıyor ve metin sütunu sola yığılıyor. | A 7/7/7/7 B 8/8/8/8
+cift4: A | 3 | A nın içindekiler kenar çubuğu, çarpıtma çubuk grafiği ve soru listesi içeriği gerçekten zenginleştiriyor, B nin haritası güzel ama metin sütunu sola yığılıp sağı boş kalıyor. | A 8/8/8/8 B 7/7/7/6
+cift5: B | 4 | B nin SLO çizgili gecikme grafiği, seçili host paneli ve bölge sütunlu zengin host tablosu gerçek bir ürün gibi, A temiz ama daha ince ve kalıp bir panel. | A 7/6/7/6 B 8/8/8/9
+cift6: B | 4 | B nin kontur çizgili ve etiketli haritası ile açıklamalı ilgili yazıları özgün, A nın üç boş renkli blokluk ilgili yazı kartları yer tutucu gibi duruyor. | A 7/6/8/6 B 8/8/8/8
+cift7: A | 3 | A nın Afrika ile Grönland alan karşılaştırma çubukları fikri gerçekten özgün ve konuyu anlatıyor, B nin amorf kıyı çizimi ve üç sayılık şeridi daha jenerik kalıyor ve sayfa bitişi zayıf. | A 8/8/7/8 B 7/7/8/7
+cift8: A | 4 | A nın SLO ve deploy işaretli grafiği, çok servisli log akışı ve gerçekçi servis tablosu çok daha inandırıcı, B nin renkli çizgileri ve eksiksiz ama ince grafikleri daha şablon. | A 8/8/8/9 B 7/6/7/7
+cift9: B | 5 | B nin deploy ve SLO işaretli grafiği, trace kimlikli log tablosu, hata kodu dökümü ve SDK ayar listesi gerçek bir gözlemlenebilirlik ürünü gibi, A düz kart dizilimli bir şablon. | A 6/6/7/5 B 9/9/8/9
+cift10: B | 3 | B nin SLO ve hata işaretli süre grafiği, sıralı flaky listesi ve seçili build log u daha ince ve tutarlı, A zengin ama çubuk grafiği kartında boşluk kalıyor ve renk daha dağınık. | A 7/7/7/8 B 8/8/8/8
+cift11: B | 3 | B nin sade ama tutarlı çizimleri, ortalanmış tek sütunu ve görselli devam kartları daha cana yakın, A da hero görsel yok ve metin sütunu sola yığılıp sağ yarı boş kalıyor. | A 6/7/7/7 B 8/7/8/7
+cift12: B | 4 | B nin SLO çizgili süre grafiği, seçili build paneli, gerçekçi hata logu ve zengin build tablosu daha derin ve profesyonel, A temiz ama daha sığ ve etiketsiz bir çubuk grafiğe sahip. | A 7/7/7/6 B 9/8/8/9

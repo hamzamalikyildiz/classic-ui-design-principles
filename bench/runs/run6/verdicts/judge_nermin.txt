@@ -1,0 +1,6 @@
+cift1: B | 2 | B yazıyı daha koyu ve okunaklı tutuyor, yalnız ilgili yazılardaki renk bloklarının yer tutucu gibi durması puan kırıyor | A 8/8/7/7 B 7/7/8/7
+cift2: A | 3 | A açık bir tarif düzeni sunuyor, başlık ve malzeme listesi büyük ve net, görseli de tarifle ilgili ve anlaşılır | A 8/8/8/8 B 7/7/8/7
+cift3: B | 2 | B geniş ve rahat okunan bir metin sütunu ile sade bir düzen sunuyor, A ise dar sütun ve küçük gri yazılarla biraz yoruyor | A 8/8/7/8 B 8/8/8/7
+cift4: A | 4 | A bölüm başlıkları, içindekiler listesi ve küçük grafikle sayfayı hemen anlaşılır ve düzenli kılıyor | A 8/8/9/9 B 7/7/7/6
+cift5: A | 3 | A tek sütunlu sade akışı, net sans yazısı ve düzgün malzeme/yöntem bölümleriyle tarif sayfasını hemen anlaşılır kılıyor | A 8/8/9/7 B 7/7/7/7
+cift6: B | 2 | B gezinme menüsü, etiketli harita ve ilgili yazılarla sayfanın ne olduğunu hemen anlatıyor, A ise sade ve okunaklı olsa da daha eksik kalıyor | A 8/8/8/7 B 8/8/8/8

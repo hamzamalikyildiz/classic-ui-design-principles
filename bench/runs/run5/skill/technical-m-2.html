@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline Ops - payments-api</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: { ink: '#09090b', panel: '#111113', line: '#27272a' },
+        fontFamily: {
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  @keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .enter { animation: fade-up 0.5s ease both; }
+  @media (prefers-reduced-motion: reduce) { .enter { animation: none; } }
+  .thin { scrollbar-color: #3f3f46 #070708; scrollbar-width: thin; }
+  .row-sel { background: rgb(8 145 178 / 0.14); box-shadow: inset 2px 0 0 #22d3ee; }
+  .axis { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; fill: #a1a1aa; }
+</style>
+</head>
+<body class="min-h-screen bg-ink font-sans text-zinc-300 antialiased">
+<main class="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6">
+
+  <header class="enter flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+    <div class="flex min-w-0 items-center gap-3">
+      <span class="grid size-8 shrink-0 place-items-center rounded-md border border-line bg-panel">
+        <svg viewBox="0 0 16 16" class="size-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1.5 8h3l2-4.5 3 9 2-4.5h3"/></svg>
+      </span>
+      <div class="min-w-0">
+        <h1 class="truncate font-mono text-sm font-semibold text-zinc-100">payments-api / main</h1>
+        <p class="font-mono text-xs text-zinc-400">pipeline ci-prod-eu-west-1 &middot; refreshed 14:32:08 UTC</p>
+      </div>
+    </div>
+    <nav aria-label="Sections" class="flex flex-wrap items-center gap-2 font-mono text-xs">
+      <span class="rounded border border-line px-2 py-1 text-emerald-400">&#9679; 6 healthy</span>
+      <span class="rounded border border-line px-2 py-1 text-amber-300">&#9679; 3 running</span>
+      <span class="rounded border border-line px-2 py-1 text-rose-400">&#9679; 1 failed</span>
+      <a href="#builds" class="rounded px-2.5 py-2.5 text-zinc-400 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">builds</a>
+      <a href="#deploys" class="rounded px-2.5 py-2.5 text-zinc-400 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">deploys</a>
+    </nav>
+  </header>
+
+  <section aria-label="Key metrics" class="enter grid grid-cols-2 gap-3 lg:grid-cols-4" style="animation-delay: 0.08s">
+    <div class="rounded-lg border border-line bg-panel p-4">
+      <p class="font-mono text-xs uppercase tracking-wider text-zinc-400">Success rate, 24h</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-50">94.2<span class="text-sm text-zinc-400">%</span></p>
+      <p class="mt-1 font-mono text-xs text-emerald-400">&#9650; 1.8 pts vs 7d</p>
+    </div>
+    <div class="rounded-lg border border-line bg-panel p-4">
+      <p class="font-mono text-xs uppercase tracking-wider text-zinc-400">Median duration</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-50">6m 12<span class="text-sm text-zinc-400">s</span></p>
+      <p class="mt-1 font-mono text-xs text-emerald-400">&#9660; 48s vs 7d</p>
+    </div>
+    <div class="rounded-lg border border-line bg-panel p-4">
+      <p class="font-mono text-xs uppercase tracking-wider text-zinc-400">Builds, 24h</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-50">47</p>
+      <p class="mt-1 font-mono text-xs text-zinc-400">3 running &middot; 2 queued</p>
+    </div>
+    <div class="rounded-lg border border-line bg-panel p-4">
+      <p class="font-mono text-xs uppercase tracking-wider text-zinc-400">Flaky tests</p>
+      <p class="mt-2 font-mono text-2xl font-semibold tabular-nums text-zinc-50">9</p>
+      <p class="mt-1 font-mono text-xs text-rose-400">&#9650; 2 this week</p>
+    </div>
+  </section>
+
+  <div class="enter grid gap-5 lg:grid-cols-3" style="animation-delay: 0.16s">
+    <section id="builds" aria-labelledby="h-builds" class="min-w-0 lg:col-span-2 rounded-lg border border-line bg-panel">
+      <div class="flex items-center justify-between border-b border-line px-4 py-3">
+        <h2 id="h-builds" class="font-mono text-xs uppercase tracking-wider text-zinc-400">Recent builds</h2>
+        <span class="font-mono text-xs text-zinc-400">last 10 of 47</span>
+      </div>
+      <div class="thin overflow-x-auto">
+        <table class="w-full min-w-[600px] font-mono text-xs tabular-nums">
+          <thead class="text-left text-zinc-400">
+            <tr class="border-b border-line">
+              <th class="px-3 py-2 font-normal">Status</th>
+              <th class="px-3 py-2 font-normal">Build</th>
+              <th class="px-3 py-2 font-normal">Branch</th>
+              <th class="px-3 py-2 font-normal">Commit</th>
+              <th class="px-3 py-2 font-normal">Author</th>
+              <th class="px-3 py-2 text-right font-normal">Duration</th>
+              <th class="px-3 py-2 text-right font-normal">Age</th>
+            </tr>
+          </thead>
+          <tbody id="build-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="deploys" aria-labelledby="h-deploys" class="min-w-0 rounded-lg border border-line bg-panel">
+      <div class="border-b border-line px-4 py-3">
+        <h2 id="h-deploys" class="font-mono text-xs uppercase tracking-wider text-zinc-400">Deploy history</h2>
+      </div>
+      <ol class="divide-y divide-line">
+        <li class="px-4 py-3">
+          <div class="flex items-center justify-between font-mono text-xs"><span class="text-zinc-100">v2.14.3</span><span class="text-emerald-400">&#10003; live</span></div>
+          <p class="mt-1 font-mono text-xs text-zinc-400">prod-eu-west-1 &middot; #4818 &middot; 3h ago &middot; 4m 02s</p>
+        </li>
+        <li class="px-4 py-3">
+          <div class="flex items-center justify-between font-mono text-xs"><span class="text-zinc-100">v2.14.2</span><span class="text-emerald-400">&#10003; ok</span></div>
+          <p class="mt-1 font-mono text-xs text-zinc-400">prod-us-east-1 &middot; #4805 &middot; 9h ago &middot; 3m 47s</p>
+        </li>
+        <li class="px-4 py-3">
+          <div class="flex items-center justify-between font-mono text-xs"><span class="text-zinc-100">v2.14.2</span><span class="text-emerald-400">&#10003; ok</span></div>
+          <p class="mt-1 font-mono text-xs text-zinc-400">staging &middot; #4803 &middot; 11h ago &middot; 2m 58s</p>
+        </li>
+        <li class="px-4 py-3">
+          <div class="flex items-center justify-between font-mono text-xs"><span class="text-zinc-100">v2.14.1</span><span class="text-rose-400">&#10005; rolled back</span></div>
+          <p class="mt-1 font-mono text-xs text-zinc-400">prod-eu-west-1 &middot; #4790 &middot; 1d ago &middot; 5m 14s</p>
+        </li>
+        <li class="px-4 py-3">
+          <div class="flex items-center justify-between font-mono text-xs"><span class="text-zinc-100">v2.14.0</span><span class="text-emerald-400">&#10003; ok</span></div>
+          <p class="mt-1 font-mono text-xs text-zinc-400">prod-us-east-1 &middot; #4779 &middot; 2d ago &middot; 3m 31s</p>
+        </li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="enter grid gap-5 lg:grid-cols-3" style="animation-delay: 0.24s">
+    <section aria-labelledby="h-chart" class="min-w-0 lg:col-span-2 rounded-lg border border-line bg-panel">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
+        <h2 id="h-chart" class="font-mono text-xs uppercase tracking-wider text-zinc-400">Build duration, last 13 finished</h2>
+        <div class="flex items-center gap-4 font-mono text-xs text-zinc-400">
+          <span class="flex items-center gap-1.5"><span class="h-0.5 w-4 bg-cyan-400"></span>build (min)</span>
+          <span class="flex items-center gap-1.5"><span class="h-0 w-4 border-t border-dashed border-amber-300"></span>SLO 8m</span>
+        </div>
+      </div>
+      <div class="thin overflow-x-auto p-4">
+        <div id="chart" class="min-w-[600px]"></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-flaky" class="min-w-0 rounded-lg border border-line bg-panel">
+      <div class="flex items-center justify-between border-b border-line px-4 py-3">
+        <h2 id="h-flaky" class="font-mono text-xs uppercase tracking-wider text-zinc-400">Flaky tests</h2>
+        <span class="font-mono text-xs text-zinc-400">7d window</span>
+      </div>
+      <ul class="divide-y divide-line">
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">ledger.settlement &rsaquo; rounds 2dp</span><span class="shrink-0 tabular-nums text-rose-400">31%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[31%] rounded bg-rose-400"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">23/74</span></div>
+        </li>
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">webhooks &rsaquo; replay within 300s</span><span class="shrink-0 tabular-nums text-amber-300">18%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[18%] rounded bg-amber-300"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">11/61</span></div>
+        </li>
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">checkout-e2e &rsaquo; coupon after edit</span><span class="shrink-0 tabular-nums text-amber-300">14%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[14%] rounded bg-amber-300"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">9/64</span></div>
+        </li>
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">auth &rsaquo; refresh token rotation</span><span class="shrink-0 tabular-nums text-amber-300">11%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[11%] rounded bg-amber-300"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">7/63</span></div>
+        </li>
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">reports &rsaquo; csv stream 50k rows</span><span class="shrink-0 tabular-nums text-zinc-400">9%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[9%] rounded bg-zinc-500"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">5/57</span></div>
+        </li>
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">queue &rsaquo; dead-letter after 5</span><span class="shrink-0 tabular-nums text-zinc-400">6%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[6%] rounded bg-zinc-500"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">4/66</span></div>
+        </li>
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">kyc-mock &rsaquo; timeout returns 504</span><span class="shrink-0 tabular-nums text-zinc-400">5%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[5%] rounded bg-zinc-500"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">3/60</span></div>
+        </li>
+        <li class="px-4 py-2.5">
+          <div class="flex justify-between gap-3 font-mono text-xs"><span class="truncate text-zinc-200">fx-rates &rsaquo; cache warm before 09:00</span><span class="shrink-0 tabular-nums text-zinc-400">3%</span></div>
+          <div class="mt-1.5 flex items-center gap-2"><div class="h-1.5 flex-1 rounded bg-zinc-800"><div class="h-1.5 w-[3%] rounded bg-zinc-500"></div></div><span class="font-mono text-xs tabular-nums text-zinc-400">2/58</span></div>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="enter grid gap-5 lg:grid-cols-3" style="animation-delay: 0.32s">
+    <section aria-labelledby="h-log" class="min-w-0 lg:col-span-2 overflow-hidden rounded-lg border border-line bg-[#070708]">
+      <div class="flex items-center gap-2 border-b border-line px-4 py-2.5">
+        <span class="size-2.5 rounded-full bg-rose-500/80" aria-hidden="true"></span>
+        <span class="size-2.5 rounded-full bg-amber-300/80" aria-hidden="true"></span>
+        <span class="size-2.5 rounded-full bg-emerald-400/80" aria-hidden="true"></span>
+        <h2 id="h-log" class="ml-2 font-mono text-xs text-zinc-400">console &middot; build #<span id="log-n"></span></h2>
+      </div>
+      <div id="log" class="thin max-h-72 overflow-auto p-4 font-mono text-xs leading-6 text-zinc-300"></div>
+    </section>
+
+    <section aria-labelledby="h-sel" class="min-w-0 rounded-lg border border-line bg-panel p-4">
+      <h2 id="h-sel" class="font-mono text-xs uppercase tracking-wider text-zinc-400">Selected build</h2>
+      <dl id="meta" class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-xs"></dl>
+      <button id="rerun" type="button" class="mt-5 w-full rounded-md bg-cyan-400 px-4 py-2.5 font-mono text-xs font-semibold text-zinc-950 hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400 active:bg-cyan-500 disabled:opacity-50">Re-run failed jobs</button>
+    </section>
+  </div>
+</main>
+
+<script>
+  const builds = [
+    { n: 4821, s: 'fail', br: 'main', sha: 'a3f9c2e', au: 'mkaya', d: 581, age: '4m' },
+    { n: 4820, s: 'run', br: 'feat/otp-retry', sha: '7be01d4', au: 'elif.s', d: null, age: '9m' },
+    { n: 4819, s: 'ok', br: 'main', sha: '0c4d8b1', au: 'j.okafor', d: 372, age: '38m' },
+    { n: 4818, s: 'ok', br: 'release/2.14', sha: '58f1a0e', au: 'mkaya', d: 242, age: '3h' },
+    { n: 4817, s: 'ok', br: 'fix/ledger-rounding', sha: 'e92b7c3', au: 'r.lindqvist', d: 409, age: '3h' },
+    { n: 4816, s: 'warn', br: 'main', sha: '2d7a6f0', au: 'j.okafor', d: 515, age: '5h' },
+    { n: 4815, s: 'ok', br: 'feat/csv-stream', sha: 'b1e4c95', au: 't.ncube', d: 348, age: '6h' },
+    { n: 4814, s: 'ok', br: 'main', sha: 'f04c3da', au: 'elif.s', d: 366, age: '7h' },
+    { n: 4813, s: 'fail', br: 'feat/webhook-v2', sha: '9a6e210', au: 't.ncube', d: 198, age: '8h' },
+    { n: 4812, s: 'ok', br: 'main', sha: 'c7b52f8', au: 'mkaya', d: 372, age: '10h' }
+  ];
+  const DOT = { ok: 'bg-emerald-400', fail: 'bg-rose-400', run: 'bg-amber-300', warn: 'bg-amber-300' };
+  const TXT = { ok: 'text-emerald-400', fail: 'text-rose-400', run: 'text-amber-300', warn: 'text-amber-300' };
+  const LBL = { ok: 'passed', fail: 'failed', run: 'running', warn: 'flaky pass' };
+  const LOG = { ok: ['text-emerald-400', '[ OK ]'], warn: ['text-amber-300', '[WARN]'], err: ['text-rose-400', '[FAIL]'], info: ['text-zinc-400', '[ .. ]'] };
+  const fmt = s => s == null ? '-' : Math.floor(s / 60) + 'm ' + String(s % 60).padStart(2, '0') + 's';
+  const $ = s => document.querySelector(s);
+
+  // Build history for the chart, oldest first; durations in minutes
+  const hist = [[4808, 6.9], [4809, 7.4], [4810, 5.7], [4811, 6.2]]
+    .concat(builds.filter(b => b.d).reverse().map(b => [b.n, b.d / 60]));
+
+  function drawChart() {
+    const W = 640, H = 320, L = 44, R = 30, T = 14, B = 28, max = 12;
+    const x = i => L + i * (W - L - R) / (hist.length - 1);
+    const y = v => T + (1 - v / max) * (H - T - B);
+    const path = hist.map(([, v], i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
+    let g = '';
+    for (let t = 0; t <= max; t += 3) {
+      g += `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" stroke="#27272a"/>`;
+      g += `<text x="${L - 8}" y="${y(t) + 4}" text-anchor="end" class="axis">${t}m</text>`;
+    }
+    hist.forEach(([n], i) => { if (i % 2 === 0) g += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" class="axis">#${n}</text>`; });
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(8)}" y2="${y(8)}" stroke="#fbbf24" stroke-dasharray="5 4"/>`;
+    g += `<text x="${L + 6}" y="${y(8) - 6}" text-anchor="start" class="axis" style="fill:#fcd34d">SLO 8m</text>`;
+    g += `<path d="${path}" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round"/>`;
+    hist.forEach(([n, v], i) => {
+      g += `<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="${v > 8 ? '#fb7185' : '#22d3ee'}"><title>#${n}: ${v.toFixed(1)} min</title></circle>`;
+    });
+    $('#chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="w-full" role="img" aria-label="Build duration line chart with 8 minute SLO line">${g}</svg>`;
+  }
+
+  function logFor(b) {
+    const base = [
+      ['ok', `checkout    git@${b.sha} (${b.br}) 412 files`],
+      ['ok', `install     pnpm 9.4, 1,284 packages in 21.8s`],
+      ['ok', `unit        2,914 passed, 0 failed in 98.3s`],
+      ['ok', `integration 386 passed, 2 retried, 0 failed in 4m 12s`],
+      ['ok', `image       ghcr.io/acme/payments-api:${b.sha} pushed (142 MB)`],
+      ['ok', `deploy      rolled out to prod-eu-west-1, 3/3 healthy`]
+    ];
+    if (b.s === 'fail') return base.slice(0, 3).concat([
+      ['warn', `integration ledger.settlement retry on 503 (attempt 2/3)`],
+      ['err', `integration ledger.settlement > rounds to 2dp under load`],
+      ['err', `            expected 1842.50, received 1842.49`],
+      ['err', `step integration exited 1 after ${fmt(b.d)}`],
+      ['info', `image, deploy skipped: upstream step failed`]
+    ]);
+    if (b.s === 'run') return base.slice(0, 3).concat([['info', `integration running... 212/386 passed`]]);
+    if (b.s === 'warn') return base.slice(0, 3).concat([
+      ['warn', `integration webhook replay retried (attempt 2/3), then passed`],
+      ...base.slice(3)
+    ]);
+    return base;
+  }
+
+  function select(i) {
+    const b = builds[i];
+    document.querySelectorAll('#build-rows tr').forEach((r, k) => {
+      r.classList.toggle('row-sel', k === i);
+      r.setAttribute('aria-selected', k === i);
+    });
+    $('#log-n').textContent = b.n;
+    $('#log').innerHTML = logFor(b).map(([k, t]) =>
+      `<div class="whitespace-pre"><span class="${LOG[k][0]}">${LOG[k][1]}</span>  ${t}</div>`).join('');
+    $('#meta').innerHTML = [
+      ['Status', LBL[b.s]], ['Branch', b.br], ['Commit', b.sha],
+      ['Author', b.au], ['Duration', fmt(b.d)], ['Runner', 'eu-w1-linux-07']
+    ].map(([k, v]) => `<div><dt class="text-zinc-400">${k}</dt><dd class="mt-0.5 truncate text-zinc-200">${v}</dd></div>`).join('');
+    $('#rerun').disabled = b.s !== 'fail';
+  }
+
+  $('#build-rows').innerHTML = builds.map((b, i) => `
+    <tr tabindex="0" data-i="${i}" class="cursor-pointer border-b border-line/60 hover:bg-zinc-800/40 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-400">
+      <td class="px-3 py-2"><span class="inline-flex items-center gap-2"><span class="size-2 rounded-full ${DOT[b.s]}" aria-hidden="true"></span><span class="${TXT[b.s]}">${LBL[b.s]}</span></span></td>
+      <td class="px-3 py-2 text-zinc-100">#${b.n}</td>
+      <td class="px-3 py-2 text-zinc-400">${b.br}</td>
+      <td class="px-3 py-2 text-zinc-400">${b.sha}</td>
+      <td class="px-3 py-2 text-zinc-400">${b.au}</td>
+      <td class="px-3 py-2 text-right text-zinc-200">${b.s === 'run' ? 'running' : fmt(b.d)}</td>
+      <td class="px-3 py-2 text-right text-zinc-400">${b.age}</td>
+    </tr>`).join('');
+
+  $('#build-rows').addEventListener('click', e => {
+    const tr = e.target.closest('tr');
+    if (tr) select(+tr.dataset.i);
+  });
+  $('#build-rows').addEventListener('keydown', e => {
+    const tr = e.target.closest('tr');
+    if (tr && e.key === 'Enter') select(+tr.dataset.i);
+  });
+  $('#rerun').addEventListener('click', e => {
+    e.currentTarget.textContent = 'Re-run queued';
+    e.currentTarget.disabled = true;
+  });
+
+  drawChart();
+  select(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+cift1: B | 3 | B daha zengin: büyük tava illüstrasyonu, koyu bülten bölümü ve düzenli yan kutu var, A sade ve biraz sönük. | A 6/6/8/6 B 7/7/8/8
+cift2: B | 4 | B nin detaylı harita illüstrasyonu, ilgili yazılar ve koyu abonelik bölümü A nın düz metin duvarından çok daha canlı ve akılda kalıcı. | A 5/6/7/5 B 8/8/8/7
+cift3: A | 3 | A nın içindekiler, koyu alıntı kutusu ve renkli çubuk grafik sayfayı hareketli ve bilgi dolu yapıyor, B güzel ama düz bir makale gibi kalıyor. | A 7/7/8/8 B 7/7/7/6
+cift4: A | 2 | A nın büyük domates illüstrasyonu, yan kutusu ve koyu çağrı bölümü daha dolu hissettiriyor, B nin renkli kartları güzel ama sayfa daha az akılda kalıyor. | A 7/7/8/7 B 7/7/8/7
+cift5: A | 3 | A tutarlı bir dergi hissi veriyor, B nin ilgili yazılardaki renkli gradyan kutuları sahte ve şablon gibi duruyor. | A 7/8/8/7 B 7/6/8/7
+cift6: A | 3 | A nın lejantlı harita çizimi, ara başlıklar ve tam genişlikte koyu bülten bölümü B nin boş renkli kutularından daha dolu ve düzgün görünüyor. | A 7/8/8/8 B 7/6/8/6

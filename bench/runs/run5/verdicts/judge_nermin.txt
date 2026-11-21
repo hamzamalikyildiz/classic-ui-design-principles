@@ -1,0 +1,12 @@
+cift1: B | 3 | B daha okunaklı sans gövde yazısı ve net malzeme-yapılış düzeni sunuyor, A da görseldeki yazı tabağın üstüne biniyor | A 7/6/7/7 B 8/8/8/7
+cift2: B | 3 | B tek sütunda ortalanmış, görselli ve sade akışıyla daha çekici ve okunur, A ise görselsiz ve küçük yazılı yapısıyla soluk kalıyor | A 6/6/6/6 B 8/7/8/7
+cift3: B | 2 | B ara başlıklar, daha ayrıntılı harita görseli ve daha zengin içerikle bölümleri rahat takip ettiriyor, A ise boş renk kutularıyla yetinmiş | A 7/7/8/6 B 8/8/8/8
+cift4: B | 4 | B daha sade, iri ve net yazılı olduğu için hemen anlaşılıyor, A ise çok yoğun ve minik yazılarla gözü yoruyor | A 7/7/4/9 B 7/7/7/6
+cift5: A | 4 | A sade tablo ve büyük rakamlarla ne işe yaradığını hemen gösteriyor, B ise grafik ve küçük yazılarla fazla karışık | A 7/7/8/6 B 7/7/5/8
+cift6: B | 2 | B "Service health" başlığı ve üst menüsüyle sayfanın amacını hemen söylüyor, A benzer ama başlıksız ve daha az yönlendirici | A 7/7/7/7 B 8/7/8/8
+cift7: A | 3 | A tutarlı renk düzeni, ara başlığı ve numaralı ilgili okumalar listesiyle daha profesyonel, B nin rastgele renk geçişli kutuları şablon gibi duruyor | A 8/8/8/8 B 7/6/8/7
+cift8: B | 4 | B daha az kalabalık, daha az bölümlü ve daha okunaklı kartlarla amacını çabuk anlatıyor, A ise küçük yazılı yoğun tablolarla yoruyor | A 7/7/5/9 B 7/7/7/6
+cift9: B | 2 | B güçlü ara başlıkları ve "Bu yazıda" içindekiler kutusuyla okuru kolay yönlendiriyor, A temiz ama başlıkları zayıf ve içeriği daha az | A 7/7/7/6 B 8/8/8/8
+cift10: A | 4 | A büyük başlık, sade kartlar ve tek tabloyla sayfanın ne işe yaradığını hemen gösteriyor, B ise grafik ve küçük yazılarla daha karışık | A 8/7/8/6 B 7/7/5/8
+cift11: A | 4 | A daha büyük yazı, "CI/CD Pipeline" başlığı ve renkli durum etiketleriyle daha rahat okunuyor, B ise küçük ve sıkışık | A 8/7/8/7 B 7/7/5/8
+cift12: A | 2 | A ortalanmış tek sütunu, belirgin ara başlıkları ve anlaşılır harita görseliyle daha rahat okunuyor, B nin çubuk grafiği ilk bakışta kafa karıştırıyor | A 8/8/8/7 B 7/7/7/8

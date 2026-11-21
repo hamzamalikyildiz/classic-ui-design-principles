@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quiet Return of the Paper Map</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { paper: '#f5f0e6', ink: '#1d1b18', muted: '#5b554c', rule: '#d9d0bd', vermilion: '#b5452b', sea: '#c9d6cf' },
+      fontFamily: { serif: ['Newsreader', 'Georgia', 'serif'], sans: ['Inter', 'system-ui', 'sans-serif'] }
+    }
+  }
+};
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { background: #f5f0e6; color: #1d1b18; }
+  .dropcap::first-letter {
+    float: left; font-family: 'Newsreader', Georgia, serif; font-weight: 600;
+    font-size: 4.6rem; line-height: .82; padding: .35rem .6rem 0 0; color: #b5452b;
+  }
+  .fade-up { animation: fadeUp .7s ease-out both; }
+  .fade-up-2 { animation: fadeUp .7s .12s ease-out both; }
+  .fade-up-3 { animation: fadeUp .7s .24s ease-out both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .fade-up, .fade-up-2, .fade-up-3 { animation: none; } }
+</style>
+</head>
+<body class="font-serif antialiased">
+
+<header class="border-b border-rule">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="flex items-center justify-between py-3 font-sans text-xs uppercase tracking-[0.18em] text-muted">
+      <span>Vol. 14 &middot; No. 3</span>
+      <span>Autumn 2026</span>
+    </div>
+    <div class="py-5 text-center">
+      <p class="font-serif text-4xl sm:text-5xl font-semibold tracking-tight">The Ledger &amp; Lane</p>
+    </div>
+    <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-rule py-3 font-sans text-sm text-ink" aria-label="Sections">
+      <a href="#" class="hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Essays</a>
+      <a href="#" class="hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Maps</a>
+      <a href="#" class="hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Travel</a>
+      <a href="#" class="hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Making</a>
+      <a href="#" class="hover:text-vermilion focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Letters</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="mx-auto max-w-5xl px-4 sm:px-6 pt-14 pb-20">
+    <header class="fade-up">
+      <p class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-vermilion">Maps &middot; Long read</p>
+      <h1 class="mt-4 font-serif text-5xl sm:text-6xl lg:text-7xl font-semibold leading-[1.02] tracking-tight text-balance">
+        The Quiet Return of the Paper Map
+      </h1>
+      <p class="mt-6 max-w-prose font-serif text-xl sm:text-2xl leading-relaxed text-muted">
+        Phones promised to make the folded sheet obsolete. Instead, a generation that never learned to read one is buying them by the armful, and finding out what a map can do that a blue dot cannot.
+      </p>
+      <p class="mt-6 max-w-prose font-sans text-sm text-muted">
+        By <span class="font-semibold text-ink">Mira Halvorsen</span> &middot; Photographs and cartography by the author &middot; 14 min read
+      </p>
+    </header>
+
+    <figure class="fade-up-2 mt-12">
+      <svg viewBox="0 0 960 520" role="img" aria-labelledby="heroTitle" class="w-full h-auto rounded-sm">
+        <title id="heroTitle">Map of a coastal ridge with a dashed vermilion route running from a trailhead to a harbor</title>
+        <rect width="960" height="520" fill="#ebe3d1"/>
+        <path d="M0 380 C160 340 260 430 420 400 S700 360 960 410 L960 520 L0 520 Z" fill="#c9d6cf"/>
+        <g fill="none" stroke="#b9ab8e" stroke-width="1.5">
+          <path d="M60 250 C160 170 300 190 380 240 S520 300 600 250 S800 180 900 230"/>
+          <path d="M90 200 C190 120 320 140 400 190 S540 250 620 200 S820 130 920 175"/>
+          <path d="M40 300 C150 260 280 290 350 330 S470 350 520 320"/>
+        </g>
+        <path d="M120 300 C220 240 300 290 380 230 S560 150 700 200 S820 300 860 360" fill="none" stroke="#b5452b" stroke-width="4" stroke-dasharray="12 9" stroke-linecap="round"/>
+        <circle cx="120" cy="300" r="9" fill="#1d1b18"/>
+        <circle cx="860" cy="360" r="9" fill="#b5452b"/>
+        <text x="136" y="340" font-family="Inter, sans-serif" font-size="18" fill="#1d1b18">Trailhead</text>
+        <text x="700" y="455" font-family="Newsreader, Georgia, serif" font-style="italic" font-size="22" fill="#1d1b18">Harbor</text>
+        <text x="40" y="70" font-family="Newsreader, Georgia, serif" font-size="30" font-weight="600" fill="#1d1b18">Ridge Road</text>
+        <text x="40" y="100" font-family="Inter, sans-serif" font-size="16" fill="#5b554c">Survey sheet 7, 1:50,000</text>
+        <g transform="translate(880 70)">
+          <circle r="28" fill="none" stroke="#1d1b18" stroke-width="1.5"/>
+          <path d="M0 -22 L6 0 L0 -6 L-6 0 Z" fill="#b5452b"/>
+          <text y="-36" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#1d1b18">N</text>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="14" fill="#1d1b18">
+          <rect x="40" y="470" width="120" height="6" fill="#1d1b18"/>
+          <text x="40" y="500">0</text>
+          <text x="160" y="500" text-anchor="end">5 km</text>
+        </g>
+      </svg>
+      <figcaption class="mt-4 max-w-prose font-sans text-sm leading-relaxed text-muted">
+        <span class="font-semibold text-ink">Fig. 1.</span> The route the author walked in March, traced in pencil over a 1950s survey sheet. The sheet shows a footpath the phone app does not.
+      </figcaption>
+    </figure>
+
+    <div class="fade-up-3 mt-16 max-w-5xl">
+      <p class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-muted">Part one</p>
+      <p class="dropcap mt-6 max-w-prose text-lg leading-[1.8] text-ink">
+        Every spring, the stationery shop on Calder Street puts a rack of folded maps beside the till, and every spring someone buys one for the wall. The owner, Teodor Mink, has run the shop for thirty-one years and says the sales were falling until about four years ago. Then they started rising again, slowly, and mostly to people under thirty.
+      </p>
+      <p class="mt-6 max-w-prose text-lg leading-[1.8] text-ink">
+        Nobody in the trade can say exactly why. The explanations come in a predictable order: nostalgia, the cost of a data plan, a backlash against screens. Mink has his own, which he offers only after a pause. "A paper map shows you the whole thing at once," he said. "A phone shows you the next turn. Some people are tired of being told only the next turn."
+      </p>
+
+      <h2 class="mt-12 font-serif text-3xl font-semibold leading-tight">What the screen hides</h2>
+      <p class="mt-5 max-w-prose text-lg leading-[1.8] text-ink">
+        A navigation app is built to answer one question: how do I get from here to there in the fastest way. It is very good at that. What it is not built to show is the shape of the land between the two points. A ridge that forces a detour, a river with one bridge, the fact that the quickest road runs along a flood plain. On a sheet of paper these facts sit in plain view, because the designer had no way to hide them.
+      </p>
+      <p class="mt-5 max-w-prose text-lg leading-[1.8] text-ink">
+        Cartographers have a name for the trade-off. They call it selection: deciding what to leave out so the important things stand out. A phone screen is a poor place for that kind of judgment, since the screen is small and the software does the choosing without saying so.
+      </p>
+
+      <blockquote class="my-12 border-y border-vermilion py-8">
+        <p class="max-w-prose font-serif text-3xl sm:text-4xl italic leading-[1.4] text-ink text-balance">
+          &ldquo;A map asks you to decide where you are. A phone decides it for you, and you never see the decision.&rdquo;
+        </p>
+        <p class="mt-5 font-sans text-sm uppercase tracking-[0.18em] text-muted">&mdash; Teodor Mink, map seller</p>
+      </blockquote>
+
+      <h2 class="mt-12 font-serif text-3xl font-semibold leading-tight">Folding it back up</h2>
+      <p class="mt-5 max-w-prose text-lg leading-[1.8] text-ink">
+        The people who buy paper maps now are not, for the most part, going back to the way things were. Many of them carry a phone as well. They buy the sheet for the planning stage: the evening before a trip, the table after dinner, the moment they want to see how two valleys connect before they commit to a route.
+      </p>
+      <p class="mt-5 max-w-prose text-lg leading-[1.8] text-ink">
+        A walker I met near the summit of Ridge Road spread a sheet across a flat rock and traced her finger along a contour line. She had been using the same survey for six years. The creases were soft as cloth. "I know how this hill is shaped now," she said. "I didn't before. My phone told me how long the hill would take."
+      </p>
+      <p class="mt-5 max-w-prose text-lg leading-[1.8] text-ink">
+        That is the quiet part of the return. Nobody is rejecting the screen. They are adding a second way of knowing a place, one that is slower to learn and harder to lose.
+      </p>
+    </div>
+
+    <section class="mt-20 border-t border-rule pt-12" aria-labelledby="related-title">
+      <h2 id="related-title" class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-vermilion">Related stories</h2>
+      <div class="mt-8 grid gap-10 sm:grid-cols-3">
+        <a href="#" class="group block">
+          <p class="font-sans text-xs uppercase tracking-[0.16em] text-muted">Travel</p>
+          <h3 class="mt-3 font-serif text-2xl font-semibold leading-snug group-hover:text-vermilion">The last hand-drawn ferry timetable on the Vell coast</h3>
+          <p class="mt-3 font-sans text-sm leading-relaxed text-muted">Eleven islands, one printer, and a schedule that changes by pencil.</p>
+        </a>
+        <a href="#" class="group block">
+          <p class="font-sans text-xs uppercase tracking-[0.16em] text-muted">Making</p>
+          <h3 class="mt-3 font-serif text-2xl font-semibold leading-snug group-hover:text-vermilion">Learning copperplate lettering for the margins of old charts</h3>
+          <p class="mt-3 max-w-prose font-sans text-sm leading-relaxed text-muted">A weekend workshop with a retired draughtsman from the county survey office.</p>
+        </a>
+        <a href="#" class="group block">
+          <p class="font-sans text-xs uppercase tracking-[0.16em] text-muted">Essays</p>
+          <h3 class="mt-3 font-serif text-2xl font-semibold leading-snug group-hover:text-vermilion">In defense of the wrong turn</h3>
+          <p class="mt-3 font-sans text-sm leading-relaxed text-muted">Getting lost used to be how a town taught you its streets.</p>
+        </a>
+      </div>
+    </section>
+  </article>
+
+  <section class="bg-ink text-paper" aria-labelledby="news-title">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-20">
+      <div class="mx-auto max-w-5xl text-center">
+        <p class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-sea">The Sunday Letter</p>
+        <h2 id="news-title" class="mt-4 font-serif text-4xl sm:text-5xl font-semibold leading-tight">Unfold one story a week</h2>
+        <p class="mx-auto mt-5 max-w-prose font-serif text-lg leading-relaxed text-paper/80">Long reads on maps, walking and the places between. One email on Sunday mornings, never more.</p>
+        <form action="#" method="post" class="mx-auto mt-8 flex max-w-prose flex-col gap-3 sm:flex-row">
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" type="email" required placeholder="you@example.com" class="h-12 flex-1 rounded-md bg-paper px-4 font-sans text-base text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-sea">
+          <button type="submit" class="h-12 rounded-md bg-vermilion px-6 font-sans text-sm font-semibold text-paper hover:brightness-110 active:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">Subscribe</button>
+        </form>
+        <p class="mt-4 font-sans text-xs text-paper/70">Unsubscribe at any time. We do not share addresses.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="mx-auto max-w-5xl px-4 sm:px-6 py-8 font-sans text-xs text-muted">
+  <p class="max-w-prose">&copy; 2026 The Ledger &amp; Lane. All maps reproduced from the author&rsquo;s collection.</p>
+</footer>
+
+</body>
+</html>

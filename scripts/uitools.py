@@ -548,6 +548,8 @@ GENERIC_FONTS = {
 }
 NEUTRAL_SANS = {'Inter', 'Roboto', 'Open Sans', 'Poppins', 'Lato', 'Montserrat', 'DM Sans', 'Nunito'}
 NEUTRAL_MONO = {'JetBrains Mono', 'Fira Code', 'IBM Plex Mono', 'Source Code Pro', 'Roboto Mono', 'Geist Mono'}
+# rounded kids' faces are the default pick for playful pages, so they do not make a page distinctive on their own
+COMMON_ROUNDED = {'Fredoka', 'Baloo 2', 'Baloo', 'Chewy', 'Lilita One', 'Quicksand', 'Comfortaa'}
 
 
 def font_families(txt):
@@ -661,7 +663,7 @@ def character_checks(txt, nodes, mood, tokens=None):
         top, n = max(((h, stock.count(h)) for h in set(stock)), key=lambda x: x[1])
         custom = re.search(r'colors\s*:\s*\{|--color-[\w-]+\s*:|:root\s*\{[^}]*--[\w-]*(?:accent|brand|primary|ink|paper)', txt)
         fams = font_families(txt)
-        neutral_fonts = not fams or fams <= (NEUTRAL_SANS | NEUTRAL_MONO)
+        neutral_fonts = not fams or fams <= (NEUTRAL_SANS | NEUTRAL_MONO | COMMON_ROUNDED)
         if top in ('blue', 'indigo', 'violet', 'purple', 'fuchsia') and not custom and neutral_fonts:
             out.append(('INFO', 'stock-look', f"accent is stock Tailwind {top} with no custom palette and only neutral fonts; "
                         "derive the palette from the subject (reference/visual-quality.md) and add a display or serif face"))

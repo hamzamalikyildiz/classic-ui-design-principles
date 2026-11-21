@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blistered Tomatoes on Toast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#f6f1e7',
+          ink: '#1d1a16',
+          paprika: '#a8402a',
+          muted: '#6b6357',
+          rule: '#d9cfbd',
+          band: '#2a241d'
+        },
+        fontFamily: {
+          display: ['Fraunces', 'Georgia', 'serif'],
+          body: ['"Source Serif 4"', 'Georgia', 'serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise 600ms ease-out both; }
+  .rise-2 { animation-delay: 120ms; }
+  .rise-3 { animation-delay: 240ms; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+  .dropcap::first-letter {
+    font-family: 'Fraunces', Georgia, serif;
+    float: left; font-size: 4.6rem; line-height: 0.85;
+    padding: 0.35rem 0.6rem 0 0; color: #a8402a; font-weight: 600;
+  }
+</style>
+</head>
+<body class="bg-paper font-body text-ink antialiased">
+
+<header class="border-b border-rule">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-5 flex items-baseline justify-between gap-6">
+    <a href="#" class="font-display text-2xl font-semibold tracking-tight inline-block py-1">Saltbox</a>
+    <p class="text-sm text-muted tracking-wide uppercase">Kitchen Quarterly · Issue 14</p>
+  </div>
+  <nav aria-label="Sections" class="border-t border-rule">
+    <ul class="mx-auto max-w-5xl px-4 sm:px-6 py-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+      <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Recipes</a></li>
+      <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Essays</a></li>
+      <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Pantry</a></li>
+      <li><a href="#" class="hover:text-paprika focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">Travel</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <article class="mx-auto max-w-5xl px-4 sm:px-6 py-16 lg:py-20">
+    <header class="rise">
+      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-paprika">Recipe · Late summer</p>
+      <h1 class="mt-5 font-display text-5xl sm:text-6xl lg:text-7xl leading-[1.02] font-semibold tracking-tight max-w-4xl">
+        Blistered tomatoes on toast, and the patience they ask for
+      </h1>
+    </header>
+
+    <div class="rise rise-2 mt-8 max-w-prose">
+      <p class="font-display text-xl leading-relaxed text-muted">
+        Hot skillet, a handful of sun-warm tomatoes and a crust of bread that has to earn its butter. Nothing here is hard. It only asks that you stand still and wait for the pan.
+      </p>
+      <p class="mt-6 text-sm text-muted">By Ines Carvalho · Serves 4 · 35 minutes</p>
+    </div>
+  </article>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="border-t border-rule"></div>
+  </div>
+
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 py-16 lg:py-20 rise rise-3" aria-labelledby="essay-title">
+    <h2 id="essay-title" class="sr-only">Essay</h2>
+    <div class="max-w-prose">
+    <p class="dropcap text-lg leading-[1.8]">
+      Every summer my grandmother had the same argument with her stove. She wanted the skillet hotter than it would go, and the stove wanted to be left alone. The tomatoes settled it. Cut in half and set cut side down, they hiss, catch, and slowly give up their sugar in a dark, uneven char that tastes like a longer afternoon than it was.
+    </p>
+    <p class="mt-6 text-lg leading-[1.8]">
+      Toast is the vehicle, not the point. Use a loaf with a chewy middle and a crust thick enough to hold oil. Rub the warm slice with a cut garlic clove until it turns to paste, then let the tomato juice soak into the holes. What you end up with is a plate that tastes of heat and salt, with nothing hiding behind it.
+    </p>
+    <blockquote class="my-12 border-l-2 border-paprika pl-6 font-display text-3xl sm:text-4xl leading-[1.4] font-semibold">
+      “The pan is never ready when you think it is. Wait a minute longer, then wait another.”
+      <footer class="mt-4 font-body text-sm font-normal not-italic tracking-wide text-muted uppercase">Ines Carvalho, on her grandmother's skillet</footer>
+    </blockquote>
+    <p class="text-lg leading-[1.8]">
+      Serve it the moment the bread leaves the pan. The butter should still be foaming, the tomatoes should still be sliding, and the first bite should be too hot to talk through.
+    </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 pb-20" aria-labelledby="recipe-title">
+    <div class="border-t border-rule pt-12 grid gap-12 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
+      <aside aria-labelledby="ingredients-title">
+        <h2 id="ingredients-title" class="font-display text-3xl font-semibold">Ingredients</h2>
+        <p class="mt-1 text-sm text-muted">For four slices of toast</p>
+        <ul class="mt-6 divide-y divide-rule border-y border-rule text-[17px]">
+          <li class="flex justify-between gap-4 py-3"><span>Ripe tomatoes</span><span class="tabular-nums text-muted">500 g</span></li>
+          <li class="flex justify-between gap-4 py-3"><span>Sourdough, thick cut</span><span class="tabular-nums text-muted">4 slices</span></li>
+          <li class="flex justify-between gap-4 py-3"><span>Olive oil</span><span class="tabular-nums text-muted">4 tbsp</span></li>
+          <li class="flex justify-between gap-4 py-3"><span>Garlic</span><span class="tabular-nums text-muted">1 clove</span></li>
+          <li class="flex justify-between gap-4 py-3"><span>Flaky salt</span><span class="tabular-nums text-muted">1 tsp</span></li>
+          <li class="flex justify-between gap-4 py-3"><span>Black pepper, cracked</span><span class="tabular-nums text-muted">to taste</span></li>
+          <li class="flex justify-between gap-4 py-3"><span>Basil leaves</span><span class="tabular-nums text-muted">a small handful</span></li>
+          <li class="flex justify-between gap-4 py-3"><span>Sherry vinegar</span><span class="tabular-nums text-muted">1 tsp</span></li>
+        </ul>
+      </aside>
+
+      <div>
+        <h2 id="recipe-title" class="font-display text-3xl font-semibold">Method</h2>
+        <ol class="mt-6 space-y-8 max-w-prose">
+          <li class="grid grid-cols-[2.5rem_1fr] gap-4">
+            <span class="font-display text-3xl font-semibold text-paprika tabular-nums leading-none">1</span>
+            <p class="leading-[1.75]">Heat a heavy skillet over medium-high for four minutes. It is ready when a drop of water skips across the surface and vanishes.</p>
+          </li>
+          <li class="grid grid-cols-[2.5rem_1fr] gap-4">
+            <span class="font-display text-3xl font-semibold text-paprika tabular-nums leading-none">2</span>
+            <p class="leading-[1.75]">Halve the tomatoes across the equator and lay them cut side down in the dry pan. Leave them alone for three minutes while the skins blister and the edges darken.</p>
+          </li>
+          <li class="grid grid-cols-[2.5rem_1fr] gap-4">
+            <span class="font-display text-3xl font-semibold text-paprika tabular-nums leading-none">3</span>
+            <p class="leading-[1.75]">Turn the tomatoes once, press gently with a spatula, and cook two minutes more until they collapse into a loose, jammy pulp. Add a pinch of salt and remove from heat.</p>
+          </li>
+          <li class="grid grid-cols-[2.5rem_1fr] gap-4">
+            <span class="font-display text-3xl font-semibold text-paprika tabular-nums leading-none">4</span>
+            <p class="leading-[1.75]">Brush the bread with two tablespoons of oil and toast it in the same pan, pressing down for the first minute, until golden at the edges and deeply browned in the middle.</p>
+          </li>
+          <li class="grid grid-cols-[2.5rem_1fr] gap-4">
+            <span class="font-display text-3xl font-semibold text-paprika tabular-nums leading-none">5</span>
+            <p class="leading-[1.75]">Rub each warm slice with the cut garlic. Spoon the tomatoes over, add the vinegar, a drizzle of oil, pepper and basil, and eat before the bread softens.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-rule bg-paper" aria-labelledby="related-title">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-16 lg:py-20">
+      <h2 id="related-title" class="font-display text-3xl font-semibold">Related recipes</h2>
+      <div class="mt-10 grid gap-10 md:grid-cols-3">
+        <a href="#" class="group block border-t-2 border-ink pt-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-paprika">Dinner · 40 min</p>
+          <h3 class="mt-3 font-display text-2xl font-semibold leading-snug group-hover:text-paprika">White beans with burnt lemon and sage</h3>
+          <p class="mt-3 text-muted leading-relaxed">A slow simmer that tastes of patience, finished with fat and acid.</p>
+        </a>
+        <a href="#" class="group block border-t-2 border-ink pt-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-paprika">Breakfast · 25 min</p>
+          <h3 class="mt-3 font-display text-2xl font-semibold leading-snug group-hover:text-paprika">Soft eggs over fennel and chili crumbs</h3>
+          <p class="mt-3 text-muted leading-relaxed">Two eggs, one warm pan and a crust of seeds for crunch.</p>
+        </a>
+        <a href="#" class="group block border-t-2 border-ink pt-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-paprika">Dessert · 2 hr</p>
+          <h3 class="mt-3 font-display text-2xl font-semibold leading-snug group-hover:text-paprika">Plums roasted until they lose their shape</h3>
+          <p class="mt-3 text-muted leading-relaxed">Honey, thyme and an oven that is left alone for longer than you expect.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-band text-paper" aria-labelledby="letter-title">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 py-16 lg:py-20 grid gap-8 lg:grid-cols-2 lg:items-end">
+      <div>
+        <h2 id="letter-title" class="font-display text-4xl font-semibold leading-tight">Get the quarterly letter</h2>
+        <p class="mt-4 text-paper/80 leading-relaxed max-w-prose">Four issues a year, one long recipe per letter, and the occasional note on what went wrong in the test kitchen.</p>
+      </div>
+      <form class="flex flex-col sm:flex-row gap-3" onsubmit="return false">
+        <label class="sr-only" for="email">Email address</label>
+        <input id="email" type="email" placeholder="you@example.com" class="flex-1 min-h-[44px] rounded-md bg-paper text-ink placeholder:text-muted px-4 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paprika">
+        <button type="submit" class="min-h-[44px] rounded-md bg-paprika px-6 py-2 font-semibold text-paper hover:bg-[#8f3320] focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="mx-auto max-w-5xl px-4 sm:px-6 py-10 text-sm text-muted flex flex-wrap justify-between gap-4 border-t border-rule">
+  <p>Saltbox Kitchen Quarterly, Issue 14</p>
+  <p>Recipes tested in a home kitchen with a gas stove.</p>
+</footer>
+
+</body>
+</html>

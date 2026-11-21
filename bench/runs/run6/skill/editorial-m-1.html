@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brown-Butter Chicken with Sage and Lemon</title>
+<meta name="description" content="A weeknight recipe essay: brown butter, sage and a lemon that means it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#f5efe3',
+          tint: '#ebe2cf',
+          ink: '#241c16',
+          muted: '#6b5d4f',
+          brick: '#9c3f24',
+          sage: '#7d8b6a',
+          butter: '#e9c46a',
+          night: '#1f2a22'
+        },
+        fontFamily: {
+          display: ['Fraunces', 'Georgia', 'serif'],
+          body: ['"Source Serif 4"', 'Georgia', 'serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #f5efe3; color: #241c16; font-family: "Source Serif 4", Georgia, serif; }
+  .drop-cap::first-letter {
+    font-family: Fraunces, Georgia, serif; float: left; font-size: 4.6rem; line-height: .9;
+    padding: .35rem .6rem 0 0; color: #9c3f24; font-weight: 600;
+  }
+  .rise { animation: rise .6s ease-out both; }
+  .rise-2 { animation: rise .6s .12s ease-out both; }
+  .rise-3 { animation: rise .6s .24s ease-out both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .rise, .rise-2, .rise-3 { animation: none; } }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="border-b border-ink/20">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-5 flex items-center justify-between">
+    <a href="#" class="font-display text-xl font-semibold tracking-tight">Saltbox <span class="text-brick">Quarterly</span></a>
+    <nav aria-label="Sections" class="hidden sm:flex gap-6 text-sm text-muted">
+      <a href="#" class="hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brick">Recipes</a>
+      <a href="#" class="hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brick">Essays</a>
+      <a href="#" class="hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brick">Kitchen Notes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 pt-14 pb-10">
+    <p class="rise text-sm uppercase tracking-[0.18em] text-brick font-semibold">Weeknight, Slowly</p>
+    <h1 class="rise-2 font-display font-semibold text-5xl sm:text-6xl leading-[1.05] mt-4 max-w-4xl">
+      Brown-butter chicken, sage and a lemon that means it
+    </h1>
+    <p class="rise-3 mt-6 text-xl sm:text-2xl leading-relaxed text-muted max-w-prose">
+      Butter left in a hot pan until it turns the colour of toasted hazelnut is the whole trick. Everything else just keeps it company.
+    </p>
+    <p class="mt-6 text-sm text-muted">By Imogen Teague &middot; Serves four &middot; 45 minutes</p>
+  </section>
+
+  <figure class="mx-auto max-w-5xl px-4 sm:px-6">
+    <svg viewBox="0 0 1000 440" class="w-full h-auto rounded-sm" role="img" aria-labelledby="fig-title fig-desc">
+      <title id="fig-title">Overhead still life of a skillet of brown butter</title>
+      <desc id="fig-desc">A cast iron skillet holds golden brown butter and fried sage leaves, with a halved lemon on the right.</desc>
+      <rect width="1000" height="440" fill="#ebe2cf"/>
+      <line x1="0" y1="372" x2="1000" y2="372" stroke="#241c16" stroke-opacity=".2" stroke-width="1"/>
+      <circle cx="380" cy="230" r="150" fill="#3a302a"/>
+      <circle cx="380" cy="230" r="126" fill="#c98b3c"/>
+      <circle cx="380" cy="230" r="98" fill="#b87a30" fill-opacity=".55"/>
+      <rect x="520" y="218" width="190" height="24" rx="12" fill="#3a302a"/>
+      <ellipse cx="330" cy="200" rx="28" ry="12" transform="rotate(-30 330 200)" fill="#7d8b6a"/>
+      <ellipse cx="415" cy="252" rx="28" ry="12" transform="rotate(20 415 252)" fill="#7d8b6a"/>
+      <ellipse cx="378" cy="176" rx="28" ry="12" transform="rotate(70 378 176)" fill="#6b7a5a"/>
+      <ellipse cx="436" cy="208" rx="28" ry="12" transform="rotate(-10 436 208)" fill="#7d8b6a"/>
+      <ellipse cx="780" cy="292" rx="96" ry="62" fill="#e9c46a"/>
+      <ellipse cx="780" cy="292" rx="76" ry="46" fill="#f5e3a6"/>
+      <line x1="780" y1="246" x2="780" y2="338" stroke="#e9c46a" stroke-width="4"/>
+      <line x1="734" y1="292" x2="826" y2="292" stroke="#e9c46a" stroke-width="4"/>
+      <text x="640" y="110" font-family="Source Serif 4, Georgia, serif" font-size="18" fill="#241c16">Sage, fried in the butter</text>
+      <text x="780" y="150" text-anchor="middle" font-family="Source Serif 4, Georgia, serif" font-size="18" fill="#241c16">Lemon, halved</text>
+    </svg>
+    <figcaption class="mt-3 text-sm text-muted">The butter is ready when the foam quiets and the milk solids smell of toast. Pull it off the heat then, not a second later.</figcaption>
+  </figure>
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 mt-14 grid gap-12 lg:grid-cols-[minmax(0,65ch)_280px]">
+    <article class="max-w-prose">
+      <p class="drop-cap text-lg leading-[1.75] max-w-prose">
+        My grandmother never wrote a recipe down. She made this one on Thursdays when the tin of butter was nearly done, and she would stand at the stove talking about the price of eggs while the pan did the real work. It took me years to notice that the talk was the timer.
+      </p>
+      <p class="mt-6 text-lg leading-[1.75] max-w-prose">
+        Brown butter is butter with its water cooked off and its milk solids allowed to toast. It is nutty, faintly sweet and a little bitter at the edges, which is exactly what chicken thighs want from a pan. Sage goes in with it, crisping at the rims until it tastes like something you would pay for at a good trattoria.
+      </p>
+      <blockquote class="my-12 border-y border-ink/20 py-8 text-center">
+        <p class="font-display text-3xl sm:text-4xl leading-[1.3] text-ink">&ldquo;Watch the butter, not the clock. The clock has never once smelled anything.&rdquo;</p>
+        <cite class="mt-4 block text-sm not-italic text-muted">Imogen Teague, from the family notebook</cite>
+      </blockquote>
+
+      <h2 class="text-sm uppercase tracking-[0.18em] text-brick font-semibold mt-4">The method</h2>
+      <ol class="mt-6 space-y-6 text-lg leading-[1.7] list-none">
+        <li class="grid grid-cols-[2.5rem_1fr] gap-2">
+          <span class="font-display text-2xl text-brick font-semibold">1</span>
+          <p>Pat eight bone-in thighs dry, salt them well on both sides, and leave them uncovered on a rack for twenty minutes while the pan heats.</p>
+        </li>
+        <li class="grid grid-cols-[2.5rem_1fr] gap-2">
+          <span class="font-display text-2xl text-brick font-semibold">2</span>
+          <p>Lay the thighs skin side down in a cold cast iron skillet, set it over medium heat, and let the fat render for about fifteen minutes until the skin is deep gold.</p>
+        </li>
+        <li class="grid grid-cols-[2.5rem_1fr] gap-2">
+          <span class="font-display text-2xl text-brick font-semibold">3</span>
+          <p>Turn the chicken, lower the heat a notch, and cook four minutes more. Move it to a warm plate and pour off all but two tablespoons of fat.</p>
+        </li>
+        <li class="grid grid-cols-[2.5rem_1fr] gap-2">
+          <span class="font-display text-2xl text-brick font-semibold">4</span>
+          <p>Add 80 g of butter and twelve sage leaves. Swirl until the butter foams, then goes quiet and smells of hazelnuts, about three minutes.</p>
+        </li>
+        <li class="grid grid-cols-[2.5rem_1fr] gap-2">
+          <span class="font-display text-2xl text-brick font-semibold">5</span>
+          <p>Return the chicken to the pan, spoon the butter over, and finish with the juice of half a lemon and a pinch of flaky salt. Rest five minutes before serving.</p>
+        </li>
+      </ol>
+    </article>
+
+    <aside aria-label="Ingredients" class="lg:sticky lg:top-8 lg:self-start bg-tint rounded-sm p-6">
+      <h2 class="font-display text-2xl font-semibold">Ingredients</h2>
+      <p class="mt-1 text-sm text-muted">Serves four</p>
+      <ul class="mt-5 divide-y divide-ink/15 text-base">
+        <li class="py-2.5 flex justify-between gap-4"><span>Bone-in chicken thighs</span><span class="tabular-nums text-muted">8</span></li>
+        <li class="py-2.5 flex justify-between gap-4"><span>Salted butter</span><span class="tabular-nums text-muted">80 g</span></li>
+        <li class="py-2.5 flex justify-between gap-4"><span>Fresh sage leaves</span><span class="tabular-nums text-muted">12</span></li>
+        <li class="py-2.5 flex justify-between gap-4"><span>Lemon</span><span class="tabular-nums text-muted">1/2</span></li>
+        <li class="py-2.5 flex justify-between gap-4"><span>Flaky sea salt</span><span class="tabular-nums text-muted">to taste</span></li>
+        <li class="py-2.5 flex justify-between gap-4"><span>Cast iron skillet</span><span class="tabular-nums text-muted">30 cm</span></li>
+      </ul>
+    </aside>
+  </div>
+
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 mt-20">
+    <h2 class="font-display text-3xl font-semibold border-t border-ink/20 pt-8">Related recipes</h2>
+    <div class="mt-8 grid gap-8 md:grid-cols-3">
+      <a href="#" class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-brick">
+        <div class="aspect-[4/3] rounded-sm bg-tint relative overflow-hidden" aria-hidden="true">
+          <div class="absolute left-[18%] top-[30%] h-20 w-20 rounded-full bg-butter"></div>
+          <div class="absolute left-[44%] top-[44%] h-12 w-24 rounded-full bg-sage/80"></div>
+        </div>
+        <h3 class="font-display text-xl font-semibold mt-4 group-hover:text-brick">Leek and white bean gratin</h3>
+        <p class="mt-2 text-sm text-muted">Forty minutes, one dish, and a crust that shatters.</p>
+      </a>
+      <a href="#" class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-brick">
+        <div class="aspect-[4/3] rounded-sm bg-tint relative overflow-hidden" aria-hidden="true">
+          <div class="absolute left-[30%] top-[22%] h-24 w-24 rounded-full bg-brick/85"></div>
+          <div class="absolute left-[52%] top-[52%] h-10 w-28 rounded-full bg-sage"></div>
+        </div>
+        <h3 class="font-display text-xl font-semibold mt-4 group-hover:text-brick">Blistered tomatoes on toast</h3>
+        <p class="mt-2 text-sm text-muted">Late August, a hot pan, and bread that soaks it up.</p>
+      </a>
+      <a href="#" class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-brick">
+        <div class="aspect-[4/3] rounded-sm bg-tint relative overflow-hidden" aria-hidden="true">
+          <div class="absolute left-[22%] top-[38%] h-16 w-40 rounded-full bg-butter/90"></div>
+          <div class="absolute left-[60%] top-[26%] h-14 w-14 rounded-full bg-sage"></div>
+        </div>
+        <h3 class="font-display text-xl font-semibold mt-4 group-hover:text-brick">Lemon curd, no double boiler</h3>
+        <p class="mt-2 text-sm text-muted">Whisked over the lowest flame you own, and done in ten.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="mt-24 bg-night text-paper">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-16 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
+    <div>
+      <p class="text-sm uppercase tracking-[0.18em] text-butter font-semibold">The Sunday letter</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-semibold mt-3 leading-tight">One recipe, one essay, every second Sunday.</h2>
+      <p class="mt-4 text-paper/80 max-w-xl">Short notes from the stove and the notebook, with nothing you need to hurry through.</p>
+    </div>
+    <a href="#" class="inline-flex items-center justify-center rounded-full bg-butter px-6 py-3 font-semibold text-night hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-butter">Read the letter</a>
+  </div>
+</footer>
+
+</body>
+</html>

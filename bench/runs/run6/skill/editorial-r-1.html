@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Quiet Return of the Paper Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        paper: '#F6F1E7',
+        ink: '#1F2328',
+        muted: '#5B5A55',
+        route: '#B1432D',
+        hairline: '#D8CFBD',
+        night: '#1E2A2F',
+        tan: '#E9DFC9'
+      },
+      fontFamily: {
+        display: ['Fraunces', 'Georgia', 'serif'],
+        body: ['"Source Serif 4"', 'Georgia', 'serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { background: #F6F1E7; color: #1F2328; font-family: "Source Serif 4", Georgia, serif; }
+  .dropcap::first-letter {
+    float: left; font-family: Fraunces, Georgia, serif; font-weight: 800;
+    font-size: 4.6em; line-height: .82; padding: .08em .12em 0 0; color: #B1432D;
+  }
+  .rise { animation: rise .6s ease-out both; }
+  .rise-2 { animation: rise .6s .12s ease-out both; }
+  .rise-3 { animation: rise .6s .24s ease-out both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .rise, .rise-2, .rise-3 { animation: none; } }
+</style>
+</head>
+<body class="antialiased">
+
+<header class="border-b border-hairline">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="flex items-center justify-between py-3 text-xs uppercase tracking-[0.18em] text-muted">
+      <span>Vol. 14 &middot; No. 3</span>
+      <span>Autumn 2026</span>
+    </div>
+    <div class="border-y border-hairline py-5 text-center">
+      <p class="font-display text-4xl font-800 tracking-tight sm:text-5xl">The Long Table</p>
+      <p class="mt-1 text-xs uppercase tracking-[0.3em] text-muted">Essays on place, craft and slow things</p>
+    </div>
+    <nav aria-label="Sections" class="flex flex-wrap justify-center gap-x-6 gap-y-2 py-3 text-sm">
+      <a href="#" class="inline-flex min-h-9 items-center hover:text-route focus-visible:outline focus-visible:outline-2 focus-visible:outline-route">Features</a>
+      <a href="#" class="hover:text-route focus-visible:outline focus-visible:outline-2 focus-visible:outline-route">Maps</a>
+      <a href="#" class="hover:text-route focus-visible:outline focus-visible:outline-2 focus-visible:outline-route">Travel</a>
+      <a href="#" class="hover:text-route focus-visible:outline focus-visible:outline-2 focus-visible:outline-route">Essays</a>
+      <a href="#" class="hover:text-route focus-visible:outline focus-visible:outline-2 focus-visible:outline-route">Making</a>
+      <a href="#newsletter" class="inline-flex min-h-9 items-center hover:text-route focus-visible:outline focus-visible:outline-2 focus-visible:outline-route">Newsletter</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="mx-auto max-w-5xl px-4 pb-16 pt-12 sm:px-6 sm:pt-16">
+    <div class="mx-auto text-center">
+      <p class="rise text-xs font-semibold uppercase tracking-[0.2em] text-route">Maps &middot; Long read</p>
+      <h1 class="rise-2 mt-4 font-display text-5xl font-800 leading-[1.04] tracking-tight sm:text-6xl">The Quiet Return of the Paper Map</h1>
+      <p class="rise-2 mx-auto mt-6 max-w-prose font-body text-xl italic leading-relaxed text-muted">Phones know where we are, but a folded sheet still teaches us where we are going. Why cartographers, cyclists and a few stubborn teenagers are unfolding one again.</p>
+      <p class="rise-3 mx-auto mt-6 max-w-prose text-sm text-muted">By <span class="text-ink">Elif Varga</span> &middot; 14 min read &middot; Photographs and drawings by the author</p>
+    </div>
+
+    <figure class="rise-3 mt-12">
+      <svg viewBox="0 0 800 420" role="img" aria-labelledby="fig-title fig-desc" class="h-auto w-full rounded-sm border border-hairline bg-tan">
+        <title id="fig-title">A folded paper map with a red route</title>
+        <desc id="fig-desc">A simplified street map on cream paper with a dashed red route running from a station to a harbor.</desc>
+        <rect x="0" y="0" width="800" height="420" fill="#E9DFC9"/>
+        <g stroke="#D8CFBD" stroke-width="1">
+          <line x1="0" y1="70" x2="800" y2="70"/><line x1="0" y1="140" x2="800" y2="140"/>
+          <line x1="0" y1="210" x2="800" y2="210"/><line x1="0" y1="280" x2="800" y2="280"/>
+          <line x1="0" y1="350" x2="800" y2="350"/>
+          <line x1="110" y1="0" x2="110" y2="420"/><line x1="250" y1="0" x2="250" y2="420"/>
+          <line x1="400" y1="0" x2="400" y2="420"/><line x1="550" y1="0" x2="550" y2="420"/>
+          <line x1="690" y1="0" x2="690" y2="420"/>
+        </g>
+        <path d="M0 300 C160 260 240 340 400 300 S640 240 800 290 L800 420 L0 420 Z" fill="#8FA3A0" opacity=".55"/>
+        <path d="M120 60 C200 120 260 110 330 170 S470 230 520 200" fill="none" stroke="#1F2328" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+        <rect x="150" y="90" width="90" height="56" fill="#F6F1E7" stroke="#1F2328" stroke-width="1.5"/>
+        <rect x="520" y="120" width="70" height="48" fill="#F6F1E7" stroke="#1F2328" stroke-width="1.5"/>
+        <path d="M205 150 L240 170 L300 120 L360 150 L420 110 L500 146 L560 146" fill="none" stroke="#B1432D" stroke-width="4" stroke-dasharray="10 8" stroke-linecap="round"/>
+        <circle cx="205" cy="150" r="9" fill="#B1432D"/>
+        <circle cx="560" cy="146" r="9" fill="#1F2328"/>
+        <text x="205" y="84" font-family="Source Serif 4, Georgia, serif" font-size="16" fill="#1F2328">Station</text>
+        <text x="520" y="200" font-family="Source Serif 4, Georgia, serif" font-size="16" fill="#1F2328">Harbor</text>
+        <path d="M700 60 L700 16 M700 16 L690 30 M700 16 L710 30" stroke="#1F2328" stroke-width="2" fill="none"/>
+        <text x="700" y="390" text-anchor="middle" font-family="Source Serif 4, Georgia, serif" font-size="14" fill="#1F2328">N</text>
+      </svg>
+      <figcaption class="mt-3 text-sm leading-relaxed text-muted">Figure 1. The author's hand-drawn route from the station to the harbor, sketched on the back of a 1974 tourist map. The dashed line is the walk; the grey band is the water.</figcaption>
+    </figure>
+
+    <div class="mx-auto mt-12 max-w-prose font-body text-[1.1875rem] leading-[1.75] text-ink">
+      <p class="dropcap">Nobody decided to stop using paper maps. They simply stopped being necessary, one blue dot at a time. For a decade the folded sheet lived in glove compartments and hotel drawers, a relic that came out only when the signal failed. Then, around the time the first generation raised on turn-by-turn directions reached adulthood, a quieter habit began to spread.</p>
+      <p class="mt-6">Ask a cartographer why the paper map is returning and you will hear about attention. A screen shows the next turn; a sheet shows the whole city at once, the river that bends east of the station, the park you would otherwise have walked past. Reading a map demands a small act of planning, and that act turns out to be the point.</p>
+      <p class="mt-6">Consider Tomas Reyes, who runs a small press in Lisbon and prints a new city map each spring. His run sold out last year, mostly to people who already owned a navigation app. "They don't want to be told where to go," he said, folding a proof with the care of a man who has done it ten thousand times. "They want to see the shape of the place first."</p>
+
+      <aside class="my-12 border-y border-route py-8 text-center">
+        <p class="font-display text-3xl font-600 leading-snug text-ink sm:text-4xl">&ldquo;A map asks you to decide where you are before it tells you where to go.&rdquo;</p>
+        <p class="mt-4 text-sm uppercase tracking-[0.18em] text-muted">Pull quote &middot; Tomas Reyes, cartographer</p>
+      </aside>
+
+      <p>The economics help, too. A well-made sheet costs less than a commuter pass and never needs charging. Libraries and bookshops have started stocking regional surveys beside the guidebooks, and a handful of outdoor cooperatives report that their topographic sheets now sell faster than rain jackets, which in a damp autumn is saying something.</p>
+      <p class="mt-6">None of this is nostalgia alone. Researchers who study wayfinding note that people who navigate with paper tend to build a stronger sense of direction over time, because they hold the layout in memory instead of outsourcing it. The map becomes a habit of looking up, not down.</p>
+      <p class="mt-6">The return is still small. Paper maps will not replace the phone for the commute, and nobody serious is arguing otherwise. What they offer is a different relationship to a place: slower, wider, a little more responsible for the route you choose. Fold one open on a café table and the city rearranges itself around your elbows.</p>
+    </div>
+  </article>
+
+  <section aria-labelledby="related-title" class="bg-tan/60 border-y border-hairline">
+    <div class="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+      <h2 id="related-title" class="font-display text-3xl font-800 tracking-tight">Keep reading</h2>
+      <div class="mt-8 grid gap-8 md:grid-cols-3">
+        <a href="#" class="group block border-t-2 border-ink pt-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-route">Travel</p>
+          <h3 class="mt-2 font-display text-xl font-600 leading-snug group-hover:text-route">Three days in a town with no street names</h3>
+          <p class="mt-2 max-w-prose text-sm leading-relaxed text-muted">Notes from a village in the Pyrenees where every route is given by landmark.</p>
+        </a>
+        <a href="#" class="group block border-t-2 border-ink pt-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-route">Making</p>
+          <h3 class="mt-2 font-display text-xl font-600 leading-snug group-hover:text-route">The printer who still sets type by hand</h3>
+          <p class="mt-2 max-w-prose text-sm leading-relaxed text-muted">Inside a workshop that has kept one letterpress running since 1962.</p>
+        </a>
+        <a href="#" class="group block border-t-2 border-ink pt-4">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-route">Essays</p>
+          <h3 class="mt-2 font-display text-xl font-600 leading-snug group-hover:text-route">What we lose when the directions are always right</h3>
+          <p class="mt-2 max-w-prose text-sm leading-relaxed text-muted">On getting lost, and the small discoveries that come with it.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="newsletter" aria-labelledby="news-title" class="bg-night text-paper">
+    <div class="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+      <div class="mx-auto text-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-tan/80">The Long Table, weekly</p>
+        <h2 id="news-title" class="mt-3 font-display text-3xl font-800 leading-tight sm:text-4xl">Get the Sunday long read in your inbox</h2>
+        <p class="mx-auto mt-4 max-w-prose leading-relaxed text-tan/90">One essay, one map, and nothing else. Unsubscribe in a click.</p>
+        <form class="mx-auto mt-8 max-w-prose flex flex-col gap-3 sm:flex-row" action="#">
+          <label for="email" class="sr-only">Email address</label>
+          <input id="email" type="email" required placeholder="you@example.com" class="h-12 flex-1 rounded-sm bg-paper px-4 text-ink placeholder:text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-route">
+          <button type="submit" class="h-12 rounded-sm bg-route px-6 font-semibold text-paper hover:bg-[#9c3a25] active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">Subscribe</button>
+        </form>
+        <p class="mx-auto mt-4 max-w-prose text-xs text-tan/70">We send one email a week. Read our privacy note before you sign up.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="mx-auto max-w-5xl px-4 py-8 text-center text-xs uppercase tracking-[0.18em] text-muted sm:px-6">
+  The Long Table &middot; Essays on place, craft and slow things
+</footer>
+
+</body>
+</html>

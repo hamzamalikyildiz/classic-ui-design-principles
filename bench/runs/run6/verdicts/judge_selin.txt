@@ -1,0 +1,6 @@
+cift1: B | 3 | B daha zengin içerik (yan panel, ilgili tarifler, bülten bloğu) ve el çizimi tabak illüstrasyonuyla daha sahici dururken A temiz ama soyut şekillerle biraz boş kalıyor | A 7/8/8/7 B 8/8/8/8
+cift2: B | 3 | B daha özgün ve ayrıntılı bir harita illüstrasyonu, gerçek bir site iskeleti (nav, ilgili yazılar, bülten) sunuyor; A uzun ve okunaklı ama bitişi çıplak, üç istatistik şeridi de zorlama | A 7/7/8/7 B 8/8/8/8
+cift3: B | 3 | B içindekiler, çarpıtma çubuk grafiği ve soru listesiyle gerçek bir editoryal tasarım gibi düşünülmüş, A ise büyük ama anlamsız dalga şeklindeki illüstrasyonla daha jenerik kalıyor | A 7/7/8/6 B 8/8/8/8
+cift4: B | 4 | B açıklamalı (lejant, pusula) harita figürü ve somut röportaj detaylarıyla daha el işi duruyor, A ise ilgili haberlerde boş renk blokları bırakıp yarım kalmış hissi veriyor | A 7/6/8/7 B 8/8/8/8
+cift5: A | 3 | A kişisel anı metni, etiketli tava illüstrasyonu ve yan kutudaki malzemelerle daha dolu ve sahici, B düzenli ama kısa ve tarif kartlarındaki soyut şekiller daha az karakterli | A 8/7/7/8 B 7/7/8/6
+cift6: A | 3 | A paleti tutarlı tutup sade bir yayın kimliği kuruyor, B ise ilgili yazılarda palet dışı turuncu-gri-mint gradient kutularla şablon hissine kayıyor | A 7/7/8/7 B 7/5/8/7

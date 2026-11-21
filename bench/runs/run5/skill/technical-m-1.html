@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline Ops</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #09090b; color: #e4e4e7; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .row-sel { background: #164e63; box-shadow: inset 2px 0 0 #22d3ee; }
+  .fade { animation: up .5s both; }
+  .pulse { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 50% { opacity: .35; } }
+  @media (prefers-reduced-motion: reduce) { .fade, .pulse { animation: none; } }
+  .scroll-dark { scrollbar-color: #3f3f46 #09090b; }
+</style>
+</head>
+<body class="min-h-screen antialiased">
+<main class="mx-auto max-w-7xl space-y-4 px-4 py-6 lg:px-6">
+
+  <header class="fade flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+    <div class="flex min-w-0 items-center gap-3">
+      <span class="mono grid h-8 w-8 shrink-0 place-items-center rounded-md border border-zinc-700 bg-zinc-900 text-cyan-400" aria-hidden="true">&gt;_</span>
+      <div class="min-w-0">
+        <h1 class="text-base font-semibold">pipeline / web-platform</h1>
+        <p class="mono truncate text-xs text-zinc-400">main · 14 runners · synced 09:42:18 UTC</p>
+      </div>
+    </div>
+    <nav aria-label="Primary" class="flex flex-wrap gap-1 text-sm text-zinc-400">
+      <a href="#builds" aria-current="page" class="rounded px-2.5 py-2 text-zinc-100 bg-zinc-800">Builds</a>
+      <a href="#tests" class="rounded px-2.5 py-2 hover:text-zinc-100">Tests</a>
+      <a href="#deploys" class="rounded px-2.5 py-2 hover:text-zinc-100">Deploys</a>
+      <a href="#runners" class="rounded px-2.5 py-2 hover:text-zinc-100">Runners</a>
+    </nav>
+    <div class="flex flex-wrap gap-1.5">
+      <span class="mono rounded-full border border-emerald-900 bg-emerald-950/60 px-2.5 py-1 text-xs text-emerald-300">38 passing</span>
+      <span class="mono rounded-full border border-rose-900 bg-rose-950/60 px-2.5 py-1 text-xs text-rose-300">3 failing</span>
+      <span class="mono rounded-full border border-amber-900 bg-amber-950/60 px-2.5 py-1 text-xs text-amber-300">2 running</span>
+    </div>
+  </header>
+
+  <section class="fade grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Key numbers">
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-3">
+      <p class="text-xs text-zinc-400">Success rate · 7d</p>
+      <p class="mono mt-1 text-2xl font-medium">94.2<span class="text-sm text-zinc-400">%</span></p>
+      <p class="mono text-xs text-emerald-400">▲ 1.8 pts vs prior week</p>
+    </div>
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-3">
+      <p class="text-xs text-zinc-400">p50 build time</p>
+      <p class="mono mt-1 text-2xl font-medium">4m<span class="text-sm text-zinc-400"> 06s</span></p>
+      <p class="mono text-xs text-emerald-400">▼ 12s vs prior week</p>
+    </div>
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-3">
+      <p class="text-xs text-zinc-400">Deploys today</p>
+      <p class="mono mt-1 text-2xl font-medium">7<span class="text-sm text-zinc-400"> / 1 rolled back</span></p>
+      <p class="mono text-xs text-zinc-400">median lead time 38m</p>
+    </div>
+    <div class="rounded-md border border-zinc-800 bg-zinc-900 p-3">
+      <p class="text-xs text-zinc-400">Flaky tests</p>
+      <p class="mono mt-1 text-2xl font-medium">6</p>
+      <p class="mono text-xs text-rose-400">▲ 2 since last week</p>
+    </div>
+  </section>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+
+    <section id="builds" class="fade min-w-0 rounded-md border border-zinc-800 bg-zinc-900/60 lg:col-span-2">
+      <div class="flex items-center justify-between border-b border-zinc-800 px-4 py-2.5">
+        <h2 class="text-sm font-medium">Recent builds</h2>
+        <span class="mono text-xs text-zinc-400">last 8 · click a row</span>
+      </div>
+      <div class="overflow-x-auto scroll-dark">
+        <table class="mono w-full min-w-[560px] text-left text-xs">
+          <thead class="text-zinc-400">
+            <tr class="border-b border-zinc-800">
+              <th class="px-4 py-2 font-normal">Build</th>
+              <th class="px-2 py-2 font-normal">Branch</th>
+              <th class="px-2 py-2 font-normal">Commit</th>
+              <th class="px-2 py-2 font-normal">Status</th>
+              <th class="px-2 py-2 text-right font-normal">Duration</th>
+              <th class="px-4 py-2 text-right font-normal">Started</th>
+            </tr>
+          </thead>
+          <tbody id="build-rows" class="divide-y divide-zinc-800/70">
+            <tr tabindex="0" role="row" data-id="1853" data-branch="feat/cache-warm" data-commit="4be07d0" data-status="running" data-dur="143" data-start="09:41" class="cursor-pointer hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 text-zinc-100">#1853</td><td class="px-2 text-zinc-300">feat/cache-warm</td><td class="px-2 text-zinc-400">4be07d0</td>
+              <td class="px-2"><span class="text-amber-300"><span class="pulse">●</span> running</span></td>
+              <td class="px-2 text-right text-zinc-300">2m 23s</td><td class="px-4 text-right text-zinc-400">09:41</td>
+            </tr>
+            <tr tabindex="0" role="row" data-id="1852" data-branch="main" data-commit="a91f3c2" data-status="passed" data-dur="219" data-start="09:38" class="cursor-pointer hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 text-zinc-100">#1852</td><td class="px-2 text-zinc-300">main</td><td class="px-2 text-zinc-400">a91f3c2</td>
+              <td class="px-2"><span class="text-emerald-300">● passed</span></td>
+              <td class="px-2 text-right text-zinc-300">3m 39s</td><td class="px-4 text-right text-zinc-400">09:38</td>
+            </tr>
+            <tr tabindex="0" role="row" data-id="1851" data-branch="feat/search-facets" data-commit="e10b9c4" data-status="passed" data-dur="226" data-start="09:21" class="cursor-pointer hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 text-zinc-100">#1851</td><td class="px-2 text-zinc-300">feat/search-facets</td><td class="px-2 text-zinc-400">e10b9c4</td>
+              <td class="px-2"><span class="text-emerald-300">● passed</span></td>
+              <td class="px-2 text-right text-zinc-300">3m 46s</td><td class="px-4 text-right text-zinc-400">09:21</td>
+            </tr>
+            <tr tabindex="0" role="row" data-id="1850" data-branch="fix/auth-refresh" data-commit="c3d9e18" data-status="failed" data-dur="241" data-start="09:12" class="cursor-pointer hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 text-zinc-100">#1850</td><td class="px-2 text-zinc-300">fix/auth-refresh</td><td class="px-2 text-zinc-400">c3d9e18</td>
+              <td class="px-2"><span class="text-rose-300">● failed</span></td>
+              <td class="px-2 text-right text-zinc-300">4m 01s</td><td class="px-4 text-right text-zinc-400">09:12</td>
+            </tr>
+            <tr tabindex="0" role="row" aria-selected="true" data-id="1849" data-branch="main" data-commit="77e2b40" data-status="passed" data-dur="276" data-start="08:55" class="row-sel cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 font-medium text-zinc-50">#1849</td><td class="px-2 text-zinc-200">main</td><td class="px-2 text-zinc-300">77e2b40</td>
+              <td class="px-2"><span class="text-emerald-300">● passed</span></td>
+              <td class="px-2 text-right text-zinc-200">4m 36s</td><td class="px-4 text-right text-zinc-300">08:55</td>
+            </tr>
+            <tr tabindex="0" role="row" data-id="1848" data-branch="release/2.14" data-commit="0b5f6aa" data-status="passed" data-dur="310" data-start="08:31" class="cursor-pointer hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 text-zinc-100">#1848</td><td class="px-2 text-zinc-300">release/2.14</td><td class="px-2 text-zinc-400">0b5f6aa</td>
+              <td class="px-2"><span class="text-emerald-300">● passed</span></td>
+              <td class="px-2 text-right text-zinc-300">5m 10s</td><td class="px-4 text-right text-zinc-400">08:31</td>
+            </tr>
+            <tr tabindex="0" role="row" data-id="1847" data-branch="feat/billing-ui" data-commit="9d1e2c7" data-status="failed" data-dur="298" data-start="08:02" class="cursor-pointer hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 text-zinc-100">#1847</td><td class="px-2 text-zinc-300">feat/billing-ui</td><td class="px-2 text-zinc-400">9d1e2c7</td>
+              <td class="px-2"><span class="text-rose-300">● failed</span></td>
+              <td class="px-2 text-right text-zinc-300">4m 58s</td><td class="px-4 text-right text-zinc-400">08:02</td>
+            </tr>
+            <tr tabindex="0" role="row" data-id="1846" data-branch="main" data-commit="5c2d8a1" data-status="passed" data-dur="251" data-start="07:44" class="cursor-pointer hover:bg-zinc-800/60 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cyan-300">
+              <td class="px-4 py-2.5 text-zinc-100">#1846</td><td class="px-2 text-zinc-300">main</td><td class="px-2 text-zinc-400">5c2d8a1</td>
+              <td class="px-2"><span class="text-emerald-300">● passed</span></td>
+              <td class="px-2 text-right text-zinc-300">4m 11s</td><td class="px-4 text-right text-zinc-400">07:44</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tests" class="fade min-w-0 rounded-md border border-zinc-800 bg-zinc-900/60">
+      <div class="flex items-center justify-between border-b border-zinc-800 px-4 py-2.5">
+        <h2 class="text-sm font-medium">Flaky tests</h2>
+        <span class="mono text-xs text-zinc-400">50 runs</span>
+      </div>
+      <ul class="mono divide-y divide-zinc-800/70 text-xs">
+        <li class="px-4 py-2.5"><p class="truncate text-zinc-100">checkout.spec &gt; promo at 3DS step</p><div class="mt-1.5 flex items-center gap-2"><span class="w-24 shrink-0 text-zinc-400">checkout-web</span><span class="h-1.5 flex-1 rounded bg-zinc-800"><span class="block h-1.5 w-[74%] rounded bg-rose-400"></span></span><span class="w-12 text-right text-rose-300">14.8%</span></div></li>
+        <li class="px-4 py-2.5"><p class="truncate text-zinc-100">ws.reconnect &gt; resumes after 1006</p><div class="mt-1.5 flex items-center gap-2"><span class="w-24 shrink-0 text-zinc-400">realtime</span><span class="h-1.5 flex-1 rounded bg-zinc-800"><span class="block h-1.5 w-[46%] rounded bg-rose-400"></span></span><span class="w-12 text-right text-rose-300">9.2%</span></div></li>
+        <li class="px-4 py-2.5"><p class="truncate text-zinc-100">search.indexer &gt; facet count settles</p><div class="mt-1.5 flex items-center gap-2"><span class="w-24 shrink-0 text-zinc-400">search-api</span><span class="h-1.5 flex-1 rounded bg-zinc-800"><span class="block h-1.5 w-[36%] rounded bg-amber-400"></span></span><span class="w-12 text-right text-amber-300">7.1%</span></div></li>
+        <li class="px-4 py-2.5"><p class="truncate text-zinc-100">auth.refresh &gt; parallel rotation</p><div class="mt-1.5 flex items-center gap-2"><span class="w-24 shrink-0 text-zinc-400">auth</span><span class="h-1.5 flex-1 rounded bg-zinc-800"><span class="block h-1.5 w-[23%] rounded bg-amber-400"></span></span><span class="w-12 text-right text-amber-300">4.6%</span></div></li>
+        <li class="px-4 py-2.5"><p class="truncate text-zinc-100">upload.resume &gt; chunk 7 retry</p><div class="mt-1.5 flex items-center gap-2"><span class="w-24 shrink-0 text-zinc-400">media</span><span class="h-1.5 flex-1 rounded bg-zinc-800"><span class="block h-1.5 w-[16%] rounded bg-zinc-400"></span></span><span class="w-12 text-right text-zinc-300">3.3%</span></div></li>
+        <li class="px-4 py-2.5"><p class="truncate text-zinc-100">db.migrate &gt; waits for advisory lock</p><div class="mt-1.5 flex items-center gap-2"><span class="w-24 shrink-0 text-zinc-400">core-db</span><span class="h-1.5 flex-1 rounded bg-zinc-800"><span class="block h-1.5 w-[10%] rounded bg-zinc-400"></span></span><span class="w-12 text-right text-zinc-300">2.0%</span></div></li>
+      </ul>
+    </section>
+
+    <section id="chart" class="fade min-w-0 rounded-md border border-zinc-800 bg-zinc-900/60 lg:col-span-2">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 px-4 py-2.5">
+        <h2 class="text-sm font-medium">Build duration · last 12 builds</h2>
+        <p class="mono flex flex-wrap items-center gap-3 text-xs text-zinc-400">
+          <span class="inline-flex items-center gap-1.5"><span class="h-0.5 w-4 bg-cyan-400" aria-hidden="true"></span>p50 duration</span>
+          <span class="inline-flex items-center gap-1.5"><span class="w-4 border-t border-dashed border-amber-400" aria-hidden="true"></span>SLO 300s</span>
+        </p>
+      </div>
+      <div class="px-4 py-4">
+        <svg viewBox="0 0 640 210" class="h-auto w-full" role="img" aria-label="Line chart of build duration in seconds for builds 1841 to 1852, with a 300 second SLO line">
+          <g stroke="#27272a" stroke-width="1">
+            <line x1="40" x2="612" y1="20" y2="20"/><line x1="40" x2="612" y1="100" y2="100"/>
+            <line x1="40" x2="612" y1="140" y2="140"/><line x1="40" x2="612" y1="180" y2="180"/>
+          </g>
+          <line x1="40" x2="612" y1="60" y2="60" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4 4"/>
+          <text x="612" y="52" text-anchor="end" font-size="10" fill="#fbbf24" class="mono">SLO 300s</text>
+          <g class="mono" font-size="10" fill="#a1a1aa" text-anchor="end">
+            <text x="32" y="184">0s</text><text x="32" y="144">100s</text><text x="32" y="104">200s</text>
+            <text x="32" y="64">300s</text><text x="32" y="24">400s</text>
+          </g>
+          <polyline fill="none" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round" points="40,96.8 92,82 144,88 196,25.2 248,74.4 300,79.6 352,60.8 404,56 456,69.6 508,83.6 560,89.6 612,92.4"/>
+          <g fill="#22d3ee">
+            <circle cx="40" cy="96.8" r="3"/><circle cx="92" cy="82" r="3"/><circle cx="144" cy="88" r="3"/>
+            <circle cx="248" cy="74.4" r="3"/><circle cx="300" cy="79.6" r="3"/><circle cx="352" cy="60.8" r="3"/>
+            <circle cx="404" cy="56" r="3"/><circle cx="456" cy="69.6" r="3"/><circle cx="508" cy="83.6" r="3"/>
+            <circle cx="560" cy="89.6" r="3"/><circle cx="612" cy="92.4" r="3"/>
+          </g>
+          <circle cx="196" cy="25.2" r="4.5" fill="#fb7185"/>
+          <text x="206" y="14" font-size="10" fill="#fda4af" class="mono">#1844 e2e shard timeout · 388s</text>
+          <g class="mono" font-size="10" fill="#71717a" text-anchor="middle">
+            <text x="40" y="200">1841</text><text x="92" y="200">1842</text><text x="144" y="200">1843</text><text x="196" y="200">1844</text>
+            <text x="248" y="200">1845</text><text x="300" y="200">1846</text><text x="352" y="200">1847</text><text x="404" y="200">1848</text>
+            <text x="456" y="200">1849</text><text x="508" y="200">1850</text><text x="560" y="200">1851</text><text x="612" y="200">1852</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section id="deploys" class="fade min-w-0 rounded-md border border-zinc-800 bg-zinc-900/60">
+      <div class="flex items-center justify-between border-b border-zinc-800 px-4 py-2.5">
+        <h2 class="text-sm font-medium">Deploy history</h2>
+        <span class="mono text-xs text-zinc-400">today</span>
+      </div>
+      <ul class="mono divide-y divide-zinc-800/70 text-xs">
+        <li class="px-4 py-2.5"><div class="flex justify-between gap-2"><span class="text-zinc-100">prod · web 2.14.3</span><span class="text-emerald-300">● ok</span></div><p class="mt-1 text-zinc-400">a91f3c2 · maya.k · 09:38</p></li>
+        <li class="px-4 py-2.5"><div class="flex justify-between gap-2"><span class="text-zinc-100">staging · api 3.8.0-rc2</span><span class="text-emerald-300">● ok</span></div><p class="mt-1 text-zinc-400">77e2b40 · ben.o · 08:57</p></li>
+        <li class="px-4 py-2.5"><div class="flex justify-between gap-2"><span class="text-zinc-100">prod · api 3.7.9</span><span class="text-amber-300">● rolled back</span></div><p class="mt-1 text-zinc-400">0b5f6aa · ben.o · 08:34</p></li>
+        <li class="px-4 py-2.5"><div class="flex justify-between gap-2"><span class="text-zinc-100">prod · worker 1.12.1</span><span class="text-emerald-300">● ok</span></div><p class="mt-1 text-zinc-400">9d1e2c7 · sam.r · 07:50</p></li>
+        <li class="px-4 py-2.5"><div class="flex justify-between gap-2"><span class="text-zinc-100">staging · web 2.15.0-rc1</span><span class="text-rose-300">● failed</span></div><p class="mt-1 text-zinc-400">c3d9e18 · maya.k · 07:12</p></li>
+      </ul>
+    </section>
+
+    <section id="log" class="fade min-w-0 rounded-md border border-zinc-800 bg-zinc-950 lg:col-span-3">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 px-4 py-2.5">
+        <h2 class="mono text-sm"><span class="text-zinc-400">log ›</span> <span id="log-title">#1849 main</span></h2>
+        <button type="button" class="h-11 rounded-md bg-cyan-400 px-4 text-sm font-semibold text-zinc-950 hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">Re-run build</button>
+      </div>
+      <pre id="log-out" class="mono scroll-dark max-h-72 min-h-[12rem] overflow-auto whitespace-pre p-4 text-xs leading-relaxed text-zinc-300"></pre>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  const rows = [...document.querySelectorAll('#build-rows tr')];
+  const out = document.getElementById('log-out');
+  const title = document.getElementById('log-title');
+  const colour = { info: 'text-zinc-300', ok: 'text-emerald-300', err: 'text-rose-300', warn: 'text-amber-300' };
+
+  function fmt(sec) { return Math.floor(sec / 60) + 'm ' + String(sec % 60).padStart(2, '0') + 's'; }
+
+  function renderLog(r) {
+    const d = r.dataset;
+    const base = Date.parse('2026-11-21T' + d.start + ':00Z');
+    const at = s => '[' + new Date(base + s * 1000).toISOString().slice(11, 19) + ']';
+    const dur = +d.dur;
+    const lines = [
+      ['info', 0, 'checkout   ' + d.commit + ' on ' + d.branch],
+      ['info', 6, 'install    pnpm 9.4.0 --frozen-lockfile · cache hit 87%'],
+      ['info', 24, 'lint       0 errors, 2 warnings'],
+      ['info', 40, 'typecheck  tsc --noEmit ok'],
+    ];
+    for (let k = 1; k <= 4; k++) {
+      const t = Math.round(dur * (0.2 + 0.15 * k));
+      const failed = d.status === 'failed' && k === 3;
+      lines.push(failed
+        ? ['err', t, 'test:e2e  shard 3/4 FAIL checkout.spec > promo at 3DS step (retry 2/3)']
+        : ['info', t, 'test:e2e  shard ' + k + '/4 ' + (120 + k * 37) + ' passed']);
+    }
+    if (d.status === 'passed') lines.push(['ok', dur, 'build passed in ' + fmt(dur)]);
+    else if (d.status === 'failed') lines.push(['err', dur, 'build failed: exit 1 at test:e2e · ' + fmt(dur)]);
+    else lines.push(['warn', dur, 'waiting for shard 4/4 ...']);
+    out.innerHTML = lines.map(([lvl, s, msg]) =>
+      '<div><span class="text-zinc-400">' + at(s) + '</span> <span class="' + colour[lvl] + '">' + msg + '</span></div>'
+    ).join('');
+    title.textContent = '#' + d.id + ' ' + d.branch;
+  }
+
+  function select(r) {
+    rows.forEach(x => { x.classList.remove('row-sel'); x.setAttribute('aria-selected', 'false'); });
+    r.classList.add('row-sel');
+    r.setAttribute('aria-selected', 'true');
+    renderLog(r);
+  }
+
+  rows.forEach(r => {
+    r.addEventListener('click', () => select(r));
+    r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(r); } });
+  });
+  renderLog(document.querySelector('tr[aria-selected="true"]'));
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every Map Is a Small Lie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#F6F1E7',
+          ink: '#1F1B16',
+          muted: '#6B6257',
+          rule: '#D9CFBD',
+          vermilion: '#A8402A'
+        },
+        fontFamily: {
+          serif: ['Newsreader', 'Georgia', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { background: #F6F1E7; color: #1F1B16; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise .6s ease-out both; }
+  .rise-2 { animation-delay: .12s; }
+  .rise-3 { animation-delay: .24s; }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+  .dropcap::first-letter { float: left; font-size: 4.6em; line-height: .85; font-weight: 600; color: #A8402A; padding: .08em .12em 0 0; }
+</style>
+</head>
+<body class="font-serif antialiased">
+
+<header class="border-b border-rule">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
+    <a href="#" class="font-serif text-lg font-semibold tracking-tight">The Quarterly Atlas</a>
+    <nav aria-label="Sections" class="hidden gap-6 font-sans text-sm text-muted sm:flex">
+      <a href="#" class="hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Maps</a>
+      <a href="#" class="hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Essays</a>
+      <a href="#" class="hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Atlases</a>
+      <a href="#" class="hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<main class="mx-auto max-w-5xl px-4 sm:px-6">
+
+  <section class="pt-14 sm:pt-20" aria-labelledby="title">
+    <p class="rise font-sans text-xs font-semibold uppercase tracking-[0.18em] text-vermilion">Essay &middot; Cartography</p>
+    <h1 id="title" class="rise rise-2 mt-4 text-5xl font-semibold leading-[1.02] tracking-tight sm:text-7xl">Every map is a small lie, told on purpose</h1>
+    <p class="rise rise-3 mt-6 max-w-prose text-2xl italic leading-relaxed text-muted sm:text-3xl">A flat sheet cannot hold a round world. Choosing which distortion to accept decides who looks big, who looks small, and where north appears to sit.</p>
+    <div class="rise rise-3 mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 border-y border-rule py-3 font-sans text-sm text-muted">
+      <span class="font-semibold text-ink">Ines Varga</span>
+      <span aria-hidden="true">/</span>
+      <span>Maps and borders</span>
+      <span aria-hidden="true">/</span>
+      <time datetime="2026-11-02">2 November 2026</time>
+      <span class="ml-auto">11 min read</span>
+    </div>
+  </section>
+
+  <figure class="mt-14" aria-labelledby="fig-caption">
+    <svg viewBox="0 0 780 220" class="h-auto w-full" role="img" aria-label="Bar comparison: Africa at 30.4 million square kilometres, Greenland at 2.2 million, and Greenland as drawn on a Mercator map at about the size of Africa.">
+      <g font-family="Inter, system-ui, sans-serif" font-size="13" fill="#6B6257">
+        <text x="0" y="38" fill="#1F1B16">Africa, true area</text>
+        <text x="0" y="108" fill="#1F1B16">Greenland, true area</text>
+        <text x="0" y="178" fill="#1F1B16">Greenland, Mercator view</text>
+      </g>
+      <rect x="200" y="20" width="480" height="28" fill="#1F1B16" fill-opacity=".85"/>
+      <rect x="200" y="90" width="35" height="28" fill="#A8402A"/>
+      <rect x="200" y="160" width="480" height="28" fill="none" stroke="#A8402A" stroke-width="2" stroke-dasharray="6 5"/>
+      <g font-family="Inter, system-ui, sans-serif" font-size="13" fill="#6B6257">
+        <text x="692" y="39">30.4 M km²</text>
+        <text x="247" y="109">2.2 M km²</text>
+        <text x="692" y="179">&asymp; Africa</text>
+      </g>
+    </svg>
+    <figcaption id="fig-caption" class="mt-4 max-w-[65ch] font-sans text-sm leading-relaxed text-muted">
+      <span class="font-semibold text-ink">Figure 1.</span> Areas drawn to one scale. On a Mercator sheet, Greenland fills roughly the space of Africa, which is about fourteen times larger.
+    </figcaption>
+  </figure>
+
+  <article class="mt-14 text-[1.2rem] leading-[1.75]">
+    <p class="dropcap max-w-[65ch]">Hold a globe in one hand and a sheet of paper in the other and the problem shows up within a minute. The sphere cannot be unrolled. Every flat map has to tear, stretch or squeeze the surface somewhere, and the mapmaker's real job is to decide where the damage will sit.</p>
+
+    <p class="mt-6 max-w-[65ch]">The Mercator projection, published in 1569 for navigators, solved one problem beautifully. A line of constant compass bearing became a straight line, so a sailor could plot a course with a ruler. The price was area. Land near the poles swells, and generations of schoolchildren learned to picture Greenland as a rival to Africa.</p>
+
+    <h2 class="mt-14 text-3xl font-semibold leading-tight tracking-tight">What a straight line promises</h2>
+
+    <p class="mt-6 max-w-[65ch]">Every projection makes a promise, and every promise is paid for somewhere else. Equal-area projections such as Gall&ndash;Peters keep each region in its true proportion, but they shear the shapes, so a continent can look taller than it is wide. Conformal projections keep angles and local outlines right, which suits navigation, but they inflate areas toward the edges.</p>
+
+    <blockquote class="my-12 max-w-[40ch] border-l-2 border-vermilion pl-6 text-3xl italic leading-relaxed">
+      &ldquo;A projection is never a picture of the world. It is a decision about which things to keep wrong.&rdquo;
+    </blockquote>
+
+    <p class="max-w-[65ch]">Walk through a school atlas and you are reading a set of compromises someone has already made for you. The page carries a choice of centre, a choice of which pole sits at the top, and a choice of which oceans get cut into pieces. Nothing on the sheet says a different decision was available.</p>
+
+    <h2 class="mt-14 text-3xl font-semibold leading-tight tracking-tight">Reading the bend</h2>
+
+    <p class="mt-6 max-w-[65ch]">The honest move is to read the margins first. Lines of latitude that curve away from the equator tell you the projection is conic or azimuthal. Grid lines that stay parallel tell you the sheet is cylindrical. When the graticule is missing altogether, the map is asking for trust it has not earned.</p>
+
+    <p class="mt-6 max-w-[65ch]">Small errors are rarely the danger. A map that keeps city distances within a few percent is useful for nearly everything. The trouble starts when one sheet is asked to do two jobs at once, showing the size of nations to a classroom and the bearing of ships to a harbour pilot.</p>
+
+    <p class="mt-6 max-w-[65ch]">The best cartographers have always said so out loud. They print the projection name in the corner, draw the scale bar in both kilometres and miles, and leave the pole visible. A small lie told in the open is a feature. A lie that hides its own seams is the one people remember.</p>
+  </article>
+
+  <section class="mt-24 border-t border-rule pt-10" aria-labelledby="related">
+    <h2 id="related" class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-muted">Related</h2>
+    <div class="mt-6 grid gap-8 sm:grid-cols-3">
+      <a href="#" class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">
+        <p class="font-sans text-xs uppercase tracking-wider text-vermilion">Atlas notes</p>
+        <h3 class="mt-2 text-xl font-semibold leading-snug group-hover:underline">The coastline that changes with the ruler</h3>
+        <p class="mt-2 font-sans text-sm leading-relaxed text-muted">Why measured borders grow the closer you look.</p>
+      </a>
+      <a href="#" class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">
+        <p class="font-sans text-xs uppercase tracking-wider text-vermilion">Field guide</p>
+        <h3 class="mt-2 text-xl font-semibold leading-snug group-hover:underline">Reading a nautical chart in ten minutes</h3>
+        <p class="mt-2 font-sans text-sm leading-relaxed text-muted">Soundings, datums and the symbols you must not ignore.</p>
+      </a>
+      <a href="#" class="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">
+        <p class="font-sans text-xs uppercase tracking-wider text-vermilion">Archive</p>
+        <h3 class="mt-2 text-xl font-semibold leading-snug group-hover:underline">Three maps that were drawn to be argued with</h3>
+        <p class="mt-2 font-sans text-sm leading-relaxed text-muted">Propaganda sheets, census maps and the cartographic disputes behind them.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<section class="mt-24 bg-ink py-16 text-paper" aria-labelledby="news">
+  <div class="mx-auto grid max-w-5xl gap-8 px-4 sm:px-6 md:grid-cols-2 md:items-end">
+    <div>
+      <h2 id="news" class="text-4xl font-semibold leading-tight tracking-tight">One map worth reading slowly, each month.</h2>
+      <p class="mt-4 max-w-[45ch] font-sans text-base leading-relaxed text-paper/75">Short essays on projections, charts and the borders they draw. No tracking pixels, one email a month.</p>
+    </div>
+    <form class="flex flex-col gap-3 sm:flex-row" onsubmit="event.preventDefault(); this.querySelector('button').textContent = 'Subscribed';">
+      <label class="sr-only" for="email">Email address</label>
+      <input id="email" type="email" required placeholder="you@example.com" class="min-h-[44px] flex-1 rounded-md border border-paper/30 bg-transparent px-4 font-sans text-base text-paper placeholder:text-paper/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">
+      <button type="submit" class="min-h-[44px] rounded-md bg-vermilion px-5 font-sans text-sm font-semibold text-paper hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper active:brightness-95">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<footer class="mx-auto max-w-5xl px-4 py-8 font-sans text-sm text-muted sm:px-6">
+  <p class="max-w-[65ch]">&copy; 2026 The Quarterly Atlas. Figures drawn from published survey data and rendered to one scale.</p>
+</footer>
+
+</body>
+</html>

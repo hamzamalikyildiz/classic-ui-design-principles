@@ -236,6 +236,13 @@ class Character(unittest.TestCase):
         self.assertEqual(rules(run(custom), 'stock-look'), [])
         self.assertEqual(rules(run(display), 'stock-look'), [])
 
+    def test_stock_look_ignores_common_rounded_faces(self):
+        font = '<link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap">'
+        stock = '<a className="bg-violet-600 text-white h-12">Go</a><span className="text-violet-600">x</span>'
+        self.assertTrue(rules(run(font + stock), 'stock-look'))   # rounded kids' face alone does not make it distinctive
+        serif = '<link href="https://fonts.googleapis.com/css2?family=Fraunces&display=swap">'
+        self.assertEqual(rules(run(serif + stock), 'stock-look'), [])
+
     def test_mood_hero_surface_and_color(self):
         sterile = '<section className="p-8 bg-white"><h1 className="text-slate-900">x</h1><a className="bg-violet-600 h-12">Go</a></section>'
         lively = '<section className="p-8 bg-gradient-to-br from-violet-500 to-amber-400"><h1>x</h1></section><p className="text-sky-700">y</p>'

@@ -29,7 +29,7 @@ NOSKILL = ("Do NOT read anything under {skill} or any skills folder.\n"
 
 ap = argparse.ArgumentParser()
 ap.add_argument('work'); ap.add_argument('--skill', required=True); ap.add_argument('--python', required=True)
-ap.add_argument('--briefs', default='r,m'); ap.add_argument('--reps', type=int, default=2); ap.add_argument('--rounds', type=int, default=2)
+ap.add_argument('--briefs', default='r,m'); ap.add_argument('--moods', default=''); ap.add_argument('--reps', type=int, default=2); ap.add_argument('--rounds', type=int, default=2)
 a = ap.parse_args()
 W = pathlib.Path(a.work)
 skill_path = pathlib.Path(a.skill)
@@ -40,6 +40,7 @@ index = []
 for arm in ('skill', 'noskill'):
     (W / 'raw' / arm).mkdir(parents=True, exist_ok=True)
     for mood, b in briefs.items():
+        if a.moods and mood not in a.moods.split(','): continue
         for key in a.briefs.split(','):
             for rep in range(1, a.reps + 1):
                 name = f'{mood}-{key}-{rep}'

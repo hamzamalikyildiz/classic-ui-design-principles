@@ -1,0 +1,44 @@
+{
+ "cift1": {
+  "orig": "cift1",
+  "skill": "B",
+  "mood": "editorial",
+  "brief": "m",
+  "rep": "2"
+ },
+ "cift2": {
+  "orig": "cift3",
+  "skill": "B",
+  "mood": "editorial",
+  "brief": "v",
+  "rep": "1"
+ },
+ "cift3": {
+  "orig": "cift2",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "v",
+  "rep": "2"
+ },
+ "cift4": {
+  "orig": "cift5",
+  "skill": "B",
+  "mood": "editorial",
+  "brief": "r",
+  "rep": "2"
+ },
+ "cift5": {
+  "orig": "cift6",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "m",
+  "rep": "1"
+ },
+ "cift6": {
+  "orig": "cift4",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "r",
+  "rep": "1"
+ }
+}
