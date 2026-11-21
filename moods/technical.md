@@ -6,7 +6,7 @@
 
 Content floor: top bar or page header with actions, 4+ KPIs with deltas, a multi-series chart with legend, a ranked or status list, a table or log stream, one alert/empty/error state shown, a code or detail panel where relevant.
 
-Distinctive, not generic (lost 4/6 blind pairs for looking like a default SaaS template):
+Distinctive, not generic:
 - Pick one identity: an ops console (dark, mono, live status dots, color-coded severity) or a light data-dense product. Do not mix; a light page with grey cards and a blue button reads as a template.
 - Give it a signature element: a live multi-series chart with a threshold line and annotation, a host/service detail side panel, or a severity-coded alert strip. Show the selected row highlighted and its detail panel open at load.
 - Use real names, IDs, timestamps and units in the data (service names, regions, p95 ms, SLO %), never lorem or round placeholder numbers.

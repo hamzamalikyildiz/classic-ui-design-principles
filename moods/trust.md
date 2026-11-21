@@ -7,4 +7,4 @@
 - Semantic colors carry state (red/amber/green) and always come with text or an icon.
 - One signature detail so it is not a template: a ledger-paper tint, a real-looking statement preview, date chips, or a hand-drawn empty state.
 
-Content floor: top bar or page header with actions, 4+ KPIs with deltas, a multi-series chart with legend, a ranked or status list, a table or log stream, one alert/empty/error state shown, a code or detail panel where relevant.
+Content floor: top bar or page header with actions, 4+ KPIs with deltas, a multi-series annotated chart with legend, a ranked or status list, a transactions/schedule table (8+ rows, tabular-nums), one action-needed/overdue alert, an empty/loading state, and a statement or detail panel where relevant.

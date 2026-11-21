@@ -1,4 +1,4 @@
-﻿cift1: A | 3 | Sari-mavi-kirmizi blok dili ve oyun hissi daha ozgun, B tutarli ama mor kurumsal sablona daha yakin | A 8/7/8/8 B 7/7/7/8
+cift1: A | 3 | Sari-mavi-kirmizi blok dili ve oyun hissi daha ozgun, B tutarli ama mor kurumsal sablona daha yakin | A 8/7/8/8 B 7/7/7/8
 cift2: A | 4 | Krem zemin, sakin yesil vurgu ve duzenli tablo ile finans paneli daha rafine, B standart koyu kenar cubuklu SaaS sablonu gibi | A 8/8/8/8 B 6/6/7/6
 cift3: A | 4 | Siyah zemin uzerinde turuncu vurgu ve buyuk editoryal tipografi net bir hiyerarsi kuruyor, B ayni renk dilini parlama efektleri ve jenerik gradyan CTA ile daha sablon hissi veriyor | A 8/8/8/8 B 6/6/7/6
 cift4: A | 3 | Yogun ama amacli bir CI paneli, durum renkleri ve gercek log akisi urunun isini gosteriyor, B temiz ama daha az bilgi iceriyor ve daha genel gorunuyor | A 7/8/7/9 B 6/7/7/5

@@ -14,16 +14,16 @@ MOOD_FILE = {'playful': 'expressive', 'bold': 'expressive', 'trust': 'trust', 't
 COMMON = ("Build one web page.\nBrief: {brief}\n\nOutput: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, "
           "vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. "
           "Save it to {out} and reply with that path only.\n\nDo NOT use the Skill tool.\n")
-SKILL = ("First read {skill}\\SKILL.md and the files it tells you to read (mood {mood}: moods\\{mf}.md, reference\\visual-quality.md; "
-         "reference\\rules.md when fixing findings). Follow it. Do not read anything else in the skill folder (bench\\ is off limits).\n"
-         "When the page is done run (set PYTHONIOENCODING=utf-8):\n"
-         "  \"{py}\" \"{skill}\\scripts\\uitools.py\" audit <file> --mood {mood}\n"
-         "  \"{py}\" \"{skill}\\scripts\\render.py\" <file> --out \"{png}\" --check\n"
+SKILL = ("First read {skill_md} and the files it tells you to read (mood {mood}: {mood_md}, {vq_md}; "
+         "{rules_md} when fixing findings). Follow it. Do not read anything else in the skill folder (bench/ is off limits).\n"
+         "When the page is done run (with PYTHONIOENCODING=utf-8 or python -X utf8):\n"
+         "  \"{py}\" \"{uitools}\" audit <file> --mood {mood}\n"
+         "  \"{py}\" \"{render_py}\" <file> --out \"{png}\" --check\n"
          "Open the PNG with the Read tool. Fix every WARN and anything empty, clipped, overlapping or broken with the smallest edits. "
          "Repeat audit and render after fixes. At most {rounds} fix rounds.\n")
 NOSKILL = ("Do NOT read anything under {skill} or any skills folder.\n"
-           "When the page is done run (set PYTHONIOENCODING=utf-8):\n"
-           "  \"{py}\" \"{skill}\\scripts\\render.py\" <file> --out \"{png}\"\n"
+           "When the page is done run (with PYTHONIOENCODING=utf-8 or python -X utf8):\n"
+           "  \"{py}\" \"{render_py}\" <file> --out \"{png}\"\n"
            "(no --check; use it only to render a screenshot). Open the PNG with the Read tool. "
            "Fix anything empty, clipped, overlapping, broken or ugly with the smallest edits. At most {rounds} fix rounds.\n")
 
@@ -31,7 +31,10 @@ ap = argparse.ArgumentParser()
 ap.add_argument('work'); ap.add_argument('--skill', required=True); ap.add_argument('--python', required=True)
 ap.add_argument('--briefs', default='r,m'); ap.add_argument('--reps', type=int, default=2); ap.add_argument('--rounds', type=int, default=2)
 a = ap.parse_args()
-W = pathlib.Path(a.work); briefs = json.load(open(HERE / 'briefs.json'))
+W = pathlib.Path(a.work)
+skill_path = pathlib.Path(a.skill)
+with open(HERE / 'briefs.json', encoding='utf-8') as fh:
+    briefs = json.load(fh)
 (W / 'tasks').mkdir(parents=True, exist_ok=True); (W / 'shots_gen').mkdir(exist_ok=True)
 index = []
 for arm in ('skill', 'noskill'):
@@ -42,9 +45,22 @@ for arm in ('skill', 'noskill'):
                 name = f'{mood}-{key}-{rep}'
                 out = W / 'raw' / arm / f'{name}.html'; png = W / 'shots_gen' / f'{arm}-{name}.png'
                 text = COMMON.format(brief=b[key], out=out)
-                fmt = dict(skill=a.skill, py=a.python, mood=mood, mf=MOOD_FILE[mood], png=png, rounds=a.rounds)
+                fmt = dict(
+                    skill=str(skill_path),
+                    skill_md=str(skill_path / 'SKILL.md'),
+                    mood_md=str(pathlib.Path('moods') / f'{MOOD_FILE[mood]}.md'),
+                    vq_md=str(pathlib.Path('reference') / 'visual-quality.md'),
+                    rules_md=str(pathlib.Path('reference') / 'rules.md'),
+                    uitools=str(skill_path / 'scripts' / 'uitools.py'),
+                    render_py=str(skill_path / 'scripts' / 'render.py'),
+                    py=a.python,
+                    mood=mood,
+                    png=png,
+                    rounds=a.rounds,
+                )
                 text += (SKILL if arm == 'skill' else NOSKILL).format(**fmt)
                 task = W / 'tasks' / f'{arm}-{name}.txt'; task.write_text(text, encoding='utf-8')
                 index.append({'arm': arm, 'page': name, 'task': str(task)})
-json.dump(index, open(W / 'tasks' / 'index.json', 'w'), indent=1)
+with open(W / 'tasks' / 'index.json', 'w', encoding='utf-8') as fh:
+    json.dump(index, fh, indent=1, ensure_ascii=False)
 print(f'{len(index)} task files in {W / "tasks"}')

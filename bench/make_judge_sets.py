@@ -13,31 +13,36 @@ import argparse, json, pathlib, random, shutil
 HERE = pathlib.Path(__file__).resolve().parent
 ap = argparse.ArgumentParser(); ap.add_argument('work'); ap.add_argument('--seed', type=int, default=7); a = ap.parse_args()
 W = pathlib.Path(a.work)
-pm = json.load(open(W / 'PAIR_MAP_DO_NOT_OPEN.json')); judges = json.load(open(HERE / 'judges.json'))
+with open(W / 'PAIR_MAP_DO_NOT_OPEN.json', encoding='utf-8') as fh:
+    pm = json.load(fh)
+with open(HERE / 'judges.json', encoding='utf-8') as fh:
+    judges = json.load(fh)
 base = (HERE / 'JUDGE_PROMPT.md').read_text(encoding='utf-8')
 (W / 'maps').mkdir(exist_ok=True); (W / 'judge_tasks').mkdir(exist_ok=True)
 for j in judges:
     rnd = random.Random(f'{a.seed}-{j["id"]}')
     ids = list(pm); rnd.shuffle(ids)
+    flags = ([True, False] * len(ids))[:len(ids)]; rnd.shuffle(flags)
     d = W / f'judge_{j["id"]}'
     if d.exists(): shutil.rmtree(d)
     d.mkdir(); mp = {}
-    for n, orig in enumerate(ids, 1):
-        swap = rnd.random() < 0.5
+    for n, (orig, skill_is_a) in enumerate(zip(ids, flags), 1):
+        v = pm[orig]; sk = v['skill']
+        swap = (sk == 'A') != skill_is_a
         src = {'A': 'B', 'B': 'A'} if swap else {'A': 'A', 'B': 'B'}   # new side -> original side
         for side in 'AB':
             for f in sorted((W / 'judge').glob(f'{orig}-{src[side]}-*.png')):
                 shutil.copy(f, d / f'cift{n}-{side}-{f.stem.rsplit("-", 1)[1]}.png')
-        v = pm[orig]; sk = v['skill']
-        mp[f'cift{n}'] = {'orig': orig, 'skill': ({'A': 'B', 'B': 'A'}[sk] if swap else sk),
+        mp[f'cift{n}'] = {'orig': orig, 'skill': ('A' if skill_is_a else 'B'),
                           'mood': v['mood'], 'brief': v['brief'], 'rep': v['rep']}
-    json.dump(mp, open(W / 'maps' / f'MAP_{j["id"]}.json', 'w'), indent=1)
+    with open(W / 'maps' / f'MAP_{j["id"]}.json', 'w', encoding='utf-8') as fh:
+        json.dump(mp, fh, indent=1, ensure_ascii=False)
     out = W / f'judge_{j["id"]}.txt'
     prompt = (f'Sen {j["name"]}, {j["age"]} yaşındasın. {j["persona"]}\n\n'
               f'Sayfaları BU kişinin gözüyle, kendi zevkinle değerlendir.\n\n{base}\n\n'
-              f'Dosyalar: {d}\\ klasöründe. Çift N için A = ciftN-A-1.png, ciftN-A-2.png (varsa -3.png), B = ciftN-B-*.png '
+              f'Dosyalar: {d} klasöründe. Çift N için A = ciftN-A-1.png, ciftN-A-2.png (varsa -3.png), B = ciftN-B-*.png '
               f'(aynı uzun sayfanın üstten alta parçaları). Çift sayısı: {len(ids)}. Her PNG\'yi Read aracıyla aç. '
-              f'{W}\\ klasöründeki başka hiçbir dosyayı (özellikle MAP, KEY, raw, anon, pairs, metrics, maps adlı olanları) ve '
+              f'{W} klasöründeki başka hiçbir dosyayı (özellikle MAP, KEY, raw, anon, pairs, metrics, maps adlı olanları) ve '
               f'skill klasörünü okuma.\n\n'
               f'Sonuçları {out} dosyasına, HER ÇİFTTEN SONRA o satırı ekleyerek yaz (bağlam kaybolursa iş kaybolmasın). '
               f'Satır formatı aynen: `cift3: A | 4 | tek cümle gerekçe | A 8/8/7/9 B 7/6/8/7` '

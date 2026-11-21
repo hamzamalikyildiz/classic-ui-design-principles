@@ -1,11 +1,11 @@
 Build one web page.
 Brief: Patient appointments dashboard for a small clinic: today's schedule, no-show rate, waiting list, reminders sent and a day/week toggle.
 
-Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to C:\Users\hamza\AppData\Local\Temp\benchrun3\raw\skill\trust-m-2.html and reply with that path only.
+Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to <WORKDIR>\raw\skill\trust-m-2.html and reply with that path only.
 
 Do NOT use the Skill tool.
-First read C:\Users\hamza\OneDrive\Desktop\Mükemmel Skill\SKILL.md and the files it tells you to read (mood trust: moods\trust.md, reference\visual-quality.md; reference\rules.md when fixing findings). Follow it. Do not read anything else in the skill folder (bench\ is off limits).
+First read <SKILL_DIR>\SKILL.md and the files it tells you to read (mood trust: moods\trust.md, reference\visual-quality.md; reference\rules.md when fixing findings). Follow it. Do not read anything else in the skill folder (bench\ is off limits).
 When the page is done run (set PYTHONIOENCODING=utf-8):
-  "C:\Users\hamza\AppData\Local\Programs\Python\Python312\python.exe" "C:\Users\hamza\OneDrive\Desktop\Mükemmel Skill\scripts\uitools.py" audit <file> --mood trust
-  "C:\Users\hamza\AppData\Local\Programs\Python\Python312\python.exe" "C:\Users\hamza\OneDrive\Desktop\Mükemmel Skill\scripts\render.py" <file> --out "C:\Users\hamza\AppData\Local\Temp\benchrun3\shots_gen\skill-trust-m-2.png" --check
+  "<PYTHON>" "<SKILL_DIR>\scripts\uitools.py" audit <file> --mood trust
+  "<PYTHON>" "<SKILL_DIR>\scripts\render.py" <file> --out "<WORKDIR>\shots_gen\skill-trust-m-2.png" --check
 Open the PNG with the Read tool. Fix every WARN and anything empty, clipped, overlapping or broken with the smallest edits. Repeat audit and render after fixes. At most 2 fix rounds.

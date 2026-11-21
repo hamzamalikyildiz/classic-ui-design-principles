@@ -4,7 +4,10 @@ import re, sys, argparse, colorsys, pathlib
 
 def hex2rgb(h):
     h = h.strip().lstrip('#')
-    if len(h) == 3: h = ''.join(c*2 for c in h)
+    if len(h) == 3:
+        h = ''.join(c * 2 for c in h)
+    if len(h) != 6 or not re.fullmatch(r'[0-9a-fA-F]{6}', h):
+        raise ValueError(f"invalid hex color: #{h}")
     return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 
 def rgb2hex(r):
@@ -36,18 +39,33 @@ def fix_color(fg, bg, target):
 def cmd_contrast(a):
     name = a.fg
     a.fg = tw_hex(a.fg, {}) or a.fg; a.bg = tw_hex(a.bg, {}) or a.bg
+    try:
+        hex2rgb(a.fg)
+        hex2rgb(a.bg)
+    except ValueError as e:
+        sys.exit(f"error: {e}")
     r = ratio(a.fg, a.bg)
     out = f"{a.fg} on {a.bg}: {r:.2f}:1 | AA text(4.5): {'PASS' if r>=4.5 else 'FAIL'} | AA large/UI(3.0): {'PASS' if r>=3 else 'FAIL'}"
     print(out)
     if r < a.target:
         tw = tw_same_hue(name, a.bg, a.target)
-        print(f"  fix -> {tw + ' / ' if tw else ''}{fix_color(a.fg, a.bg, a.target)} (>= {a.target}:1, same hue)")
+        fixed = fix_color(a.fg, a.bg, a.target)
+        note = f">= {a.target}:1" if ratio(fixed, a.bg) >= a.target else "best possible"
+        print(f"  fix -> {tw + ' / ' if tw else ''}{fixed} ({note}, same hue)")
 
 RATIOS = {'minor-second':1.067,'major-second':1.125,'minor-third':1.2,'major-third':1.25,
           'perfect-fourth':1.333,'augmented-fourth':1.414,'perfect-fifth':1.5,'golden':1.618}
 
 def cmd_scale(a):
-    rt = RATIOS.get(a.ratio) or float(a.ratio)
+    if a.ratio in RATIOS:
+        rt = RATIOS[a.ratio]
+    else:
+        try:
+            rt = float(a.ratio)
+        except ValueError:
+            sys.exit(f"error: unknown ratio: {a.ratio}")
+    if not (0 < rt < float('inf')):
+        sys.exit(f"error: --ratio must be > 0 (got {rt})")
     names = ['xs','sm','base','lg','xl','2xl','3xl','4xl','5xl']
     steps = range(-2, 7)
     print(f"/* type scale base={a.base}px ratio={rt} */\n:root {{")
@@ -70,6 +88,8 @@ def cmd_radius(a):
     if inner == 0: print("  note: padding >= radius, inner element should be square (0) or use small 2-4px")
 
 def cmd_snap(a):
+    if a.grid <= 0:
+        sys.exit(f"error: --grid must be > 0 (got {a.grid})")
     for v in a.values:
         g = a.grid
         print(f"{v}px -> {round(v/g)*g}px (grid {g})")
@@ -108,7 +128,7 @@ HEX = r'#(?:[0-9a-fA-F]{3}){1,2}\b'
 def tw_hex(name, tokens):
     """Resolve 'slate-400', 'white', '[#abc]' or a shadcn token like 'primary' to hex."""
     name = name.split('/')[0]
-    m = re.fullmatch(r'\[(#[0-9a-fA-F]{3,6})\]', name)
+    m = re.fullmatch(r'\[(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\]', name)
     if m:
         return m.group(1)
     if re.fullmatch(HEX, name):
@@ -150,7 +170,75 @@ def blend(top, bottom, a):
     return rgb2hex([a * x + (1 - a) * y for x, y in zip(t, b)])
 
 
-def backdrop(chain, variant, tokens, page_bg):
+def is_gradient(c):
+    return c.startswith(('bg-gradient', 'bg-linear-', 'bg-radial', 'bg-conic'))
+
+
+def strip_css_comments(txt):
+    """Replace /* ... */ CSS comments with spaces, preserving newline count."""
+    return re.sub(r'/\*.*?\*/', lambda m: re.sub(r'[^\n]', ' ', m.group(0)), txt, flags=re.S)
+
+
+def _parse_solid_bg(val, tokens=None):
+    val = re.sub(r'\s*!important\s*$', '', val.strip(), flags=re.I).strip()
+    if not val or re.search(r'(?:gradient|url)\s*\(', val, re.I):
+        return None
+    if re.fullmatch(HEX, val):
+        return val
+    if val.lower() in NAMED:
+        return NAMED[val.lower()]
+    m = re.fullmatch(r'var\(\s*--([\w-]+)(?:\s*,\s*([^)]+))?\s*\)', val)
+    if m:
+        if tokens and m.group(1) in tokens:
+            return tokens[m.group(1)]
+        if m.group(2):
+            return _parse_solid_bg(m.group(2), tokens)
+    return None
+
+
+def inline_bg(attrs):
+    """Return solid hex from inline style='background...', 'GRADIENT' for gradients/urls, or None."""
+    m = re.search(r"""(?<![\w-])style\s*=\s*(?:"([^"]*)"|'([^']*)')""", attrs, re.I)
+    if not m:
+        return None
+    style = strip_css_comments(m.group(1) or m.group(2) or '')
+    found = None
+    for dm in re.finditer(r'(?<![\w-])background(?:-color)?\s*:\s*([^;]+)', style, re.I):
+        val = dm.group(1).strip()
+        if re.search(r'(?:gradient|url)\s*\(', val, re.I):
+            return 'GRADIENT'
+        bg = _parse_solid_bg(val)
+        if bg:
+            found = bg
+    return found
+
+
+def css_page_bg(txt, tokens=None):
+    """Resolve solid background color from body (preferred) or html rules in <style> or CSS files."""
+    styles = re.findall(r'<style\b[^>]*>(.*?)</style>', txt, re.S | re.I)
+    if styles:
+        css_src = '\n'.join(styles)
+    elif re.search(r'<(?:html|head|body|div|main|section|p|span)\b', txt, re.I):
+        return None
+    else:
+        css_src = txt
+    css_src = strip_css_comments(css_src)
+    body_bg = html_bg = None
+    for m in re.finditer(r'(?:^|(?<=[};{}]))\s*([^{};]+?)\s*\{([^{}]*)\}', css_src):
+        sels = {s.strip().lower() for s in m.group(1).split(',')}
+        if not (sels & {'body', 'html'}):
+            continue
+        for dm in re.finditer(r'(?<![\w-])background(?:-color)?\s*:\s*([^;]+)', m.group(2), re.I):
+            bg = _parse_solid_bg(dm.group(1), tokens)
+            if bg:
+                if 'body' in sels:
+                    body_bg = bg
+                if 'html' in sels:
+                    html_bg = bg
+    return body_bg or html_bg
+
+
+def backdrop(chain, variant, tokens, page_bg, styles=None):
     """Effective background behind an element: (hex, label) or None if unknown.
 
     Walks from the element outward, compositing semi-transparent layers (bg-white/10)
@@ -158,10 +246,18 @@ def backdrop(chain, variant, tokens, page_bg):
     base class. Gradients, images and unresolvable colors make the backdrop unknown.
     """
     layers = []
-    for cls in chain:
+    for idx, cls in enumerate(chain):
+        has_var_bg = bool(variant and pick(cls, 'bg', variant))
+        if styles and idx < len(styles) and not has_var_bg:
+            ib = inline_bg(styles[idx])
+            if ib == 'GRADIENT':
+                return None
+            if ib:
+                layers.append((ib, 1.0, f"[{ib}]"))
+                break
         b = (pick(cls, 'bg', variant) if variant else None) or pick(cls, 'bg')
-        grad = any(c.startswith('bg-gradient') or c.startswith('bg-[url') for c in cls if ':' not in c)
-        if variant and pick(cls, 'bg', variant):
+        grad = any(is_gradient(c) or c.startswith('bg-[url') for c in cls if ':' not in c)
+        if has_var_bg:
             grad = False  # dark: color overrides a light gradient
         if grad:
             return None
@@ -208,21 +304,54 @@ def hsl2hex(h, s, l):
     return rgb2hex([r * 255, g * 255, b * 255])
 
 
+def _strip_css_blocks(txt, selector_pat):
+    out, i = [], 0
+    for m in re.finditer(selector_pat + r'\s*\{', txt):
+        if m.start() < i:
+            continue
+        out.append(txt[i:m.start()])
+        j, depth = m.end(), 1
+        while j < len(txt) and depth:
+            depth += (txt[j] == '{') - (txt[j] == '}')
+            j += 1
+        i = j
+    out.append(txt[i:])
+    return ''.join(out)
+
+
 def tailwind_config_colors(txt):
     """Custom colors from an inline `tailwind.config = {... colors: {ink:'#123', brand:{500:'#abc'}}}` and v4 `@theme { --color-x: #abc }`."""
     out = {}
-    for m in re.finditer(r'--color-([\w-]+)\s*:\s*(' + HEX + r')', txt):
+    light_css = _strip_css_blocks(strip_css_comments(txt), r'\.dark')
+    for m in re.finditer(r'--color-([\w-]+)\s*:\s*(' + HEX + r')', light_css):
         out[m.group(1)] = m.group(2)
     for m in re.finditer(r'\bcolors\s*:\s*\{', txt):
-        i, depth, stack, j = m.end(), 1, [], m.end()
-        body = []
+        i, depth, j = m.end(), 1, m.end()
         while j < len(txt) and depth:
             ch = txt[j]
+            if txt[j:j+2] == '//':
+                nl = txt.find('\n', j)
+                j = len(txt) if nl == -1 else nl + 1
+                continue
+            if txt[j:j+2] == '/*':
+                end = txt.find('*/', j + 2)
+                j = len(txt) if end == -1 else end + 2
+                continue
+            if ch in ('"', "'", '`'):
+                q = ch
+                j += 1
+                while j < len(txt) and txt[j] != q:
+                    if txt[j] == '\\':
+                        j += 1
+                    j += 1
+                j += 1
+                continue
             depth += (ch == '{') - (ch == '}')
             j += 1
         body = txt[i:j - 1]
-        path, pos = [], 0
-        for t in re.finditer(r"""(?P<key>['"]?[\w-]+['"]?)\s*:\s*(?:(?P<open>\{)|['"](?P<val>#[0-9a-fA-F]{3,8})['"])|(?P<close>\})""", body):
+        path = []
+        pat = r"""//[^\n]*|/\*[\s\S]*?\*/|(?P<key>['"]?[\w-]+['"]?)\s*:\s*(?:(?P<open>\{)|['"](?P<val>#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}))['"])|(?P<close>\})"""
+        for t in re.finditer(pat, body):
             if t.group('close'):
                 if path:
                     path.pop()
@@ -231,16 +360,17 @@ def tailwind_config_colors(txt):
             elif t.group('val'):
                 name = '-'.join(path + [t.group('key').strip('\'"')])
                 name = name[:-8] if name.endswith('-DEFAULT') else name
-                out[name] = t.group('val')[:7]
+                out[name] = t.group('val')
     return out
 
 
 def css_tokens(texts, selector=r':root'):
     """CSS custom properties from `selector` blocks (shadcn v3 'H S% L%', hsl() or hex) -> {name: hex}."""
     tok = {}
-    for txt in texts:
+    for raw in texts:
+        txt = strip_css_comments(raw)
         if selector == r':root':
-            tok.update(tailwind_config_colors(txt))
+            tok.update(tailwind_config_colors(raw))
         for blk in re.findall(selector + r'\s*\{([^}]*)\}', txt):
             for name, val in re.findall(r'--([\w-]+)\s*:\s*([^;]+);', blk):
                 val = val.strip()
@@ -255,26 +385,39 @@ def css_tokens(texts, selector=r':root'):
 
 SPACE_PROPS = r'(?:margin|padding|gap|row-gap|column-gap|inset)(?:-[a-z]+)?'
 TW_SPACE = re.compile(r'(?<![\w:\[-])-?(?:p|px|py|pt|pr|pb|pl|ps|pe|m|mx|my|mt|mr|mb|ml|ms|me|gap|gap-x|gap-y|space-x|space-y|inset)-(\[[^\]]+\]|[\d.]+)(?![\w.])')
-TAG = re.compile(r"""<(/?)([A-Za-z][\w.]*)((?:[^>{}"']|"[^"]*"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})*?)(/?)>""")
+TAG = re.compile(r"""(</|(?<![A-Za-z0-9_$])<)([A-Za-z][\w.]*)((?:[^>{}"']|"[^"]*"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})*?)(/?)>""")
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'}
 READABLE_MAXW = re.compile(r'(?<![\w:-])max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[4-7]\d|80)ch\])(?![\w-])|max-width\s*:\s*(?:[4-7]\d|80)ch')
 BIG_TEXT = {'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl', 'text-9xl'}
 BOLD = {'font-semibold', 'font-bold', 'font-extrabold', 'font-black'}
 BLOCK = re.compile(r'^(?:section|article|form|dialog|header|main|aside|Card|DialogContent|SheetContent|AlertDialogContent)$')
 BG_NON_COLOR = re.compile(r'(?:auto|cover|contain|fixed|local|scroll|center|top|bottom|left|right|(?:left|right)-(?:top|bottom)|'
-                          r'repeat|no-repeat|repeat-[xy]|repeat-round|repeat-space|none|clip-\w+|origin-\w+|blend-[\w-]+|opacity-\d+)')
+                          r'repeat|no-repeat|repeat-[xy]|repeat-round|repeat-space|none|clip-\w+|origin-\w+|blend-[\w-]+|opacity-\d+|'
+                          r'\[length:[^\]]+\]|\[position:[^\]]+\]|size-[\w-]+)')
 BG_PASSTHROUGH = {'transparent', 'inherit', 'current'}
-TEXT_NON_COLOR = re.compile(r'(?:xs|sm|base|lg|\d?xl|left|right|center|justify|start|end|wrap|nowrap|balance|pretty|ellipsis|clip|\[\d.*\])')
+TEXT_NON_COLOR = re.compile(r'(?:xs|sm|base|lg|\d?xl|left|right|center|justify|start|end|wrap|nowrap|balance|pretty|ellipsis|clip|'
+                            r'\[\d.*\]|opacity-\d+|shadow(?:-[\w-]+)?|\[length:[^\]]+\])')
+
+
+def mask_non_markup(txt):
+    """Replace HTML/JSX comments, <script>, and <style> blocks with spaces while preserving newlines and indices."""
+    pat = r'<!--.*?-->|\{/\*.*?\*/\}|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>'
+    return re.sub(pat, lambda m: re.sub(r'[^\n]', ' ', m.group(0)), txt, flags=re.S | re.I)
 
 
 def classes(attrs):
-    m = re.search(r"""class(?:Name)?\s*=\s*("[^"]*"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})""", attrs)
+    m = re.search(r"""(?<![\w-])class(?:Name)?\s*=\s*("[^"]*"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})""", attrs)
     if not m:
         return []
     v = m.group(1)
     if v.startswith('{'):
-        parts = re.findall(r'"([^"]*)"|\'([^\']*)\'|`([^`]*)`', v)
-        return ' '.join(''.join(p) for p in parts).split()
+        parts = []
+        for dq, sq, tpl in re.findall(r'"([^"]*)"|\'([^\']*)\'|`([^`]*)`', v):
+            if tpl:
+                parts.append(re.sub(r'\$\{[^{}]*\}', ' ', tpl))
+            else:
+                parts.append(dq or sq)
+        return ' '.join(parts).split()
     return v[1:-1].split()
 
 
@@ -283,9 +426,9 @@ def walk(txt):
     stack = []
     for m in TAG.finditer(txt):
         close, tag, attrs, selfclose = m.groups()
-        if close:
+        if close == '</':
             for i in range(len(stack) - 1, -1, -1):
-                if stack[i][0] == tag:
+                if stack[i][0].lower() == tag.lower():
                     del stack[i:]
                     break
             continue
@@ -364,12 +507,23 @@ def height_px(cls):
 DARK_NEUTRAL = re.compile(r'(?:slate|gray|zinc|neutral|stone)-(?:[6-9]00|950)|black')
 
 
-def is_dark_page(txt):
+def is_dark_page(txt, tokens=None):
     """True when the page base is a dark neutral (body/html/main/root wrapper), so dark neutral buttons are surfaces, not CTAs."""
-    for m in re.finditer(r'<(?:body|html|main)\b[^>]*>', txt):
-        if re.search(r'(?<![\w:-])bg-(?:(?:slate|gray|zinc|neutral|stone)-(?:9\d0)|black)(?![\w-])', m.group(0)):
+    tokens = tokens or {}
+    cbg = css_page_bg(txt, tokens)
+    if cbg and lum(cbg) < 0.18:
+        return True
+    for m in re.finditer(r'<(?:body|html|main)\b([^>]*)>', mask_non_markup(txt), re.I):
+        attrs = m.group(1)
+        ib = inline_bg(attrs)
+        if ib and ib != 'GRADIENT' and lum(ib) < 0.18:
             return True
-    return bool(re.search(r'(?:body|html)\s*\{[^}]*background(?:-color)?\s*:\s*#(?:0|1)[0-9a-fA-F]{2,5}\b', txt))
+        b = pick(classes(attrs), 'bg')
+        if b and b not in BG_PASSTHROUGH:
+            h = tw_hex(b, tokens)
+            if h and lum(h) < 0.18:
+                return True
+    return False
 
 
 def is_solid_cta(tag, attrs, cls, dark_page=False):
@@ -378,8 +532,8 @@ def is_solid_cta(tag, attrs, cls, dark_page=False):
         if dark_page and bg and DARK_NEUTRAL.fullmatch(bg):
             return False  # dark neutral on a dark page is a secondary surface
         return bool(bg) and (bg in ('primary', 'destructive') or
-                             bool(re.fullmatch(r'\[#[0-9a-fA-F]{3,6}\]', bg)) or
-                             bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg))) or any(c.startswith('bg-gradient') for c in cls)
+                             bool(re.fullmatch(r'\[(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\]', bg)) or
+                             bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg))) or any(is_gradient(c) for c in cls)
     if tag == 'Button':
         var = re.search(r"""variant\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*["']([^"']*)["']\s*\})""", attrs)
         v = ''.join(g or '' for g in var.groups()) if var else 'default'
@@ -387,10 +541,50 @@ def is_solid_cta(tag, attrs, cls, dark_page=False):
     return False
 
 
-def character_checks(txt, nodes, mood):
+GENERIC_FONTS = {
+    'inherit', 'initial', 'unset', 'sans-serif', 'serif', 'monospace', 'cursive', 'fantasy',
+    'system-ui', 'ui-sans-serif', 'ui-serif', 'ui-monospace', 'ui-rounded',
+    '-apple-system', 'blinkmacsystemfont', 'segoe ui',
+}
+NEUTRAL_SANS = {'Inter', 'Roboto', 'Open Sans', 'Poppins', 'Lato', 'Montserrat', 'DM Sans', 'Nunito'}
+NEUTRAL_MONO = {'JetBrains Mono', 'Fira Code', 'IBM Plex Mono', 'Source Code Pro', 'Roboto Mono', 'Geist Mono'}
+
+
+def font_families(txt):
+    """Extract declared/imported font families, ignoring CSS generic families and var()."""
+    fams = set()
+    for f in re.findall(r'font-family\s*:\s*([^;}\n]+)', txt):
+        fam = f.split(',')[0].strip().strip('\'"')
+        if fam and not fam.startswith('var(') and fam.lower() not in GENERIC_FONTS:
+            fams.add(fam)
+    for url in re.findall(r'fonts\.googleapis\.com/[^"\'\s)]+', txt):
+        for raw in re.findall(r'family=([^&"\']+)', url):
+            for chunk in raw.split('|'):
+                fam = chunk.split(':')[0].replace('+', ' ').strip()
+                if fam and fam.lower() not in GENERIC_FONTS:
+                    fams.add(fam)
+    for imp in re.findall(r'import\s*\{([^}]+)\}\s*from\s*["\']next/font/google["\']', txt):
+        for x in imp.split(','):
+            fam = x.split(' as ')[0].strip().replace('_', ' ')
+            if fam and fam.lower() not in GENERIC_FONTS:
+                fams.add(fam)
+    return fams
+
+
+def is_chromatic(h):
+    """True if hex color has noticeable chroma (excludes black, white, greys, and warm off-whites)."""
+    try:
+        r, g, b = [v / 255 for v in hex2rgb(h)]
+    except ValueError:
+        return False
+    _, _, s = colorsys.rgb_to_hls(r, g, b)
+    return (max(r, g, b) - min(r, g, b)) >= 0.18 and s >= 0.25
+
+
+def character_checks(txt, nodes, mood, tokens=None):
     """Checks for the 'sterile' failure mode: correct but grey, flat and boxed-in."""
     out = []
-    dark = is_dark_page(txt)
+    dark = is_dark_page(txt, tokens)
     children = {}
     for n in nodes:
         anc = n[3]
@@ -466,8 +660,8 @@ def character_checks(txt, nodes, mood):
     if stock:
         top, n = max(((h, stock.count(h)) for h in set(stock)), key=lambda x: x[1])
         custom = re.search(r'colors\s*:\s*\{|--color-[\w-]+\s*:|:root\s*\{[^}]*--[\w-]*(?:accent|brand|primary|ink|paper)', txt)
-        fams = {f.replace('+', ' ') for f in re.findall(r'family=([A-Za-z0-9+]+)', txt)}
-        neutral_fonts = not fams or fams <= {'Inter', 'Roboto', 'Open Sans', 'Poppins', 'Lato', 'Montserrat', 'DM Sans', 'Nunito'}
+        fams = font_families(txt)
+        neutral_fonts = not fams or fams <= (NEUTRAL_SANS | NEUTRAL_MONO)
         if top in ('blue', 'indigo', 'violet', 'purple', 'fuchsia') and not custom and neutral_fonts:
             out.append(('INFO', 'stock-look', f"accent is stock Tailwind {top} with no custom palette and only neutral fonts; "
                         "derive the palette from the subject (reference/visual-quality.md) and add a display or serif face"))
@@ -475,6 +669,13 @@ def character_checks(txt, nodes, mood):
     # mood: color presence and hero surface
     if mood in ('playful', 'bold', 'trust'):
         hues = {h for h in HUE_CLASS.findall(txt) if h in TW and h not in NEUTRALS}
+        if tokens:
+            for tok_name in re.findall(r'(?<![\w-])(?:[a-z]+:)*(?:bg|text|border|from|to)-([\w-]+)(?![\w-])', txt):
+                if tok_name in tokens and is_chromatic(tokens[tok_name]):
+                    hues.add(tok_name)
+        for hx in re.findall(r'(?<![\w-])(?:[a-z]+:)*bg-\[(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\]', txt):
+            if is_chromatic(hx):
+                hues.add(hx.lower())
         need = 3 if mood in ('playful', 'bold') else 1
         if len(hues) < need:
             out.append(('INFO', 'low-color', f"{len(hues)} hue(s) {sorted(hues)} for a {mood} mood; aim for >= {need} (accent + supporting hues)"))
@@ -482,10 +683,12 @@ def character_checks(txt, nodes, mood):
         for tag, attrs, cls, anc, s, e in nodes:
             if tag in ('button', 'a', 'Button', 'span'):
                 continue
-            big = (padding_px(cls) or 0) >= 16 or any(re.match(r'p[xy]?-(?:[5-9]|1\d|2\d)$', c) for c in cls)
-            sat = any(c.startswith('bg-gradient') for c in cls) or any(
+            big = (padding_px(cls) or 0) >= 16 or any(re.match(r'p[xybt]?-(?:[5-9]|[1-9]\d)$', c) for c in cls)
+            b = pick(cls, 'bg')
+            b_hex = tw_hex(b, tokens or {}) if b and b not in BG_PASSTHROUGH else None
+            sat = any(is_gradient(c) for c in cls) or any(
                 (m := re.fullmatch(r'bg-([a-z]+)-(?:[5-9]00|950)', c)) and m.group(1) in TW and m.group(1) not in NEUTRALS
-                for c in cls)
+                for c in cls) or (bool(b_hex) and (b.startswith('[#') or (tokens and b.split('/')[0] in tokens)) and is_chromatic(b_hex))
             dark_band = (mood == 'bold' and tag in ('section', 'header', 'div') and
                          any(re.fullmatch(r'bg-(?:(?:slate|gray|zinc|neutral|stone)-(?:900|950)|black)', c) for c in cls) and
                          any(re.fullmatch(r'p[ty]-(?:1[6-9]|[2-9]\d)', c) for c in cls))
@@ -517,7 +720,7 @@ def _px(v, unit):
 def character_floor(txt, nodes, mood):
     out = []
     # content that needs JS to appear
-    if re.search(r'\bopacity-0\b', txt) or re.search(r'\.(?:reveal|fade-in|hidden-on-load)[^{]*\{[^}]*opacity\s*:\s*0', txt):
+    if re.search(r'(?<![:\w-])opacity-0\b', txt) or re.search(r'\.(?:reveal|fade-in|hidden-on-load)[^{]*\{[^}]*opacity\s*:\s*0', txt):
         if not re.search(r'<noscript|animation-fill-mode|animation:[^;}]*(?:both|forwards)', txt):
             out.append(('WARN', 'reveal-needs-js', "content starts at opacity 0 and relies on a script to appear; "
                         "it renders blank without JS or in a screenshot. Keep content visible or use a CSS animation with fill-mode both"))
@@ -546,8 +749,8 @@ def character_floor(txt, nodes, mood):
         if not sizes or max(sizes) < 72:
             out.append(('WARN', 'bold-headline-size', "no headline at 72px+ (text-7xl or clamp up to 6-7rem); "
                         "Bold needs one oversized display headline"))
-        fams = {f.replace('+', ' ') for f in re.findall(r'family=([A-Za-z0-9+]+)', txt)}
-        if fams and fams <= {'Inter', 'Roboto', 'Open Sans', 'Poppins', 'Lato', 'Montserrat', 'Nunito', 'DM Sans'}:
+        fams = font_families(txt)
+        if fams and fams <= NEUTRAL_SANS:
             out.append(('INFO', 'bold-font-default', "only neutral body fonts loaded; add a display face "
                         "(Archivo Black, Anton, Space Grotesk, Sora, Bebas Neue) for the headline"))
     return out
@@ -574,9 +777,12 @@ def mood_specific(txt, nodes, mood):
         # reading column centered while the headline is left-aligned: left edges drift apart
         cols = [n for n in nodes if any(NARROW.match(c) for c in n[2]) and 'mx-auto' in n[2]]
         if cols:
+            col_starts = {n[4] for n in cols}
             drift = []
             for tag, attrs, cls, anc, s, e in nodes:
                 if tag == 'h1':
+                    if s in col_starts or any(a[3] in col_starts for a in anc) or any(any(a[3] == s for a in col[3]) for col in cols):
+                        continue
                     chain = [cls] + [a[2] for a in anc]
                     if not any('text-center' in c for c in chain):
                         drift.append(line_of(txt, s))
@@ -589,7 +795,7 @@ def mood_specific(txt, nodes, mood):
                  and any(c in ('text-lg', 'text-xl', 'text-2xl', 'text-base') for c in cls)]
         if tight:
             out.append(('WARN', 'editorial-leading', f"{len(tight)} long-form text element(s) with tight leading (lines {tight[:6]}); body 1.65-1.8 (leading-relaxed/loose), quotes >= 1.4"))
-        if not re.search(r'font-serif|font-\[|font-family\s*:[^;]*(?:serif|Merriweather|Lora|Playfair|Source Serif|Fraunces)', txt, re.I):
+        if not re.search(r'font-serif|(?:font-family\s*:[^;}]*|font-\[[^\]]*)(?:(?<!sans-)\bserif\b|Merriweather|Lora|Playfair|Source Serif|Source_Serif|Fraunces)', txt, re.I):
             out.append(('INFO', 'no-serif', "no serif face found; editorial mood usually pairs a serif display (or body) with a sans"))
     elif mood == 'technical':
         soft = [line_of(txt, s) for tag, attrs, cls, anc, s, e in nodes
@@ -610,6 +816,7 @@ def line_of(txt, pos):
 
 def audit(path, grid, tokens, dark_tokens=None, mood=None):
     txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
+    masked = mask_non_markup(txt)
     issues = []
 
     def add(sev, rule, msg):
@@ -633,7 +840,7 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
         for px in re.findall(r'(-?\d+(?:\.\d+)?)px', m.group(1)):
             grid_check(f"L{line_of(txt, m.start())} {m.group(0).strip()[:50]}", float(px))
     # spacing: Tailwind
-    for m in TW_SPACE.finditer(txt):
+    for m in TW_SPACE.finditer(masked):
         val = m.group(1)
         if val.startswith('['):
             px = re.fullmatch(r'\[(-?\d+(?:\.\d+)?)px\]', val)
@@ -649,16 +856,7 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
                             f"fine inside dense controls, prefer {grid}px multiples for layout spacing")
 
     # fonts
-    fams = set()
-    for f in re.findall(r'font-family\s*:\s*([^;}\n]+)', txt):
-        fam = f.split(',')[0].strip().strip('\'"')
-        if not fam.startswith('var(') and fam not in ('inherit', 'initial', 'unset'):
-            fams.add(fam)
-    for url in re.findall(r'fonts\.googleapis\.com/[^"\'\s)]+', txt):
-        for fam in re.findall(r'family=([^&:"\']+)', url):
-            fams.add(fam.replace('+', ' '))
-    for imp in re.findall(r'import\s*\{([^}]+)\}\s*from\s*["\']next/font/google["\']', txt):
-        fams.update(x.strip() for x in imp.split(',') if x.strip())
+    fams = font_families(txt)
     if len(fams) > 2:
         add('FAIL', 'max-2-fonts', f"{len(fams)} font families: {sorted(fams)}")
 
@@ -673,11 +871,11 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
                 add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
                     f"L{line_of(txt, blk.start())} {fg.group(1)} on {bg.group(1)} = {r:.2f}:1 (fix -> {fix_color(fg.group(1), bg.group(1), 4.5)})")
 
-    nodes = list(walk(txt))
+    nodes = list(walk(masked))
 
     # contrast: Tailwind palette, arbitrary hex and shadcn tokens; background composited from ancestors
     seen = set()
-    page = 'background' if 'background' in tokens else 'white'
+    page = 'background' if 'background' in tokens else (f'[{cbg}]' if (cbg := css_page_bg(txt, tokens)) else 'white')
     passes = [('', '', tokens, page, None), ('dark:', 'dark:', tokens, None, None)]
     if dark_tokens:  # shadcn .dark theme: same classes re-evaluated with dark token values
         passes.append(('', '[.dark] ', {**tokens, **dark_tokens}, 'background' if 'background' in dark_tokens else None, dark_tokens))
@@ -686,11 +884,13 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
             fg = pick(cls, 'text', variant)
             if not fg:
                 continue
-            res = backdrop([cls] + [a[2] for a in reversed(anc)], variant, tokens, page_bg)
+            res = backdrop([cls] + [a[2] for a in reversed(anc)], variant, tokens, page_bg,
+                           [attrs] + [a[1] for a in reversed(anc)])
             if res is None:
                 continue  # gradient, image or unknown color behind the text
             bh, bg = res
-            if only is not None and fg.split('/')[0] not in only and bg.split('/')[0] not in only:
+            bg_names = {part.removeprefix('bg-').split('/')[0] for part in bg.split(' over ')}
+            if only is not None and fg.split('/')[0] not in only and not (bg_names & set(only)):
                 continue  # theme-independent pair, already checked in the light pass
             fh = tw_hex(fg, tokens)
             if not fh:
@@ -720,7 +920,7 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
             continue
         g = None
         for c in [cls] + [a[2] for a in reversed(anc)]:
-            if any(x.startswith('bg-gradient') for x in c if ':' not in x):
+            if any(is_gradient(x) for x in c if ':' not in x):
                 g = c
                 break
             b = pick(c, 'bg')
@@ -748,7 +948,7 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
                     f"L{line_of(txt, s)} text-{fg} on gradient stop {x} = {r:.2f}:1 (need {need:g}); text must pass against every stop, darken that stop within its hue")
 
     # single primary CTA per block: raw buttons with solid bg, and shadcn <Button> default/destructive
-    dark_page = is_dark_page(txt)
+    dark_page = is_dark_page(txt, tokens)
     counts = {}
     for tag, attrs, cls, anc, s, e in nodes:
         if not is_solid_cta(tag, attrs, cls, dark_page):
@@ -772,13 +972,13 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
             add('INFO', 'nested-radius', f"L{line_of(txt, s)} inner radius {cr}px inside {pr}px with {pp}px padding; use {want}px ({RADIUS_NAME.get(want, f'rounded-[{want}px]')})")
 
     # character / sterility checks
-    issues.extend(character_checks(txt, nodes, mood))
+    issues.extend(character_checks(txt, nodes, mood, tokens))
 
     # Miller: nav items
     for tag, attrs, cls, anc, s, e in nodes:
         if tag == 'nav':
-            end = txt.find('</nav>', e)
-            body = txt[e:end if end != -1 else len(txt)]
+            end = masked.find('</nav>', e)
+            body = masked[e:end if end != -1 else len(masked)]
             body = re.sub(r'<details\b.*?</details>', '', body, flags=re.S)  # overflow menu items are disclosed on demand
             n = len(re.findall(r'<(?:a|Link|NavLink)\b', body))
             if n > 7:
@@ -790,8 +990,8 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
     for tag, attrs, cls, anc, s, e in nodes:
         if tag != 'p':
             continue
-        end = txt.find('</p>', e)
-        inner = re.sub(r'<[^>]+>|\{[^}]*\}', '', txt[e:end if end != -1 else e])
+        end = masked.find('</p>', e)
+        inner = re.sub(r'<[^>]+>|\{[^}]*\}', '', masked[e:end if end != -1 else e])
         if len(' '.join(inner.split())) < 75:
             continue
         chain = [(attrs, cls)] + [(a[1], a[2]) for a in anc]
@@ -804,7 +1004,7 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
     # skeleton / empty state
     if re.search(r'\.map\(|v-for|\*ngFor|\{#each', txt) and not re.search(r'(?i)skeleton|empty|no (?:data|results|items)|animate-pulse', txt):
         add('INFO', 'skeleton-empty', "list rendering without skeleton/empty state")
-    if re.search(r'<(?:html|body)\b', txt, re.I) and not re.search(r'<main\b|role=["\']main', txt, re.I):
+    if re.search(r'<(?:html|body)\b', masked, re.I) and not re.search(r'<main\b|role=["\']main', masked, re.I):
         add('WARN', 'landmark-main', 'full page without a <main> landmark; wrap the primary content in <main> (and use <header>/<footer>/<nav>)')
     if mood in EXPRESSIVE:
         issues = [(('INFO', r, m + ' [relaxed in expressive moods]') if sev != 'INFO' and r in RELAXED else (sev, r, m))
@@ -813,13 +1013,18 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
 
 
 def cmd_audit(a):
+    if a.grid <= 0:
+        sys.exit(f"error: --grid must be > 0 (got {a.grid})")
     missing = [p for p in a.files + (a.css or []) if not pathlib.Path(p).is_file()]
     if missing:
         sys.exit(f"error: file not found: {', '.join(missing)}")
-    texts = [pathlib.Path(p).read_text(encoding='utf-8', errors='ignore') for p in a.files + (a.css or [])]
-    tokens, dark_tokens = css_tokens(texts), css_tokens(texts, r'\.dark')
+    css_texts = [pathlib.Path(p).read_text(encoding='utf-8', errors='ignore') for p in (a.css or [])]
+    shared_tokens, shared_dark = css_tokens(css_texts), css_tokens(css_texts, r'\.dark')
     total = {'FAIL': 0, 'WARN': 0, 'INFO': 0}
     for p in a.files:
+        p_txt = pathlib.Path(p).read_text(encoding='utf-8', errors='ignore')
+        tokens = {**shared_tokens, **css_tokens([p_txt])}
+        dark_tokens = {**shared_dark, **css_tokens([p_txt], r'\.dark')}
         iss = audit(p, a.grid, tokens, dark_tokens, a.mood)
         print(f"== {p}: {len(iss)} issue(s)")
         for sev, rule, msg in iss:

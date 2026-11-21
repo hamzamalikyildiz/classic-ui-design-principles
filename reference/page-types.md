@@ -1,6 +1,6 @@
 # Page-type matrix
 
-Always-on baseline: WCAG AA, 8pt grid, semantic colors, max 2 fonts, modular scale, one hero surface per screen, single primary CTA, depth over borders, Jakob, proximity.
+Always-on baseline: WCAG AA, 8pt grid, semantic colors, max 2 fonts (up to 3 in expressive moods), modular scale, one hero surface per screen, single primary CTA, depth over borders, Jakob, proximity.
 
 | Page type | Additional rules | Default mood | Layout |
 |---|---|---|---|

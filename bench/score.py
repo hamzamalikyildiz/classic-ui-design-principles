@@ -3,11 +3,11 @@
 
     python3 bench/score.py <workdir> [--md RESULTS.md]
 
-Reads <workdir>/judge_<id>.txt (one per persona in judges.json) and <workdir>/maps/MAP_<id>.json.
+Reads <workdir>/judge_<id>.txt (or verdicts/judge_<id>.txt) per persona in judges.json and <workdir>/maps/MAP_<id>.json.
 Judge lines look like: `cift3: A | 4 | reason | A 8/8/7/9 B 7/6/8/7`.
 Reports: per-judge skill win rate, vote-level win rate with a pair-cluster bootstrap 95% CI, per-pair
 majority wins with an exact two-sided sign test, per-mood rates, mean score differences per criterion,
-and the automatic axe / --check metrics (metrics.json, KEY_DO_NOT_OPEN.json) when present.
+and the automatic axe / --check metrics (metrics.json, KEY_DO_NOT_OPEN.json or page_key.json) when present.
 """
 import argparse, json, math, pathlib, random, re, statistics
 
@@ -15,17 +15,30 @@ CRIT = ['visual appeal', 'professional look', 'hierarchy and readability', 'cont
 LINE = re.compile(r'(cift\d+)\s*:\s*([AB])\b\s*\|\s*([1-5])\b\s*\|(.*)', re.I)
 SCORES = re.compile(r'A\s*(\d+)\s*/\s*(\d+)\s*/\s*(\d+)\s*/\s*(\d+)\s*B\s*(\d+)\s*/\s*(\d+)\s*/\s*(\d+)\s*/\s*(\d+)', re.I)
 
+
+def load_json(path):
+    """Load JSON from a UTF-8 file."""
+    with open(path, encoding='utf-8') as fh:
+        return json.load(fh)
+
+
+def first_existing(*paths):
+    """Return the first existing Path among candidates, or None."""
+    return next((p for p in paths if p.exists()), None)
+
+
 ap = argparse.ArgumentParser(); ap.add_argument('work'); ap.add_argument('--md'); a = ap.parse_args()
 W = pathlib.Path(a.work); H = pathlib.Path(__file__).resolve().parent
-judges = json.load(open(H / 'judges.json'))
+judges = load_json(H / 'judges.json')
 votes = {}       # orig pair -> list of dict(judge, win, conf, diff)
 per_judge = {}
 moods = {}
 for j in judges:
-    f, mf = W / f'judge_{j["id"]}.txt', W / 'maps' / f'MAP_{j["id"]}.json'
-    if not f.exists() or not mf.exists(): continue
-    mp = json.load(open(mf)); seen = set(); w = n = 0
-    for m in LINE.finditer(f.read_text(encoding='utf-8')):
+    f = first_existing(W / f'judge_{j["id"]}.txt', W / 'verdicts' / f'judge_{j["id"]}.txt')
+    mf = W / 'maps' / f'MAP_{j["id"]}.json'
+    if f is None or not mf.exists(): continue
+    mp = load_json(mf); seen = set(); w = n = 0
+    for m in LINE.finditer(f.read_text(encoding='utf-8-sig')):
         k = m.group(1).lower()
         if k not in mp or k in seen: continue
         seen.add(k); v = mp[k]; win = m.group(2).upper() == v['skill']
@@ -56,7 +69,7 @@ def boot(votes, reps=4000, seed=1):
 
 def sign_p(w, n):
     if n == 0: return 1.0
-    k = max(w, n - w); p = sum(math.comb(n, i) for i in range(k, n + 1)) / 2 ** n
+    k = max(w, n - w); p = math.ldexp(sum(math.comb(n, i) for i in range(k, n + 1)), -n)
     return min(1.0, 2 * p)
 
 
@@ -82,14 +95,16 @@ if ds:
     for i, c in enumerate(CRIT): out.append(f'| {c} | {statistics.mean(d[i] for d in ds):+.2f} |')
 hi_conf = [x for x in allv if x['conf'] >= 4]
 if hi_conf: out += ['', f'High-confidence votes only (conf >= 4): skill wins {sum(x["win"] for x in hi_conf)}/{len(hi_conf)}.']
-kp, mpth = W / 'KEY_DO_NOT_OPEN.json', W / 'metrics.json'
-if kp.exists() and mpth.exists():
-    key, met = json.load(open(kp)), json.load(open(mpth))
+kp = first_existing(W / 'KEY_DO_NOT_OPEN.json', W / 'page_key.json')
+mpth = W / 'metrics.json'
+if kp is not None and mpth.exists():
+    key, met = load_json(kp), load_json(mpth)
     out += ['', '## Automatic metrics (no model involved)', '', '| Arm | Pages | Pages with serious axe issue | Mean --check WARNs |', '|---|---|---|---|']
     for arm in ('skill', 'noskill'):
         ks = [k for k, v in key.items() if v['arm'] == arm]
-        cw = [met[k]['check_warns'] for k in ks if 'check_warns' in met[k]]
-        out.append(f'| {arm} | {len(ks)} | {sum(1 for k in ks if met[k]["axe_serious"])} | {statistics.mean(cw):.1f} |' if cw else
-                   f'| {arm} | {len(ks)} | {sum(1 for k in ks if met[k]["axe_serious"])} | n/a |')
+        cw = [met[k]['check_warns'] for k in ks if k in met and 'check_warns' in met[k]]
+        serious = sum(1 for k in ks if met.get(k, {}).get('axe_serious', 0))
+        out.append(f'| {arm} | {len(ks)} | {serious} | {statistics.mean(cw):.1f} |' if cw else
+                   f'| {arm} | {len(ks)} | {serious} | n/a |')
 text = '\n'.join(out); print(text)
 if a.md: pathlib.Path(a.md).write_text(text + '\n', encoding='utf-8')

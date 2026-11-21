@@ -20,10 +20,16 @@ import sys
 import tempfile
 import urllib.request
 
-CDN = re.compile(r'<script[^>]+src="https://cdn\.tailwindcss\.com[^"]*"[^>]*>\s*</script>')
+CDN = re.compile(r'<script[^>]+src=["\']https://cdn\.tailwindcss\.com[^"\']*["\'][^>]*>\s*</script>')
 INLINE_CFG = re.compile(r'<script>\s*tailwind\.config\s*=\s*(\{[\s\S]*?\})\s*;?\s*</script>')
 GFONTS = re.compile(r'<link[^>]+fonts\.(?:googleapis|gstatic)\.com[^>]*>')
 CACHE = pathlib.Path(os.environ.get('UITOOLS_CACHE', pathlib.Path.home() / '.cache' / 'uitools-render'))
+OFFLINE_ERRS = (
+    'net::ERR_NAME_NOT_RESOLVED',
+    'net::ERR_INTERNET_DISCONNECTED',
+    'net::ERR_CONNECTION_REFUSED',
+    'net::ERR_BLOCKED_BY_CLIENT',
+)
 
 
 def log(msg):
@@ -32,8 +38,8 @@ def log(msg):
 
 def reachable(url):
     try:
-        urllib.request.urlopen(url, timeout=4)
-        return True
+        with urllib.request.urlopen(url, timeout=4):
+            return True
     except Exception:
         return False
 
@@ -45,7 +51,14 @@ def npm(*args):
     CACHE.mkdir(parents=True, exist_ok=True)
     if not (CACHE / 'package.json').exists():
         (CACHE / 'package.json').write_text('{"name":"uitools-render","private":true}', encoding='utf-8')
-    return subprocess.run([npm_bin, *args], cwd=CACHE, capture_output=True, text=True)
+    return subprocess.run([npm_bin, *args], cwd=CACHE, capture_output=True, text=True,
+                          encoding='utf-8', errors='replace')
+
+
+def _inject_head(html, tag):
+    """Insert tag before </head> (case-insensitive), or prepend if no </head>."""
+    out, n = re.subn(r'</head>', lambda m: f'{tag}{m.group(0)}', html, count=1, flags=re.I)
+    return out if n else f'{tag}{html}'
 
 
 def compile_tailwind(html):
@@ -62,7 +75,7 @@ def compile_tailwind(html):
     m = INLINE_CFG.search(html)
     if m:
         r = subprocess.run(['node', '-e', f'process.stdout.write(JSON.stringify(({m.group(1)})))'],
-                           capture_output=True, text=True)
+                           capture_output=True, text=True, encoding='utf-8', errors='replace')
         if r.returncode == 0:
             cfg = json.loads(r.stdout)
         else:
@@ -70,17 +83,21 @@ def compile_tailwind(html):
     with tempfile.TemporaryDirectory() as d:
         d = pathlib.Path(d)
         (d / 'page.html').write_text(html, encoding='utf-8')
-        (d / 'tailwind.config.js').write_text('module.exports=' + json.dumps({**cfg, 'content': [str(d / 'page.html')]}), encoding='utf-8')
+        (d / 'tailwind.config.js').write_text(
+            'module.exports=' + json.dumps({**cfg, 'content': [(d / 'page.html').as_posix()]}),
+            encoding='utf-8',
+        )
         (d / 'in.css').write_text('@tailwind base;@tailwind components;@tailwind utilities;', encoding='utf-8')
         r = subprocess.run([str(tw_bin), '-c', str(d / 'tailwind.config.js'),
-                            '-i', str(d / 'in.css'), '-o', str(d / 'out.css'), '--minify'], capture_output=True, text=True)
+                            '-i', str(d / 'in.css'), '-o', str(d / 'out.css'), '--minify'],
+                           capture_output=True, text=True, encoding='utf-8', errors='replace')
         if r.returncode:
             log(f'tailwind build failed: {r.stderr.strip()[:200]}')
             return html
         css = (d / 'out.css').read_text(encoding='utf-8')
     html = CDN.sub('', html)
     html = INLINE_CFG.sub('', html)
-    return html.replace('</head>', f'<style>{css}</style></head>', 1)
+    return _inject_head(html, f'<style>{css}</style>')
 
 
 def inline_fonts(html):
@@ -104,7 +121,7 @@ def inline_fonts(html):
                 faces.append(f"@font-face{{font-family:'{fam}';font-weight:{w.group(1)};font-style:normal;"
                              f"font-display:block;src:url(data:font/woff2;base64,{b64}) format('woff2');}}")
     html = GFONTS.sub('', html)
-    return html.replace('</head>', f"<style>{''.join(faces)}</style></head>", 1)
+    return _inject_head(html, f"<style>{''.join(faces)}</style>") if faces else html
 
 
 def chrome_path():
@@ -112,6 +129,21 @@ def chrome_path():
         p = shutil.which(name)
         if p:
             return p
+    candidates = [
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    ]
+    for base in (os.environ.get('PROGRAMFILES'), os.environ.get('PROGRAMFILES(X86)'), os.environ.get('LOCALAPPDATA')):
+        if base:
+            candidates.append(os.path.join(base, 'Google', 'Chrome', 'Application', 'chrome.exe'))
+    if os.name == 'nt':
+        candidates.extend([
+            r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+            r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+        ])
+    for c in candidates:
+        if pathlib.Path(c).is_file():
+            return c
     return None
 
 
@@ -121,22 +153,44 @@ CHECK_JS = r"""() => {
                        return e.tagName.toLowerCase() + (c ? '.' + c : ''); };
   const vis = e => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
                      return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'; };
+  const mediaTags = new Set(['svg', 'img', 'canvas', 'video', 'iframe', 'input', 'textarea', 'select']);
+  const hasDirectText = c => [...c.childNodes].some(nd => nd.nodeType === 3 && nd.textContent.trim());
+  const contentBottom = container => {
+    let last = container.getBoundingClientRect().top, n = 0;
+    if (hasDirectText(container)) {
+      for (const nd of container.childNodes) {
+        if (nd.nodeType === 3 && nd.textContent.trim()) {
+          const rg = document.createRange();
+          rg.selectNodeContents(nd);
+          const rr = rg.getBoundingClientRect();
+          if (rr.height > 0) { last = Math.max(last, rr.bottom); n++; }
+        }
+      }
+    }
+    for (const d of container.querySelectorAll('*')) {
+      if (!vis(d)) continue;
+      const t = (d.children.length === 0 && (d.innerText || '').trim()) || hasDirectText(d);
+      if (t || mediaTags.has(d.tagName.toLowerCase())) { last = Math.max(last, d.getBoundingClientRect().bottom); n++; }
+    }
+    return { last, n };
+  };
   if (document.documentElement.scrollWidth > vw + 2)
     out.push(['WARN', 'page-overflow-x', `page is ${document.documentElement.scrollWidth}px wide in a ${vw}px viewport (horizontal scrollbar)`]);
   const clipped = [], hidden = [], empty = [], edge = [], blank = [];
   for (const e of document.querySelectorAll('body *')) {
     if (!vis(e)) continue;
-    const cs = getComputedStyle(e), tag = e.tagName.toLowerCase();
+    const cs = getComputedStyle(e), tag = e.tagName.toLowerCase(), r = e.getBoundingClientRect();
     if (['script', 'style', 'svg', 'path', 'circle', 'rect', 'g', 'defs', 'stop', 'line', 'polygon', 'polyline', 'ellipse', 'text', 'tspan'].includes(tag)) continue;
     const text = (e.innerText || '').trim();
-    if ((cs.overflowX === 'hidden' && e.scrollWidth > e.clientWidth + 3) || (cs.overflowY === 'hidden' && e.scrollHeight > e.clientHeight + 3)) {
-      if (text && e.clientHeight > 0 && !cs.textOverflow.includes('ellipsis') && !cs.webkitLineClamp) clipped.push(where(e));
+    const srOnly = r.width <= 2 || r.height <= 2 || cs.clip === 'rect(0px, 0px, 0px, 0px)' || cs.clipPath === 'inset(50%)';
+    if (!srOnly) {
+      if ((cs.overflowX === 'hidden' && e.scrollWidth > e.clientWidth + 3) || (cs.overflowY === 'hidden' && e.scrollHeight > e.clientHeight + 3)) {
+        if (text && e.clientHeight > 0 && !cs.textOverflow.includes('ellipsis') && (cs.webkitLineClamp === 'none' || !cs.webkitLineClamp)) clipped.push(where(e));
+      }
+      if ((tag === 'pre' || tag === 'code') && e.scrollWidth > e.clientWidth + 3 && cs.display !== 'inline' && cs.overflowX !== 'auto' && cs.overflowX !== 'scroll') clipped.push(where(e) + ' (text runs out of its box)');
     }
-    if ((tag === 'pre' || tag === 'code') && e.scrollWidth > e.clientWidth + 3 && cs.display !== 'inline') clipped.push(where(e) + ' (text runs out of its box)');
     if (text && parseFloat(cs.opacity) === 0 && !e.closest('[aria-hidden=true]')) hidden.push(where(e));
     if ((tag === 'button' || tag === 'a') && !text && !e.querySelector('svg,img,canvas') && !e.getAttribute('aria-label') && !e.getAttribute('title')) empty.push(where(e));
-    if (tag === 'button' && text === '' && e.querySelector('svg,img')) {}
-    const r = e.getBoundingClientRect();
     if (['img', 'canvas', 'figure'].includes(tag) && r.right > vw + 2 && r.left < vw - 8) edge.push(where(e));
   }
   for (const e of document.querySelectorAll('section, main > div, header, footer')) {
@@ -151,8 +205,7 @@ CHECK_JS = r"""() => {
     if (r.height < 260 || r.width < 240) continue;
     if (!(parseFloat(cs.borderTopWidth) > 0 || cs.backgroundColor !== 'rgba(0, 0, 0, 0)')) continue;
     if (e.matches('body > div, main, #app, #root') || r.width > innerWidth * 0.9) continue;
-    let last = r.top, n = 0;
-    for (const c of e.querySelectorAll('*')) { if (!vis(c)) continue; const t = c.children.length === 0 && (c.innerText || '').trim(); if (t || ['svg','img','canvas'].includes(c.tagName.toLowerCase())) { last = Math.max(last, c.getBoundingClientRect().bottom); n++; } }
+    const { last, n } = contentBottom(e);
     if (n && (last - r.top) / r.height < 0.5) sparse.push(where(e) + ` (${Math.round(100 * (last - r.top) / r.height)}% filled)`);
   }
   if (sparse.length) out.push(['WARN', 'empty-panel', `${sparse.length} panel(s) are more than half empty: ${[...new Set(sparse)].slice(0, 4).join(', ')}; fill them (more rows, content) or shrink the panel`]);
@@ -162,28 +215,37 @@ CHECK_JS = r"""() => {
     const pr = p.getBoundingClientRect(), pcs = getComputedStyle(p);
     if (pr.height < 700 || p.children.length < 2) continue;
     if (!(pcs.display === 'grid' || (pcs.display === 'flex' && pcs.flexDirection.startsWith('row')))) continue;
-    for (const c of p.children) {
-      if (!vis(c)) continue;
-      const r = c.getBoundingClientRect();
+    const visCols = [...p.children].filter(vis).map(c => ({ c, r: c.getBoundingClientRect(), cs: getComputedStyle(c) }));
+    for (const col of visCols) {
+      if (col.cs.position === 'sticky' || col.cs.position === 'fixed') continue;
+      const r = col.r;
       if (r.width < 200) continue;
-      let last = r.top;
-      for (const d of c.querySelectorAll('*')) {
-        if (!vis(d)) continue;
-        const t = d.children.length === 0 && (d.innerText || '').trim();
-        if (t || ['svg', 'img', 'canvas'].includes(d.tagName.toLowerCase())) last = Math.max(last, d.getBoundingClientRect().bottom);
-      }
-      const blankH = pr.bottom - last;
-      if (blankH > 500 && blankH / pr.height > 0.4) cols.push(where(c) + ` (${Math.round(blankH)}px empty below its content)`);
+      const rowSibs = visCols.filter(sib => sib.cs.position !== 'fixed' && Math.abs(r.top - sib.r.top) < 80 && Math.min(r.bottom, sib.r.bottom) > Math.max(r.top, sib.r.top));
+      if (rowSibs.length < 2) continue;
+      const rowTop = Math.min(...rowSibs.map(s => s.r.top));
+      const rowBottom = Math.max(...rowSibs.map(s => s.r.bottom));
+      const rowHeight = rowBottom - rowTop;
+      const { last } = contentBottom(col.c);
+      const blankH = rowBottom - last;
+      if (rowHeight > 0 && blankH > 500 && blankH / rowHeight > 0.4) cols.push(where(col.c) + ` (${Math.round(blankH)}px empty below its content)`);
     }
   }
   if (cols.length) out.push(['WARN', 'empty-column', `${cols.length} column(s) end far above their row: ${[...new Set(cols)].slice(0, 3).join(', ')}; continue the column (stats, related reading, contents) or use a single column`]);
-  const labs = [...document.querySelectorAll('svg text')].filter(vis).slice(0, 200), ovl = [];
-  for (let i = 0; i < labs.length; i++) for (let j = i + 1; j < labs.length; j++) {
-    if (labs[i].ownerSVGElement !== labs[j].ownerSVGElement) continue;
-    const a = labs[i].getBoundingClientRect(), b = labs[j].getBoundingClientRect();
-    const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-    if (w > 2 && h > 2 && w * h > 0.25 * Math.min(a.width * a.height, b.width * b.height))
-      ovl.push(`"${(labs[i].textContent || '').trim().slice(0, 12)}" / "${(labs[j].textContent || '').trim().slice(0, 12)}"`);
+  const ovl = [];
+  for (const svg of document.querySelectorAll('svg')) {
+    const labs = [...svg.querySelectorAll('text')].filter(el => {
+      if (!vis(el)) return false;
+      const cs = getComputedStyle(el);
+      if (parseFloat(cs.opacity) === 0 || cs.fill === 'none') return false;
+      if ((el.getAttribute('transform') || '').includes('rotate') || cs.transform !== 'none') return false;
+      return true;
+    }).slice(0, 200);
+    for (let i = 0; i < labs.length; i++) for (let j = i + 1; j < labs.length; j++) {
+      const a = labs[i].getBoundingClientRect(), b = labs[j].getBoundingClientRect();
+      const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      if (w > 2 && h > 2 && w * h > 0.25 * Math.min(a.width * a.height, b.width * b.height))
+        ovl.push(`"${(labs[i].textContent || '').trim().slice(0, 12)}" / "${(labs[j].textContent || '').trim().slice(0, 12)}"`);
+    }
   }
   if (ovl.length) out.push(['WARN', 'overlapping-labels', `${ovl.length} SVG label pair(s) overlap: ${ovl.slice(0, 3).join(', ')}; move or shorten the labels`]);
   const u = a => [...new Set(a)].slice(0, 5).join(', ');
@@ -199,17 +261,22 @@ CHECK_JS = r"""() => {
 
 MOBILE_JS = r"""() => {
   const out = [], vw = innerWidth;
+  const vis = e => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+                     return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'; };
   if (document.documentElement.scrollWidth > vw + 2)
     out.push(['WARN', 'mobile-overflow-x', `page is ${document.documentElement.scrollWidth}px wide at ${vw}px (horizontal scroll)`]);
   const small = [], tiny = [];
   for (const e of document.querySelectorAll('a, button, input, select, textarea, [role=button]')) {
-    const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-    if (!r.width || cs.display === 'none' || cs.visibility === 'hidden') continue;
-    if ((e.innerText || '').trim().length && r.height < 36 && r.width < 120 && !e.closest('p, li')) small.push((e.innerText || e.tagName).trim().slice(0, 18) + ` (${Math.round(r.width)}x${Math.round(r.height)})`);
+    if (!vis(e) || (e.tagName === 'INPUT' && (e.type || '').toLowerCase() === 'hidden')) continue;
+    const r = e.getBoundingClientRect();
+    if (r.height < 36 && r.width <= 120 && !e.closest('p, li'))
+      small.push((e.innerText || e.getAttribute('aria-label') || e.placeholder || e.tagName).trim().slice(0, 18) + ` (${Math.round(r.width)}x${Math.round(r.height)})`);
   }
   for (const e of document.querySelectorAll('p, li, span, a, button, td')) {
+    if (!vis(e)) continue;
     const cs = getComputedStyle(e);
-    if ((e.childNodes[0] && e.childNodes[0].nodeType === 3 && e.textContent.trim().length > 3) && parseFloat(cs.fontSize) < 11) tiny.push(e.textContent.trim().slice(0, 14));
+    if ([...e.childNodes].some(nd => nd.nodeType === 3 && nd.textContent.trim().length > 3) && parseFloat(cs.fontSize) < 11)
+      tiny.push(e.textContent.trim().slice(0, 14));
   }
   if (small.length) out.push(['INFO', 'mobile-tap-targets', `${small.length} control(s) under 36px tall: ${small.slice(0, 4).join(', ')}`]);
   if (tiny.length) out.push(['WARN', 'mobile-tiny-text', `${tiny.length} text run(s) under 11px: ${tiny.slice(0, 4).join(', ')}`]);
@@ -218,23 +285,30 @@ MOBILE_JS = r"""() => {
 
 INTERACT_JS = r"""async () => {
   const out = [], btns = [...document.querySelectorAll('button, [role=button]')]
-    .filter(b => (b.innerText || '').trim() && b.getBoundingClientRect().width && getComputedStyle(b).display !== 'none' && b.type !== 'submit').slice(0, 8);
+    .filter(b => (b.innerText || '').trim() && b.getBoundingClientRect().width && getComputedStyle(b).display !== 'none' && b.type !== 'submit' && !b.disabled && b.getAttribute('aria-disabled') !== 'true').slice(0, 8);
   let dead = [];
   for (const b of btns) {
     let changed = false;
     const mo = new MutationObserver(() => { changed = true; });
-    mo.observe(document.body, { subtree: true, attributes: true, childList: true, characterData: true });
-    const y = scrollY; try { b.click(); } catch (e) {}
-    await new Promise(r => setTimeout(r, 120)); mo.disconnect(); scrollTo(0, y);
+    mo.observe(document.documentElement, { subtree: true, attributes: true, childList: true, characterData: true });
+    const x = scrollX, y = scrollY; try { b.click(); } catch (e) {}
+    await new Promise(r => setTimeout(r, 120)); mo.disconnect();
+    if (Math.abs(scrollY - y) > 5 || Math.abs(scrollX - x) > 5) changed = true;
+    if (scrollY !== y || scrollX !== x) scrollTo(x, y);
     if (!changed && !b.closest('a, form')) dead.push(b.innerText.trim().slice(0, 18));
   }
   if (dead.length) out.push(['INFO', 'dead-buttons', `${dead.length} button(s) changed nothing when clicked: ${dead.slice(0, 5).join(', ')}`]);
-  const focusable = document.querySelectorAll('a[href], button, input, select, textarea, [tabindex]').length;
+  const focusEls = [...document.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, [tabindex]:not([tabindex="-1"])')]
+    .filter(e => {
+      const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+      return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden' && !e.disabled && e.getAttribute('aria-disabled') !== 'true';
+    }).slice(0, 6);
   let noRing = 0;
-  for (const e of [...document.querySelectorAll('a[href], button')].slice(0, 6)) {
+  for (const e of focusEls) {
     e.focus({ focusVisible: true });
     const cs = getComputedStyle(e);
-    if (document.activeElement === e && cs.outlineStyle === 'none' && cs.boxShadow === 'none' && !e.className.toString().match(/focus/)) noRing++;
+    const cls = typeof e.className === 'string' ? e.className : (e.getAttribute('class') || '');
+    if (document.activeElement === e && cs.outlineStyle === 'none' && cs.boxShadow === 'none' && !/focus(?:-visible)?:(?:ring|outline-(?!none)|border-)/.test(cls)) noRing++;
   }
   if (noRing >= 3) out.push(['WARN', 'no-focus-ring', `${noRing} of the first 6 controls show no focus indicator (add focus-visible:ring-2)`]);
   return out;
@@ -266,6 +340,38 @@ def run_axe(page):
     return out
 
 
+SCROLL_SWEEP_JS = """async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) {
+    window.scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } window.scrollTo(0, 0); }"""
+
+
+def write_temp_render(src, html):
+    """Write rendered HTML beside src so relative assets resolve, or fall back to tempdir."""
+    page_file = src.with_name(f'.{src.stem}.{os.getpid()}.render.html')
+    try:
+        page_file.write_text(html, encoding='utf-8')
+        return page_file
+    except OSError:
+        with tempfile.NamedTemporaryFile('w', suffix='.render.html', prefix=f'.{src.stem}.',
+                                         dir=tempfile.gettempdir(), delete=False, encoding='utf-8') as tf:
+            tf.write(html)
+            return pathlib.Path(tf.name)
+
+
+def is_ignored_console_error(text):
+    """Ignore expected CDN/external offline errors while keeping local missing files and JS errors."""
+    return any(err in text for err in OFFLINE_ERRS)
+
+
+def _prepare_page(page, uri, dark):
+    """Navigate to uri, apply dark class if requested, and run scroll-reveal sweep."""
+    page.goto(uri)
+    page.wait_for_timeout(500)
+    if dark:
+        page.evaluate("document.documentElement.classList.add('dark')")
+    page.evaluate(SCROLL_SWEEP_JS)
+    page.wait_for_timeout(800)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description='Full-page screenshot of an HTML file (offline-friendly)')
     ap.add_argument('html')
@@ -290,8 +396,7 @@ def main(argv=None):
     if GFONTS.search(html) and not reachable('https://fonts.googleapis.com/css2?family=Inter'):
         log('Google Fonts unreachable; inlining @fontsource fonts')
         html = inline_fonts(html)
-    page_file = src.with_name(f'.{src.stem}.render.html')  # same folder so relative assets resolve
-    page_file.write_text(html, encoding='utf-8')
+    page_file = write_temp_render(src, html)
 
     try:
         with sync_playwright() as p:
@@ -300,24 +405,23 @@ def main(argv=None):
             page = browser.new_page(viewport={'width': a.width, 'height': a.height})
             errors = []
             page.on('pageerror', lambda e: errors.append(str(e)[:160]))
-            page.on('console', lambda m: errors.append(m.text[:160]) if m.type == 'error' and 'ERR_' not in m.text and 'Failed to load resource' not in m.text else None)
-            page.goto(page_file.as_uri())
-            page.wait_for_timeout(500)
-            if a.dark:
-                page.evaluate("document.documentElement.classList.add('dark')")
-            # scroll through once so scroll-triggered reveals run, then return to top
-            page.evaluate("""async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) {
-                window.scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } window.scrollTo(0, 0); }""")
-            page.wait_for_timeout(800)
+            page.on('console', lambda m: errors.append(m.text[:160])
+                    if m.type == 'error' and not is_ignored_console_error(m.text) else None)
+            _prepare_page(page, page_file.as_uri(), a.dark)
             page.screenshot(path=a.out, full_page=True)
+            scroll_h = page.evaluate('document.documentElement.scrollHeight')
             if a.check:
                 found = list(page.evaluate(CHECK_JS))
                 found += run_axe(page)
-                found += page.evaluate(INTERACT_JS)
+                try:
+                    found += page.evaluate(INTERACT_JS)
+                except Exception as exc:
+                    found.append(['INFO', 'interact-check',
+                                  f'interaction check interrupted (e.g., navigation): {str(exc)[:100]}'])
                 if errors:
                     found.append(['WARN', 'js-errors', f"{len(errors)} console/page error(s): {'; '.join(errors[:3])}"])
                 m = browser.new_page(viewport={'width': 375, 'height': 800})
-                m.goto(page_file.as_uri()); m.wait_for_timeout(600)
+                _prepare_page(m, page_file.as_uri(), a.dark)
                 found += m.evaluate(MOBILE_JS)
                 m.close()
                 found = [f for f in found if f[1] != 'dom-check']
@@ -325,7 +429,7 @@ def main(argv=None):
                     found = [['INFO', 'dom-check', 'no defects found']]
                 for sev, rule, msg in found:
                     print(f"  [{sev}] {rule}: {msg}")
-            print(f"{a.out} ({a.width}x{page.evaluate('document.documentElement.scrollHeight')})")
+            print(f"{a.out} ({a.width}x{scroll_h})")
             browser.close()
     finally:
         page_file.unlink(missing_ok=True)

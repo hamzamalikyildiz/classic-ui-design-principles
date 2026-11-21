@@ -9,6 +9,10 @@ Turn vague adjectives ("modern", "clean", "fun") into measurable decisions. Rule
 
 Flow: detect context, pick mood, read the mood file, plan, build, audit, render and check, fix, report.
 
+**Fast path (single component or small tweak):**
+- For a single component (button, modal, form field, card tweak), skip the mood file, `reference/visual-quality.md`, and the signature element.
+- Apply AA contrast, 8pt grid, nested radius, and focus/CTA rules (`reference/rules.md`), then run `audit`.
+
 ## 1. Detect context
 
 - **Stack:** Tailwind in `package.json`/config or CDN, shadcn/ui (`components.json`; use semantic tokens `bg-background`, `text-muted-foreground`, `border-border`), React/Vue/Svelte, or plain CSS (custom properties on `:root`). Build on existing tokens and fonts, never break them.
@@ -16,7 +20,7 @@ Flow: detect context, pick mood, read the mood file, plan, build, audit, render 
 - **Audience and brand** pick the mood. **Page type** picks layout rules (`reference/page-types.md`, which also maps unusual briefs onto the five moods).
 - **Plan statement** before code, one line: `Type: Dashboard | Mood: Trust | Stack: Tailwind CDN | Concept: ... | Signature: ...`
 
-## 2. Mood profiles (read `moods/<mood>.md` for the chosen mood before building)
+## 2. Mood profiles (read `moods/expressive.md` for Playful/Bold, or `moods/<mood>.md` for Trust/Editorial/Technical before building)
 
 | | Playful | Trust | Bold | Editorial | Technical |
 |---|---|---|---|---|---|
@@ -25,7 +29,7 @@ Flow: detect context, pick mood, read the mood file, plan, build, audit, render 
 | Hero surface | saturated stage | one accent card/band | full-bleed gradient or dark band | large type, image | dark panel, code block |
 | Depth | `shadow-md/lg`, colored shadows ok | `shadow-sm`, bg shift | `shadow-lg`, layered | hairlines | 1px borders |
 | Card / control radius | 24px / full | 12-16 / 8 | 16-24 / 12 | 4-8 / 4 | 6-8 / 6 |
-| Type | rounded display + sans, 1.25-1.333 | one sans, 1.2 | display + sans, 1.333-1.5 | serif display + body, 1.25 | sans + mono, 1.2 |
+| Type | rounded display + sans, 1.25-1.333 | serif display + sans (or clean sans), 1.2 | display + sans, 1.333-1.5 | serif display + body, 1.25 | sans + mono, 1.2 |
 | Landing section spacing | `py-16 lg:py-20` | `py-20` | `py-24 lg:py-32` | `py-16` | `py-16` |
 
 Playful and Bold are **expressive**: the audit enforces only the accessibility floor and turns style rules into INFO, so spend the effort on character (`moods/expressive.md`). Dark mode is a theme, not a mood. Every mood respects `prefers-reduced-motion`.
@@ -70,7 +74,7 @@ python3 scripts/render.py page.html --out shot.png --check  # screenshot + rende
 2. Palette from the subject; check every text/background pair with `contrast`. Type scale with `scale`. Tokens in one place.
 3. Build hero surface, focal visual and signature element first, then supporting content (content floor in the mood file).
 4. `audit --mood <mood>` once on the finished file. Fix FAIL/WARN with the smallest edit (a shade, a size, a class); never delete the signature element or illustration to satisfy a check.
-5. `render.py --check`, fix every WARN, then open the screenshot and ask: where does the eye land (hero surface or primary CTA)? does it feel like the mood? any empty, stretched or boxed-in area? does the squint test show hierarchy? did a requested element lose emphasis? If rendering is impossible, say so in the report.
+5. If Playwright + Chrome are available, run `render.py --check`, fix every WARN, then open the screenshot and ask: where does the eye land (hero surface or primary CTA)? does it feel like the mood? any empty, stretched or boxed-in area? does the squint test show hierarchy? did a requested element lose emphasis? If Playwright/rendering is unavailable and skipped, say so in the report.
 6. Repeat 4-5 at most three times; the last round must be clean.
 
 ## 7. Report

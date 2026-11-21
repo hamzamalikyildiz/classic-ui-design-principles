@@ -279,7 +279,7 @@ class Expressive(unittest.TestCase):
 
     def sev(self, mood):
         with tempfile.TemporaryDirectory() as d:
-            f = pathlib.Path(d) / 'p.html'; f.write_text(self.PAGE)
+            f = pathlib.Path(d) / 'p.html'; f.write_text(self.PAGE, encoding='utf-8')
             return {r: s for s, r, _ in ut.audit(str(f), 8, {}, None, mood)}
 
     def test_style_rules_relaxed(self):
@@ -293,7 +293,7 @@ class Expressive(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             f = pathlib.Path(d) / 'p.html'
             f.write_text('<div class="opacity-0">x</div><p class="text-gray-300 bg-white">low</p>'
-                         '<button class="bg-blue-600 text-white h-8 px-4">Go</button>')
+                         '<button class="bg-blue-600 text-white h-8 px-4">Go</button>', encoding='utf-8')
             r = {x[1]: x[0] for x in ut.audit(str(f), 8, {}, None, 'playful')}
         self.assertEqual(r.get('reveal-needs-js'), 'WARN')
         self.assertEqual(r.get('fitts-primary'), 'WARN')
@@ -303,7 +303,7 @@ class Expressive(unittest.TestCase):
 class Landmark(unittest.TestCase):
     def rules(self, html):
         with tempfile.TemporaryDirectory() as d:
-            f = pathlib.Path(d) / 'p.html'; f.write_text(html)
+            f = pathlib.Path(d) / 'p.html'; f.write_text(html, encoding='utf-8')
             return [r for _, r, _ in ut.audit(str(f), 8, {}, None, None)]
 
     def test_main_required_for_full_pages(self):
@@ -327,7 +327,7 @@ class CustomColors(unittest.TestCase):
         html = ("<script>tailwind.config={theme:{extend:{colors:{sun:'#FFC933'}}}}</script>"
                 '<p class="text-sun bg-white">hello</p>')
         with tempfile.TemporaryDirectory() as d:
-            f = pathlib.Path(d) / 'p.html'; f.write_text(html)
+            f = pathlib.Path(d) / 'p.html'; f.write_text(html, encoding='utf-8')
             iss = ut.audit(str(f), 8, ut.css_tokens([html]), None, None)
         self.assertTrue(any(r == 'wcag-aa' for _, r, _ in iss))
 
@@ -336,7 +336,7 @@ class Cli(unittest.TestCase):
     def test_exit_code_on_fail(self):
         with tempfile.TemporaryDirectory() as d:
             f = pathlib.Path(d) / 'a.tsx'
-            f.write_text('<p className="text-slate-300">x</p>')
+            f.write_text('<p className="text-slate-300">x</p>', encoding='utf-8')
             with self.assertRaises(SystemExit) as cm, contextlib.redirect_stdout(io.StringIO()):
                 ut.main(['audit', str(f)])
             self.assertEqual(cm.exception.code, 1)
@@ -419,6 +419,155 @@ class MoodSpecific(unittest.TestCase):
         with contextlib.redirect_stdout(out):
             ut.main(['scale', '--ratio', 'major-third'])
         self.assertIn('--text-xl: 1.5rem; --leading-xl: 2rem;', out.getvalue())  # 24px / 32px, not 28
+
+
+class Regressions(unittest.TestCase):
+    def test_invalid_hex_validation_and_tw_hex(self):
+        self.assertIsNone(ut.tw_hex('[#1234]', {}))
+        self.assertEqual(rules(run('<p className="text-[#1234]">x</p>'), 'wcag-aa'), [])
+        with self.assertRaises(ValueError):
+            ut.hex2rgb('#1234')
+        with self.assertRaises(ValueError):
+            ut.hex2rgb('#gggggg')
+
+    def test_tailwind_config_comments_strings_and_dark_theme_vars(self):
+        txt = """
+        <style>
+          /* --color-ignored: #ff0000; */
+          @theme { --color-accent: #10b981; --color-bad: #1234; }
+          .dark { --color-accent: #000000; --color-darkonly: #111111; }
+        </style>
+        <script>
+          tailwind.config = {
+            theme: { extend: { colors: {
+              // brace } in line comment
+              /* block } comment */
+              note: "string with } brace",
+              brand: '#ff5500',
+              bad4: '#1234',
+              bad8: '#12345678',
+            } } }
+          };
+        </script>
+        """
+        c = ut.tailwind_config_colors(txt)
+        self.assertEqual(c['accent'], '#10b981')
+        self.assertNotIn('darkonly', c)
+        self.assertNotIn('ignored', c)
+        self.assertNotIn('bad', c)
+        self.assertNotIn('bad4', c)
+        self.assertNotIn('bad8', c)
+        self.assertEqual(c['brand'], '#ff5500')
+
+    def test_css_body_background_and_inline_style_bg(self):
+        html = '<style>body { background: #0B0B0C; }</style><body><p class="text-white">ok</p><p class="text-zinc-900">bad</p></body>'
+        iss = rules(run(html, suffix='.html'), 'wcag-aa')
+        self.assertEqual(len(iss), 1)
+        self.assertIn('bg-[#0B0B0C]', iss[0][2])
+        self.assertTrue(ut.is_dark_page(html))
+        inline = '<div style="background: #0B0B0C"><span class="text-white">ok</span><span class="text-zinc-900">bad</span></div>'
+        iss_inline = rules(run(inline, suffix='.html'), 'wcag-aa')
+        self.assertEqual(len(iss_inline), 1)
+        self.assertIn('bg-[#0B0B0C]', iss_inline[0][2])
+        after_root = '<style>:root { --a: 1; }\nbody { background: #0B0A09; color: #F4EDE4; }</style><main><p class="text-white">ok</p></main>'
+        self.assertEqual(ut.css_page_bg(after_root), '#0B0A09')
+        self.assertEqual(rules(run(after_root, suffix='.html'), 'wcag-aa'), [])
+
+    def test_dark_bg_background_ancestor_caught(self):
+        src = '<div className="bg-background"><p className="text-slate-700">x</p></div>'
+        iss = rules(run(src, css=SHADCN_CSS), 'wcag-aa')
+        self.assertTrue(any('[.dark] text-slate-700 on bg-background' in i[2] for i in iss))
+
+    def test_unclosed_html_comment_does_not_poison_and_script_masked(self):
+        unclosed = '<!-- unclosed comment\n<p class="text-slate-300">bad</p>'
+        self.assertTrue(rules(run(unclosed, suffix='.html'), 'wcag-aa'))
+        closed = '<!-- <p class="text-slate-300">ignored</p> --><p class="text-slate-900">ok</p>'
+        self.assertEqual(rules(run(closed, suffix='.html'), 'wcag-aa'), [])
+        scripted = '<script>const s = `<span class="text-muted">x</span>`;</script><p class="text-slate-900">ok</p>'
+        self.assertEqual(rules(run(scripted, suffix='.html'), 'wcag-aa'), [])
+
+    def test_ts_generics_and_template_literal_classes(self):
+        src = ('const x: Array<string> = [];\n'
+               'export function C({a}: {a: boolean}) {\n'
+               '  return <div className={`bg-slate-900 ${a ? "p-4" : "p-2"}`}><span className="text-slate-700">x</span></div>;\n'
+               '}')
+        iss = rules(run(src), 'wcag-aa')
+        self.assertTrue(any('bg-slate-900' in i[2] for i in iss))
+        ternary = "<div className={cond ? 'bg-white' : 'bg-slate-900'}><span className=\"text-slate-700\">x</span></div>"
+        self.assertTrue(rules(run(ternary), 'wcag-aa'))
+        adj = '<div class="bg-zinc-950"><a class="bg-lime text-zinc-950">See work</a><a class="text-white">Contact</a></div>'
+        self.assertEqual(rules(run(adj, suffix='.html'), 'wcag-aa'), [])
+
+    def test_tailwind_v4_gradients(self):
+        self.assertTrue(ut.is_gradient('bg-linear-to-r'))
+        self.assertTrue(ut.is_gradient('bg-radial'))
+        self.assertTrue(ut.is_gradient('bg-conic-180'))
+        bad = '<div className="bg-linear-to-r from-yellow-300 to-pink-600"><p className="text-white">Hi</p></div>'
+        msg = rules(run(bad), 'wcag-aa')
+        self.assertTrue(msg and 'gradient stop from-yellow-300' in msg[0][2])
+        hero = '<section className="py-12 bg-linear-to-r from-indigo-600 to-violet-700"><h1>Hi</h1></section>'
+        self.assertEqual(rules(run(hero, mood='bold'), 'no-hero-surface'), [])
+
+    def test_no_serif_excludes_sans_serif_and_arbitrary_size(self):
+        sans = '<style>body{font-family:Inter,sans-serif}</style><h1 class="font-[700]">Hi</h1>'
+        self.assertTrue(rules(run(sans, suffix='.html', mood='editorial'), 'no-serif'))
+        serif = '<h1 class="font-serif">Hi</h1>'
+        self.assertEqual(rules(run(serif, suffix='.html', mood='editorial'), 'no-serif'), [])
+
+    def test_max_2_fonts_generics_and_v1_pipe(self):
+        ok = ('<link href="https://fonts.googleapis.com/css2?family=Inter&family=Fraunces">'
+              '<style>body{font-family:system-ui,sans-serif} code{font-family:ui-monospace,monospace}</style>')
+        self.assertEqual(rules(run(ok, suffix='.html'), 'max-2-fonts'), [])
+        v1 = '<link href="https://fonts.googleapis.com/css?family=Roboto:400,700|Open+Sans:400|Lato:400">'
+        self.assertEqual(rules(run(v1, suffix='.html'), 'max-2-fonts')[0][0], 'FAIL')
+
+    def test_text_and_bg_non_color_utilities(self):
+        src = '<div className="bg-white bg-size-auto bg-[length:10px]"><p className="text-slate-900 text-opacity-50 text-shadow-sm text-[length:14px]">x</p></div>'
+        self.assertEqual(rules(run(src), 'wcag-aa'), [])
+
+    def test_edge_align_allows_h1_inside_centered_column(self):
+        inside = '<div className="max-w-prose mx-auto"><h1 className="text-3xl">T</h1><p>x</p></div>'
+        self.assertEqual(rules(run(inside, mood='editorial'), 'edge-align'), [])
+
+    def test_hover_opacity_zero_does_not_trigger_reveal_needs_js(self):
+        src = '<button className="hover:opacity-0 disabled:opacity-0">x</button>'
+        self.assertEqual(rules(run(src, mood='bold'), 'reveal-needs-js'), [])
+        self.assertTrue(rules(run('<div className="opacity-0">x</div>', mood='bold'), 'reveal-needs-js'))
+
+    def test_custom_palette_hero_surface_and_low_color(self):
+        src = ('<script>tailwind.config={theme:{extend:{colors:{ink:"#0B0B0C",lime:"#C6FF3D",coral:"#FF5A36",sky2:"#38BDF8"}}}}</script>'
+               '<section class="bg-coral py-16"><h1>Hi</h1></section><p class="text-lime">A</p><p class="text-sky2">B</p>')
+        self.assertEqual(rules(run(src, suffix='.html', mood='bold'), 'no-hero-surface'), [])
+        self.assertEqual(rules(run(src, suffix='.html', mood='bold'), 'low-color'), [])
+
+    def test_stock_look_with_mono_font_and_next_font(self):
+        mono = '<link href="https://fonts.googleapis.com/css2?family=Inter&family=JetBrains+Mono"><a className="bg-indigo-600 text-white h-12">Go</a>'
+        self.assertTrue(rules(run(mono), 'stock-look'))
+        nxt = "import { Inter } from 'next/font/google';\n<a className=\"bg-indigo-600 text-white h-12\">Go</a>"
+        self.assertTrue(rules(run(nxt), 'stock-look'))
+        self.assertTrue(rules(run(nxt, mood='bold'), 'bold-font-default'))
+
+    def test_cli_guards_and_file_token_isolation(self):
+        for args in (['snap', '10', '--grid', '0'], ['audit', 'x.html', '--grid', '0'],
+                     ['scale', '--ratio', 'bogus'], ['scale', '--ratio', '0'],
+                     ['contrast', '#1234', '#ffffff'], ['contrast', '#ffffff', 'notacolor']):
+            with self.assertRaises(SystemExit):
+                ut.main(args)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            ut.main(['contrast', '#777777', '#888888', '--target', '7'])
+        self.assertIn('best possible', out.getvalue())
+        self.assertNotIn('>= 7', out.getvalue())
+        with tempfile.TemporaryDirectory() as d:
+            a = pathlib.Path(d) / 'a.html'
+            b = pathlib.Path(d) / 'b.html'
+            a.write_text('<script>tailwind.config={theme:{extend:{colors:{brand:"#000000"}}}}</script><p class="text-brand">a</p>', encoding='utf-8')
+            b.write_text('<div class="bg-brand"><p class="text-slate-700">b</p></div>', encoding='utf-8')
+            out = io.StringIO()
+            with self.assertRaises(SystemExit) as cm, contextlib.redirect_stdout(out):
+                ut.main(['audit', str(a), str(b)])
+            self.assertEqual(cm.exception.code, 0)
+            self.assertNotIn('bg-brand', out.getvalue())
 
 
 if __name__ == '__main__':

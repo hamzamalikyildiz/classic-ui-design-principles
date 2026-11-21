@@ -29,7 +29,7 @@
 - Modular scale: `scale --ratio <ratio>` output. Do not shrink Tailwind's small sizes: `xs` ≥12px, `sm` ≥14px (the script enforces this). Body 16px. Line-height by size: body 1.5–1.6 (long-form 1.65–1.8), 20–24px text 1.4, headings 1.1–1.25. The `scale` output follows this.
 - Hierarchy uses three channels: **size, weight, color**. Body 400, labels 500, headings 600–700, muted text one shade lighter. If most text is the same size and bold, there is no hierarchy.
 - Line length: paragraphs capped with `max-w-prose` or `max-width: 65ch`.
-- Max 2 fonts (a display font for headings counts as one).
+- Max 2 fonts, up to 3 in expressive moods (a display font for headings counts as one).
 
 **UX laws**
 - Fitts: primary CTAs and touch-first UI ≥44×44px (`h-11`+; hero CTA `h-12`–`h-14`). Desktop secondary controls, toolbars, segmented controls and tabs: 32–40px (`h-8`–`h-10`), never below 24px. Destructive actions away from the primary.
@@ -46,3 +46,12 @@
 Too sloppy: rainbow buttons, several solid CTAs side by side, light grey body text, more than 2 fonts, 8+ nav links, tiny 10–12px body copy, gradient text everywhere, emoji in every label.
 
 Too sterile: contrast fixed by turning colored text grey, grey-only charts, a featured card without a hero surface, frame wrappers, borders on every card, everything `text-base font-bold`, every control 44px tall, huge section padding on light content, stretched empty cards, the illustration shrunk into a pale box.
+
+**Conflict resolution**
+
+| Request | Rule | Resolution |
+|---|---|---|
+| 10+ top-level nav items | Miller (≤7) | Group into categories + `"More"` dropdown |
+| 3+ action buttons together | Single primary CTA | Keep 1 solid accent CTA, demote others to outline/ghost |
+| Light/pastel/yellow brand hue | WCAG AA | Keep light/brand surface for containers/accents, use dark ink or darken text shade within the same hue |
+| Flat/wireframe aesthetic | Depth over borders | Keep crisp hairlines (`1px`), elevate only interactive hero/popover via background step |
