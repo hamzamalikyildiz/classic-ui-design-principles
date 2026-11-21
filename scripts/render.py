@@ -35,6 +35,12 @@ OFFLINE_ERRS = (
     'net::ERR_CONNECTION_REFUSED',
     'net::ERR_BLOCKED_BY_CLIENT',
 )
+HYDRATION_MISMATCH_PATTERNS = (
+    'Hydration failed',
+    'did not match',
+    'Text content does not match server-rendered HTML',
+    'Hydration completed but contains mismatches',
+)
 
 
 def log(msg):
@@ -220,6 +226,8 @@ class RenderOptions:
     storage_state: str | None = None
     save_storage_state: str | None = None
     login_script: str | None = None
+    wait_for: str | None = None
+    actions: list | None = None
 
 
 def _coerce_options(opts):
@@ -254,12 +262,175 @@ def is_online_target(target_uri, opts=None):
     return str(target_uri).lower().startswith(('http://', 'https://'))
 
 
-def _prepare_page(page, uri, dark):
-    """Navigate to uri, apply dark class if requested, and run scroll-reveal sweep."""
+def is_hydration_mismatch_error(text):
+    """Return True when a console or page error indicates a SSR/CSR hydration mismatch."""
+    return any(pat in text for pat in HYDRATION_MISMATCH_PATTERNS)
+
+
+_HYDRATION_STABILITY_JS = """({ quietMs, maxWaitMs, checkFramework }) => new Promise(resolve => {
+  const start = performance.now();
+  const hasReactKey = el => {
+    if (!el) return false;
+    try {
+      return Object.keys(el).some(k => k.startsWith('__reactContainer$') || k === '_reactRootContainer');
+    } catch (e) {
+      return false;
+    }
+  };
+  const detectFramework = () => {
+    if (!checkFramework) return { detected: false, mounted: true };
+    const nextRoot = document.querySelector('#__next');
+    const hasNext = Boolean(nextRoot || document.querySelector('#__NEXT_DATA__') || window.__NEXT_DATA__ || (window.next && window.next.router));
+    const vueRoot = document.querySelector('[data-v-app]') || document.querySelector('#app') || document.querySelector('#root');
+    const hasVue = Boolean((vueRoot && vueRoot.__vue_app__) || window.__VUE__);
+    const svelteNode = document.querySelector('[data-svelte-h]');
+    const hasSvelte = Boolean(svelteNode);
+    const candidates = [
+      document.querySelector('#root'),
+      document.querySelector('#app'),
+      nextRoot,
+      document.body,
+      ...(document.body ? Array.from(document.body.children).slice(0, 6) : []),
+    ].filter(Boolean);
+    const hasReact = candidates.some(hasReactKey) || Boolean(
+      document.querySelector('[data-reactroot]') ||
+      document.querySelector('script[src*="react" i]') ||
+      document.documentElement.hasAttribute('data-react-app')
+    );
+    const detected = hasNext || hasVue || hasSvelte || hasReact;
+    if (!detected) return { detected: false, mounted: true };
+    const nextMounted = !hasNext || Boolean(
+      (window.next && window.next.router) ||
+      hasReactKey(nextRoot) ||
+      (nextRoot && nextRoot.children.length > 0 && document.readyState === 'complete')
+    );
+    const reactMounted = !hasReact || candidates.some(hasReactKey) || Boolean(document.querySelector('[data-reactroot]'));
+    const vueMounted = !hasVue || Boolean((vueRoot && vueRoot.__vue_app__) || (document.body && Array.from(document.body.children).some(c => c.__vue_app__)));
+    const svelteMounted = !hasSvelte || document.readyState === 'complete';
+    return { detected: true, mounted: nextMounted && reactMounted && vueMounted && svelteMounted };
+  };
+
+  let lastMutation = performance.now();
+  let settled = false;
+  const root = document.documentElement || document.body;
+  let mo = null;
+  if (root && typeof MutationObserver !== 'undefined') {
+    mo = new MutationObserver(() => {
+      lastMutation = performance.now();
+    });
+    mo.observe(root, { subtree: true, childList: true, attributes: true, characterData: true });
+  }
+  const finish = status => {
+    if (settled) return;
+    settled = true;
+    if (mo) mo.disconnect();
+    resolve(status);
+  };
+  const tick = () => {
+    if (settled) return;
+    const now = performance.now();
+    const elapsed = now - start;
+    if (elapsed >= maxWaitMs) {
+      finish({ timedOut: true, elapsedMs: Math.round(elapsed) });
+      return;
+    }
+    const fw = detectFramework();
+    const quietFor = now - lastMutation;
+    if (fw.mounted && quietFor >= quietMs) {
+      finish({ timedOut: false, detected: fw.detected, elapsedMs: Math.round(elapsed) });
+      return;
+    }
+    setTimeout(tick, Math.min(50, Math.max(10, quietMs - quietFor)));
+  };
+  setTimeout(tick, Math.min(50, quietMs));
+})"""
+
+
+def wait_for_dom_stability(page, quiet_ms=300, max_wait_ms=3000):
+    """Wait until the page DOM stops mutating for quiet_ms (up to max_wait_ms)."""
+    if hasattr(page, 'evaluate'):
+        try:
+            res = page.evaluate(
+                _HYDRATION_STABILITY_JS,
+                {'quietMs': int(quiet_ms), 'maxWaitMs': int(max_wait_ms), 'checkFramework': False},
+            )
+            if isinstance(res, dict):
+                return res
+        except TypeError:
+            pass
+        except Exception:
+            pass
+    if hasattr(page, 'wait_for_timeout'):
+        page.wait_for_timeout(quiet_ms)
+    return {'timedOut': False, 'detected': False, 'elapsedMs': 0}
+
+
+def wait_for_hydration(page, wait_for=None, quiet_ms=500, max_wait_ms=5000):
+    """Wait for load, soft networkidle, framework hydration + DOM stability, and optional selector."""
+    if hasattr(page, 'wait_for_load_state'):
+        try:
+            page.wait_for_load_state('load', timeout=max_wait_ms)
+        except Exception:
+            pass
+        try:
+            page.wait_for_load_state('networkidle', timeout=min(2500, max_wait_ms))
+        except Exception:
+            pass
+
+    evaluated = False
+    if hasattr(page, 'evaluate'):
+        try:
+            res = page.evaluate(
+                _HYDRATION_STABILITY_JS,
+                {'quietMs': int(quiet_ms), 'maxWaitMs': int(max_wait_ms), 'checkFramework': True},
+            )
+            evaluated = isinstance(res, dict)
+        except TypeError:
+            evaluated = False
+        except Exception:
+            evaluated = False
+
+    if not evaluated and hasattr(page, 'wait_for_timeout'):
+        page.wait_for_timeout(quiet_ms)
+
+    if wait_for and hasattr(page, 'wait_for_selector'):
+        page.wait_for_selector(wait_for, state='visible', timeout=max_wait_ms)
+
+
+def run_actions(page, actions):
+    """Run optional pre-check interaction actions only after hydration and DOM stability settle."""
+    if not actions:
+        return
+    wait_for_dom_stability(page, quiet_ms=300, max_wait_ms=3000)
+    for act in actions:
+        if callable(act):
+            act(page)
+        elif isinstance(act, dict):
+            kind = act.get('type') or act.get('action')
+            sel = act.get('selector')
+            if kind == 'fill' and sel is not None and hasattr(page, 'fill'):
+                page.fill(sel, str(act.get('value', '')))
+            elif kind == 'click' and sel is not None and hasattr(page, 'click'):
+                page.click(sel)
+            elif kind == 'wait_for' and sel is not None and hasattr(page, 'wait_for_selector'):
+                page.wait_for_selector(sel, state='visible', timeout=act.get('timeout', 5000))
+        elif isinstance(act, (tuple, list)) and len(act) >= 2:
+            kind, sel = act[0], act[1]
+            if kind == 'fill' and hasattr(page, 'fill'):
+                page.fill(sel, str(act[2] if len(act) > 2 else ''))
+            elif kind == 'click' and hasattr(page, 'click'):
+                page.click(sel)
+        wait_for_dom_stability(page, quiet_ms=300, max_wait_ms=3000)
+
+
+def _prepare_page(page, uri, dark, wait_for=None, actions=None):
+    """Navigate to uri, wait for hydration/DOM stability, apply dark class, run actions, and scroll sweep."""
     page.goto(uri)
-    page.wait_for_timeout(500)
+    wait_for_hydration(page, wait_for=wait_for, quiet_ms=500, max_wait_ms=5000)
     if dark:
         page.evaluate("document.documentElement.classList.add('dark')")
+    if actions:
+        run_actions(page, actions)
     page.evaluate(SCROLL_SWEEP_JS)
     page.wait_for_timeout(800)
 
@@ -331,20 +502,26 @@ def _run_dom_checks(page, mobile_factory, target_uri, opts, console_errors, netw
     found = list(page.evaluate(CHECK_JS))
     found += run_axe(page)
     try:
+        wait_for_dom_stability(page, quiet_ms=300, max_wait_ms=3000)
         found += page.evaluate(INTERACT_JS)
     except Exception as exc:
         found.append(['INFO', 'interact-check',
                       f'interaction check interrupted (e.g., navigation): {str(exc)[:100]}'])
-    if console_errors:
+    hydration_errors = [e for e in console_errors if is_hydration_mismatch_error(e)]
+    other_console_errors = [e for e in console_errors if not is_hydration_mismatch_error(e)]
+    if hydration_errors:
+        found.append(['WARN', 'hydration-mismatch',
+                      f"{len(hydration_errors)} hydration mismatch(es): {'; '.join(hydration_errors[:3])}"])
+    if other_console_errors:
         found.append(['WARN', 'js-errors',
-                      f"{len(console_errors)} console/page error(s): {'; '.join(console_errors[:3])}"])
+                      f"{len(other_console_errors)} console/page error(s): {'; '.join(other_console_errors[:3])}"])
     if network_errors:
         found.append(['WARN', 'network-errors',
                       f"{len(network_errors)} network error(s): {'; '.join(network_errors[:3])}"])
     if mobile_factory is not None and hasattr(mobile_factory, 'new_page'):
         m = _new_page(mobile_factory, {'width': 375, 'height': 800})
         try:
-            _prepare_page(m, target_uri, opts.dark)
+            _prepare_page(m, target_uri, opts.dark, wait_for=opts.wait_for, actions=opts.actions)
             found += m.evaluate(MOBILE_JS)
         finally:
             m.close()
@@ -462,7 +639,7 @@ def capture(browser_or_page, target_uri, opts=None):
     network_errors = []
     detach = _attach_error_listeners(page, console_errors, network_errors, online=online)
     try:
-        _prepare_page(page, target_uri, opts.dark)
+        _prepare_page(page, target_uri, opts.dark, wait_for=opts.wait_for, actions=opts.actions)
         out_path = str(opts.out) if opts.out is not None else None
         if out_path is not None:
             page.screenshot(path=out_path, full_page=True)
@@ -503,6 +680,8 @@ def build_parser():
                     help='save the session (after load/login) to this JSON file. PRIVACY: the file holds live cookies/tokens; add it to .gitignore')
     ap.add_argument('--login-script', metavar='PATH',
                     help='Python file defining def login(page, base_url): run once before rendering the target')
+    ap.add_argument('--wait-for', metavar='SELECTOR',
+                    help='wait for this CSS selector to become visible after hydration/DOM stability before capturing or interacting')
     ap.add_argument('--check', action='store_true',
                     help='also print defects found in the rendered page: layout (clipped text, blank/half-empty panels, hidden content), axe accessibility, console errors, 375px mobile, dead buttons, focus rings')
     ap.epilog = (
@@ -537,6 +716,7 @@ def parse_options(argv=None):
         storage_state=a.storage_state,
         save_storage_state=a.save_storage_state,
         login_script=a.login_script,
+        wait_for=a.wait_for,
     )
 
 
