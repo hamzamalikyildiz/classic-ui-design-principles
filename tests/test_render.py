@@ -183,6 +183,7 @@ class JsPayloads(unittest.TestCase):
         self.assertIn("cs.overflowX !== 'auto' && cs.overflowX !== 'scroll'", rd.CHECK_JS)
         self.assertIn("position === 'sticky'", rd.CHECK_JS)
         self.assertIn("position === 'fixed'", rd.CHECK_JS)
+        self.assertIn("col.c.matches('nav') || col.c.querySelector('nav')", rd.CHECK_JS)
         self.assertIn('Math.abs(r.top - sib.r.top) < 80', rd.CHECK_JS)
         self.assertIn('nd.nodeType === 3 && nd.textContent.trim()', rd.CHECK_JS)
         for tag in ('svg', 'img', 'canvas', 'video', 'iframe', 'input', 'textarea', 'select'):

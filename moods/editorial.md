@@ -7,11 +7,9 @@
 - Serif is allowed for body (Merriweather, Source Serif, Lora) and often warmer than a sans; still max 2 families.
 - Depth comes from hairline rules and whitespace, so `border-heavy` does not apply.
 
-Content floor: masthead with date/section nav, kicker + headline + standfirst + byline with avatar, illustration with caption, drop cap, pull quote, related stories, newsletter.
-
-Fill the page:
-- A 65ch column alone leaves the right half empty at 1280px. Use a two-column article: reading column plus a sticky aside (`lg:grid-cols-[minmax(0,65ch)_280px] gap-12`) with contents list, one big statistic, key facts or related reading.
-- Include at least one custom inline-SVG figure (map, diagram, timeline) with a caption, not a gradient box or stock placeholder. Related stories get small illustrated cards (SVG shape per card), not text-only links.
-- Give the piece a signature: a distinctive serif display face at 56px+ for the headline, one spot accent color from the subject, and a dark newsletter/closing band for contrast.
-- Verify with the screenshot: no region of the page wider than 300px x 400px is blank. A sticky aside that is short still looks like an empty right column in a full-page screenshot: keep the aside as long as the article (stats, key facts, contents, related reading, a second figure) or use one centered column instead. `render.py --check` reports this as `empty-column`.
-- Labels inside SVG figures (map pins, chart annotations) need 8px clearance from each other and from lines; place them on a grid, shorten them, or move them into a legend. `--check` reports `overlapping-labels`.
+Layout and figures:
+- **Default layout: centered single reading column** (`max-w-prose` / `65ch` under a wide `max-w-4xl`/`5xl` headline and wide figures — generous open margins around a 65ch column are intentional editorial breathing room, NOT empty space!).
+- Use a two-column layout (`lg:grid-cols-[minmax(0,65ch)_280px] gap-12`) **only** when the brief genuinely benefits from parallel margin notes, a recipe ingredient rail, or a compact sticky TOC — never stack 6-7 unrelated widgets just to match article height.
+- Include at least one custom inline-SVG figure (map, diagram, timeline) with a caption, not a gradient box or stock placeholder.
+- Give the piece a signature: a distinctive serif display face at 56px+ for the headline, one spot accent color from the subject, and a dark newsletter/closing band for contrast when the brief calls for one.
+- **SVG figure craft:** keep every SVG label clear of axis lines, dashed threshold lines, and callout borders (`>= 8px` clearance; never run a vertical threshold line across bar value labels). `--check` reports `overlapping-labels`.

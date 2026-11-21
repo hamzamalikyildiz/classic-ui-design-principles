@@ -33,6 +33,7 @@ judges = load_json(H / 'judges.json')
 votes = {}       # orig pair -> list of dict(judge, win, conf, diff)
 per_judge = {}
 moods = {}
+briefs = {}
 for j in judges:
     f = first_existing(W / f'judge_{j["id"]}.txt', W / 'verdicts' / f'judge_{j["id"]}.txt')
     mf = W / 'maps' / f'MAP_{j["id"]}.json'
@@ -49,7 +50,9 @@ for j in judges:
             sk, ns = (a_, b_) if v['skill'] == 'A' else (b_, a_)
             diff = [p - q for p, q in zip(sk, ns)]
         votes.setdefault(v['orig'], []).append({'judge': j['id'], 'win': win, 'conf': int(m.group(3)), 'diff': diff})
-        moods[v['orig']] = v['mood']; w += win; n += 1
+        moods[v['orig']] = v['mood']
+        if 'brief' in v: briefs[v['orig']] = v['brief']
+        w += win; n += 1
     per_judge[j['id']] = (w, n, len(mp))
 
 allv = [x for vs in votes.values() for x in vs]
@@ -89,6 +92,16 @@ bymood = {}
 for k, v in maj.items(): bymood.setdefault(moods[k], []).append(v)
 for m, vs in sorted(bymood.items()):
     out.append(f'| {m} | {len(vs)} | {sum(1 for v in vs if v > .5)}/{len(vs)} |')
+bybrief = {}
+for k, v in maj.items():
+    if k in briefs: bybrief.setdefault(briefs[k], []).append(k)
+if len(bybrief) > 1:
+    out += ['', '## Per brief type (majority per pair)', '', '| Brief | Pairs | Skill majority wins | Vote win rate |', '|---|---|---|---|']
+    for b, ks in sorted(bybrief.items()):
+        bw = sum(x['win'] for k in ks for x in votes[k])
+        bn = sum(len(votes[k]) for k in ks)
+        bm = sum(1 for k in ks if maj[k] > .5)
+        out.append(f'| {b} | {len(ks)} | {bm}/{len(ks)} | {bw}/{bn} = {100 * bw / max(bn, 1):.0f}% |')
 ds = [x['diff'] for x in allv if x['diff']]
 if ds:
     out += ['', '## Mean score difference, skill minus no-skill (1-10 scale)', '', '| Criterion | Mean diff |', '|---|---|']

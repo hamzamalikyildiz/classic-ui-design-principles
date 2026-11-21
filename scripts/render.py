@@ -218,6 +218,7 @@ CHECK_JS = r"""() => {
     const visCols = [...p.children].filter(vis).map(c => ({ c, r: c.getBoundingClientRect(), cs: getComputedStyle(c) }));
     for (const col of visCols) {
       if (col.cs.position === 'sticky' || col.cs.position === 'fixed') continue;
+      if (col.c.matches('nav') || col.c.querySelector('nav')) continue;
       const r = col.r;
       if (r.width < 200) continue;
       const rowSibs = visCols.filter(sib => sib.cs.position !== 'fixed' && Math.abs(r.top - sib.r.top) < 80 && Math.min(r.bottom, sib.r.bottom) > Math.max(r.top, sib.r.top));

@@ -41,7 +41,7 @@ Playful and Bold are **expressive**: the audit enforces only the accessibility f
 3. **Icons are inline SVG**, one stroke style. Emoji as icons only in Playful.
 4. **Specific copy and data**: real-sounding names, numbers, units; no "Lorem", no "Feature one".
 5. **Visual polish** (`reference/visual-quality.md`, read it before building): palette recipe from the subject, a display or serif face with a voice, one hero entrance and one dealt moment, real product UI instead of boxes, one atmosphere treatment, varied section rhythm. Cover the logo: if the page could belong to any company, add specifics. `audit` flags stock blue/violet accents with no custom palette as `stock-look`.
-6. **Fill the page**: no half-empty panels, every list/table shows real rows, every plan card has its own button, art keeps its subject inside the viewport, all content visible without JavaScript (no `opacity-0` start states).
+6. **No half-empty stubs, no filler widgets**: populate every panel you include with real rows and copy, and do NOT invent extra panels or sidebars just to fill space; intentional breathing room beats kitchen-sink crowding; keep all content visible without JavaScript (no `opacity-0` start states).
 
 ## 4. Hard rules (details and values in `reference/rules.md`; read it when fixing findings or building components)
 
@@ -72,7 +72,7 @@ python3 scripts/render.py page.html --out shot.png --check  # screenshot + rende
 
 1. Mood, concept (one line: visual idea + 3 personality words) and plan statement.
 2. Palette from the subject; check every text/background pair with `contrast`. Type scale with `scale`. Tokens in one place.
-3. Build hero surface, focal visual and signature element first, then supporting content (content floor in the mood file).
+3. Build hero surface, focal visual and signature element first, then add only the supporting modules the brief calls for (follow the mood file's focus rule, not a fixed widget quota).
 4. `audit --mood <mood>` once on the finished file. Fix FAIL/WARN with the smallest edit (a shade, a size, a class); never delete the signature element or illustration to satisfy a check.
 5. If Playwright + Chrome are available, run `render.py --check`, fix every WARN, then open the screenshot and ask: where does the eye land (hero surface or primary CTA)? does it feel like the mood? any empty, stretched or boxed-in area? does the squint test show hierarchy? did a requested element lose emphasis? If Playwright/rendering is unavailable and skipped, say so in the report.
 6. Repeat 4-5 at most three times; the last round must be clean.
