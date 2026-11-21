@@ -147,193 +147,17 @@ def chrome_path():
     return None
 
 
-CHECK_JS = r"""() => {
-  const out = [], vw = innerWidth;
-  const where = e => { const c = (e.className && e.className.baseVal === undefined ? String(e.className) : '').trim().split(/\s+/).slice(0, 3).join('.');
-                       return e.tagName.toLowerCase() + (c ? '.' + c : ''); };
-  const vis = e => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-                     return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'; };
-  const mediaTags = new Set(['svg', 'img', 'canvas', 'video', 'iframe', 'input', 'textarea', 'select']);
-  const hasDirectText = c => [...c.childNodes].some(nd => nd.nodeType === 3 && nd.textContent.trim());
-  const contentBottom = container => {
-    let last = container.getBoundingClientRect().top, n = 0;
-    if (hasDirectText(container)) {
-      for (const nd of container.childNodes) {
-        if (nd.nodeType === 3 && nd.textContent.trim()) {
-          const rg = document.createRange();
-          rg.selectNodeContents(nd);
-          const rr = rg.getBoundingClientRect();
-          if (rr.height > 0) { last = Math.max(last, rr.bottom); n++; }
-        }
-      }
-    }
-    for (const d of container.querySelectorAll('*')) {
-      if (!vis(d)) continue;
-      const t = (d.children.length === 0 && (d.innerText || '').trim()) || hasDirectText(d);
-      if (t || mediaTags.has(d.tagName.toLowerCase())) { last = Math.max(last, d.getBoundingClientRect().bottom); n++; }
-    }
-    return { last, n };
-  };
-  if (document.documentElement.scrollWidth > vw + 2)
-    out.push(['WARN', 'page-overflow-x', `page is ${document.documentElement.scrollWidth}px wide in a ${vw}px viewport (horizontal scrollbar)`]);
-  const clipped = [], hidden = [], empty = [], edge = [], blank = [], hollow = [], tinyDesk = [];
-  for (const e of document.querySelectorAll('body *')) {
-    if (!vis(e)) continue;
-    const cs = getComputedStyle(e), tag = e.tagName.toLowerCase(), r = e.getBoundingClientRect();
-    if (['script', 'style', 'svg', 'path', 'circle', 'rect', 'g', 'defs', 'stop', 'line', 'polygon', 'polyline', 'ellipse', 'text', 'tspan'].includes(tag)) continue;
-    const text = (e.innerText || '').trim();
-    const srOnly = r.width <= 2 || r.height <= 2 || cs.clip === 'rect(0px, 0px, 0px, 0px)' || cs.clipPath === 'inset(50%)';
-    if (!srOnly) {
-      if ((cs.overflowX === 'hidden' && e.scrollWidth > e.clientWidth + 3) || (cs.overflowY === 'hidden' && e.scrollHeight > e.clientHeight + 3)) {
-        if (text && e.clientHeight > 0 && !cs.textOverflow.includes('ellipsis') && (cs.webkitLineClamp === 'none' || !cs.webkitLineClamp)) clipped.push(where(e));
-      }
-      if ((tag === 'pre' || tag === 'code') && e.scrollWidth > e.clientWidth + 3 && cs.display !== 'inline' && cs.overflowX !== 'auto' && cs.overflowX !== 'scroll') clipped.push(where(e) + ' (text runs out of its box)');
-      if (text && parseFloat(cs.webkitTextStrokeWidth) > 0 && (cs.webkitTextFillColor === 'transparent' || /rgba\([^)]+,\s*0(?:\.0+)?\)/.test(cs.webkitTextFillColor || ''))) hollow.push(where(e));
-      if (parseFloat(cs.fontSize) < 12 && [...e.childNodes].some(nd => nd.nodeType === 3 && nd.textContent.trim().length > 12)) tinyDesk.push(where(e) + ` (${Math.round(parseFloat(cs.fontSize))}px)`);
-    }
-    if (text && parseFloat(cs.opacity) === 0 && !e.closest('[aria-hidden=true]')) hidden.push(where(e));
-    if ((tag === 'button' || tag === 'a') && !text && !e.querySelector('svg,img,canvas') && !e.getAttribute('aria-label') && !e.getAttribute('title')) empty.push(where(e));
-    if (['img', 'canvas', 'figure'].includes(tag) && r.right > vw + 2 && r.left < vw - 8) edge.push(where(e));
-  }
-  for (const e of document.querySelectorAll('section, main > div, header, footer')) {
-    if (!vis(e) || getComputedStyle(e).position === 'absolute') continue;
-    const r = e.getBoundingClientRect();
-    if (r.height > 320 && !(e.innerText || '').trim() && !e.querySelector('svg,img,canvas,video,iframe')) blank.push(where(e) + ` (${Math.round(r.height)}px)`);
-  }
-  const sparse = [];
-  for (const e of document.querySelectorAll('div, section, article, aside, pre')) {
-    if (!vis(e)) continue;
-    const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-    if (r.height < 260 || r.width < 240) continue;
-    if (!(parseFloat(cs.borderTopWidth) > 0 || cs.backgroundColor !== 'rgba(0, 0, 0, 0)')) continue;
-    if (e.matches('body > div, main, #app, #root') || r.width > innerWidth * 0.9) continue;
-    const { last, n } = contentBottom(e);
-    if (n && (last - r.top) / r.height < 0.5) sparse.push(where(e) + ` (${Math.round(100 * (last - r.top) / r.height)}% filled)`);
-  }
-  if (sparse.length) out.push(['WARN', 'empty-panel', `${sparse.length} panel(s) are more than half empty: ${[...new Set(sparse)].slice(0, 4).join(', ')}; fill them (more rows, content) or shrink the panel`]);
-  const cols = [];
-  for (const p of document.querySelectorAll('div, section, main, article')) {
-    if (!vis(p)) continue;
-    const pr = p.getBoundingClientRect(), pcs = getComputedStyle(p);
-    if (pr.height < 700 || p.children.length < 2) continue;
-    if (!(pcs.display === 'grid' || (pcs.display === 'flex' && pcs.flexDirection.startsWith('row')))) continue;
-    const visCols = [...p.children].filter(c => vis(c) && getComputedStyle(c).position !== 'absolute').map(c => ({ c, r: c.getBoundingClientRect(), cs: getComputedStyle(c) }));
-    for (const col of visCols) {
-      if (col.cs.position === 'sticky' || col.cs.position === 'fixed') continue;
-      if ([...col.c.children].some(ch => getComputedStyle(ch).position === 'sticky')) continue;
-      if (col.c.matches('nav') || (col.c.matches('aside') && col.c.querySelector('nav'))) continue;
-      const r = col.r;
-      if (r.width < 200) continue;
-      if (pcs.display === 'grid' && visCols.some(sib => sib.c !== col.c && sib.r.top >= r.bottom - 5 && sib.r.left < r.right - 5 && sib.r.right > r.left + 5)) continue;
-      const rowSibs = visCols.filter(sib => sib.cs.position !== 'fixed' && Math.abs(r.top - sib.r.top) < 80 && Math.min(r.bottom, sib.r.bottom) > Math.max(r.top, sib.r.top));
-      if (rowSibs.length < 2) continue;
-      const rowTop = Math.min(...rowSibs.map(s => s.r.top));
-      const rowBottom = Math.max(...rowSibs.map(s => s.r.bottom));
-      const rowHeight = rowBottom - rowTop;
-      const { last, n } = contentBottom(col.c);
-      const blankH = rowBottom - last;
-      if (n && rowHeight > 0 && blankH > 500 && blankH / rowHeight > 0.4) cols.push(where(col.c) + ` (${Math.round(blankH)}px empty below its content)`);
-    }
-  }
-  if (cols.length) out.push(['WARN', 'empty-column', `${cols.length} column(s) end far above their row: ${[...new Set(cols)].slice(0, 3).join(', ')}; continue the column (stats, related reading, contents) or use a single column`]);
-  const ovl = [];
-  const isHiddenOrRotated = (el, svg) => {
-    for (let cur = el; cur && cur !== svg.parentElement; cur = cur.parentElement) {
-      const pcs = getComputedStyle(cur);
-      if (parseFloat(pcs.opacity) === 0 || pcs.display === 'none' || pcs.visibility === 'hidden') return true;
-      if ((cur.getAttribute('transform') || '').includes('rotate')) return true;
-      const tm = (pcs.transform || '').match(/^matrix\(([^)]+)\)/);
-      if (tm) {
-        const pts = tm[1].split(',').map(Number);
-        if (Math.abs(pts[1]) > 0.05 || Math.abs(pts[2]) > 0.05) return true;
-      }
-    }
-    return false;
-  };
-  for (const svg of document.querySelectorAll('svg')) {
-    const labs = [...svg.querySelectorAll('text')].filter(el => {
-      if (!vis(el)) return false;
-      const cs = getComputedStyle(el);
-      if (cs.fill === 'none') return false;
-      if (isHiddenOrRotated(el, svg)) return false;
-      return true;
-    }).slice(0, 200);
-    for (let i = 0; i < labs.length; i++) for (let j = i + 1; j < labs.length; j++) {
-      const a = labs[i].getBoundingClientRect(), b = labs[j].getBoundingClientRect();
-      const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-      if (w > 2 && h > 2 && w * h > 0.25 * Math.min(a.width * a.height, b.width * b.height))
-        ovl.push(`"${(labs[i].textContent || '').trim().slice(0, 12)}" / "${(labs[j].textContent || '').trim().slice(0, 12)}"`);
-    }
-  }
-  if (ovl.length) out.push(['WARN', 'overlapping-labels', `${ovl.length} SVG label pair(s) overlap: ${ovl.slice(0, 3).join(', ')}; move or shorten the labels`]);
-  const u = a => [...new Set(a)].slice(0, 5).join(', ');
-  if (clipped.length) out.push(['WARN', 'clipped-content', `${clipped.length} element(s) cut off or overflowing: ${u(clipped)}`]);
-  if (hollow.length) out.push(['WARN', 'hollow-text', `${hollow.length} stroked hollow/transparent text element(s) hurt low-vision legibility: ${u(hollow)}`]);
-  if (tinyDesk.length) out.push(['WARN', 'desktop-tiny-text', `${tinyDesk.length} text run(s) under 12px on desktop: ${u(tinyDesk)}`]);
-  if (hidden.length) out.push(['WARN', 'invisible-content', `${hidden.length} element(s) with text but opacity 0 after load and scroll: ${u(hidden)}`]);
-  if (blank.length) out.push(['WARN', 'blank-band', `${blank.length} tall section(s) render empty: ${u(blank)}`]);
-  if (empty.length) out.push(['WARN', 'empty-control', `${empty.length} button/link without text, icon or label: ${u(empty)}`]);
-  if (edge.length) out.push(['INFO', 'edge-clipped-art', `art runs past the right edge: ${u(edge)}; keep the subject fully visible or bleed at least a third of it`]);
-  if (!out.length) out.push(['INFO', 'dom-check', 'no layout defects found']);
-  return out;
-}"""
+CHECKS_DIR = pathlib.Path(__file__).resolve().parent / 'checks'
 
 
-MOBILE_JS = r"""() => {
-  const out = [], vw = innerWidth;
-  const vis = e => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-                     return r.width > 2 && r.height > 2 && cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) !== 0 && cs.clip !== 'rect(0px, 0px, 0px, 0px)' && cs.clipPath !== 'inset(50%)'; };
-  if (document.documentElement.scrollWidth > vw + 2)
-    out.push(['WARN', 'mobile-overflow-x', `page is ${document.documentElement.scrollWidth}px wide at ${vw}px (horizontal scroll)`]);
-  const small = [], tiny = [];
-  for (const e of document.querySelectorAll('a, button, input, select, textarea, [role=button]')) {
-    if (!vis(e) || (e.tagName === 'INPUT' && (e.type || '').toLowerCase() === 'hidden')) continue;
-    const r = e.getBoundingClientRect();
-    if (r.height < 36 && r.width <= 120 && !e.closest('p, li'))
-      small.push((e.innerText || e.getAttribute('aria-label') || e.placeholder || e.tagName).trim().slice(0, 18) + ` (${Math.round(r.width)}x${Math.round(r.height)})`);
-  }
-  for (const e of document.querySelectorAll('p, li, span, a, button, td')) {
-    if (!vis(e)) continue;
-    const cs = getComputedStyle(e);
-    if ([...e.childNodes].some(nd => nd.nodeType === 3 && nd.textContent.trim().length > 3) && parseFloat(cs.fontSize) < 11)
-      tiny.push(e.textContent.trim().slice(0, 14));
-  }
-  if (small.length) out.push(['INFO', 'mobile-tap-targets', `${small.length} control(s) under 36px tall: ${small.slice(0, 4).join(', ')}`]);
-  if (tiny.length) out.push(['WARN', 'mobile-tiny-text', `${tiny.length} text run(s) under 11px: ${tiny.slice(0, 4).join(', ')}`]);
-  return out;
-}"""
+def _load_check_js(filename):
+    return (CHECKS_DIR / filename).read_text(encoding='utf-8').strip()
 
-INTERACT_JS = r"""async () => {
-  const out = [];
-  const focusEls = [...document.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, [tabindex]:not([tabindex="-1"])')]
-    .filter(e => {
-      const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-      return r.width > 2 && r.height > 2 && cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) !== 0 && cs.clip !== 'rect(0px, 0px, 0px, 0px)' && cs.clipPath !== 'inset(50%)' && !e.disabled && e.getAttribute('aria-disabled') !== 'true';
-    }).slice(0, 6);
-  let noRing = 0;
-  for (const e of focusEls) {
-    e.focus({ focusVisible: true });
-    const cs = getComputedStyle(e);
-    const cls = typeof e.className === 'string' ? e.className : (e.getAttribute('class') || '');
-    if (document.activeElement === e && cs.outlineStyle === 'none' && cs.boxShadow === 'none' && !/(?:^|\s)focus(?:-visible)?:(?:ring(?!-0\b)(?:-\S+|\b)|outline(?!-(?:none|0)\b)(?:-\S+|\b)|border-(?!transparent\b)\S+)/.test(cls)) noRing++;
-  }
-  if (noRing >= 3) out.push(['WARN', 'no-focus-ring', `${noRing} of ${focusEls.length} checked control(s) show no focus indicator (add focus-visible:ring-2)`]);
-  const btns = [...document.querySelectorAll('button, [role=button]')]
-    .filter(b => (b.innerText || '').trim() && b.getBoundingClientRect().width && getComputedStyle(b).display !== 'none' && b.type !== 'submit' && !b.disabled && b.getAttribute('aria-disabled') !== 'true').slice(0, 8);
-  let dead = [];
-  for (const b of btns) {
-    let changed = false;
-    const mo = new MutationObserver(() => { changed = true; });
-    mo.observe(document.documentElement, { subtree: true, attributes: true, childList: true, characterData: true });
-    const x = scrollX, y = scrollY; try { b.click(); } catch (e) {}
-    await new Promise(r => setTimeout(r, 120)); mo.disconnect();
-    if (Math.abs(scrollY - y) > 5 || Math.abs(scrollX - x) > 5) changed = true;
-    if (scrollY !== y || scrollX !== x) scrollTo(x, y);
-    if (!changed && !b.closest('a, form')) dead.push(b.innerText.trim().slice(0, 18));
-  }
-  if (dead.length) out.push(['INFO', 'dead-buttons', `${dead.length} button(s) changed nothing when clicked: ${dead.slice(0, 5).join(', ')}`]);
-  return out;
-}"""
+
+CHECK_JS = _load_check_js('check.js')
+MOBILE_JS = _load_check_js('mobile.js')
+INTERACT_JS = _load_check_js('interact.js')
+SCROLL_SWEEP_JS = _load_check_js('sweep.js')
 
 
 def find_axe():
@@ -362,11 +186,6 @@ def run_axe(page):
         sev = 'WARN' if v['impact'] in ('serious', 'critical') else 'INFO'
         out.append((sev, 'axe-' + v['id'], f"{v['help']} ({v['n']} node(s), {v['impact']}; first: {v['t']})"))
     return out
-
-
-SCROLL_SWEEP_JS = """async () => { const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-    for (let y = 0; y < h; y += 600) { window.scrollTo({ top: y, behavior: 'instant' }); await new Promise(r => setTimeout(r, 60)); }
-    window.scrollTo({ top: 0, behavior: 'instant' }); }"""
 
 
 def write_temp_render(src, html):
