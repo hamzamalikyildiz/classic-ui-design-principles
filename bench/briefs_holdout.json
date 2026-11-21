@@ -1,0 +1,10 @@
+{"playful": {"a": "Homepage for \"Bubbly Bites\", a healthy-snack subscription box for kids: hero with mascot, what is in the box, a snack-quiz teaser, pricing, a parents section, CTA band.",
+             "b": "Page for a children's science museum weekend festival: activity zones, a Saturday and Sunday schedule, ticket tiers, safety information and a map teaser."},
+ "bold": {"a": "Launch page for \"Ridge\", a trail-running shoe: dramatic hero, three technology highlights, athlete quotes, sizing guide, pre-order CTA.",
+          "b": "Landing page for an indie music festival called \"Low Tide\": lineup, dates and venue, ticket tiers, sponsor call-to-action."},
+ "technical": {"a": "Database admin console for \"Quillbase\": query latency by shard, slow query list, replication lag chart, connection pool status and a SQL snippet panel.",
+               "b": "Cloud cost dashboard: spend by service, daily trend chart, anomaly alerts, top idle resources and tag coverage."},
+ "trust": {"a": "Tax-prep portal for freelancers called \"Taxwell\": refund estimate, document checklist, upcoming deadlines, a flagged-deduction alert and a table of past filings.",
+           "b": "Pharmacy account dashboard: prescriptions ready for pickup, refills due, delivery tracking and an insurance status alert."},
+ "editorial": {"a": "Long-read profile page about a ceramics studio, headline \"Clay and Fire\": standfirst, byline, body sections, a pull quote, related stories and a newsletter signup.",
+               "b": "Travel essay page \"Night Train to Trieste\": headline, introduction, an itinerary sidebar, a pull quote and related essays."}}

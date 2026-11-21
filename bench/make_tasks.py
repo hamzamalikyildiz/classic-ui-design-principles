@@ -29,11 +29,11 @@ NOSKILL = ("Do NOT read anything under {skill} or any skills folder.\n"
 
 ap = argparse.ArgumentParser()
 ap.add_argument('work'); ap.add_argument('--skill', required=True); ap.add_argument('--python', required=True)
-ap.add_argument('--briefs', default='r,m'); ap.add_argument('--moods', default=''); ap.add_argument('--reps', type=int, default=2); ap.add_argument('--rounds', type=int, default=2)
+ap.add_argument('--briefs', default='r,m'); ap.add_argument('--moods', default=''); ap.add_argument('--briefs-file', default='briefs.json'); ap.add_argument('--reps', type=int, default=2); ap.add_argument('--rounds', type=int, default=2)
 a = ap.parse_args()
 W = pathlib.Path(a.work)
 skill_path = pathlib.Path(a.skill)
-with open(HERE / 'briefs.json', encoding='utf-8') as fh:
+with open(HERE / a.briefs_file, encoding='utf-8') as fh:
     briefs = json.load(fh)
 (W / 'tasks').mkdir(parents=True, exist_ok=True); (W / 'shots_gen').mkdir(exist_ok=True)
 index = []

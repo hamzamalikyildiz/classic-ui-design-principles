@@ -236,6 +236,16 @@ class Character(unittest.TestCase):
         self.assertEqual(rules(run(custom), 'stock-look'), [])
         self.assertEqual(rules(run(display), 'stock-look'), [])
 
+    def test_no_serif_uses_loaded_faces(self):
+        page = '<main><h1 className="text-4xl">x</h1></main>'
+        link = lambda fam: f'<link href="https://fonts.googleapis.com/css2?family={fam}&display=swap">'
+        for fam in ('Fraunces:opsz,wght@9..144,600', 'Newsreader:ital,wght@0,400', 'Source+Serif+4', 'Playfair+Display'):
+            self.assertEqual(rules(run(link(fam) + page, mood='editorial'), 'no-serif'), [], fam)
+        self.assertEqual(rules(run('<main><h1 className="font-serif">x</h1></main>', mood='editorial'), 'no-serif'), [])
+        self.assertTrue(rules(run(link('Inter') + page, mood='editorial'), 'no-serif'))
+        sans = '<style>body{font-family:Inter,sans-serif}</style>' + page
+        self.assertTrue(rules(run(sans, mood='editorial'), 'no-serif'))   # sans-serif is not a serif
+
     def test_stock_look_ignores_common_rounded_faces(self):
         font = '<link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap">'
         stock = '<a className="bg-violet-600 text-white h-12">Go</a><span className="text-violet-600">x</span>'

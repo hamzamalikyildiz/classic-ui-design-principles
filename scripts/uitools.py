@@ -550,6 +550,21 @@ NEUTRAL_SANS = {'Inter', 'Roboto', 'Open Sans', 'Poppins', 'Lato', 'Montserrat',
 NEUTRAL_MONO = {'JetBrains Mono', 'Fira Code', 'IBM Plex Mono', 'Source Code Pro', 'Roboto Mono', 'Geist Mono'}
 # rounded kids' faces are the default pick for playful pages, so they do not make a page distinctive on their own
 COMMON_ROUNDED = {'Fredoka', 'Baloo 2', 'Baloo', 'Chewy', 'Lilita One', 'Quicksand', 'Comfortaa'}
+SERIF_FACES = {'fraunces', 'playfair display', 'newsreader', 'merriweather', 'lora', 'eb garamond', 'cormorant', 'cormorant garamond',
+               'libre caslon text', 'libre caslon display', 'libre baskerville', 'crimson text', 'crimson pro', 'literata', 'spectral',
+               'bitter', 'georgia', 'times new roman', 'baskerville', 'garamond', 'abril fatface', 'young serif', 'gloock',
+               'instrument serif'}
+
+
+def has_serif_face(txt):
+    """True when the page uses a serif: the font-serif class, a serif generic in a font stack, or a loaded/declared serif face."""
+    if re.search(r'(?<![\w-])font-serif(?![\w-])', txt):
+        return True
+    if re.search(r'(?:font-family|fontFamily)\s*:[^;}\n]*(?<!sans-)\bserif\b', txt, re.I):
+        return True
+    names = {n.lower() for n in font_families(txt)}
+    names |= {n.lower() for n in re.findall(r"""['"]([A-Z][A-Za-z0-9 ]+)['"]\s*,""", txt)}
+    return any(n in SERIF_FACES or re.search(r'\bserif\b', n) for n in names)
 
 
 def font_families(txt):
@@ -797,7 +812,7 @@ def mood_specific(txt, nodes, mood):
                  and any(c in ('text-lg', 'text-xl', 'text-2xl', 'text-base') for c in cls)]
         if tight:
             out.append(('WARN', 'editorial-leading', f"{len(tight)} long-form text element(s) with tight leading (lines {tight[:6]}); body 1.65-1.8 (leading-relaxed/loose), quotes >= 1.4"))
-        if not re.search(r'font-serif|(?:font-family\s*:[^;}]*|font-\[[^\]]*)(?:(?<!sans-)\bserif\b|Merriweather|Lora|Playfair|Source Serif|Source_Serif|Fraunces)', txt, re.I):
+        if not has_serif_face(txt):
             out.append(('INFO', 'no-serif', "no serif face found; editorial mood usually pairs a serif display (or body) with a sans"))
     elif mood == 'technical':
         soft = [line_of(txt, s) for tag, attrs, cls, anc, s, e in nodes
