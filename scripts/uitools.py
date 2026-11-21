@@ -6,7 +6,7 @@ _SCRIPTS_DIR = str(pathlib.Path(__file__).resolve().parent)
 if _SCRIPTS_DIR not in sys.path:
     sys.path.insert(0, _SCRIPTS_DIR)
 
-from uiignore import apply_ignores
+from uiignore import apply_ignores, filter_baseline, issue_hash, load_baseline, write_baseline
 from uicolor import (
     HEX,
     NAMED,
@@ -742,13 +742,26 @@ def cmd_audit(a):
     shared_tokens, shared_dark = css_tokens(css_texts), css_tokens(css_texts, r'\.dark')
     total = {'FAIL': 0, 'WARN': 0, 'INFO': 0}
     total_suppressed = 0
+    total_baseline_skipped = 0
     show_suppressed = getattr(a, 'show_suppressed', False)
+    baseline_path = getattr(a, 'baseline', None)
+    write_baseline_flag = getattr(a, 'write_baseline', False)
+    baseline_entries = load_baseline(baseline_path) if (baseline_path and not write_baseline_flag) else None
+    collected_hashes = []
+
     for p in a.files:
         p_txt = pathlib.Path(p).read_text(encoding='utf-8', errors='ignore')
         tokens = {**shared_tokens, **css_tokens([p_txt])}
         dark_tokens = {**shared_dark, **css_tokens([p_txt], r'\.dark')}
         iss, suppressed = audit(p, a.grid, tokens, dark_tokens, a.mood, txt=p_txt, return_suppressed=True)
         total_suppressed += len(suppressed)
+        if write_baseline_flag:
+            for _sev, rule, msg in iss:
+                collected_hashes.append(issue_hash(p, rule, msg, source_txt=p_txt))
+        elif baseline_entries is not None:
+            filtered, skipped = filter_baseline([(p, sev, rule, msg, p_txt) for sev, rule, msg in iss], baseline_entries)
+            iss = [(sev, rule, msg) for _p, sev, rule, msg, _txt in filtered]
+            total_baseline_skipped += skipped
         print(f"== {p}: {len(iss)} issue(s)")
         for sev, rule, msg in iss:
             total[sev] += 1
@@ -756,9 +769,18 @@ def cmd_audit(a):
         if show_suppressed and suppressed:
             for sev, rule, msg, reason in suppressed:
                 print(f"  [SUPPRESSED] [{sev}] {rule}: {msg} — reason: {reason}")
+
+    if write_baseline_flag:
+        target = baseline_path or '.uitools-baseline.json'
+        write_baseline(target, collected_hashes)
+        print(f"\nWrote {len(set(collected_hashes))} baseline entries to {target}")
+        sys.exit(0)
+
     summary = f"\nSUMMARY FAIL={total['FAIL']} WARN={total['WARN']} INFO={total['INFO']}"
     if total_suppressed > 0 or show_suppressed:
         summary += f" SUPPRESSED={total_suppressed}"
+    if baseline_path is not None:
+        summary += f" BASELINE_SKIPPED={total_baseline_skipped}"
     print(summary)
     sys.exit(1 if total['FAIL'] else 0)
 
@@ -782,6 +804,10 @@ def main(argv=None):
                    help='enable mood checks: color presence and hero surface')
     d.add_argument('--show-suppressed', action='store_true',
                    help='list suppressed issues with their ignore reasons')
+    d.add_argument('--baseline', metavar='PATH',
+                   help='baseline JSON file to filter known issues (default for --write-baseline: .uitools-baseline.json)')
+    d.add_argument('--write-baseline', action='store_true',
+                   help='write current issues to baseline file (--baseline path or .uitools-baseline.json)')
     d.set_defaults(f=cmd_audit)
     a = ap.parse_args(argv)
     a.f(a)

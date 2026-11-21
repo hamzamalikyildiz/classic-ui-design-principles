@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 """Reasoned suppression (`uitools-ignore`) parser and matcher for uitools."""
+import hashlib
+import json
+import os
+import pathlib
 import re
 
 KNOWN_RULES = frozenset({
@@ -188,3 +192,85 @@ def apply_ignores(txt, issues, known_rules=None):
             kept_issues.append((sev, rule, msg))
 
     return kept_issues, suppressed_issues, meta_issues
+
+
+def _normalize_path(file_path):
+    """Normalize file_path to a stable POSIX-style relative path."""
+    p = pathlib.Path(file_path)
+    if p.is_absolute():
+        try:
+            p = pathlib.Path(os.path.relpath(p))
+        except ValueError:
+            p = pathlib.Path(p.name)
+    s = p.as_posix()
+    while s.startswith('./'):
+        s = s[2:]
+    return s
+
+
+def _normalize_msg(msg):
+    """Strip line numbers from an audit message so line shifts don't break hashes."""
+    s = re.sub(r'\bL\d+\b', 'L?', msg)
+    s = re.sub(r'\(lines?\s+\[?[\d,\s]+\]?\)', '(lines ?)', s)
+    s = re.sub(r'\bline\s+\d+\b', 'line ?', s)
+    return re.sub(r'\s+', ' ', s).strip()
+
+
+def issue_hash(file_path, rule, msg, source_txt=None):
+    """Compute a line-shift-resilient hash for an audit issue."""
+    rel_path = _normalize_path(file_path)
+    norm_msg = _normalize_msg(msg)
+    snippet = ''
+    if source_txt is not None:
+        lines = source_txt.splitlines()
+        iss_lines = sorted(_issue_lines(msg))
+        parts = [lines[ln - 1].strip() for ln in iss_lines if 1 <= ln <= len(lines)]
+        snippet = '\n'.join(parts)
+    payload = f"{rel_path}\0{rule}\0{norm_msg}\0{snippet}"
+    return hashlib.sha256(payload.encode('utf-8')).hexdigest()[:16]
+
+
+def load_baseline(path):
+    """Load baseline hashes from a JSON file. Returns a set of hash strings."""
+    p = pathlib.Path(path)
+    if not p.is_file():
+        return set()
+    data = json.loads(p.read_text(encoding='utf-8'))
+    if isinstance(data, dict):
+        return set(data.get('entries', []))
+    if isinstance(data, list):
+        return set(data)
+    return set()
+
+
+def write_baseline(path, entries):
+    """Write sorted baseline hashes to a JSON file."""
+    p = pathlib.Path(path)
+    payload = {
+        'version': 1,
+        'entries': sorted(set(entries)),
+    }
+    p.write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+
+
+def filter_baseline(issues_with_files, baseline_entries):
+    """Filter out issues whose hash is in baseline_entries.
+
+    issues_with_files: iterable of (file_path, sev, rule, msg) or
+                       (file_path, sev, rule, msg, source_txt).
+    Returns (new_issues, skipped_count) where new_issues preserves the input tuple shape.
+    """
+    new_issues = []
+    skipped = 0
+    for item in issues_with_files:
+        if len(item) == 5:
+            file_path, sev, rule, msg, source_txt = item
+        else:
+            file_path, sev, rule, msg = item
+            source_txt = None
+        h = issue_hash(file_path, rule, msg, source_txt=source_txt)
+        if h in baseline_entries:
+            skipped += 1
+        else:
+            new_issues.append(item)
+    return new_issues, skipped
