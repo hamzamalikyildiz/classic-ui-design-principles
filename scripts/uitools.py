@@ -53,6 +53,7 @@ from uiparse import (
     COL_MED,
     COL_NARROW,
     DARK_NEUTRAL,
+    extract_cva_metadata,
     HEADLINE_TEXT,
     HUE_CLASS,
     MAXW,
@@ -848,6 +849,124 @@ def mood_specific(txt, nodes, mood):
     return out
 
 
+_TR_CHARS_RE = re.compile(r'[ğüşıöçĞÜŞİÖÇ]')
+_LANG_TR_RE = re.compile(r'\blang\s*=\s*(?:["\']tr(?:-[A-Za-z]+)?["\']|\{["\']tr(?:-[A-Za-z]+)?["\']\})', re.I)
+_THEME_TOGGLE_RE = re.compile(
+    r'(?:ThemeToggle|setTheme|next-themes|useTheme|data-theme-toggle|classList\.toggle\s*\(\s*[\'"]dark[\'"]\s*\)|toggleTheme)'
+)
+_HARDCODED_CURRENCY_TOFIXED_RE = re.compile(
+    r'(?:[$€₺%]|\b(?:TL|USD)\b)[^;\n]{0,40}\.toFixed\s*\(|\.toFixed\s*\([^)]*\)[^;\n]{0,20}(?:[$€₺%]|\b(?:TL|USD)\b)'
+)
+_HARDCODED_DATE_RE = re.compile(
+    r'\$\{[^}]*getDate\s*\(\s*\)\s*\}\s*/|getMonth\s*\(\s*\)\s*\+\s*1'
+)
+_NUMERIC_CELL_RE = re.compile(r'^[\s$€₺%+\-\u2212]*\d[\d.,\s%$€₺]*$')
+
+
+def _audit_static_rules_a8(raw_txt, txt, masked, nodes, dark_tokens, mood, route_mode):
+    """Run İP-A8 static rules: tr-uppercase, numeric-columns, heading-wrap, theme-toggle-missing, hardcoded-locale-format, shadcn-defaults."""
+    out = []
+
+    # 1. tr-uppercase (WARN)
+    has_uppercase = (
+        any('uppercase' in cls for _, _, cls, _, _, _ in nodes)
+        or bool(re.search(r'text-transform\s*:\s*uppercase', txt, re.I))
+    )
+    if has_uppercase and _TR_CHARS_RE.search(txt) and not _LANG_TR_RE.search(txt):
+        out.append(('WARN', 'tr-uppercase', 'uppercase transform with Turkish characters but missing lang="tr" on root/ancestor; i/I casing may corrupt'))
+
+    # 2. numeric-columns (INFO)
+    def _inner_text(tag, end_open):
+        close_idx = masked.find(f'</{tag}>', end_open)
+        if close_idx == -1:
+            return ''
+        return re.sub(r'<[^>]+>', '', masked[end_open:close_idx]).strip()
+
+    has_tabular_css = bool(re.search(r'font-variant-numeric\s*:\s*tabular-nums', txt, re.I))
+    if not has_tabular_css:
+        numeric_td_without_tabular = 0
+        for tag, attrs, cls, anc, s, e in nodes:
+            if tag == 'td':
+                inner = _inner_text(tag, e)
+                if inner and _NUMERIC_CELL_RE.match(inner):
+                    chain_cls = set(cls)
+                    for a in anc:
+                        chain_cls.update(a[2])
+                    if 'tabular-nums' not in chain_cls:
+                        numeric_td_without_tabular += 1
+        has_kpi_without_tabular = False
+        for tag, attrs, cls, anc, s, e in nodes:
+            if tag in ('div', 'span', 'p', 'dd') and any(k in ' '.join(cls).lower() for k in ('kpi', 'metric', 'stat')):
+                inner = _inner_text(tag, e)
+                if inner and _NUMERIC_CELL_RE.match(inner):
+                    chain_cls = set(cls)
+                    for a in anc:
+                        chain_cls.update(a[2])
+                    if 'tabular-nums' not in chain_cls:
+                        has_kpi_without_tabular = True
+                        break
+        if numeric_td_without_tabular >= 2 or has_kpi_without_tabular:
+            out.append(('INFO', 'numeric-columns', 'numeric table cells or KPI values without tabular-nums; add tabular-nums for aligned digits'))
+
+    # 3. heading-wrap (INFO, max 1 per file)
+    has_css_balance = bool(re.search(r'text-wrap\s*:\s*balance', txt, re.I))
+    has_css_pretty = bool(re.search(r'text-wrap\s*:\s*pretty', txt, re.I))
+    heading_missing = False
+    para_missing = False
+    for tag, attrs, cls, anc, s, e in nodes:
+        if tag in ('h1', 'h2', 'h3') and not has_css_balance:
+            if 'text-balance' not in cls and not re.search(r'text-wrap\s*:\s*balance', attrs, re.I):
+                heading_missing = True
+                break
+    if not heading_missing and not has_css_pretty:
+        for tag, attrs, cls, anc, s, e in nodes:
+            if tag == 'p':
+                inner = _inner_text(tag, e)
+                if len(inner) >= 80 and 'text-pretty' not in cls and not re.search(r'text-wrap\s*:\s*pretty', attrs, re.I):
+                    para_missing = True
+                    break
+    if heading_missing or para_missing:
+        out.append(('INFO', 'heading-wrap', 'headings without text-balance or long paragraphs without text-pretty; add text-balance / text-pretty'))
+
+    # 4. theme-toggle-missing (INFO, WARN in route_mode)
+    has_dark_mode = (
+        bool(dark_tokens)
+        or '[data-theme="dark"]' in txt
+        or "[data-theme='dark']" in txt
+        or any(c.startswith('dark:') for _, _, cls, _, _, _ in nodes for c in cls)
+        or bool(re.search(r'\bdark:[a-zA-Z0-9_-]+', txt))
+    )
+    if has_dark_mode and not _THEME_TOGGLE_RE.search(txt):
+        sev = 'WARN' if route_mode else 'INFO'
+        out.append((sev, 'theme-toggle-missing', 'dark mode tokens or dark: classes found without a visible theme toggle (ThemeToggle / setTheme / useTheme)'))
+
+    # 5. hardcoded-locale-format (INFO)
+    if _HARDCODED_CURRENCY_TOFIXED_RE.search(txt) or _HARDCODED_DATE_RE.search(txt):
+        out.append(('INFO', 'hardcoded-locale-format', 'hardcoded currency/percent .toFixed() or manual date concatenation; use Intl.NumberFormat / Intl.DateTimeFormat'))
+
+    # 6. shadcn-defaults (INFO)
+    cva_meta = extract_cva_metadata(raw_txt)
+    shadcn_hits = []
+    for entry in cva_meta.get('shadcn_defaults', []):
+        comp = (entry.get('component') or entry.get('var_name') or '').lower()
+        tok = entry.get('token', '')
+        opt = (entry.get('option') or '').lower()
+        if entry.get('kind') == 'small-height' and 'button' in comp and opt in ('default', 'sm', 'base') and tok == 'h-8':
+            shadcn_hits.append(f"Button {opt} uses {tok}")
+        elif entry.get('kind') == 'micro-text' and 'badge' in comp and tok in ('text-[10px]', 'text-[11px]'):
+            shadcn_hits.append(f"Badge uses {tok}")
+    if mood in ('trust', 'playful', 'bold'):
+        for tag, attrs, cls, anc, s, e in nodes:
+            if tag.lower() == 'card' or 'card' in ' '.join(cls).lower():
+                if 'border' in cls and not any(c in cls for c in ('shadow-sm', 'shadow-md', 'shadow-lg', 'border-transparent')):
+                    shadcn_hits.append(f"Card in {mood} mood uses flat border without shadow-sm/md/lg")
+                    break
+    if shadcn_hits:
+        out.append(('INFO', 'shadcn-defaults', f"shadcn default styling detected ({'; '.join(shadcn_hits[:3])})"))
+
+    return out
+
+
 def audit(
     path,
     grid,
@@ -1145,6 +1264,7 @@ def audit(
         add('INFO', 'skeleton-empty', "list rendering without skeleton/empty state")
     if re.search(r'<(?:html|body)\b', masked, re.I) and not re.search(r'<main\b|role=["\']main', masked, re.I):
         add('WARN', 'landmark-main', 'full page without a <main> landmark; wrap the primary content in <main> (and use <header>/<footer>/<nav>)')
+    issues.extend(_audit_static_rules_a8(raw_txt, txt, masked, nodes, dark_tokens, mood, route_mode))
     if component_file:
         downgraded = []
         for idx_i, (sev, r, m) in enumerate(issues):
