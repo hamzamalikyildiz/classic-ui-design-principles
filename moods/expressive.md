@@ -13,3 +13,7 @@ These two are judged on memorability, so the audit only enforces a floor and tur
 Floor, never broken: AA contrast (including on gradients and inside dark/saturated cards), `>= 44px` primary tap targets, visible focus, `prefers-reduced-motion` respected, all content visible without JavaScript (no `opacity-0` start state without CSS `animation-fill-mode: both`), nothing clipped, empty or overlapping. Run `render.py --check` and fix every WARN it prints.
 
 **Scope (no forced template quota):** build a strong hero plus only the supporting sections the brief calls for, rather than stacking a fixed 6-section quota or invented filler blocks.
+
+## Motion & state tone (`reference/motion.md`, `reference/states.md`)
+- **Motion personality:** **Playful**: tactile springs (`stiffness 400, damping 30`), `scale(0.98)` press, celebratory completion (check draw/confetti); **Bold**: cinematic, deliberate entrances (`320-500ms` enter curve, `30-50ms` hero stagger), high-contrast shared-element transitions (`prefers-reduced-motion: reduce`).
+- **State & microcopy tone:** **Playful**: warm, encouraging, conversational (friendly empty states, reassuring error recovery); **Bold**: confident, punchy, action-forward.

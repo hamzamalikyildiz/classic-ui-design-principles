@@ -6,3 +6,7 @@
 - **Code & log safety:** wrap code/log blocks in `overflow-x-auto` with sleek dark scrollbars (`scrollbar-color`) and `max-w-full min-w-0` on their grid column; check header pills do not overlap nav links at intermediate widths (`850-1024px`). `--check` catches overflow (`clipped-content`) and label collisions (`overlapping-labels`).
 - **Signature element:** one live multi-series annotated chart, severity-coded alert strip, or host/service detail inspector (when a master-detail inspector fits the brief, show the selected row highlighted and its detail panel open at load).
 - **Low-vision & dense typography:** use monospace with `tabular-nums` for numbers, timestamps, code and IDs. Keep primary table cells, log lines, descriptions, and chart axis labels at `>= 14px` (`text-sm`) with high contrast on dark zinc/slate surfaces (`>= 7:1` where practical; avoid faint muted grey walls); reserve `12px` (`text-xs`) strictly for short uppercase kickers, badges, or metadata tags.
+
+## Motion & state tone (`reference/motion.md`, `reference/states.md`)
+- **Motion personality:** ultra-fast and functional (`80-150ms` instant/fast tokens); crisp tab/command-palette transitions, live streaming log/progress steps, zero decorative flourish.
+- **State & microcopy tone:** diagnostic and exact (include HTTP/error codes, correlation IDs or query filters in `mono`, explicit retry/cancel/CLI copy actions, and millisecond/step telemetry on >3s operations).

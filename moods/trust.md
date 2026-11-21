@@ -7,3 +7,7 @@
 - Semantic colors carry state (red/amber/green) and always come with text or an icon.
 - **Low-vision comfort:** keep KPI sublabels, table rows, chart legends and copy inside dark accent hero cards at `>= 14px` (`text-sm`) with strong contrast; avoid `text-xs` body lists or faint translucent white text (`text-white/60`) on dark accent cards.
 - One signature detail so it is not a template: a ledger-paper tint, a real-looking statement preview, date chips, or a hand-drawn empty state.
+
+## Motion & state tone (`reference/motion.md`, `reference/states.md`)
+- **Motion personality:** calm, predictable (`150-220ms` `standard` cubic-bezier); subtle card elevation (`translateY(-1px)` + `shadow-md`), restrained count-up/ring fill (`tabular-nums`), zero playful bounce or confetti.
+- **State & microcopy tone:** reassuring, precise, non-alarmist (errors state exactly what is safe and the direct recovery action; empty states explain the next workflow step; >3s operations show named verification stages and elapsed/estimated time).

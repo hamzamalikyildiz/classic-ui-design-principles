@@ -18,3 +18,7 @@
 - When no graphic serves the topic (a quiet profile, interview, or literary essay), let editorial craft carry the page: oversized serif headline, crisp standfirst and byline, drop cap, ruled section breaks, a generous pull quote, and — where genuinely useful — a structured maker/index note or at-a-glance facts block.
 - Related stories without photography should be **typographic** (kicker, headline, short deck, hairline divider) — never empty gradient or flat color-block placeholder boxes.
 - Include only the elements the brief calls for (masthead/nav, kicker, headline, standfirst, byline, body, pull quote, related stories, newsletter/closing band); do not force a dark closing band or extra boxes unless they fit the piece.
+
+## Motion & state tone (`reference/motion.md`, `reference/states.md`)
+- **Motion personality:** minimal and opacity-led (`150-220ms` crossfades, quiet TOC active indicator); avoid spatial sliding, spring bounce, or decorative motion that competes with reading.
+- **State & microcopy tone:** literate, direct, understated (plain prose for empty/filtered states and inline errors; no SaaS jargon or exclamation marks).
