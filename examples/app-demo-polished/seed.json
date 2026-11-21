@@ -1,0 +1,132 @@
+{
+  "applications": [
+    {
+      "id": "app_01",
+      "candidate": "Çağla İnanç",
+      "role": "Senior Product Designer",
+      "company": "Kovan",
+      "score": 73,
+      "salary": 1284950,
+      "status": "accepted",
+      "updatedLabel": "14 min ago",
+      "updatedAt": "2026-11-21T18:12:00Z",
+      "skills": ["Figma", "OKLCH", "WCAG AA", "Design Systems"],
+      "scoreHistory": [
+        { "id": "rev_1", "label": "18 Oct", "score": 64 },
+        { "id": "rev_2", "label": "Yesterday", "score": 69 },
+        { "id": "rev_3", "label": "14 min ago", "score": 73 }
+      ],
+      "scoreBreakdown": [
+        { "label": "Erişilebilirlik (WCAG AA)", "value": 92 },
+        { "label": "Sistem Mimarisi & Tokenlar", "value": 84 },
+        { "label": "Ölçülebilir Etki", "value": 73 }
+      ],
+      "recommendations": [
+        { "id": "rec_1", "delta": "+2", "title": "Quantify design-system adoption", "status": "accepted" },
+        { "id": "rec_2", "delta": "+2", "title": "Add WCAG AA audit outcome", "status": "accepted" },
+        { "id": "rec_3", "delta": "+5", "title": "Align bullets with OKLCH tokens", "status": "pending" },
+        { "id": "rec_4", "delta": "+3", "title": "Highlight Code Connect & CI", "status": "pending" },
+        { "id": "rec_5", "delta": "+2", "title": "Replace passive verbs", "status": "pending" },
+        { "id": "rec_6", "delta": "0", "title": "Add basic HTML/CSS badge", "status": "dismissed" }
+      ],
+      "interviewQuestions": [
+        {
+          "id": "q_1",
+          "question": "How did you migrate hex values to semantic tokens?",
+          "answer": "Mapped 140+ legacy hex tokens to CSS oklch variables with automated contrast verification in CI.",
+          "score": "4.5/5",
+          "status": "answered"
+        },
+        {
+          "id": "q_2",
+          "question": "Describe a brand vs WCAG AA contrast fix.",
+          "answer": "Darkened teal accent L=0.58 -> L=0.45 in OKLCH so white CTA text holds >= 4.5:1 without hue shift.",
+          "score": "4.0/5",
+          "status": "answered"
+        },
+        {
+          "id": "q_3",
+          "question": "How do you measure component adoption?",
+          "answer": null,
+          "score": null,
+          "status": "partial"
+        }
+      ]
+    },
+    {
+      "id": "app_02",
+      "candidate": "Şahin Öztürk",
+      "role": "Principal Distributed Systems & Platform Reliability Architect (EMEA / İstanbul)",
+      "company": "Borusan",
+      "score": 69,
+      "salary": null,
+      "status": "in_review",
+      "updatedLabel": "Yesterday",
+      "updatedAt": "2026-11-20T16:40:00Z",
+      "skills": ["Go", "Kubernetes", "C# / .NET", "±4.2% SLA"],
+      "scoreHistory": [
+        { "id": "rev_1", "label": "10 Nov", "score": 61 },
+        { "id": "rev_2", "label": "Yesterday", "score": 69 }
+      ],
+      "scoreBreakdown": [
+        { "label": "Dağıtık Sistemler", "value": 88 },
+        { "label": "Güvenilirlik (SRE)", "value": 76 },
+        { "label": "Liderlik Özeti", "value": 64 }
+      ],
+      "recommendations": [
+        { "id": "rec_201", "delta": "+4", "title": "Summarize multi-region failover latency", "status": "pending" }
+      ],
+      "interviewQuestions": [
+        {
+          "id": "q_201",
+          "question": "How do you budget error rates across regional clusters?",
+          "answer": null,
+          "score": null,
+          "status": "partial"
+        }
+      ]
+    },
+    {
+      "id": "app_03",
+      "candidate": "Elif Karakoç",
+      "role": "İK Uzmanı & Yetenek Kazanımı Lideri",
+      "company": "Arçelik",
+      "score": 84,
+      "salary": 920000,
+      "status": "draft",
+      "updatedLabel": "18 Oct",
+      "updatedAt": "2026-10-18T11:30:00Z",
+      "skills": ["İşe Alım", "OKR", "₺ Bütçe", "🎯 Hedef"],
+      "scoreHistory": [
+        { "id": "rev_301", "label": "18 Oct", "score": 84 }
+      ],
+      "scoreBreakdown": [
+        { "label": "Yetenek Kazanımı", "value": 90 },
+        { "label": "Paydaş Yönetimi", "value": 82 },
+        { "label": "Veri Odaklılık", "value": 79 }
+      ],
+      "recommendations": [],
+      "interviewQuestions": []
+    },
+    {
+      "id": "app_04",
+      "candidate": "Mertcan Yılmaz",
+      "role": "Frontend Platform Engineer",
+      "company": "Getir",
+      "score": 0,
+      "salary": 1050000,
+      "status": "failed",
+      "updatedLabel": "12 Jan 2024",
+      "updatedAt": "2024-01-12T09:15:00Z",
+      "skills": ["React", "TypeScript", "Vite"],
+      "scoreHistory": [
+        { "id": "rev_401", "label": "12 Jan 2024", "score": 0 }
+      ],
+      "scoreBreakdown": [
+        { "label": "PDF Ayrıştırma", "value": 0 }
+      ],
+      "recommendations": [],
+      "interviewQuestions": []
+    }
+  ]
+}
