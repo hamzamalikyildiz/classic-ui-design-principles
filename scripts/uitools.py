@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """UI design rule toolkit: contrast, type scale, nested radius, spacing snap, audit."""
-import re, sys, argparse, colorsys, pathlib
+import re, sys, argparse, colorsys, pathlib, urllib.parse
 
 def hex2rgb(h):
     h = h.strip().lstrip('#')
@@ -183,6 +183,8 @@ def _parse_solid_bg(val, tokens=None):
     val = re.sub(r'\s*!important\s*$', '', val.strip(), flags=re.I).strip()
     if not val or re.search(r'(?:gradient|url)\s*\(', val, re.I):
         return None
+    if val.lower() in ('transparent', 'inherit', 'currentcolor', 'none'):
+        return None
     if re.fullmatch(HEX, val):
         return val
     if val.lower() in NAMED:
@@ -193,11 +195,35 @@ def _parse_solid_bg(val, tokens=None):
             return tokens[m.group(1)]
         if m.group(2):
             return _parse_solid_bg(m.group(2), tokens)
-    return None
+    return 'UNKNOWN'
 
 
-def inline_bg(attrs):
-    """Return solid hex from inline style='background...', 'GRADIENT' for gradients/urls, or None."""
+def _strip_at_blocks(css):
+    """Remove nested @media/@supports/@container brace blocks, preserving newlines."""
+    out = []
+    i = 0
+    n = len(css)
+    pat = re.compile(r'@(?:media|supports|container)\b[^{;]*\{', re.I)
+    for m in pat.finditer(css):
+        if m.start() < i:
+            continue
+        out.append(css[i:m.start()])
+        j = m.end()
+        depth = 1
+        while j < n and depth > 0:
+            if css[j] == '{':
+                depth += 1
+            elif css[j] == '}':
+                depth -= 1
+            j += 1
+        out.append(re.sub(r'[^\n]', ' ', css[m.start():j]))
+        i = j
+    out.append(css[i:])
+    return ''.join(out)
+
+
+def inline_bg(attrs, tokens=None):
+    """Return solid hex from inline style='background...', 'GRADIENT'/'UNKNOWN', or None."""
     m = re.search(r"""(?<![\w-])style\s*=\s*(?:"([^"]*)"|'([^']*)')""", attrs, re.I)
     if not m:
         return None
@@ -207,14 +233,14 @@ def inline_bg(attrs):
         val = dm.group(1).strip()
         if re.search(r'(?:gradient|url)\s*\(', val, re.I):
             return 'GRADIENT'
-        bg = _parse_solid_bg(val)
+        bg = _parse_solid_bg(val, tokens)
         if bg:
             found = bg
     return found
 
 
 def css_page_bg(txt, tokens=None):
-    """Resolve solid background color from body (preferred) or html rules in <style> or CSS files."""
+    """Resolve solid background color from top-level body (preferred) or html rules in <style> or CSS files."""
     styles = re.findall(r'<style\b[^>]*>(.*?)</style>', txt, re.S | re.I)
     if styles:
         css_src = '\n'.join(styles)
@@ -222,7 +248,7 @@ def css_page_bg(txt, tokens=None):
         return None
     else:
         css_src = txt
-    css_src = strip_css_comments(css_src)
+    css_src = _strip_at_blocks(strip_css_comments(css_src))
     body_bg = html_bg = None
     for m in re.finditer(r'(?:^|(?<=[};{}]))\s*([^{};]+?)\s*\{([^{}]*)\}', css_src):
         sels = {s.strip().lower() for s in m.group(1).split(',')}
@@ -230,7 +256,7 @@ def css_page_bg(txt, tokens=None):
             continue
         for dm in re.finditer(r'(?<![\w-])background(?:-color)?\s*:\s*([^;]+)', m.group(2), re.I):
             bg = _parse_solid_bg(dm.group(1), tokens)
-            if bg:
+            if bg and bg != 'UNKNOWN':
                 if 'body' in sels:
                     body_bg = bg
                 if 'html' in sels:
@@ -249,8 +275,8 @@ def backdrop(chain, variant, tokens, page_bg, styles=None):
     for idx, cls in enumerate(chain):
         has_var_bg = bool(variant and pick(cls, 'bg', variant))
         if styles and idx < len(styles) and not has_var_bg:
-            ib = inline_bg(styles[idx])
-            if ib == 'GRADIENT':
+            ib = inline_bg(styles[idx], tokens)
+            if ib in ('GRADIENT', 'UNKNOWN'):
                 return None
             if ib:
                 layers.append((ib, 1.0, f"[{ib}]"))
@@ -384,10 +410,10 @@ def css_tokens(texts, selector=r':root'):
 
 
 SPACE_PROPS = r'(?:margin|padding|gap|row-gap|column-gap|inset)(?:-[a-z]+)?'
-TW_SPACE = re.compile(r'(?<![\w:\[-])-?(?:p|px|py|pt|pr|pb|pl|ps|pe|m|mx|my|mt|mr|mb|ml|ms|me|gap|gap-x|gap-y|space-x|space-y|inset)-(\[[^\]]+\]|[\d.]+)(?![\w.])')
-TAG = re.compile(r"""(</|(?<![A-Za-z0-9_$])<)([A-Za-z][\w.]*)((?:[^>{}"']|"[^"]*"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})*?)(/?)>""")
+TW_SPACE_CLS = re.compile(r'^(?:[a-z0-9]+:)*-?(?:p|px|py|pt|pr|pb|pl|ps|pe|m|mx|my|mt|mr|mb|ml|ms|me|gap|gap-x|gap-y|space-x|space-y|inset)-(\[[^\]]+\]|[\d.]+)$')
+TAG = re.compile(r"""(</|(?<![A-Za-z0-9_$])<)([A-Za-z][\w.-]*)((?:[^>{}"']|"[^"]*"|'[^']*'|\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\})*?)(/?)>""")
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'}
-READABLE_MAXW = re.compile(r'(?<![\w:-])max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[4-7]\d|80)ch\])(?![\w-])|max-width\s*:\s*(?:[4-7]\d|80)ch')
+READABLE_MAXW = re.compile(r'(?<![\w-])(?:[a-z0-9]+:)*max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[4-7]\d|80)ch\])(?![\w-])|max-width\s*:\s*(?:[4-7]\d|80)ch')
 BIG_TEXT = {'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl', 'text-9xl'}
 BOLD = {'font-semibold', 'font-bold', 'font-extrabold', 'font-black'}
 BLOCK = re.compile(r'^(?:section|article|form|dialog|header|main|aside|Card|DialogContent|SheetContent|AlertDialogContent)$')
@@ -406,7 +432,7 @@ def mask_non_markup(txt):
 
 
 def classes(attrs):
-    m = re.search(r"""(?<![\w-])class(?:Name)?\s*=\s*("[^"]*"|'[^']*'|\{(?:[^{}]|\{[^{}]*\})*\})""", attrs)
+    m = re.search(r"""(?<![\w-])class(?:Name)?\s*=\s*("[^"]*"|'[^']*'|\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\})""", attrs)
     if not m:
         return []
     v = m.group(1)
@@ -414,7 +440,9 @@ def classes(attrs):
         parts = []
         for dq, sq, tpl in re.findall(r'"([^"]*)"|\'([^\']*)\'|`([^`]*)`', v):
             if tpl:
-                parts.append(re.sub(r'\$\{[^{}]*\}', ' ', tpl))
+                def _expr_lits(em):
+                    return ' ' + ' '.join(a or b for a, b in re.findall(r'"([^"]*)"|\'([^\']*)\'', em.group(1))) + ' '
+                parts.append(re.sub(r'\$\{([^{}]*)\}', _expr_lits, tpl))
             else:
                 parts.append(dq or sq)
         return ' '.join(parts).split()
@@ -515,8 +543,8 @@ def is_dark_page(txt, tokens=None):
         return True
     for m in re.finditer(r'<(?:body|html|main)\b([^>]*)>', mask_non_markup(txt), re.I):
         attrs = m.group(1)
-        ib = inline_bg(attrs)
-        if ib and ib != 'GRADIENT' and lum(ib) < 0.18:
+        ib = inline_bg(attrs, tokens)
+        if ib and ib not in ('GRADIENT', 'UNKNOWN') and lum(ib) < 0.18:
             return True
         b = pick(classes(attrs), 'bg')
         if b and b not in BG_PASSTHROUGH:
@@ -526,14 +554,27 @@ def is_dark_page(txt, tokens=None):
     return False
 
 
-def is_solid_cta(tag, attrs, cls, dark_page=False):
+def is_solid_cta(tag, attrs, cls, dark_page=False, tokens=None):
     if tag in ('button', 'a'):
+        if 'bg-clip-text' in cls:
+            return False
         bg = pick(cls, 'bg')
         if dark_page and bg and DARK_NEUTRAL.fullmatch(bg):
             return False  # dark neutral on a dark page is a secondary surface
-        return bool(bg) and (bg in ('primary', 'destructive') or
-                             bool(re.fullmatch(r'\[(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\]', bg)) or
-                             bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg))) or any(is_gradient(c) for c in cls)
+        if bg:
+            if bg in ('primary', 'destructive') or bool(re.fullmatch(r'[a-z]+-(?:[5-9]00|950)', bg)):
+                return True
+            hx = re.fullmatch(r'\[(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\]', bg)
+            if hx:
+                h = hx.group(1)
+                if not dark_page and not is_chromatic(h) and lum(h) > 0.7:
+                    return False  # light neutral hex on light page is a secondary/card fill
+                if dark_page and not is_chromatic(h) and lum(h) < 0.15:
+                    return False  # dark neutral hex on dark page is a secondary surface
+                return True
+            if tokens and bg.split('/')[0] in tokens and is_chromatic(tokens[bg.split('/')[0]]):
+                return True
+        return any(is_gradient(c) for c in cls)
     if tag == 'Button':
         var = re.search(r"""variant\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*["']([^"']*)["']\s*\})""", attrs)
         v = ''.join(g or '' for g in var.groups()) if var else 'default'
@@ -556,36 +597,48 @@ SERIF_FACES = {'fraunces', 'playfair display', 'newsreader', 'merriweather', 'lo
                'instrument serif'}
 
 
+def _strip_all_comments(txt):
+    """Strip HTML, JSX and CSS comments while preserving newlines."""
+    txt = re.sub(r'<!--.*?-->|\{/\*.*?\*/\}', lambda m: re.sub(r'[^\n]', ' ', m.group(0)), txt, flags=re.S)
+    return strip_css_comments(txt)
+
+
 def has_serif_face(txt):
     """True when the page uses a serif: the font-serif class, a serif generic in a font stack, or a loaded/declared serif face."""
-    if re.search(r'(?<![\w-])font-serif(?![\w-])', txt):
+    clean = _strip_all_comments(txt)
+    if re.search(r'(?<![\w-])font-serif(?![\w-])', clean):
         return True
-    if re.search(r'(?:font-family|fontFamily)\s*:[^;}\n]*(?<!sans-)\bserif\b', txt, re.I):
+    if re.search(r'(?:font-family|fontFamily)\s*:[^;}\n]*(?<!sans-)\bserif\b', clean, re.I):
         return True
-    names = {n.lower() for n in font_families(txt)}
-    names |= {n.lower() for n in re.findall(r"""['"]([A-Z][A-Za-z0-9 ]+)['"]\s*,""", txt)}
+    names = {n.lower() for n in font_families(clean)}
+    for blk in re.finditer(r'fontFamily\s*:\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}', clean):
+        for n in re.findall(r"""['"]([A-Z][A-Za-z0-9 ]+)['"]""", blk.group(1)):
+            names.add(n.lower())
     return any(n in SERIF_FACES or re.search(r'\bserif\b', n) for n in names)
 
 
 def font_families(txt):
-    """Extract declared/imported font families, ignoring CSS generic families and var()."""
-    fams = set()
-    for f in re.findall(r'font-family\s*:\s*([^;}\n]+)', txt):
-        fam = f.split(',')[0].strip().strip('\'"')
+    """Extract declared/imported font families, ignoring comments, CSS generic families, var(), and case duplicates."""
+    clean = _strip_all_comments(txt)
+    seen = {}
+
+    def _add(fam):
+        fam = fam.strip().strip('\'"')
         if fam and not fam.startswith('var(') and fam.lower() not in GENERIC_FONTS:
-            fams.add(fam)
-    for url in re.findall(r'fonts\.googleapis\.com/[^"\'\s)]+', txt):
+            seen.setdefault(fam.lower(), fam)
+
+    for m in re.finditer(r"""font-family\s*:\s*(?:"([^"\n;{}]+)"|'([^'\n;{}]+)'|([^;}\n"'<>]+))""", clean):
+        val = (m.group(1) or m.group(2) or m.group(3) or '').split(',')[0]
+        _add(val)
+    for url in re.findall(r'fonts\.googleapis\.com/[^"\'\s)]+', clean):
         for raw in re.findall(r'family=([^&"\']+)', url):
             for chunk in raw.split('|'):
-                fam = chunk.split(':')[0].replace('+', ' ').strip()
-                if fam and fam.lower() not in GENERIC_FONTS:
-                    fams.add(fam)
-    for imp in re.findall(r'import\s*\{([^}]+)\}\s*from\s*["\']next/font/google["\']', txt):
+                fam = urllib.parse.unquote(chunk.split(':')[0].replace('+', ' '))
+                _add(fam)
+    for imp in re.findall(r'import\s*\{([^}]+)\}\s*from\s*["\']next/font/google["\']', clean):
         for x in imp.split(','):
-            fam = x.split(' as ')[0].strip().replace('_', ' ')
-            if fam and fam.lower() not in GENERIC_FONTS:
-                fams.add(fam)
-    return fams
+            _add(x.split(' as ')[0].strip().replace('_', ' '))
+    return set(seen.values())
 
 
 def is_chromatic(h):
@@ -610,7 +663,7 @@ def character_checks(txt, nodes, mood, tokens=None):
 
     # primary CTA too small (Fitts)
     for tag, attrs, cls, anc, s, e in nodes:
-        if is_solid_cta(tag, attrs, cls, dark):
+        if is_solid_cta(tag, attrs, cls, dark, tokens):
             h = height_px(cls)
             if h is not None and h < 40:
                 out.append(('WARN', 'fitts-primary', f"L{line_of(txt, s)} primary CTA is {h:g}px tall; use >=44px (h-11+), hero CTA h-12..h-14"))
@@ -673,12 +726,13 @@ def character_checks(txt, nodes, mood, tokens=None):
         out.append(('WARN', 'grey-chart', f"{len(bars)} chart bars use {sorted(set(bars))}; give categories distinct hues (indigo, emerald, amber, rose, sky)"))
 
     # stock look: default Tailwind accent, no custom palette, only neutral body fonts
+    neutral_all = {n.lower() for n in (NEUTRAL_SANS | NEUTRAL_MONO | COMMON_ROUNDED)}
     stock = [h for h in HUE_CLASS.findall(txt) if h in TW and h not in NEUTRALS]
     if stock:
-        top, n = max(((h, stock.count(h)) for h in set(stock)), key=lambda x: x[1])
+        top, n = max(((h, stock.count(h)) for h in sorted(set(stock))), key=lambda x: x[1])
         custom = re.search(r'colors\s*:\s*\{|--color-[\w-]+\s*:|:root\s*\{[^}]*--[\w-]*(?:accent|brand|primary|ink|paper)', txt)
         fams = font_families(txt)
-        neutral_fonts = not fams or fams <= (NEUTRAL_SANS | NEUTRAL_MONO | COMMON_ROUNDED)
+        neutral_fonts = not fams or all(f.lower() in neutral_all for f in fams)
         if top in ('blue', 'indigo', 'violet', 'purple', 'fuchsia') and not custom and neutral_fonts:
             out.append(('INFO', 'stock-look', f"accent is stock Tailwind {top} with no custom palette and only neutral fonts; "
                         "derive the palette from the subject (reference/visual-quality.md) and add a display or serif face"))
@@ -722,10 +776,15 @@ MAXW = re.compile(r'^max-w-(prose|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|\[[^\]]
 NARROW = re.compile(r'^max-w-(?:prose|xs|sm|md|lg|xl|2xl|\[(?:[4-7]\d|80)ch\])$')
 NARROW_COL = re.compile(r'^max-w-(?:prose|xs|sm|md|lg|xl|\[(?:[4-6]\d)ch\])$')
 COL_NARROW = re.compile(r'^max-w-(?:prose|\[(?:[4-7]\d)ch\])$')
+COL_MED = re.compile(r'^max-w-(?:xl|2xl)$')
 WIDE_FRAME = re.compile(r'^max-w-(?:4xl|5xl|6xl|7xl)$')
-MULTI_COL = re.compile(r'^(?:[a-z]+:)*(?:grid-cols-(?:[2-9]|1[0-2]|\[.+\])|flex-row)$')
-DISPLAY_TEXT = re.compile(r'^text-(?:3xl|4xl|5xl|6xl|7xl|8xl|9xl)$')
-HEADLINE_TEXT = re.compile(r'^(?:[a-z]+:)*text-(?:4xl|5xl|6xl|7xl|8xl|9xl)$')
+WIDE_XL = re.compile(r'^max-w-(?:5xl|6xl|7xl)$')
+MULTI_COL = re.compile(r'^(?:[a-z0-9]+:)*(?:grid-cols-(?:[2-9]|1[0-2]|\[[^\]]+[_ ][^\]]+\])|flex-row)$')
+HEADLINE_TEXT = re.compile(r'^(?:[a-z0-9]+:)*text-(?:4xl|5xl|6xl|7xl|8xl|9xl)$')
+
+
+def _has_row_flex(cls):
+    return 'flex' in cls and not any(c.endswith('flex-col') for c in cls)
 
 
 EXPRESSIVE = ('playful', 'bold')
@@ -764,7 +823,9 @@ def character_floor(txt, nodes, mood):
             sizes.append(tw_xl[m.group(1)])
         for m in re.finditer(r'text-\[(\d+(?:\.\d+)?)(px|rem)\]', txt):
             sizes.append(_px(float(m.group(1)), m.group(2)))
-        for m in re.finditer(r'clamp\([^;{}]*?,\s*(\d+(?:\.\d+)?)(px|rem)\s*\)', txt):
+        for m in re.finditer(r'text-\[clamp\([^,\]]+,[^,\]]+,\s*[_\s]*(\d+(?:\.\d+)?)(px|rem)[_\s]*\)\]', txt):
+            sizes.append(_px(float(m.group(1)), m.group(2)))
+        for m in re.finditer(r'font-size\s*:\s*clamp\([^;{}]*?,\s*(\d+(?:\.\d+)?)(px|rem)\s*\)', txt):
             sizes.append(_px(float(m.group(1)), m.group(2)))
         for m in re.finditer(r'font-size\s*:\s*(\d+(?:\.\d+)?)(px|rem)', txt):
             sizes.append(_px(float(m.group(1)), m.group(2)))
@@ -772,7 +833,8 @@ def character_floor(txt, nodes, mood):
             out.append(('WARN', 'bold-headline-size', "no headline at 72px+ (text-7xl or clamp up to 6-7rem); "
                         "Bold needs one oversized display headline"))
         fams = font_families(txt)
-        if fams and fams <= NEUTRAL_SANS:
+        neutral_sans = {n.lower() for n in NEUTRAL_SANS}
+        if fams and all(f.lower() in neutral_sans for f in fams):
             out.append(('INFO', 'bold-font-default', "only neutral body fonts loaded; add a display face "
                         "(Archivo Black, Anton, Space Grotesk, Sora, Bebas Neue) for the headline"))
     return out
@@ -791,22 +853,40 @@ def mood_specific(txt, nodes, mood):
         if trapped:
             out.append(('WARN', 'headline-measure', f"{len(trapped)} display h1 inside the narrow reading measure (lines {trapped[:6]}); "
                         "let the h1 span a wider frame (max-w-3xl/4xl/5xl) centered above the column, or use a 2-column grid"))
+        # two-column reading layout detection (aside in a multi-col grid/row-flex)
+        has_sidebar = any(
+            n[0].lower() == 'aside' and (
+                any(MULTI_COL.match(c) for a in n[3] for c in a[2]) or
+                any(_has_row_flex(a[2]) for a in n[3])
+            )
+            for n in nodes
+        )
+        has_2col_reading = has_sidebar or any(
+            (any(MULTI_COL.match(c) for c in n[2]) or _has_row_flex(n[2])) and
+            any(a_node[0].lower() in ('div', 'article', 'aside') and any(COL_NARROW.match(x) or COL_MED.match(x) for x in a_node[2])
+                for a_node in nodes if any(an[3] == n[4] for an in a_node[3]))
+            for n in nodes if n[0].lower() in ('div', 'section', 'main', 'article')
+        )
         # lone uncentered reading column inside a wide frame with no sidebar
-        if not any(n[0].lower() == 'aside' for n in nodes):
+        if not has_sidebar:
             left_stacked = []
-            skip_tags = {'blockquote', 'figure', 'header', 'footer', 'aside', 'nav'}
+            skip_tags = {'blockquote', 'figure', 'header', 'footer', 'nav'}
             for tag, attrs, cls, anc, s, e in nodes:
                 if tag.lower() not in ('div', 'article', 'section', 'main'):
                     continue
-                if not any(COL_NARROW.match(c) for c in cls) or 'mx-auto' in cls:
+                is_col = any(COL_NARROW.match(c) for c in cls)
+                is_med = any(COL_MED.match(c) for c in cls)
+                if (not is_col and not is_med) or 'mx-auto' in cls:
                     continue
-                if not any(WIDE_FRAME.match(c) for a in anc if a[0] not in ('body', 'html') for c in a[2]):
+                if is_col and not any(WIDE_FRAME.match(c) for a in anc if a[0] not in ('body', 'html') for c in a[2]):
                     continue
-                if any(a[0].lower() in skip_tags for a in anc):
+                if not is_col and is_med and not any(WIDE_XL.match(c) for a in anc if a[0] not in ('body', 'html') for c in a[2]):
                     continue
-                if any(MULTI_COL.match(c) for a in anc for c in a[2]):
+                if any(a[0].lower() in skip_tags or a[0].lower() == 'aside' for a in anc):
                     continue
-                if any(('flex' in a[2] and not any('flex-col' in c for c in a[2])) or ('flex-col' in a[2] and 'items-center' in a[2]) for a in anc):
+                if any(MULTI_COL.match(c) or _has_row_flex(a[2]) for a in anc for c in a[2]):
+                    continue
+                if any(('flex-col' in a[2] and 'items-center' in a[2]) or (any(NARROW.match(c) for c in a[2]) and 'mx-auto' in a[2]) for a in anc):
                     continue
                 left_stacked.append(line_of(txt, s))
             if left_stacked:
@@ -819,16 +899,22 @@ def mood_specific(txt, nodes, mood):
         if len(widths) >= 3:
             out.append(('INFO', 'width-funnel', f"{len(widths)} container widths {sorted(widths)}; use two: one wide frame + one reading column, aligned to the same left edge or centered together"))
         # reading column centered while the headline is left-aligned: left edges drift apart
-        cols = [n for n in nodes if any(NARROW.match(c) for c in n[2]) and 'mx-auto' in n[2]]
-        if cols:
+        ignore_edge = {'footer', 'header', 'nav', 'aside', 'blockquote', 'figure', 'form'}
+        cols = [
+            n for n in nodes
+            if n[0].lower() not in ignore_edge
+            and not any(a[0].lower() in ignore_edge for a in n[3])
+            and any(NARROW.match(c) for c in n[2]) and 'mx-auto' in n[2]
+        ]
+        if cols and not has_2col_reading:
             col_starts = {n[4] for n in cols}
             drift = []
             for tag, attrs, cls, anc, s, e in nodes:
                 if tag == 'h1':
                     if s in col_starts or any(a[3] in col_starts for a in anc) or any(any(a[3] == s for a in col[3]) for col in cols):
                         continue
-                    chain = [cls] + [a[2] for a in anc]
-                    if not any('text-center' in c for c in chain):
+                    chain_str = ' '.join(cls + [c for a in anc for c in a[2]])
+                    if not (re.search(r'(?:^|\s)(?:[a-z0-9]+:)*(?:text-center|justify-center)(?:\s|$)', chain_str) or re.search(r'text-align\s*:\s*center', attrs, re.I)):
                         drift.append(line_of(txt, s))
             if drift:
                 out.append(('WARN', 'edge-align', f"reading column is centered (mx-auto) while the wide-frame headline is left-aligned (line {drift[0]}); "
@@ -858,9 +944,11 @@ def line_of(txt, pos):
     return txt.count('\n', 0, pos) + 1
 
 
-def audit(path, grid, tokens, dark_tokens=None, mood=None):
-    txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
+def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None):
+    if txt is None:
+        txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
     masked = mask_non_markup(txt)
+    nodes = list(walk(masked))
     issues = []
 
     def add(sev, rule, msg):
@@ -879,19 +967,27 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
         elif v % grid:
             finetunes.append(label.split()[0])
 
-    # spacing: CSS
-    for m in re.finditer(rf'(?<![\w-]){SPACE_PROPS}\s*:\s*([^;}}"\n]+)', txt):
+    # spacing: CSS (<style> blocks or standalone CSS files only, ignoring comments)
+    styles = re.findall(r'<style\b[^>]*>(.*?)</style>', txt, re.S | re.I)
+    css_for_grid = strip_css_comments('\n'.join(styles)) if styles else (
+        '' if re.search(r'<(?:html|head|body|div|main|section|p|span)\b', masked, re.I) else strip_css_comments(txt)
+    )
+    for m in re.finditer(rf'(?<![\w-]){SPACE_PROPS}\s*:\s*([^;}}"\n]+)', css_for_grid):
         for px in re.findall(r'(-?\d+(?:\.\d+)?)px', m.group(1)):
-            grid_check(f"L{line_of(txt, m.start())} {m.group(0).strip()[:50]}", float(px))
-    # spacing: Tailwind
-    for m in TW_SPACE.finditer(masked):
-        val = m.group(1)
-        if val.startswith('['):
-            px = re.fullmatch(r'\[(-?\d+(?:\.\d+)?)px\]', val)
-            if px:
-                grid_check(f"L{line_of(txt, m.start())} {m.group(0)}", float(px.group(1)))
-        else:
-            grid_check(f"L{line_of(txt, m.start())} {m.group(0)}", float(val) * 4)
+            grid_check(f"L{line_of(css_for_grid, m.start())} {m.group(0).strip()[:50]}", float(px))
+    # spacing: Tailwind classes extracted from parsed nodes (avoids matching visible prose)
+    for tag, attrs, cls, anc, s, e in nodes:
+        for c in cls:
+            m = TW_SPACE_CLS.fullmatch(c)
+            if not m:
+                continue
+            val = m.group(1)
+            if val.startswith('['):
+                px = re.fullmatch(r'\[(-?\d+(?:\.\d+)?)px\]', val)
+                if px:
+                    grid_check(f"L{line_of(txt, s)} {c}", float(px.group(1)))
+            else:
+                grid_check(f"L{line_of(txt, s)} {c}", float(val) * 4)
 
     if finetunes:
         share = len(finetunes)
@@ -904,18 +1000,21 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
     if len(fams) > 2:
         add('FAIL', 'max-2-fonts', f"{len(fams)} font families: {sorted(fams)}")
 
-    # contrast: plain CSS rules
-    for blk in re.finditer(r'\{([^{}]+)\}', txt):
+    # contrast: plain CSS rules (comment-stripped, last declaration wins, 3:1 large text >=24px)
+    css_for_wcag = strip_css_comments(re.sub(r'<!--.*?-->', ' ', txt, flags=re.S))
+    for blk in re.finditer(r'\{([^{}]+)\}', css_for_wcag):
         b = blk.group(1)
-        fg = re.search(rf'(?<![\w-])color\s*:\s*({HEX})', b)
-        bg = re.search(rf'background(?:-color)?\s*:\s*({HEX})', b)
-        if fg and bg:
-            r = ratio(fg.group(1), bg.group(1))
-            if r < 4.5:
+        fgs = re.findall(rf'(?<![\w-])color\s*:\s*({HEX})', b)
+        bgs = re.findall(rf'background(?:-color)?\s*:\s*({HEX})', b)
+        if fgs and bgs:
+            fg_h, bg_h = fgs[-1], bgs[-1]
+            fs_m = re.findall(r'font-size\s*:\s*(\d+(?:\.\d+)?)(px|rem)', b)
+            large = fs_m and _px(float(fs_m[-1][0]), fs_m[-1][1]) >= 24
+            need = 3.0 if large else 4.5
+            r = ratio(fg_h, bg_h)
+            if r < need:
                 add('FAIL' if r < 3 else 'WARN', 'wcag-aa',
-                    f"L{line_of(txt, blk.start())} {fg.group(1)} on {bg.group(1)} = {r:.2f}:1 (fix -> {fix_color(fg.group(1), bg.group(1), 4.5)})")
-
-    nodes = list(walk(masked))
+                    f"L{line_of(css_for_wcag, blk.start())} {fg_h} on {bg_h} = {r:.2f}:1 (fix -> {fix_color(fg_h, bg_h, need)})")
 
     # contrast: Tailwind palette, arbitrary hex and shadcn tokens; background composited from ancestors
     seen = set()
@@ -995,7 +1094,7 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
     dark_page = is_dark_page(txt, tokens)
     counts = {}
     for tag, attrs, cls, anc, s, e in nodes:
-        if not is_solid_cta(tag, attrs, cls, dark_page):
+        if not is_solid_cta(tag, attrs, cls, dark_page, tokens):
             continue
         idx = next((i for i in range(len(anc) - 1, -1, -1) if BLOCK.match(anc[i][0])), None)
         key = anc[idx][3] if idx is not None else -1
@@ -1012,7 +1111,7 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
         if cr is None or pr is None or pp is None or pr <= 0 or pp >= pr:
             continue  # with padding >= outer radius the inner radius is a free choice
         want = pr - pp
-        if cr != want and cr > want:
+        if cr > want:
             add('INFO', 'nested-radius', f"L{line_of(txt, s)} inner radius {cr}px inside {pr}px with {pp}px padding; use {want}px ({RADIUS_NAME.get(want, f'rounded-[{want}px]')})")
 
     # character / sterility checks
@@ -1028,11 +1127,16 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None):
             if n > 7:
                 add('WARN', 'miller-7', f"L{line_of(txt, s)} nav has {n} links (>7); group or move to an overflow menu")
 
-    # line length: each long <p> needs a readable max-width on itself or an ancestor
-    css_p = re.search(r'(?:^|[\s,}])(?:p|article|\.prose)\s*(?:,[^{]*)?\{[^}]*max-width\s*:\s*(?:[4-7]\d|80)ch', txt)
+    # line length: each long <p> needs a readable max-width on itself or an ancestor (skipping multi-column grids)
+    css_for_p = strip_css_comments('\n'.join(styles)) if styles else (
+        '' if re.search(r'<(?:html|head|body|div|main|section|p|span)\b', masked, re.I) else strip_css_comments(txt)
+    )
+    css_p = re.search(r'(?:^|[\n}])\s*(?:p|article|\.prose)\s*(?:,\s*(?:p|article|\.prose))*\s*\{[^}]*max-width\s*:\s*(?:[4-7]\d|80)ch', css_for_p)
     bad = []
     for tag, attrs, cls, anc, s, e in nodes:
         if tag != 'p':
+            continue
+        if any(MULTI_COL.match(c) for a in anc for c in a[2]):
             continue
         end = masked.find('</p>', e)
         inner = re.sub(r'<[^>]+>|\{[^}]*\}', '', masked[e:end if end != -1 else e])
@@ -1069,7 +1173,7 @@ def cmd_audit(a):
         p_txt = pathlib.Path(p).read_text(encoding='utf-8', errors='ignore')
         tokens = {**shared_tokens, **css_tokens([p_txt])}
         dark_tokens = {**shared_dark, **css_tokens([p_txt], r'\.dark')}
-        iss = audit(p, a.grid, tokens, dark_tokens, a.mood)
+        iss = audit(p, a.grid, tokens, dark_tokens, a.mood, txt=p_txt)
         print(f"== {p}: {len(iss)} issue(s)")
         for sev, rule, msg in iss:
             total[sev] += 1

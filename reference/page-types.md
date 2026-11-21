@@ -1,11 +1,11 @@
 # Page-type matrix
 
-Always-on baseline: WCAG AA, 8pt grid, semantic colors, max 2 fonts (up to 3 in expressive moods), modular scale, one hero surface per screen, single primary CTA, depth over borders, Jakob, proximity.
+Always-on baseline: WCAG AA, 8pt grid, semantic colors, max 2 fonts (up to 3 in expressive moods), modular scale, one hero surface per screen (except pure typographic Editorial), single primary CTA, depth over borders (except Technical/Editorial hairlines), Jakob, proximity.
 
 | Page type | Additional rules | Default mood | Layout |
 |---|---|---|---|
-| Landing / marketing | Z-pattern, Fitts (large hero CTA), bento features, focal visual in hero | Bold (Playful for kids/consumer) | Full-width sections, spacing from mood |
-| Dashboard / admin | F-pattern, bento metrics with one featured card, Miller (sidebar ≤7), skeleton/empty/error, categorical chart colors | Trust | Left sidebar + 12-col grid, `gap-4`/`gap-6` |
+| Landing / marketing | Z-pattern, Fitts (large hero CTA), focal visual + brief-driven bento/features | Bold (Playful for kids/consumer) | Full-width sections, spacing from mood |
+| Dashboard / admin | F-pattern, focal telemetry/metrics + brief-driven companion panels, Miller (nav ≤7), skeleton/empty/error when async, categorical chart colors | Trust | Left sidebar (when nav needs it) or focused 12-col grid, `gap-4`/`gap-6` |
 | Form / onboarding / checkout | Hick (steps), progressive disclosure, Fitts (full-width submit on mobile), inline errors in semantic red | Trust | Single column, `max-w-md`/`max-w-lg` |
 | Content / blog / docs | 45–75 chars for body (`max-w-prose`), comfortable 18px/1.7 leading, earned visuals only (see Editorial notes) | Editorial | Centered single column or 2-column rail |
 | Mobile app screen | Fitts (44–48px targets, CTA in bottom zone), Miller (tab bar ≤5), skeleton | brand's | Single column, 16px side padding |

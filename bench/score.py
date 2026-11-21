@@ -9,7 +9,7 @@ Reports: per-judge skill win rate, vote-level win rate with a pair-cluster boots
 majority wins with an exact two-sided sign test, per-mood rates, mean score differences per criterion,
 and the automatic axe / --check metrics (metrics.json, KEY_DO_NOT_OPEN.json or page_key.json) when present.
 """
-import argparse, json, math, pathlib, random, re, statistics
+import argparse, json, math, pathlib, random, re, statistics, sys
 
 CRIT = ['visual appeal', 'professional look', 'hierarchy and readability', 'content richness']
 LINE = re.compile(r'(cift\d+)\s*:\s*([AB])\b\s*\|\s*([1-5])\b\s*\|(.*)', re.I)
@@ -39,7 +39,13 @@ for j in judges:
     mf = W / 'maps' / f'MAP_{j["id"]}.json'
     if f is None or not mf.exists(): continue
     mp = load_json(mf); seen = set(); w = n = 0
-    for m in LINE.finditer(f.read_text(encoding='utf-8-sig')):
+    for ln_no, raw_ln in enumerate(f.read_text(encoding='utf-8-sig').splitlines(), 1):
+        line = raw_ln.strip()
+        if not line: continue
+        m = LINE.search(line)
+        if not m:
+            print(f'warning: unparsed line in {f.name}:{ln_no}: {line[:80]}', file=sys.stderr)
+            continue
         k = m.group(1).lower()
         if k not in mp or k in seen: continue
         seen.add(k); v = mp[k]; win = m.group(2).upper() == v['skill']
@@ -61,13 +67,13 @@ N, WIN = len(allv), sum(x['win'] for x in allv)
 
 
 def boot(votes, reps=4000, seed=1):
-    rnd = random.Random(seed); keys = list(votes); res = []
+    rnd = random.Random(seed); keys = sorted(votes); res = []
     for _ in range(reps):
         w = n = 0
         for k in (rnd.choice(keys) for _ in keys):
             w += sum(x['win'] for x in votes[k]); n += len(votes[k])
         res.append(w / n)
-    res.sort(); return res[int(.025 * reps)], res[int(.975 * reps)]
+    res.sort(); return res[int(.025 * (reps - 1))], res[int(.975 * (reps - 1))]
 
 
 def sign_p(w, n):
@@ -79,10 +85,12 @@ def sign_p(w, n):
 lo, hi = boot(votes)
 maj = {k: sum(x['win'] for x in vs) / len(vs) for k, vs in votes.items()}
 mw = sum(1 for v in maj.values() if v > .5); ml = sum(1 for v in maj.values() if v < .5); mt = len(maj) - mw - ml
+pval = sign_p(mw, mw + ml)
+pstr = '< 0.0001' if pval < 0.0001 else f'= {pval:.4f}'
 out = ['# Blind A/B results', '',
        f'Pairs: {len(votes)}, judges: {len(per_judge)}, votes: {N}.', '',
        f'**Skill win rate (all votes): {WIN}/{N} = {100 * WIN / N:.0f}%**, pair-cluster bootstrap 95% CI {100 * lo:.0f}% to {100 * hi:.0f}%.', '',
-       f'Per-pair majority: skill wins {mw}, no-skill wins {ml}, ties {mt}; exact sign test p = {sign_p(mw, mw + ml):.4f}.', '',
+       f'Per-pair majority: skill wins {mw}, no-skill wins {ml}, ties {mt}; exact sign test p {pstr}.', '',
        '## Per judge', '', '| Judge | Skill wins | Votes |', '|---|---|---|']
 names = {j['id']: f'{j["name"]} ({j["age"]})' for j in judges}
 for jid, (w, n, tot) in per_judge.items():
@@ -112,12 +120,16 @@ kp = first_existing(W / 'KEY_DO_NOT_OPEN.json', W / 'page_key.json')
 mpth = W / 'metrics.json'
 if kp is not None and mpth.exists():
     key, met = load_json(kp), load_json(mpth)
-    out += ['', '## Automatic metrics (no model involved)', '', '| Arm | Pages | Pages with serious axe issue | Mean --check WARNs |', '|---|---|---|---|']
+    has_layout = any('layout_warns' in met.get(k, {}) for k in key)
+    warn_hdr = 'Mean layout WARNs (non-axe)' if has_layout else 'Mean --check WARNs'
+    out += ['', '## Automatic metrics (no model involved)', '', f'| Arm | Pages | Pages with serious axe issue | {warn_hdr} |', '|---|---|---|---|']
     for arm in ('skill', 'noskill'):
         ks = [k for k, v in key.items() if v['arm'] == arm]
-        cw = [met[k]['check_warns'] for k in ks if k in met and 'check_warns' in met[k]]
-        serious = sum(1 for k in ks if met.get(k, {}).get('axe_serious', 0))
-        out.append(f'| {arm} | {len(ks)} | {serious} | {statistics.mean(cw):.1f} |' if cw else
-                   f'| {arm} | {len(ks)} | {serious} | n/a |')
+        axe_vals = [met[k]['axe_serious'] for k in ks if k in met and met[k].get('axe_serious') is not None]
+        serious_str = str(sum(1 for v in axe_vals if v)) if axe_vals else 'n/a'
+        cw = [met[k]['layout_warns'] if 'layout_warns' in met[k] else met[k]['check_warns']
+              for k in ks if k in met and ('layout_warns' in met[k] or 'check_warns' in met[k])]
+        out.append(f'| {arm} | {len(ks)} | {serious_str} | {statistics.mean(cw):.1f} |' if cw else
+                   f'| {arm} | {len(ks)} | {serious_str} | n/a |')
 text = '\n'.join(out); print(text)
 if a.md: pathlib.Path(a.md).write_text(text + '\n', encoding='utf-8')

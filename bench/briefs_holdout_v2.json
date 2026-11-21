@@ -1,0 +1,6 @@
+{"playful": {"a": "Homepage for \"Sprout Club\", a kids weekend backyard gardening club: hero with mascot, seasonal projects, seed kit contents, pricing, parents section and CTA band."},
+ "bold": {"a": "Launch page for \"Gravel X1\", an electric gravel bicycle: dramatic hero, three engineering highlights, rider quotes, geometry specs table, pre-order CTA."},
+ "trust": {"a": "Patient billing and appointment portal for \"Alder Dental\": balance summary, upcoming visit card, treatment plan checklist, insurance coverage alert and past invoices table."},
+ "technical": {"a": "CI/CD runner and build pipeline telemetry console for \"ForgeGrid\": queue latency by pool, recent failed jobs table, runner utilization chart, active worker nodes and a YAML config snippet."},
+ "editorial": {"a": "Quiet long-read profile of a master violin restorer, headline \"Spruce and Varnish\": standfirst, byline, body sections, a pull quote, related stories and a newsletter signup.",
+               "b": "Process explainer essay \"The Roasting Curve\" about small-batch coffee roasting: headline, introduction, roast-stage temperature/time sidebar, a pull quote and related essays."}}

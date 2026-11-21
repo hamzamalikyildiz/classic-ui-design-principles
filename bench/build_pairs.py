@@ -4,8 +4,8 @@
     python3 bench/build_pairs.py <workdir> [--seed N] [--checks]
 
 Writes <workdir>/judge/ciftN-{A,B}-K.png (1000px wide crops), pairs/*.html, PAIR_MAP_DO_NOT_OPEN.json
-(placement; skill is A in exactly half of each mood's pairs) and metrics.json (axe violations; --checks adds
-render.py --check WARN counts). Judges see only the judge/ crops.
+(placement; skill is A in half of each mood's pairs) and metrics.json (axe serious violations; --checks adds
+non-axe layout WARN counts). Judges see only the judge/ crops.
 """
 import argparse, json, pathlib, random, re, shutil, subprocess, sys
 HERE = pathlib.Path(__file__).resolve().parent
@@ -21,7 +21,10 @@ W = pathlib.Path(a.work); random.seed(a.seed)
 files = sorted(f for f in (W / 'raw').glob('*/*.html') if not f.name.startswith('.'))
 ids = random.sample(range(1000, 9999), len(files))
 key, metrics = {}, {}
-for d in ('anon', 'shots', 'pairs', 'judge'): (W / d).mkdir(exist_ok=True)
+if (W / 'judge').exists():
+    shutil.rmtree(W / 'judge')
+for d in ('anon', 'shots', 'pairs', 'judge'):
+    (W / d).mkdir(exist_ok=True)
 tw_offline = a.offline or not R.reachable('https://cdn.tailwindcss.com')
 gf_offline = a.offline or not R.reachable('https://fonts.googleapis.com/css2?family=Inter')
 with sync_playwright() as p:
@@ -36,13 +39,14 @@ with sync_playwright() as p:
         pg = br.new_page(viewport={'width': 1440, 'height': 900})
         try:
             pg.goto(tmp.as_uri()); pg.wait_for_timeout(500)
-            pg.evaluate("async()=>{for(let y=0;y<document.body.scrollHeight;y+=600){scrollTo(0,y);await new Promise(r=>setTimeout(r,60))}scrollTo(0,0)}")
+            pg.evaluate("async()=>{const h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);for(let y=0;y<h;y+=600){scrollTo({top:y,behavior:'instant'});await new Promise(r=>setTimeout(r,60))}scrollTo({top:0,behavior:'instant'})}")
             pg.wait_for_timeout(600); pg.screenshot(path=str(W / 'shots' / f'{pid}.png'), full_page=True)
             ax = R.run_axe(pg)
         finally:
             pg.close(); tmp.unlink(missing_ok=True)
         key[pid] = {'arm': arm, 'mood': mood, 'brief': brief, 'rep': rep}
-        metrics[pid] = {'axe_serious': sum(1 for s, r, m in ax if s == 'WARN')}
+        axe_missing = any(r == 'axe' and 'unavailable' in m for _, r, m in ax)
+        metrics[pid] = {'axe_serious': None if axe_missing else sum(1 for s, r, m in ax if s == 'WARN')}
         if a.checks:
             tmp_png = W / 'anon' / '_b.png'
             try:
@@ -55,12 +59,19 @@ with sync_playwright() as p:
             if res.returncode != 0:
                 print(f'warning: render.py --check failed for {pid}: {res.stderr.strip()}', file=sys.stderr)
             else:
-                metrics[pid]['check_warns'] = len(re.findall(r'\[WARN\]', res.stdout))
+                non_axe = len(re.findall(r'^\s*\[WARN\]\s+(?!axe-)', res.stdout, re.M))
+                metrics[pid]['layout_warns'] = non_axe
+                metrics[pid]['check_warns'] = non_axe
     br.close()
 inv = {(v['arm'], v['mood'], v['brief'], v['rep']): k for k, v in key.items()}
 groups = {}
-for (arm, mood, brief, rep) in inv:
-    if arm == 'skill' and ('noskill', mood, brief, rep) in inv: groups.setdefault(mood, []).append((brief, rep))
+for (arm, mood, brief, rep) in sorted(inv):
+    other = 'noskill' if arm == 'skill' else 'skill'
+    if (other, mood, brief, rep) not in inv:
+        print(f'warning: unpaired page dropped: {arm}/{mood}-{brief}-{rep}', file=sys.stderr)
+        continue
+    if arm == 'skill':
+        groups.setdefault(mood, []).append((brief, rep))
 pm, n = {}, 0
 order = [(m, b, r) for m, lst in groups.items() for b, r in lst]; random.shuffle(order)
 placement = {}
@@ -74,7 +85,7 @@ for m, b, r in order:
     for side, pid in (('A', A), ('B', B)):
         shutil.copy(W / 'anon' / f'{pid}.html', W / 'pairs' / f'cift{n}-{side}.html')
         im = Image.open(W / 'shots' / f'{pid}.png').convert('RGB'); w, h = im.size
-        im = im.resize((a.width, int(h * a.width / w))); h = im.size[1]; k = 2 if h * 1000 / a.width < 3400 else 3
+        im = im.resize((a.width, int(h * a.width / w)), Image.Resampling.LANCZOS); h = im.size[1]; k = 2 if h * 1000 / a.width < 3400 else 3
         half_ov = 40 if k >= 2 else 0
         for j in range(k):
             y0 = max(0, j * h // k - (half_ov if j > 0 else 0))

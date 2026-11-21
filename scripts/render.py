@@ -176,7 +176,7 @@ CHECK_JS = r"""() => {
   };
   if (document.documentElement.scrollWidth > vw + 2)
     out.push(['WARN', 'page-overflow-x', `page is ${document.documentElement.scrollWidth}px wide in a ${vw}px viewport (horizontal scrollbar)`]);
-  const clipped = [], hidden = [], empty = [], edge = [], blank = [];
+  const clipped = [], hidden = [], empty = [], edge = [], blank = [], hollow = [], tinyDesk = [];
   for (const e of document.querySelectorAll('body *')) {
     if (!vis(e)) continue;
     const cs = getComputedStyle(e), tag = e.tagName.toLowerCase(), r = e.getBoundingClientRect();
@@ -188,13 +188,15 @@ CHECK_JS = r"""() => {
         if (text && e.clientHeight > 0 && !cs.textOverflow.includes('ellipsis') && (cs.webkitLineClamp === 'none' || !cs.webkitLineClamp)) clipped.push(where(e));
       }
       if ((tag === 'pre' || tag === 'code') && e.scrollWidth > e.clientWidth + 3 && cs.display !== 'inline' && cs.overflowX !== 'auto' && cs.overflowX !== 'scroll') clipped.push(where(e) + ' (text runs out of its box)');
+      if (text && parseFloat(cs.webkitTextStrokeWidth) > 0 && (cs.webkitTextFillColor === 'transparent' || /rgba\([^)]+,\s*0(?:\.0+)?\)/.test(cs.webkitTextFillColor || ''))) hollow.push(where(e));
+      if (parseFloat(cs.fontSize) < 12 && [...e.childNodes].some(nd => nd.nodeType === 3 && nd.textContent.trim().length > 12)) tinyDesk.push(where(e) + ` (${Math.round(parseFloat(cs.fontSize))}px)`);
     }
     if (text && parseFloat(cs.opacity) === 0 && !e.closest('[aria-hidden=true]')) hidden.push(where(e));
     if ((tag === 'button' || tag === 'a') && !text && !e.querySelector('svg,img,canvas') && !e.getAttribute('aria-label') && !e.getAttribute('title')) empty.push(where(e));
     if (['img', 'canvas', 'figure'].includes(tag) && r.right > vw + 2 && r.left < vw - 8) edge.push(where(e));
   }
   for (const e of document.querySelectorAll('section, main > div, header, footer')) {
-    if (!vis(e)) continue;
+    if (!vis(e) || getComputedStyle(e).position === 'absolute') continue;
     const r = e.getBoundingClientRect();
     if (r.height > 320 && !(e.innerText || '').trim() && !e.querySelector('svg,img,canvas,video,iframe')) blank.push(where(e) + ` (${Math.round(r.height)}px)`);
   }
@@ -215,30 +217,45 @@ CHECK_JS = r"""() => {
     const pr = p.getBoundingClientRect(), pcs = getComputedStyle(p);
     if (pr.height < 700 || p.children.length < 2) continue;
     if (!(pcs.display === 'grid' || (pcs.display === 'flex' && pcs.flexDirection.startsWith('row')))) continue;
-    const visCols = [...p.children].filter(vis).map(c => ({ c, r: c.getBoundingClientRect(), cs: getComputedStyle(c) }));
+    const visCols = [...p.children].filter(c => vis(c) && getComputedStyle(c).position !== 'absolute').map(c => ({ c, r: c.getBoundingClientRect(), cs: getComputedStyle(c) }));
     for (const col of visCols) {
       if (col.cs.position === 'sticky' || col.cs.position === 'fixed') continue;
-      if (col.c.matches('nav') || col.c.querySelector('nav')) continue;
+      if ([...col.c.children].some(ch => getComputedStyle(ch).position === 'sticky')) continue;
+      if (col.c.matches('nav') || (col.c.matches('aside') && col.c.querySelector('nav'))) continue;
       const r = col.r;
       if (r.width < 200) continue;
+      if (pcs.display === 'grid' && visCols.some(sib => sib.c !== col.c && sib.r.top >= r.bottom - 5 && sib.r.left < r.right - 5 && sib.r.right > r.left + 5)) continue;
       const rowSibs = visCols.filter(sib => sib.cs.position !== 'fixed' && Math.abs(r.top - sib.r.top) < 80 && Math.min(r.bottom, sib.r.bottom) > Math.max(r.top, sib.r.top));
       if (rowSibs.length < 2) continue;
       const rowTop = Math.min(...rowSibs.map(s => s.r.top));
       const rowBottom = Math.max(...rowSibs.map(s => s.r.bottom));
       const rowHeight = rowBottom - rowTop;
-      const { last } = contentBottom(col.c);
+      const { last, n } = contentBottom(col.c);
       const blankH = rowBottom - last;
-      if (rowHeight > 0 && blankH > 500 && blankH / rowHeight > 0.4) cols.push(where(col.c) + ` (${Math.round(blankH)}px empty below its content)`);
+      if (n && rowHeight > 0 && blankH > 500 && blankH / rowHeight > 0.4) cols.push(where(col.c) + ` (${Math.round(blankH)}px empty below its content)`);
     }
   }
   if (cols.length) out.push(['WARN', 'empty-column', `${cols.length} column(s) end far above their row: ${[...new Set(cols)].slice(0, 3).join(', ')}; continue the column (stats, related reading, contents) or use a single column`]);
   const ovl = [];
+  const isHiddenOrRotated = (el, svg) => {
+    for (let cur = el; cur && cur !== svg.parentElement; cur = cur.parentElement) {
+      const pcs = getComputedStyle(cur);
+      if (parseFloat(pcs.opacity) === 0 || pcs.display === 'none' || pcs.visibility === 'hidden') return true;
+      if ((cur.getAttribute('transform') || '').includes('rotate')) return true;
+      const tm = (pcs.transform || '').match(/^matrix\(([^)]+)\)/);
+      if (tm) {
+        const pts = tm[1].split(',').map(Number);
+        if (Math.abs(pts[1]) > 0.05 || Math.abs(pts[2]) > 0.05) return true;
+      }
+    }
+    return false;
+  };
   for (const svg of document.querySelectorAll('svg')) {
     const labs = [...svg.querySelectorAll('text')].filter(el => {
       if (!vis(el)) return false;
       const cs = getComputedStyle(el);
-      if (parseFloat(cs.opacity) === 0 || cs.fill === 'none') return false;
-      if ((el.getAttribute('transform') || '').includes('rotate') || cs.transform !== 'none') return false;
+      if (cs.fill === 'none') return false;
+      if (isHiddenOrRotated(el, svg)) return false;
       return true;
     }).slice(0, 200);
     for (let i = 0; i < labs.length; i++) for (let j = i + 1; j < labs.length; j++) {
@@ -251,6 +268,8 @@ CHECK_JS = r"""() => {
   if (ovl.length) out.push(['WARN', 'overlapping-labels', `${ovl.length} SVG label pair(s) overlap: ${ovl.slice(0, 3).join(', ')}; move or shorten the labels`]);
   const u = a => [...new Set(a)].slice(0, 5).join(', ');
   if (clipped.length) out.push(['WARN', 'clipped-content', `${clipped.length} element(s) cut off or overflowing: ${u(clipped)}`]);
+  if (hollow.length) out.push(['WARN', 'hollow-text', `${hollow.length} stroked hollow/transparent text element(s) hurt low-vision legibility: ${u(hollow)}`]);
+  if (tinyDesk.length) out.push(['WARN', 'desktop-tiny-text', `${tinyDesk.length} text run(s) under 12px on desktop: ${u(tinyDesk)}`]);
   if (hidden.length) out.push(['WARN', 'invisible-content', `${hidden.length} element(s) with text but opacity 0 after load and scroll: ${u(hidden)}`]);
   if (blank.length) out.push(['WARN', 'blank-band', `${blank.length} tall section(s) render empty: ${u(blank)}`]);
   if (empty.length) out.push(['WARN', 'empty-control', `${empty.length} button/link without text, icon or label: ${u(empty)}`]);
@@ -263,7 +282,7 @@ CHECK_JS = r"""() => {
 MOBILE_JS = r"""() => {
   const out = [], vw = innerWidth;
   const vis = e => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-                     return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden'; };
+                     return r.width > 2 && r.height > 2 && cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) !== 0 && cs.clip !== 'rect(0px, 0px, 0px, 0px)' && cs.clipPath !== 'inset(50%)'; };
   if (document.documentElement.scrollWidth > vw + 2)
     out.push(['WARN', 'mobile-overflow-x', `page is ${document.documentElement.scrollWidth}px wide at ${vw}px (horizontal scroll)`]);
   const small = [], tiny = [];
@@ -285,7 +304,21 @@ MOBILE_JS = r"""() => {
 }"""
 
 INTERACT_JS = r"""async () => {
-  const out = [], btns = [...document.querySelectorAll('button, [role=button]')]
+  const out = [];
+  const focusEls = [...document.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, [tabindex]:not([tabindex="-1"])')]
+    .filter(e => {
+      const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+      return r.width > 2 && r.height > 2 && cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) !== 0 && cs.clip !== 'rect(0px, 0px, 0px, 0px)' && cs.clipPath !== 'inset(50%)' && !e.disabled && e.getAttribute('aria-disabled') !== 'true';
+    }).slice(0, 6);
+  let noRing = 0;
+  for (const e of focusEls) {
+    e.focus({ focusVisible: true });
+    const cs = getComputedStyle(e);
+    const cls = typeof e.className === 'string' ? e.className : (e.getAttribute('class') || '');
+    if (document.activeElement === e && cs.outlineStyle === 'none' && cs.boxShadow === 'none' && !/(?:^|\s)focus(?:-visible)?:(?:ring(?!-0\b)(?:-\S+|\b)|outline(?!-(?:none|0)\b)(?:-\S+|\b)|border-(?!transparent\b)\S+)/.test(cls)) noRing++;
+  }
+  if (noRing >= 3) out.push(['WARN', 'no-focus-ring', `${noRing} of ${focusEls.length} checked control(s) show no focus indicator (add focus-visible:ring-2)`]);
+  const btns = [...document.querySelectorAll('button, [role=button]')]
     .filter(b => (b.innerText || '').trim() && b.getBoundingClientRect().width && getComputedStyle(b).display !== 'none' && b.type !== 'submit' && !b.disabled && b.getAttribute('aria-disabled') !== 'true').slice(0, 8);
   let dead = [];
   for (const b of btns) {
@@ -299,19 +332,6 @@ INTERACT_JS = r"""async () => {
     if (!changed && !b.closest('a, form')) dead.push(b.innerText.trim().slice(0, 18));
   }
   if (dead.length) out.push(['INFO', 'dead-buttons', `${dead.length} button(s) changed nothing when clicked: ${dead.slice(0, 5).join(', ')}`]);
-  const focusEls = [...document.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, [tabindex]:not([tabindex="-1"])')]
-    .filter(e => {
-      const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-      return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden' && !e.disabled && e.getAttribute('aria-disabled') !== 'true';
-    }).slice(0, 6);
-  let noRing = 0;
-  for (const e of focusEls) {
-    e.focus({ focusVisible: true });
-    const cs = getComputedStyle(e);
-    const cls = typeof e.className === 'string' ? e.className : (e.getAttribute('class') || '');
-    if (document.activeElement === e && cs.outlineStyle === 'none' && cs.boxShadow === 'none' && !/focus(?:-visible)?:(?:ring|outline-(?!none)|border-)/.test(cls)) noRing++;
-  }
-  if (noRing >= 3) out.push(['WARN', 'no-focus-ring', `${noRing} of the first 6 controls show no focus indicator (add focus-visible:ring-2)`]);
   return out;
 }"""
 
@@ -332,8 +352,11 @@ def run_axe(page):
     js = find_axe()
     if not js:
         return [('INFO', 'axe', 'axe-core unavailable (npm install axe-core to enable)')]
-    page.add_script_tag(content=js)
-    res = page.evaluate("axe.run().then(r => r.violations.map(v => ({id: v.id, impact: v.impact, n: v.nodes.length, help: v.help, t: (v.nodes[0].target || []).join(' ').slice(0, 70)})))")
+    try:
+        page.add_script_tag(content=js)
+        res = page.evaluate("axe.run().then(r => r.violations.map(v => ({id: v.id, impact: v.impact, n: v.nodes.length, help: v.help, t: (v.nodes[0].target || []).join(' ').slice(0, 70)})))")
+    except Exception as exc:
+        return [('INFO', 'axe', f'axe-core error: {str(exc)[:120]}')]
     out = []
     for v in res:
         sev = 'WARN' if v['impact'] in ('serious', 'critical') else 'INFO'
@@ -341,8 +364,9 @@ def run_axe(page):
     return out
 
 
-SCROLL_SWEEP_JS = """async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) {
-    window.scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } window.scrollTo(0, 0); }"""
+SCROLL_SWEEP_JS = """async () => { const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    for (let y = 0; y < h; y += 600) { window.scrollTo({ top: y, behavior: 'instant' }); await new Promise(r => setTimeout(r, 60)); }
+    window.scrollTo({ top: 0, behavior: 'instant' }); }"""
 
 
 def write_temp_render(src, html):

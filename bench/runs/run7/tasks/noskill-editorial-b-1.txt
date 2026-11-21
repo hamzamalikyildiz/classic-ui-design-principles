@@ -1,10 +1,10 @@
 Build one web page.
 Brief: Travel essay page "Night Train to Trieste": headline, introduction, an itinerary sidebar, a pull quote and related essays.
 
-Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to C:\Users\hamza\AppData\Local\Temp\benchrun7\raw\noskill\editorial-b-1.html and reply with that path only.
+Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to <WORKDIR>\raw\noskill\editorial-b-1.html and reply with that path only.
 
 Do NOT use the Skill tool.
-Do NOT read anything under C:\Users\hamza\OneDrive\Desktop\Mükemmel Skill or any skills folder.
+Do NOT read anything under <SKILL_DIR> or any skills folder.
 When the page is done run (with PYTHONIOENCODING=utf-8 or python -X utf8):
-  "C:\Users\hamza\AppData\Local\Programs\Python\Python312\python.exe" "C:\Users\hamza\OneDrive\Desktop\Mükemmel Skill\scripts\render.py" <file> --out "C:\Users\hamza\AppData\Local\Temp\benchrun7\shots_gen\noskill-editorial-b-1.png"
+  "<PYTHON>" "<SKILL_DIR>\scripts\render.py" <file> --out "<WORKDIR>\shots_gen\noskill-editorial-b-1.png"
 (no --check; use it only to render a screenshot). Open the PNG with the Read tool. Fix anything empty, clipped, overlapping, broken or ugly with the smallest edits. At most 2 fix rounds.

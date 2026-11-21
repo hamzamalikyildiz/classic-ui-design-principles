@@ -45,12 +45,12 @@ Playful and Bold are **expressive**: the audit enforces only the accessibility f
 
 ## 4. Hard rules (details and values in `reference/rules.md`; read it when fixing findings or building components)
 
-- Color: 60-30-10 by area; one hero surface per screen; AA contrast (4.5:1 body, 3:1 large/UI), measured on gradients too; fix a failing colored pair by shade within the hue, never by grey; charts use a categorical palette with labels.
-- Depth over borders; no frame wrappers; nested radius = outer - padding.
-- Layout: 8pt grid (4px for fine-tuning), proximity inside groups < between groups, Z-pattern for landings, F-pattern for dashboards and content, bento with one featured card.
-- Type: modular scale, xs >= 12px, sm >= 14px, body 16px, leading 1.5-1.6, paragraphs <= 65ch, <= 2 families (3 in expressive moods).
-- UX: single solid primary CTA per screen/card/form (primary >= 44px), Hick <= 7 options, Miller 5-7 nav items, skeleton + empty + error states, hover/focus-visible/active/disabled, `aria-hidden` on decoration, `<main>`/`<header>`/`<nav>` landmarks.
-- Anti-patterns: rainbow buttons, grey-only charts, grey fixes for color, tiny body copy, borders on every card, everything bold, stretched empty cards.
+- Color: 60-30-10 by area; one hero surface per screen (except pure typographic Editorial); AA contrast (4.5:1 body, 3:1 large/UI), measured on gradients too; fix a failing colored pair by shade within the hue, never by grey; charts use a categorical palette with labels.
+- Depth over borders (except Technical/Editorial hairlines); no frame wrappers; nested radius = outer - padding.
+- Layout: 8pt grid (4px for fine-tuning), proximity inside groups < between groups, Z-pattern for landings, F-pattern for dashboards and content, bento with one featured card (when the brief calls for bento).
+- Type: modular scale, `xs` >= 12px for short kickers/tags only, >= 14px (`sm`) for readable table/caption/sidebar text, body 16px, leading 1.5-1.6, paragraphs <= 65ch, <= 2 families (up to 3 in expressive moods).
+- UX: single solid primary CTA per screen/card/form (primary >= 44px; `audit` warns below 40px), Hick <= 7 options, Miller 5-7 nav items, skeleton + empty + error states for dynamic/async data, hover/focus-visible/active/disabled, `aria-hidden` on decoration, `<main>`/`<header>`/`<nav>` landmarks.
+- Anti-patterns: rainbow buttons, several solid CTAs, tiny <14px body/table text, faint grey walls, hollow outlined display text, borders on every card outside Technical/Editorial, everything bold, stretched empty cards.
 
 The user's explicit request wins; satisfy colliding rules through presentation (grouping, "More" menus, ghost variants) and say so in the report.
 

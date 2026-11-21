@@ -19,10 +19,11 @@ with open(HERE / 'judges.json', encoding='utf-8') as fh:
     judges = json.load(fh)
 base = (HERE / 'JUDGE_PROMPT.md').read_text(encoding='utf-8')
 (W / 'maps').mkdir(exist_ok=True); (W / 'judge_tasks').mkdir(exist_ok=True)
-for j in judges:
+for idx, j in enumerate(judges):
     rnd = random.Random(f'{a.seed}-{j["id"]}')
     ids = list(pm); rnd.shuffle(ids)
-    flags = ([True, False] * len(ids))[:len(ids)]; rnd.shuffle(flags)
+    pair_pattern = [True, False] if idx % 2 == 0 else [False, True]
+    flags = (pair_pattern * ((len(ids) + 1) // 2))[:len(ids)]; rnd.shuffle(flags)
     d = W / f'judge_{j["id"]}'
     if d.exists(): shutil.rmtree(d)
     d.mkdir(); mp = {}
@@ -38,6 +39,7 @@ for j in judges:
     with open(W / 'maps' / f'MAP_{j["id"]}.json', 'w', encoding='utf-8') as fh:
         json.dump(mp, fh, indent=1, ensure_ascii=False)
     out = W / f'judge_{j["id"]}.txt'
+    out.unlink(missing_ok=True)
     prompt = (f'Sen {j["name"]}, {j["age"]} yaşındasın. {j["persona"]}\n\n'
               f'Sayfaları BU kişinin gözüyle, kendi zevkinle değerlendir.\n\n{base}\n\n'
               f'Dosyalar: {d} klasöründe. Çift N için A = ciftN-A-1.png, ciftN-A-2.png (varsa -3.png), B = ciftN-B-*.png '
@@ -45,8 +47,9 @@ for j in judges:
               f'{W} klasöründeki başka hiçbir dosyayı (özellikle MAP, KEY, raw, anon, pairs, metrics, maps adlı olanları) ve '
               f'skill klasörünü okuma.\n\n'
               f'Sonuçları {out} dosyasına, HER ÇİFTTEN SONRA o satırı ekleyerek yaz (bağlam kaybolursa iş kaybolmasın). '
-              f'Satır formatı aynen: `cift3: A | 4 | tek cümle gerekçe | A 8/8/7/9 B 7/6/8/7` '
-              f'(tercih, güven 1-5, gerekçe, sonra dört kriter için A ve B puanları). Beraberlik yok. '
+              f'Satır formatı aynen: `cift3: A | 4 | tek cümle Türkçe gerekçe | A 8/8/7/9 B 7/6/8/7` '
+              f'(tercih, güven 1-5, gerekçe, sonra dört kriter için A ve B puanları). '
+              f'Gerekçeyi mutlaka tek cümle ve Türkçe yaz. Beraberlik yok. '
               f'En sonda sadece dosya yolunu yaz.')
     (W / 'judge_tasks' / f'{j["id"]}.txt').write_text(prompt, encoding='utf-8')
 print(f'{len(judges)} judge sets, {len(pm)} pairs each; prompts in {W / "judge_tasks"}')

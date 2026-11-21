@@ -400,10 +400,24 @@ class MoodSpecific(unittest.TestCase):
         iss = run(bad, mood='editorial')
         self.assertTrue(rules(iss, 'edge-align'))
         self.assertFalse(any('Drop mx-auto' in msg for _, r, msg in iss if r == 'edge-align'))
-        ok = '<div className="max-w-4xl mx-auto"><h1 className="text-5xl">T</h1><div className="max-w-prose"><p>x</p></div></div>'
-        self.assertEqual(rules(run(ok, mood='editorial'), 'edge-align'), [])
-        centered = '<div className="max-w-4xl mx-auto text-center"><h1 className="text-5xl">T</h1></div><div className="max-w-prose mx-auto"><p>x</p></div>'
+        two_col_ok = '<main className="max-w-5xl mx-auto"><h1 className="text-5xl">T</h1><div className="grid lg:grid-cols-[minmax(0,65ch)_280px]"><div className="max-w-prose"><p>x</p></div><aside>R</aside></div><footer><form className="max-w-md mx-auto"></form></footer></main>'
+        self.assertEqual(rules(run(two_col_ok, mood='editorial'), 'edge-align'), [])
+        centered = '<div className="max-w-4xl mx-auto md:text-center"><h1 className="text-5xl">T</h1></div><div className="max-w-prose mx-auto"><p>x</p></div>'
         self.assertEqual(rules(run(centered, mood='editorial'), 'edge-align'), [])
+
+    def test_editorial_edge_cases_v2(self):
+        bottom_aside = '<main className="max-w-5xl mx-auto"><h1 className="text-5xl text-center">T</h1><div className="max-w-prose"><p>x</p></div><aside>Author bio</aside></main>'
+        self.assertTrue(rules(run(bottom_aside, mood='editorial'), 'left-stacked-column'))
+        wide_2xl_uncentered = '<article className="mx-auto max-w-6xl"><h1 className="text-6xl text-center">T</h1><div className="max-w-2xl"><p>x</p></div></article>'
+        self.assertTrue(rules(run(wide_2xl_uncentered, mood='editorial'), 'left-stacked-column'))
+        nested_ok = '<main className="max-w-5xl mx-auto text-center"><div className="max-w-prose mx-auto"><div className="max-w-prose"><p>x</p></div></div></main>'
+        self.assertEqual(rules(run(nested_ok, mood='editorial'), 'left-stacked-column'), [])
+        twok_grid = '<article className="mx-auto max-w-6xl"><div className="grid 2xl:grid-cols-2"><div className="max-w-prose"><p>x</p></div><div>rail</div></div></article>'
+        self.assertEqual(rules(run(twok_grid, mood='editorial'), 'left-stacked-column'), [])
+        js_bitter = '<link href="https://fonts.googleapis.com/css2?family=Inter"><script>const x=["Bitter","Sweet"];</script><main><h1 className="text-4xl">T</h1></main>'
+        self.assertTrue(rules(run(js_bitter, suffix='.html', mood='editorial'), 'no-serif'))
+        tw_single = '<script>tailwind.config={theme:{extend:{fontFamily:{display:["Playfair Display"]}}}}</script><main><h1 className="font-display text-5xl">T</h1></main>'
+        self.assertEqual(rules(run(tw_single, suffix='.html', mood='editorial'), 'no-serif'), [])
 
     def test_editorial_h2_and_2xl_allowed_in_headline_measure(self):
         h2_ok = '<div className="max-w-prose mx-auto"><h2 className="text-4xl font-serif">Subheading</h2><p>x</p></div>'
@@ -608,6 +622,46 @@ class Regressions(unittest.TestCase):
                 ut.main(['audit', str(a), str(b)])
             self.assertEqual(cm.exception.code, 0)
             self.assertNotIn('bg-brand', out.getvalue())
+
+    def test_v2_hardening_regressions(self):
+        inline_var = '<style>:root { --surface: #0b0b0c; }</style><div style="background: var(--surface)"><p className="text-white">Hi</p></div><div style="background: rgb(15, 23, 42)"><p className="text-white">Hi</p></div>'
+        self.assertEqual(rules(run(inline_var, suffix='.html'), 'wcag-aa'), [])
+
+        dark_media = '<style>body { background: #ffffff; } @media (prefers-color-scheme: dark) { body { background: #0b0b0c; } }</style><body><p class="text-slate-900">Hi</p></body>'
+        self.assertEqual(rules(run(dark_media, suffix='.html'), 'wcag-aa'), [])
+
+        jsx_3 = '<div className="bg-slate-900" onClick={() => { if (a) { b(); } }}><p className="text-white">Hi</p></div>'
+        self.assertEqual(rules(run(jsx_3), 'wcag-aa'), [])
+        tpl_cls = '<div className={`p-4 ${dark ? "bg-slate-900" : "bg-slate-800"}`}><span className="text-white">x</span></div>'
+        self.assertEqual(rules(run(tpl_cls), 'wcag-aa'), [])
+
+        f_ok = ('<link href="https://fonts.googleapis.com/css2?family=Inter&family=Playfair%20Display">'
+                '<style>/* font-family: Lobster; */ h1 { font-family: "playfair display", serif; }</style>'
+                '<h2 style="font-family: \'Playfair Display\'">X</h2>')
+        self.assertEqual(rules(run(f_ok, suffix='.html'), 'max-2-fonts'), [])
+
+        css_wcag = '.a { /* color: #cccccc; */ color: #111111; background: #ffffff; } .b { background: #ffffff; background: #0f172a; color: #f8fafc; } h1 { font-size: 48px; color: #949494; background: #ffffff; }'
+        self.assertEqual(rules(run(css_wcag, suffix='.css'), 'wcag-aa'), [])
+
+        grid_prose = '<style>/* padding: 13px; */ .a { padding: 16px; }</style><p>Avoid padding: 13px and p-3</p>'
+        self.assertEqual(rules(run(grid_prose, suffix='.html'), 'grid'), [])
+        self.assertTrue(rules(run('<div className="md:p-[13px]">x</div>'), 'grid'))
+
+        long_p = 'x ' * 50
+        self.assertEqual(rules(run(f'<section class="grid md:grid-cols-3"><div><p>{long_p}</p></div></section>', suffix='.html'), 'line-length'), [])
+        self.assertEqual(rules(run(f'<main class="max-w-7xl"><div class="lg:max-w-prose"><p>{long_p}</p></div></main>', suffix='.html'), 'line-length'), [])
+        self.assertTrue(rules(run(f'<style>.footer p {{ max-width: 65ch; }}</style><main class="max-w-7xl"><p>{long_p}</p></main>', suffix='.html'), 'line-length'))
+
+        pad_clamp = '<style>section { padding-block: clamp(2rem, 8vw, 6rem); }</style><h1 className="text-2xl">Tiny</h1>'
+        self.assertTrue(rules(run(pad_clamp, suffix='.html', mood='bold'), 'bold-headline-size'))
+        u_clamp = '<h1 className="text-[clamp(3rem,_8vw,_6rem)]">Huge</h1>'
+        self.assertEqual(rules(run(u_clamp, mood='bold'), 'bold-headline-size'), [])
+
+        cta_ok = '<section><a className="bg-[#ffffff] border">A</a><a className="bg-[#f8fafc] border">B</a><a className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Brand</a></section>'
+        self.assertEqual(rules(run(cta_ok), 'single-primary-cta'), [])
+        cta_tok = '<script>tailwind.config={theme:{extend:{colors:{coral:"#FF5A36"}}}}</script><section><button class="bg-coral text-white h-8">A</button><button class="bg-coral text-white h-8">B</button></section>'
+        self.assertTrue(rules(run(cta_tok, suffix='.html'), 'single-primary-cta'))
+        self.assertTrue(rules(run(cta_tok, suffix='.html'), 'fitts-primary'))
 
 
 if __name__ == '__main__':

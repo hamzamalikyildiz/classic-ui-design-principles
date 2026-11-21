@@ -181,36 +181,53 @@ class JsPayloads(unittest.TestCase):
         self.assertIn("cs.webkitLineClamp === 'none'", rd.CHECK_JS)
         self.assertIn("cs.clipPath === 'inset(50%)'", rd.CHECK_JS)
         self.assertIn("cs.overflowX !== 'auto' && cs.overflowX !== 'scroll'", rd.CHECK_JS)
+        self.assertIn("position !== 'absolute'", rd.CHECK_JS)
         self.assertIn("position === 'sticky'", rd.CHECK_JS)
+        self.assertIn("getComputedStyle(ch).position === 'sticky'", rd.CHECK_JS)
         self.assertIn("position === 'fixed'", rd.CHECK_JS)
-        self.assertIn("col.c.matches('nav') || col.c.querySelector('nav')", rd.CHECK_JS)
+        self.assertIn("col.c.matches('nav') || (col.c.matches('aside') && col.c.querySelector('nav'))", rd.CHECK_JS)
         self.assertIn('Math.abs(r.top - sib.r.top) < 80', rd.CHECK_JS)
         self.assertIn('nd.nodeType === 3 && nd.textContent.trim()', rd.CHECK_JS)
         for tag in ('svg', 'img', 'canvas', 'video', 'iframe', 'input', 'textarea', 'select'):
             self.assertIn(f"'{tag}'", rd.CHECK_JS)
         self.assertIn("document.querySelectorAll('svg')", rd.CHECK_JS)
+        self.assertIn('isHiddenOrRotated', rd.CHECK_JS)
+        self.assertIn('hollow-text', rd.CHECK_JS)
+        self.assertIn('desktop-tiny-text', rd.CHECK_JS)
         self.assertIn("cs.fill === 'none'", rd.CHECK_JS)
         self.assertNotIn("if (tag === 'button' && text === ''", rd.CHECK_JS)
 
-        # INTERACT_JS invariants
+        # INTERACT_JS invariants (focus check runs before button clicks)
+        self.assertLess(rd.INTERACT_JS.index('focusEls'), rd.INTERACT_JS.index('b.click()'))
         self.assertIn('mo.observe(document.documentElement', rd.INTERACT_JS)
         self.assertIn('Math.abs(scrollY - y) > 5', rd.INTERACT_JS)
         self.assertIn('if (scrollY !== y || scrollX !== x) scrollTo(x, y)', rd.INTERACT_JS)
         self.assertIn("b.getAttribute('aria-disabled') !== 'true'", rd.INTERACT_JS)
         self.assertNotIn('const focusable =', rd.INTERACT_JS)
-        focus_re = re.search(r'/([^/]+)/\.test\(cls\)', rd.INTERACT_JS)
+        focus_re = re.search(r'/(.+)/\.test\(cls\)', rd.INTERACT_JS)
         self.assertIsNotNone(focus_re)
         py_focus_re = re.compile(focus_re.group(1))
-        self.assertIsNone(py_focus_re.search('focus:outline-none'))
-        self.assertIsNotNone(py_focus_re.search('focus-visible:ring-2'))
-        self.assertIsNotNone(py_focus_re.search('focus:outline-2'))
-        self.assertIsNotNone(py_focus_re.search('focus:border-indigo-500'))
+        for bad_cls in ('focus:outline-none', 'focus:ring-0', 'focus:outline-0', 'focus:border-transparent'):
+            self.assertIsNone(py_focus_re.search(bad_cls), bad_cls)
+        for ok_cls in ('focus-visible:ring-2', 'focus-visible:outline', 'focus:outline-2', 'focus:border-indigo-500'):
+            self.assertIsNotNone(py_focus_re.search(ok_cls), ok_cls)
 
-        # MOBILE_JS invariants
+        # SCROLL_SWEEP_JS & MOBILE_JS invariants
+        self.assertIn("behavior: 'instant'", rd.SCROLL_SWEEP_JS)
+        self.assertIn('parseFloat(cs.opacity) !== 0', rd.MOBILE_JS)
         self.assertIn("e.tagName === 'INPUT' && (e.type || '').toLowerCase() === 'hidden'", rd.MOBILE_JS)
         self.assertIn('r.height < 36 && r.width <= 120', rd.MOBILE_JS)
         self.assertIn("e.getAttribute('aria-label') || e.placeholder || e.tagName", rd.MOBILE_JS)
         self.assertIn('nd.nodeType === 3 && nd.textContent.trim().length > 3', rd.MOBILE_JS)
+
+    def test_run_axe_handles_script_error(self):
+        fake_page = mock.MagicMock()
+        fake_page.add_script_tag.side_effect = RuntimeError('CSP blocked')
+        with mock.patch.object(rd, 'find_axe', return_value='/* axe */'):
+            res = rd.run_axe(fake_page)
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0][:2], ('INFO', 'axe'))
+        self.assertIn('CSP blocked', res[0][2])
 
 
 if __name__ == '__main__':
