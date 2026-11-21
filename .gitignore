@@ -4,3 +4,8 @@ __pycache__/
 .venv/
 .DS_Store
 Thumbs.db
+node_modules/
+dist/
+*.tsbuildinfo
+auth.json
+shots/
