@@ -212,9 +212,72 @@ def write_temp_render(src, html):
             return pathlib.Path(tf.name)
 
 
+VIEWPORT_PRESETS = {
+    'desktop': (1440, 900),
+    'laptop': (1280, 800),
+    'tablet': (834, 1112),
+    'mobile': (390, 844),
+    'mobile-375': (375, 800),
+    'legacy-mobile': (375, 800),
+}
+_CUSTOM_VP_RE = re.compile(r'^(\d+)[xX](\d+)$')
+
+
+def _normalize_list_arg(val):
+    """Flatten comma-separated or space-separated CLI/config string list arguments."""
+    if val is None:
+        return None
+    items = [val] if isinstance(val, str) else list(val)
+    out = []
+    for item in items:
+        if isinstance(item, str):
+            for part in item.split(','):
+                part = part.strip()
+                if part:
+                    out.append(part)
+        elif item is not None:
+            out.append(item)
+    return out
+
+
+def parse_viewport(spec):
+    """Resolve a viewport preset name ('desktop', 'mobile', ...) or 'WxH' string into (name, width, height)."""
+    if isinstance(spec, dict):
+        if 'width' not in spec or 'height' not in spec:
+            raise ValueError(f'viewport dict requires width and height: {spec!r}')
+        w, h = int(spec['width']), int(spec['height'])
+        if w <= 0 or h <= 0:
+            raise ValueError(f'viewport dimensions must be positive: {spec!r}')
+        name = str(spec.get('name') or f'{w}x{h}').strip()
+        return name, w, h
+    if isinstance(spec, (tuple, list)) and len(spec) == 2:
+        w, h = int(spec[0]), int(spec[1])
+        if w <= 0 or h <= 0:
+            raise ValueError(f'viewport dimensions must be positive: {spec!r}')
+        return f'{w}x{h}', w, h
+    if not isinstance(spec, str) or not spec.strip():
+        raise ValueError(f'invalid viewport specification: {spec!r}')
+    key = spec.strip().lower()
+    if key in VIEWPORT_PRESETS:
+        w, h = VIEWPORT_PRESETS[key]
+        return key, w, h
+    m = _CUSTOM_VP_RE.match(key)
+    if m:
+        w, h = int(m.group(1)), int(m.group(2))
+        if w <= 0 or h <= 0:
+            raise ValueError(f'viewport dimensions must be positive: {spec!r}')
+        return f'{w}x{h}', w, h
+    raise ValueError(
+        f'unknown viewport {spec!r}: expected one of {sorted(VIEWPORT_PRESETS)} or WxH (e.g. 375x800)'
+    )
+
+
+resolve_viewport = parse_viewport
+
+
 @dataclass
 class RenderOptions:
-    """Configuration for rendering and optionally checking a local HTML file or live URL."""
+    """Configuration for rendering and optionally checking a local HTML file, live URL, or multi-route config."""
     html: str | None = None
     url: str | None = None
     out: str | None = None
@@ -228,6 +291,10 @@ class RenderOptions:
     login_script: str | None = None
     wait_for: str | None = None
     actions: list | None = None
+    routes: str | dict | None = None
+    out_dir: str = 'shots'
+    viewports: list | None = None
+    states: list | None = None
 
 
 def _coerce_options(opts):
@@ -408,12 +475,35 @@ def run_actions(page, actions):
         elif isinstance(act, dict):
             kind = act.get('type') or act.get('action')
             sel = act.get('selector')
+            val = act.get('value', '')
+            if not kind:
+                for k in ('click', 'fill', 'wait_for', 'hover', 'press', 'wait'):
+                    if k in act:
+                        kind = k
+                        raw = act[k]
+                        if k == 'fill' and isinstance(raw, (list, tuple)) and len(raw) >= 2:
+                            sel, val = raw[0], raw[1]
+                        elif k == 'fill' and isinstance(raw, dict):
+                            sel = raw.get('selector')
+                            val = raw.get('value', '')
+                        else:
+                            sel = raw
+                        break
             if kind == 'fill' and sel is not None and hasattr(page, 'fill'):
-                page.fill(sel, str(act.get('value', '')))
+                page.fill(sel, str(val))
             elif kind == 'click' and sel is not None and hasattr(page, 'click'):
                 page.click(sel)
             elif kind == 'wait_for' and sel is not None and hasattr(page, 'wait_for_selector'):
                 page.wait_for_selector(sel, state='visible', timeout=act.get('timeout', 5000))
+            elif kind == 'hover' and sel is not None and hasattr(page, 'hover'):
+                page.hover(sel)
+            elif kind == 'press' and sel is not None and hasattr(page, 'press'):
+                if isinstance(sel, (list, tuple)) and len(sel) >= 2:
+                    page.press(sel[0], str(sel[1]))
+                elif 'key' in act:
+                    page.press(sel, str(act['key']))
+            elif kind == 'wait' and sel is not None and hasattr(page, 'wait_for_timeout'):
+                page.wait_for_timeout(int(sel))
         elif isinstance(act, (tuple, list)) and len(act) >= 2:
             kind, sel = act[0], act[1]
             if kind == 'fill' and hasattr(page, 'fill'):
@@ -664,13 +754,526 @@ def capture(browser_or_page, target_uri, opts=None):
             owned_context.close()
 
 
+def validate_routes_config(cfg):
+    """Validate and normalize a routes.json dictionary schema."""
+    if not isinstance(cfg, dict):
+        raise ValueError('routes config must be a JSON object')
+    base_url = cfg.get('base_url')
+    if not isinstance(base_url, str) or not base_url.strip():
+        raise ValueError("routes config requires a non-empty string 'base_url'")
+    routes = cfg.get('routes')
+    if not isinstance(routes, list) or not routes:
+        raise ValueError("routes config requires a non-empty 'routes' list")
+    auth = cfg.get('auth')
+    if auth is not None:
+        if not isinstance(auth, dict):
+            raise ValueError("'auth' in routes config must be an object")
+        for k in ('storage_state', 'login_script', 'save_storage_state'):
+            if auth.get(k) is not None and (not isinstance(auth[k], str) or not auth[k].strip()):
+                raise ValueError(f"auth.{k} must be a non-empty string")
+    if cfg.get('viewports') is not None:
+        vps = _normalize_list_arg(cfg['viewports'])
+        if not vps:
+            raise ValueError("'viewports' in routes config cannot be empty")
+        for vp in vps:
+            parse_viewport(vp)
+    if cfg.get('states') is not None:
+        sts = _normalize_list_arg(cfg['states'])
+        if not sts or not all(isinstance(s, str) and s.strip() for s in sts):
+            raise ValueError("'states' in routes config must be a non-empty list of strings")
+
+    seen_names = set()
+    for idx, route in enumerate(routes):
+        if not isinstance(route, dict):
+            raise ValueError(f'route at index {idx} must be an object')
+        name = route.get('name')
+        if not isinstance(name, str) or not name.strip() or '/' in name or '\\' in name or name.strip() in ('.', '..'):
+            raise ValueError(f"route at index {idx} requires a valid non-empty string 'name'")
+        name = name.strip()
+        if name in seen_names:
+            raise ValueError(f'duplicate route name: {name!r}')
+        seen_names.add(name)
+        path_val = route.get('path', route.get('url'))
+        if not isinstance(path_val, str):
+            raise ValueError(f"route {name!r} requires a string 'path' (or 'url')")
+        if route.get('states') is not None:
+            r_sts = _normalize_list_arg(route['states'])
+            if not r_sts or not all(isinstance(s, str) and s.strip() for s in r_sts):
+                raise ValueError(f"route {name!r} has invalid 'states'")
+        if route.get('viewports') is not None:
+            r_vps = _normalize_list_arg(route['viewports'])
+            if not r_vps:
+                raise ValueError(f"route {name!r} has empty 'viewports'")
+            for vp in r_vps:
+                parse_viewport(vp)
+        if route.get('actions') is not None and not isinstance(route['actions'], list):
+            raise ValueError(f"route {name!r} 'actions' must be a list")
+        if route.get('wait_for') is not None and not isinstance(route['wait_for'], str):
+            raise ValueError(f"route {name!r} 'wait_for' must be a string")
+    return cfg
+
+
+def load_routes_config(routes_source):
+    """Load and validate routes config from a file path or dict; return (cfg_dict, base_dir)."""
+    if isinstance(routes_source, dict):
+        return validate_routes_config(dict(routes_source)), None
+    p = pathlib.Path(routes_source)
+    if not p.is_file():
+        raise FileNotFoundError(f'routes file not found: {routes_source}')
+    try:
+        cfg = json.loads(p.read_text(encoding='utf-8'))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f'invalid JSON in routes file {routes_source}: {exc}') from exc
+    return validate_routes_config(cfg), p.resolve().parent
+
+
+def _resolve_auth_path(path_val, base_dir, must_exist=False):
+    if not path_val:
+        return None
+    p = pathlib.Path(path_val)
+    if p.is_absolute() or base_dir is None:
+        return str(p)
+    candidate = base_dir / p
+    if must_exist:
+        return str(candidate) if candidate.exists() else str(p)
+    return str(candidate)
+
+
+def _resolve_base_target(base_url, base_dir=None):
+    """Resolve base_url (HTTP(S), file://, or local HTML/dir path) into (base_uri, online, temp_html_file)."""
+    raw = base_url.strip()
+    if raw.lower().startswith(('http://', 'https://')):
+        return raw, True, None
+    if raw.lower().startswith('file://'):
+        parsed = urllib.parse.urlsplit(raw)
+        local_path = pathlib.Path(urllib.request.url2pathname(parsed.path))
+        if local_path.is_file() and local_path.suffix.lower() in ('.html', '.htm'):
+            temp_file = prepare_html_target(local_path)
+            uri = temp_file.as_uri()
+            if parsed.query or parsed.fragment:
+                sp = urllib.parse.urlsplit(uri)
+                uri = urllib.parse.urlunsplit((sp.scheme, sp.netloc, sp.path, parsed.query, parsed.fragment))
+            return uri, False, temp_file
+        return raw, False, None
+
+    # Local path (optionally with ?query or #fragment)
+    m = re.match(r'^([^?#]*)(.*)$', raw)
+    file_part, tail = (m.group(1), m.group(2)) if m else (raw, '')
+    p = pathlib.Path(file_part)
+    if not p.is_absolute() and base_dir is not None and (base_dir / p).exists():
+        p = (base_dir / p).resolve()
+    else:
+        p = p.resolve()
+    temp_file = None
+    if p.is_file() and p.suffix.lower() in ('.html', '.htm'):
+        temp_file = prepare_html_target(p)
+        base_uri = temp_file.as_uri()
+    else:
+        base_uri = p.as_uri()
+    if tail:
+        base_uri = f'{base_uri}{tail}'
+    return base_uri, False, temp_file
+
+
+def _build_route_url(base_uri, route_cfg, state_name='default'):
+    """Construct target URI for a route and state, supporting HTTP(S), file://, and hash/query routes."""
+    route_path = route_cfg.get('url') if route_cfg.get('url') is not None else route_cfg.get('path', '')
+    overrides = route_cfg.get('state_overrides')
+    has_explicit_state_path = False
+    if isinstance(overrides, dict) and isinstance(overrides.get(state_name), dict):
+        ov = overrides[state_name]
+        if ov.get('url') is not None:
+            route_path = ov['url']
+            has_explicit_state_path = True
+        elif ov.get('path') is not None:
+            route_path = ov['path']
+            has_explicit_state_path = True
+
+    route_path = str(route_path).strip()
+    if route_path.lower().startswith(('http://', 'https://', 'file://')):
+        target = route_path
+    elif base_uri.lower().startswith(('http://', 'https://')):
+        if not route_path:
+            target = base_uri
+        elif route_path.startswith(('#', '?')):
+            target = f'{base_uri}{route_path}'
+        elif route_path.startswith('/'):
+            sp = urllib.parse.urlsplit(base_uri)
+            root = f'{sp.scheme}://{sp.netloc}'
+            base_path = sp.path.rstrip('/')
+            if base_path and not base_path.lower().endswith(('.html', '.htm')):
+                target = f'{root}{base_path}{route_path}'
+            else:
+                target = f'{root}{route_path}'
+        else:
+            target = f"{base_uri.rstrip('/')}/{route_path}"
+    else:
+        # file:// target (single HTML with hash routing or directory)
+        if not route_path or route_path == '/':
+            target = base_uri
+        elif route_path.startswith(('#', '?')):
+            target = f'{base_uri}{route_path}'
+        elif urllib.parse.urlsplit(base_uri).path.lower().endswith(('.html', '.htm')):
+            target = f'{base_uri}#{route_path}'
+        else:
+            target = f"{base_uri.rstrip('/')}/{route_path.lstrip('/')}"
+
+    if state_name and state_name != 'default' and not has_explicit_state_path and not route_cfg.get('disable_state_query'):
+        sp = urllib.parse.urlsplit(target)
+        qs = urllib.parse.parse_qs(sp.query, keep_blank_values=True)
+        if 'state' not in qs and f'state={state_name}' not in sp.fragment:
+            q_add = f'state={urllib.parse.quote(str(state_name))}'
+            new_query = f'{sp.query}&{q_add}' if sp.query else q_add
+            target = urllib.parse.urlunsplit((sp.scheme, sp.netloc, sp.path, new_query, sp.fragment))
+    return target
+
+
+def _apply_route_state(context, page, route_cfg, state_name):
+    """Hook for applying route state (state init markers, state_overrides, and İP-B5 network mocks).
+
+    May optionally return a cleanup callable or dict (e.g. {'target_uri': ...}).
+    """
+    state_name = state_name or 'default'
+    if hasattr(page, 'add_init_script'):
+        try:
+            state_json = json.dumps(state_name)
+            page.add_init_script(
+                f"window.__RENDER_STATE__ = {state_json}; "
+                f"window.__UI_STATE__ = {state_json}; "
+                f"document.addEventListener('DOMContentLoaded', () => {{"
+                f"  if (document.documentElement && !document.documentElement.dataset.state) {{"
+                f"    document.documentElement.dataset.state = {state_json};"
+                f"  }}"
+                f"}});"
+            )
+        except Exception:
+            pass
+    return None
+
+
+def _run_viewport_checks(page, vp_width, console_errors, network_errors):
+    """Run viewport-appropriate DOM checks: desktop/tablet (CHECK_JS+axe+INTERACT_JS) or mobile<=480 (CHECK_JS+MOBILE_JS+axe)."""
+    found = list(page.evaluate(CHECK_JS) or [])
+    if vp_width <= 480:
+        found += list(page.evaluate(MOBILE_JS) or [])
+        found += run_axe(page)
+    else:
+        found += run_axe(page)
+        try:
+            wait_for_dom_stability(page, quiet_ms=200, max_wait_ms=2000)
+            found += list(page.evaluate(INTERACT_JS) or [])
+        except Exception as exc:
+            found.append(['INFO', 'interact-check',
+                          f'interaction check interrupted (e.g., navigation): {str(exc)[:100]}'])
+    hydration_errors = [e for e in console_errors if is_hydration_mismatch_error(e)]
+    other_console_errors = [e for e in console_errors if not is_hydration_mismatch_error(e)]
+    if hydration_errors:
+        found.append(['WARN', 'hydration-mismatch',
+                      f"{len(hydration_errors)} hydration mismatch(es): {'; '.join(hydration_errors[:3])}"])
+    if other_console_errors:
+        found.append(['WARN', 'js-errors',
+                      f"{len(other_console_errors)} console/page error(s): {'; '.join(other_console_errors[:3])}"])
+    if network_errors:
+        found.append(['WARN', 'network-errors',
+                      f"{len(network_errors)} network error(s): {'; '.join(network_errors[:3])}"])
+    found = [list(f) for f in found if f[1] != 'dom-check']
+    if not found:
+        found = [['INFO', 'dom-check', 'no defects found']]
+    return found
+
+
+def _count_severities(findings):
+    fails = sum(1 for sev, _, _ in findings if sev == 'FAIL')
+    warns = sum(1 for sev, _, _ in findings if sev == 'WARN')
+    infos = sum(1 for sev, rule, _ in findings if sev == 'INFO' and rule != 'dom-check')
+    return fails, warns, infos
+
+
+def _write_route_check_file(route_dir, route_name, route_path, route_results):
+    """Write per-route findings summary to shots/<route>/check.txt."""
+    check_path = route_dir / 'check.txt'
+    lines = [f'# Route: {route_name} ({route_path})']
+    for item in route_results:
+        rel_png = pathlib.Path(item['out']).name if item.get('out') else ''
+        lines.append(
+            f"\n## [{item['state']} / {item['viewport']}] "
+            f"({item['width']}x{item['scroll_height']}) -> {rel_png}"
+        )
+        for sev, rule, msg in item['findings']:
+            lines.append(f'  [{sev}] {rule}: {msg}')
+    check_path.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    return check_path
+
+
+def _write_report_md(out_dir, results):
+    """Write shots/REPORT.md containing the Markdown summary table and detailed findings list."""
+    report_path = pathlib.Path(out_dir) / 'REPORT.md'
+    lines = [
+        '# Multi-Route UI Capture & Check Report',
+        '',
+        '| Route | State | Viewport | Size | FAIL | WARN | INFO | Screenshot |',
+        '| --- | --- | --- | --- | --- | --- | --- | --- |',
+    ]
+    for item in results:
+        fails, warns, infos = _count_severities(item['findings'])
+        rel_shot = f"{item['route']}/{item['state']}-{item['viewport']}.png"
+        size_str = f"{item['width']}x{item['scroll_height']}"
+        lines.append(
+            f"| {item['route']} | {item['state']} | {item['viewport']} | {size_str} | "
+            f"{fails} | {warns} | {infos} | {rel_shot} |"
+        )
+    lines.extend(['', '## Detailed Findings', ''])
+    for item in results:
+        rel_shot = f"{item['route']}/{item['state']}-{item['viewport']}.png"
+        lines.append(
+            f"### {item['route']} — `{item['state']}` / `{item['viewport']}` "
+            f"({item['width']}x{item['scroll_height']}, `{rel_shot}`)"
+        )
+        for sev, rule, msg in item['findings']:
+            lines.append(f'- **[{sev}]** `{rule}`: {msg}')
+        lines.append('')
+    report_path.write_text('\n'.join(lines), encoding='utf-8')
+    return report_path
+
+
+def _build_contact_sheet(results, out_path, cols=4, thumb_width=320, thumb_height=220):
+    """Combine all route/state-viewport screenshots into a labeled contact-sheet.png thumbnail grid."""
+    try:
+        from PIL import Image, ImageDraw
+    except ImportError:
+        log('PIL (Pillow) unavailable; skipping contact-sheet.png')
+        return None
+
+    valid = [r for r in results if r.get('out') and pathlib.Path(r['out']).is_file()]
+    if not valid:
+        return None
+
+    cols = max(1, min(cols, len(valid)))
+    rows = (len(valid) + cols - 1) // cols
+    pad = 16
+    label_h = 28
+    cell_w = thumb_width
+    cell_h = thumb_height + label_h
+    sheet_w = pad + cols * (cell_w + pad)
+    sheet_h = pad + rows * (cell_h + pad)
+
+    sheet = Image.new('RGB', (sheet_w, sheet_h), (24, 24, 27))
+    draw = ImageDraw.Draw(sheet)
+    resample = getattr( getattr(Image, 'Resampling', Image), 'LANCZOS', Image.BICUBIC)
+
+    for idx, item in enumerate(valid):
+        r_idx, c_idx = divmod(idx, cols)
+        x0 = pad + c_idx * (cell_w + pad)
+        y0 = pad + r_idx * (cell_h + pad)
+
+        # Header label bar
+        draw.rectangle([x0, y0, x0 + cell_w - 1, y0 + label_h - 1], fill=(39, 39, 42))
+        label = f"{item['route']} | {item['state']} | {item['viewport']}"
+        draw.text((x0 + 8, y0 + 7), label[:42], fill=(244, 244, 245))
+
+        # Thumbnail tile
+        tile_y = y0 + label_h
+        draw.rectangle([x0, tile_y, x0 + cell_w - 1, tile_y + thumb_height - 1], fill=(255, 255, 255))
+        try:
+            with Image.open(item['out']) as im:
+                im_rgb = im.convert('RGB')
+                scale = cell_w / max(1, im_rgb.width)
+                scaled_h = max(1, int(round(im_rgb.height * scale)))
+                resized = im_rgb.resize((cell_w, scaled_h), resample=resample)
+                crop_h = min(thumb_height, resized.height)
+                cropped = resized.crop((0, 0, cell_w, crop_h))
+                sheet.paste(cropped, (x0, tile_y))
+        except Exception:
+            draw.text((x0 + 12, tile_y + 16), 'preview unavailable', fill=(113, 113, 122))
+        draw.rectangle([x0, y0, x0 + cell_w - 1, y0 + cell_h - 1], outline=(63, 63, 70))
+
+    out_file = pathlib.Path(out_path)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    sheet.save(str(out_file), format='PNG')
+    return out_file
+
+
+def render_routes(opts, browser=None):
+    """Execute multi-route × state × viewport capture and checks from routes.json and RenderOptions."""
+    opts = _coerce_options(opts)
+    if not opts.routes:
+        raise ValueError('render_routes requires opts.routes')
+    cfg, base_dir = load_routes_config(opts.routes)
+    out_dir = pathlib.Path(opts.out_dir or 'shots')
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    auth_cfg = cfg.get('auth') or {}
+    storage_state = opts.storage_state or _resolve_auth_path(auth_cfg.get('storage_state'), base_dir, must_exist=True)
+    login_script = opts.login_script or _resolve_auth_path(auth_cfg.get('login_script'), base_dir, must_exist=True)
+    save_storage_state = opts.save_storage_state or _resolve_auth_path(auth_cfg.get('save_storage_state'), base_dir, must_exist=False)
+
+    cli_viewports = _normalize_list_arg(opts.viewports)
+    cfg_viewports = _normalize_list_arg(cfg.get('viewports')) or ['desktop']
+    cli_states = _normalize_list_arg(opts.states)
+    cfg_states = _normalize_list_arg(cfg.get('states'))
+
+    base_uri, online, temp_html_file = _resolve_base_target(cfg['base_url'], base_dir=base_dir)
+    if opts.online is not None:
+        online = bool(opts.online)
+
+    auth_opts = RenderOptions(
+        width=opts.width,
+        height=opts.height,
+        storage_state=storage_state,
+        login_script=login_script,
+        save_storage_state=save_storage_state,
+    )
+
+    def _run_with_browser(active_browser):
+        context = None
+        owns_context = False
+        if hasattr(active_browser, 'new_context'):
+            owns_context = True
+            if _has_auth(auth_opts):
+                context = _open_auth_context(active_browser, base_uri, auth_opts)
+            else:
+                context = _new_context(active_browser, auth_opts)
+        else:
+            context = active_browser
+
+        all_results = []
+        route_summaries = {}
+        try:
+            for route_cfg in cfg['routes']:
+                route_name = route_cfg['name'].strip()
+                route_dir = out_dir / route_name
+                route_dir.mkdir(parents=True, exist_ok=True)
+
+                vp_specs = cli_viewports or _normalize_list_arg(route_cfg.get('viewports')) or cfg_viewports
+                resolved_vps = [parse_viewport(vp) for vp in vp_specs]
+                states = cli_states or _normalize_list_arg(route_cfg.get('states')) or cfg_states or ['default']
+
+                route_results = []
+                for state_name in states:
+                    state_name = state_name.strip()
+                    overrides = route_cfg.get('state_overrides')
+                    state_ov = overrides.get(state_name) if isinstance(overrides, dict) and isinstance(overrides.get(state_name), dict) else {}
+                    wait_for = state_ov.get('wait_for') or route_cfg.get('wait_for') or opts.wait_for
+                    actions = state_ov.get('actions') if state_ov.get('actions') is not None else (
+                        route_cfg.get('actions') if route_cfg.get('actions') is not None else opts.actions
+                    )
+                    dark = bool(state_ov.get('dark', route_cfg.get('dark', opts.dark)))
+
+                    for vp_name, vp_w, vp_h in resolved_vps:
+                        shot_path = route_dir / f'{state_name}-{vp_name}.png'
+                        target_uri = _build_route_url(base_uri, route_cfg, state_name=state_name)
+                        page = _new_page(context, {'width': vp_w, 'height': vp_h})
+                        console_errors = []
+                        network_errors = []
+                        detach = _attach_error_listeners(page, console_errors, network_errors, online=online)
+                        hook_cleanup = None
+                        try:
+                            hook_res = _apply_route_state(context, page, route_cfg, state_name)
+                            if callable(hook_res):
+                                hook_cleanup = hook_res
+                            elif isinstance(hook_res, dict):
+                                if hook_res.get('target_uri') or hook_res.get('url'):
+                                    target_uri = hook_res.get('target_uri') or hook_res.get('url')
+                                if callable(hook_res.get('cleanup')):
+                                    hook_cleanup = hook_res['cleanup']
+
+                            page.goto(target_uri)
+                            wait_for_hydration(page, wait_for=wait_for, quiet_ms=150, max_wait_ms=5000)
+                            if dark:
+                                page.evaluate("document.documentElement.classList.add('dark')")
+                            if actions:
+                                run_actions(page, actions)
+                            page.evaluate(SCROLL_SWEEP_JS)
+                            page.wait_for_timeout(150)
+
+                            page.screenshot(path=str(shot_path), full_page=True)
+                            scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                            findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
+
+                            entry = {
+                                'route': route_name,
+                                'path': route_cfg.get('path', route_cfg.get('url', '')),
+                                'url': target_uri,
+                                'state': state_name,
+                                'viewport': vp_name,
+                                'width': vp_w,
+                                'height': vp_h,
+                                'scroll_height': scroll_h,
+                                'out': str(shot_path),
+                                'findings': findings,
+                                'console_errors': console_errors,
+                                'network_errors': network_errors,
+                            }
+                            route_results.append(entry)
+                            all_results.append(entry)
+                        finally:
+                            if hook_cleanup is not None:
+                                try:
+                                    hook_cleanup()
+                                except Exception:
+                                    pass
+                            detach()
+                            page.close()
+
+                check_file = _write_route_check_file(
+                    route_dir,
+                    route_name,
+                    route_cfg.get('path', route_cfg.get('url', '')),
+                    route_results,
+                )
+                for r in route_results:
+                    r['check_file'] = str(check_file)
+                route_summaries[route_name] = {
+                    'check_file': str(check_file),
+                    'captures': route_results,
+                }
+        finally:
+            if owns_context and context is not None:
+                context.close()
+
+        report_path = _write_report_md(out_dir, all_results)
+        contact_sheet_path = _build_contact_sheet(all_results, out_dir / 'contact-sheet.png')
+        return {
+            'out_dir': str(out_dir),
+            'report': str(report_path),
+            'contact_sheet': str(contact_sheet_path) if contact_sheet_path else None,
+            'results': all_results,
+            'routes': route_summaries,
+        }
+
+    try:
+        if browser is not None:
+            return _run_with_browser(browser)
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            sys.exit('render: Playwright missing. pip install playwright && python -m playwright install chromium')
+        with sync_playwright() as p:
+            launched = launch_browser(p)
+            try:
+                return _run_with_browser(launched)
+            finally:
+                launched.close()
+    finally:
+        if temp_html_file is not None:
+            temp_html_file.unlink(missing_ok=True)
+
+
 def build_parser():
     """Construct the CLI argument parser for render.py."""
     ap = argparse.ArgumentParser(
         description='Full-page screenshot of an HTML file or live URL (offline-friendly for files)')
-    ap.add_argument('html', nargs='?', help='path to local HTML file (omit when using --url)')
+    ap.add_argument('html', nargs='?', help='path to local HTML file (omit when using --url or --routes)')
     ap.add_argument('--url', help='live HTTP(S) URL to capture (e.g. http://localhost:3000/dashboard)')
-    ap.add_argument('--out', required=True, help='output PNG path')
+    ap.add_argument('--out', help='output PNG path (required unless --routes is used)')
+    ap.add_argument('--routes', metavar='PATH',
+                    help='multi-route JSON configuration file (captures route x state x viewport matrix)')
+    ap.add_argument('--out-dir', metavar='DIR', default='shots',
+                    help='output directory for --routes mode (default: shots)')
+    ap.add_argument('--viewports', nargs='+', metavar='VP',
+                    help='override viewports for --routes (presets: desktop, laptop, tablet, mobile, mobile-375, or WxH; space or comma separated)')
+    ap.add_argument('--states', nargs='+', metavar='ST',
+                    help='override state list for --routes (e.g. default,empty,error; space or comma separated)')
     ap.add_argument('--dark', action='store_true', help="add class 'dark' to <html> before capturing")
     ap.add_argument('--width', type=int, default=1440)
     ap.add_argument('--height', type=int, default=900)
@@ -696,10 +1299,45 @@ def parse_options(argv=None):
     """Parse and validate CLI arguments into a RenderOptions instance."""
     ap = build_parser()
     a = ap.parse_args(argv)
+    viewports = _normalize_list_arg(a.viewports)
+    if viewports is not None:
+        if not viewports:
+            ap.error('--viewports cannot be empty')
+        for vp in viewports:
+            try:
+                parse_viewport(vp)
+            except ValueError as exc:
+                ap.error(str(exc))
+    states = _normalize_list_arg(a.states)
+    if states is not None and not states:
+        ap.error('--states cannot be empty')
+
+    if a.routes:
+        if a.html or a.url:
+            ap.error('cannot combine --routes with an HTML file or --url')
+        return RenderOptions(
+            out=a.out,
+            dark=a.dark,
+            width=a.width,
+            height=a.height,
+            check=True if not a.check else a.check,
+            online=None,
+            storage_state=a.storage_state,
+            save_storage_state=a.save_storage_state,
+            login_script=a.login_script,
+            wait_for=a.wait_for,
+            routes=a.routes,
+            out_dir=a.out_dir or 'shots',
+            viewports=viewports,
+            states=states,
+        )
+
     if bool(a.html) == bool(a.url):
         if not a.html and not a.url:
             ap.error('either an HTML file or --url must be provided')
         ap.error('cannot specify both an HTML file and --url')
+    if not a.out:
+        ap.error('the following arguments are required: --out')
     if a.url:
         parsed = urllib.parse.urlparse(a.url)
         if parsed.scheme not in ('http', 'https') or not parsed.netloc:
@@ -717,12 +1355,16 @@ def parse_options(argv=None):
         save_storage_state=a.save_storage_state,
         login_script=a.login_script,
         wait_for=a.wait_for,
+        viewports=viewports,
+        states=states,
     )
 
 
 def render(opts):
-    """Execute a single render/check run from a RenderOptions (or dict) and return capture result."""
+    """Execute a single render/check run (or multi-route run if opts.routes is set) from RenderOptions/dict."""
     opts = _coerce_options(opts)
+    if opts.routes:
+        return render_routes(opts)
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -757,6 +1399,16 @@ def render(opts):
 
 def main(argv=None):
     opts = parse_options(argv)
+    if opts.routes:
+        summary = render_routes(opts)
+        for item in summary['results']:
+            for sev, rule, msg in item['findings']:
+                print(f"  [{sev}] {rule}: {msg}")
+            print(f"{item['out']} ({item['width']}x{item['scroll_height']})")
+        print(f"REPORT: {summary['report']}")
+        if summary.get('contact_sheet'):
+            print(f"CONTACT_SHEET: {summary['contact_sheet']}")
+        return
     result = render(opts)
     if opts.check:
         for sev, rule, msg in result['findings']:
