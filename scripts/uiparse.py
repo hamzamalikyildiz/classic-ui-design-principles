@@ -153,7 +153,11 @@ def _strip_all_comments(txt):
 def mask_non_markup(txt):
     """Replace HTML/JSX comments, <script>, and <style> blocks with spaces while preserving newlines and indices."""
     pat = r'<!--.*?-->|\{/\*.*?\*/\}|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>'
-    return re.sub(pat, lambda m: re.sub(r'[^\n]', ' ', m.group(0)), txt, flags=re.S | re.I)
+    res = re.sub(pat, lambda m: re.sub(r'[^\n]', ' ', m.group(0)), txt, flags=re.S | re.I)
+    clone_fn = getattr(txt, '_clone_with_text', None)
+    if clone_fn is not None:
+        return clone_fn(res)
+    return res
 
 
 def classes(attrs):
@@ -2501,10 +2505,19 @@ def extract_cva_metadata(txt, *, source_path=None):
 def walk(txt, cva_defs=None, source_path=None):
     """Yield ParsedNode (tag, attrs, classes, ancestors, start, end) for every opening tag; ancestors innermost-last."""
     active_cva = None
+    inlined_cva = getattr(txt, 'cva_registry', None)
     if cva_defs is not None:
         active_cva = CvaRegistry().merge_from(cva_defs)
+        if inlined_cva:
+            active_cva.merge_from(inlined_cva)
         if 'cva' in txt:
             active_cva.merge_from(parse_cva_definitions(txt, source_path=source_path))
+    elif inlined_cva is not None:
+        active_cva = CvaRegistry().merge_from(inlined_cva)
+        if source_path is not None:
+            active_cva.merge_from(discover_cva_definitions(source_path, txt))
+        elif 'cva' in txt:
+            active_cva.merge_from(parse_cva_definitions(txt))
     elif source_path is not None:
         active_cva = discover_cva_definitions(source_path, txt)
     elif 'cva' in txt:
@@ -2539,6 +2552,9 @@ def walk(txt, cva_defs=None, source_path=None):
         else:
             cs = attr_cs
             cls = attr_cls
+        if 'data-uitools-unknown-bg' in attrs and pick(cls, 'bg') is None:
+            cls = list(cls) + ['bg-[UNKNOWN]']
+            cs.base = list(cs.base) + ['bg-[UNKNOWN]']
         b_hits = []
         if branches_flat:
             hits = [
@@ -2630,4 +2646,7 @@ def _has_row_flex(cls):
 
 
 def line_of(txt, pos):
+    line_at = getattr(txt, 'line_at', None)
+    if line_at is not None:
+        return line_at(pos)
     return txt.count('\n', 0, pos) + 1
