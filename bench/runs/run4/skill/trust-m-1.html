@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oakridge Family Clinic — Patient Appointments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#F5F8F7',
+            surface: '#FFFFFF',
+            mist: '#E8F0EE',
+            clinic: {
+              DEFAULT: '#0E5A64',
+              light: '#157480',
+              soft: '#E0F0F2',
+            },
+            amberbrand: {
+              DEFAULT: '#B45309',
+              soft: '#FEF3C7',
+            },
+            ink: {
+              DEFAULT: '#0F2427',
+              muted: '#446064',
+            },
+            line: '#D7E3E5',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 450ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { animation: none; }
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-sans antialiased min-h-screen">
+  <header class="border-b border-line bg-surface/95 sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-lg bg-clinic text-white flex items-center justify-center shrink-0" aria-hidden="true">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </div>
+        <div class="truncate">
+          <p class="font-display text-lg font-semibold leading-tight text-ink truncate">Oakridge Family Clinic</p>
+          <p class="text-xs text-ink-muted">Reception Desk &middot; Thursday, Nov 21</p>
+        </div>
+      </div>
+
+      <nav aria-label="Schedule view" class="flex items-center bg-mist p-1 rounded-lg gap-1">
+        <button type="button" data-view="day" class="view-btn px-3 py-1.5 text-sm font-medium rounded bg-surface text-ink shadow-sm transition focus-visible:outline-2 focus-visible:outline-clinic">Day</button>
+        <button type="button" data-view="week" class="view-btn px-3 py-1.5 text-sm font-medium rounded text-ink-muted hover:text-ink transition focus-visible:outline-2 focus-visible:outline-clinic">Week</button>
+      </nav>
+
+      <button id="walkinBtn" type="button" class="min-h-[44px] px-4 py-2 rounded-lg bg-clinic hover:bg-clinic-light text-white text-sm font-semibold shadow-sm transition shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clinic">
+        + Walk-in
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+    <!-- KPI Row -->
+    <section class="fade-up grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="rounded-2xl bg-gradient-to-br from-clinic to-clinic-light text-white p-6 shadow-sm">
+        <div class="flex items-center justify-between gap-2">
+          <h1 id="kpiTitle" class="text-xs font-semibold uppercase tracking-wider text-cyan-100/90">Today's Appointments</h1>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/15 text-cyan-50 shrink-0">On schedule</span>
+        </div>
+        <p id="kpiCount" class="font-display text-4xl font-semibold tabular-nums mt-3">24</p>
+        <p id="kpiSub" class="text-xs text-cyan-100/80 mt-2">18 confirmed &middot; 6 remaining today</p>
+      </div>
+
+      <div class="rounded-2xl bg-surface p-6 shadow-sm">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">No-Show Rate</h2>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-clinic-soft text-clinic shrink-0">-1.2%</span>
+        </div>
+        <p class="font-display text-3xl font-semibold text-ink tabular-nums mt-3">3.8%</p>
+        <p class="text-xs text-ink-muted mt-2">Down from 5.0% last month</p>
+      </div>
+
+      <div class="rounded-2xl bg-surface p-6 shadow-sm">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">Reminders Sent</h2>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-mist text-ink-muted shrink-0">91.7%</span>
+        </div>
+        <p class="font-display text-3xl font-semibold text-ink tabular-nums mt-3">22 / 24</p>
+        <p class="text-xs text-ink-muted mt-2">SMS &amp; email delivered 24h prior</p>
+      </div>
+    </section>
+
+    <!-- Main 2-Column Grid: Schedule + Waiting List -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 rounded-2xl bg-surface p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <h2 id="scheduleHeading" class="font-display text-xl font-semibold text-ink">Today's Schedule</h2>
+            <p id="scheduleSub" class="text-sm text-ink-muted">3 clinicians on duty &middot; 15-min buffer</p>
+          </div>
+          <span class="text-xs font-medium text-ink-muted tabular-nums">Next: 10:30 AM</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-line text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                <th class="py-3 pr-4">Time</th>
+                <th class="py-3 pr-4">Patient</th>
+                <th class="py-3 pr-4">Clinician</th>
+                <th class="py-3 pr-4">Status</th>
+                <th class="py-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleBody" class="divide-y divide-line text-sm">
+              <tr>
+                <td class="py-3.5 pr-4 text-xs font-semibold text-ink-muted tabular-nums whitespace-nowrap">09:30 AM</td>
+                <td class="py-3.5 pr-4 font-medium text-ink">Elena Rostova</td>
+                <td class="py-3.5 pr-4 text-ink-muted">Dr. Patel</td>
+                <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-clinic-soft text-clinic">Checked In</span></td>
+                <td class="py-3.5 text-right"><span class="text-xs text-ink-muted">In Room 2</span></td>
+              </tr>
+              <tr>
+                <td class="py-3.5 pr-4 text-xs font-semibold text-ink-muted tabular-nums whitespace-nowrap">10:00 AM</td>
+                <td class="py-3.5 pr-4 font-medium text-ink">Marcus Vance</td>
+                <td class="py-3.5 pr-4 text-ink-muted">Dr. Lin</td>
+                <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-amberbrand-soft text-amberbrand">Waiting</span></td>
+                <td class="py-3.5 text-right"><button type="button" class="checkin-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition focus-visible:outline-2 focus-visible:outline-clinic">Check In</button></td>
+              </tr>
+              <tr>
+                <td class="py-3.5 pr-4 text-xs font-semibold text-ink-muted tabular-nums whitespace-nowrap">10:30 AM</td>
+                <td class="py-3.5 pr-4 font-medium text-ink">Hannah Abbott</td>
+                <td class="py-3.5 pr-4 text-ink-muted">Dr. Patel</td>
+                <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-mist text-ink-muted">Confirmed</span></td>
+                <td class="py-3.5 text-right"><button type="button" class="checkin-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition focus-visible:outline-2 focus-visible:outline-clinic">Check In</button></td>
+              </tr>
+              <tr>
+                <td class="py-3.5 pr-4 text-xs font-semibold text-ink-muted tabular-nums whitespace-nowrap">11:00 AM</td>
+                <td class="py-3.5 pr-4 font-medium text-ink">David Kim</td>
+                <td class="py-3.5 pr-4 text-ink-muted">NP Morales</td>
+                <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-mist text-ink-muted">Confirmed</span></td>
+                <td class="py-3.5 text-right"><button type="button" class="checkin-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition focus-visible:outline-2 focus-visible:outline-clinic">Check In</button></td>
+              </tr>
+              <tr>
+                <td class="py-3.5 pr-4 text-xs font-semibold text-ink-muted tabular-nums whitespace-nowrap">11:30 AM</td>
+                <td class="py-3.5 pr-4 font-medium text-ink">Sofia Alvarez</td>
+                <td class="py-3.5 pr-4 text-ink-muted">Dr. Lin</td>
+                <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-amberbrand-soft text-amberbrand">Unconfirmed</span></td>
+                <td class="py-3.5 text-right"><button type="button" class="checkin-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition focus-visible:outline-2 focus-visible:outline-clinic">Check In</button></td>
+              </tr>
+              <tr>
+                <td class="py-3.5 pr-4 text-xs font-semibold text-ink-muted tabular-nums whitespace-nowrap">01:15 PM</td>
+                <td class="py-3.5 pr-4 font-medium text-ink">Arthur Pendelton</td>
+                <td class="py-3.5 pr-4 text-ink-muted">Dr. Patel</td>
+                <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-mist text-ink-muted">Confirmed</span></td>
+                <td class="py-3.5 text-right"><button type="button" class="checkin-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition focus-visible:outline-2 focus-visible:outline-clinic">Check In</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Waiting List -->
+      <div class="rounded-2xl bg-surface p-6 shadow-sm flex flex-col justify-between space-y-4">
+        <div>
+          <h2 class="font-display text-xl font-semibold text-ink">Waiting List</h2>
+          <p class="text-sm text-ink-muted">Patients ready for same-day openings</p>
+        </div>
+        <ul class="divide-y divide-line">
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">Claire Bennett</p>
+              <p class="text-xs text-ink-muted">Anytime today &middot; Follow-up</p>
+            </div>
+            <button type="button" class="notify-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition shrink-0 focus-visible:outline-2 focus-visible:outline-clinic">Notify</button>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">Omar Farooq</p>
+              <p class="text-xs text-ink-muted">After 1:00 PM &middot; Lab review</p>
+            </div>
+            <button type="button" class="notify-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition shrink-0 focus-visible:outline-2 focus-visible:outline-clinic">Notify</button>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">Nadia Kowalski</p>
+              <p class="text-xs text-ink-muted">Morning &middot; Annual physical</p>
+            </div>
+            <button type="button" class="notify-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition shrink-0 focus-visible:outline-2 focus-visible:outline-clinic">Notify</button>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">Samuel Osei</p>
+              <p class="text-xs text-ink-muted">Flexible &middot; Prescription</p>
+            </div>
+            <button type="button" class="notify-btn px-3 py-1.5 rounded-lg bg-mist hover:bg-clinic hover:text-white text-xs font-semibold text-ink transition shrink-0 focus-visible:outline-2 focus-visible:outline-clinic">Notify</button>
+          </li>
+        </ul>
+        <div class="pt-2 border-t border-line flex items-center justify-between text-xs text-ink-muted">
+          <span>Average wait time</span>
+          <span class="font-semibold text-ink tabular-nums">11 mins</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const viewData = {
+      day: {
+        title: "Today's Appointments",
+        count: '24',
+        sub: '18 confirmed · 6 remaining today',
+        heading: "Today's Schedule",
+        scheduleSub: '3 clinicians on duty · 15-min buffer',
+      },
+      week: {
+        title: "This Week's Appointments",
+        count: '118',
+        sub: '104 confirmed · 14 open slots',
+        heading: 'Weekly Schedule',
+        scheduleSub: 'Mon Nov 18 – Fri Nov 22 · 94% booked',
+      },
+    };
+
+    document.querySelectorAll('.view-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.view-btn').forEach((b) => {
+          b.classList.remove('bg-surface', 'text-ink', 'shadow-sm');
+          b.classList.add('text-ink-muted');
+        });
+        btn.classList.add('bg-surface', 'text-ink', 'shadow-sm');
+        btn.classList.remove('text-ink-muted');
+        const d = viewData[btn.dataset.view];
+        if (d) {
+          document.getElementById('kpiTitle').textContent = d.title;
+          document.getElementById('kpiCount').textContent = d.count;
+          document.getElementById('kpiSub').textContent = d.sub;
+          document.getElementById('scheduleHeading').textContent = d.heading;
+          document.getElementById('scheduleSub').textContent = d.scheduleSub;
+        }
+      });
+    });
+
+    document.querySelectorAll('.checkin-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        const badge = row.querySelector('span');
+        badge.className = 'inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-clinic-soft text-clinic';
+        badge.textContent = 'Checked In';
+        btn.replaceWith(Object.assign(document.createElement('span'), {
+          className: 'text-xs text-ink-muted',
+          textContent: 'Checked in',
+        }));
+      });
+    });
+
+    document.querySelectorAll('.notify-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        btn.textContent = 'Sent';
+        btn.disabled = true;
+        btn.classList.add('opacity-60');
+      });
+    });
+
+    const walkinBtn = document.getElementById('walkinBtn');
+    walkinBtn.addEventListener('click', () => {
+      walkinBtn.textContent = 'Added';
+      setTimeout(() => { walkinBtn.textContent = '+ Walk-in'; }, 1800);
+    });
+  </script>
+</body>
+</html>

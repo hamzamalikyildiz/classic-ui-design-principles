@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Quiet Return of the Paper Map — Field &amp; Meridian</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#FAF7F0',
+            paperTint: '#F0EBE0',
+            ink: '#1A1D1A',
+            inkMuted: '#4F564F',
+            pine: '#2C5530',
+            pineDark: '#1E3C21',
+            ochre: '#A66E2D',
+            rule: '#DCD6C8',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            body: ['Source Serif 4', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-enter { animation: fadeUp 0.55s ease-out both; }
+    .hero-enter-delay { animation: fadeUp 0.55s ease-out 0.1s both; }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-enter, .hero-enter-delay { animation: none; }
+    }
+    .drop-cap::first-letter {
+      float: left;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 3.5rem;
+      line-height: 0.85;
+      padding-right: 0.6rem;
+      padding-top: 0.2rem;
+      color: #2C5530;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-body antialiased selection:bg-pine/20">
+  <header class="border-b border-rule">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="#top" class="font-display font-bold text-xl tracking-tight text-ink">Field &amp; Meridian</a>
+      <nav aria-label="Sections" class="flex items-center gap-6 text-sm text-inkMuted">
+        <a href="#story" class="hover:text-pine transition-colors">Dispatches</a>
+        <a href="#related" class="hover:text-pine transition-colors">Archive</a>
+        <a href="#newsletter" class="hover:text-pine transition-colors">Letters</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="py-12 lg:py-16">
+    <!-- Wide Frame: Kicker, Headline, Standfirst, Byline -->
+    <div class="max-w-4xl mx-auto px-6 text-center hero-enter">
+      <p class="text-sm uppercase tracking-[0.18em] text-pine font-semibold mb-4">Wayfinding · Autumn Issue</p>
+      <h1 class="font-display text-4xl sm:text-6xl font-bold tracking-tight text-ink leading-[1.08] mb-6">
+        The Quiet Return of the Paper Map
+      </h1>
+      <p class="text-lg sm:text-xl text-inkMuted max-w-prose mx-auto leading-relaxed mb-8">
+        In an era of turn-by-turn voice prompts and glowing blue dots, hikers, cyclists, and urban wanderers are rediscovering the folded sheet—and the wider sense of place it restores.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-inkMuted border-y border-rule py-3">
+        <span>By <strong class="text-ink font-semibold">Julian Mercer</strong></span>
+        <span aria-hidden="true">·</span>
+        <time datetime="2026-10-08">October 8, 2026</time>
+        <span aria-hidden="true">·</span>
+        <span>9 min read</span>
+      </div>
+    </div>
+
+    <!-- Wide Frame: Hero Illustration with Caption -->
+    <figure class="max-w-4xl mx-auto px-6 my-12 hero-enter-delay">
+      <div class="bg-paperTint border border-rule rounded p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-4 mb-4 border-b border-rule">
+          <span class="text-xs uppercase tracking-[0.14em] text-inkMuted">Topographic Sheet · 1:25,000 Scale</span>
+          <button type="button" id="grid-toggle" aria-pressed="true" class="px-3 py-2 text-sm rounded bg-pine text-paper font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-pine">
+            Hide UTM Grid
+          </button>
+        </div>
+        <svg viewBox="0 0 800 340" class="w-full h-auto block bg-paper rounded border border-rule" role="img" aria-label="Folded topographic map illustration with contour lines, ridge trail, and elevation markers">
+          <!-- UTM Grid -->
+          <g id="utm-grid" stroke="#DCD6C8" stroke-width="1">
+            <line x1="160" y1="0" x2="160" y2="340"/>
+            <line x1="320" y1="0" x2="320" y2="340"/>
+            <line x1="480" y1="0" x2="480" y2="340"/>
+            <line x1="640" y1="0" x2="640" y2="340"/>
+            <line x1="0" y1="85" x2="800" y2="85"/>
+            <line x1="0" y1="170" x2="800" y2="170"/>
+            <line x1="0" y1="255" x2="800" y2="255"/>
+          </g>
+          <!-- Fold Creases -->
+          <g stroke="#1A1D1A" stroke-opacity="0.12" stroke-width="2">
+            <line x1="266" y1="0" x2="266" y2="340"/>
+            <line x1="533" y1="0" x2="533" y2="340"/>
+          </g>
+          <!-- Contour Rings -->
+          <g fill="none" stroke="#A66E2D" stroke-opacity="0.55" stroke-width="1.3">
+            <path d="M80,270 C150,210 220,140 310,130 C410,120 470,190 560,175 C640,160 700,100 750,80"/>
+            <path d="M120,295 C195,235 250,175 330,165 C420,155 480,220 570,205 C655,190 715,135 765,115"/>
+            <ellipse cx="325" cy="185" rx="75" ry="42"/>
+            <ellipse cx="325" cy="185" rx="42" ry="22"/>
+            <ellipse cx="620" cy="130" rx="58" ry="30"/>
+          </g>
+          <!-- Trail Path -->
+          <path d="M70,290 Q190,240 325,185 T620,130 T760,70" fill="none" stroke="#2C5530" stroke-width="2.5" stroke-dasharray="8 5"/>
+          <!-- Elevation & Landmark Labels -->
+          <g font-family="Fraunces, Georgia, serif" font-size="13" fill="#1A1D1A">
+            <circle cx="325" cy="185" r="4.5" fill="#2C5530"/>
+            <text x="338" y="182" font-weight="600">Pine Saddle · 1,420m</text>
+            <circle cx="620" cy="130" r="4.5" fill="#2C5530"/>
+            <text x="633" y="134" font-weight="600">North Cairn</text>
+          </g>
+        </svg>
+        <figcaption class="text-sm text-inkMuted mt-3 leading-relaxed">
+          <strong class="text-ink">Illustration.</strong> A three-panel folded sheet preserves both the immediate trail and the surrounding watershed—context a phone screen crops out.
+        </figcaption>
+      </div>
+    </figure>
+
+    <!-- Reading Column (65ch) -->
+    <article id="story" class="max-w-prose mx-auto px-6 space-y-6 text-lg leading-[1.75] text-ink">
+      <p class="drop-cap">
+        Unfolding a paper map on a windy ridge is a small act of theater. The corners snap, the creases resist, and for a moment you are holding a square meter of terrain in both hands. Unlike a glass screen that narrows the world to a glowing corridor fifty meters ahead, a printed sheet insists that you see the whole valley at once.
+      </p>
+      <p>
+        Independent mapmakers and outdoor outfitters report a steady rise in demand for waterproof topographic sheets, city walking atlases, and hand-drawn neighborhood guides. The buyers are not nostalgists rejecting technology; many carry a GPS watch on their wrist. They carry paper because it teaches a different kind of attention.
+      </p>
+
+      <blockquote class="border-l-2 border-pine pl-6 py-2 my-8 font-display text-2xl leading-relaxed text-ink italic">
+        “When a machine tells you to turn left in two hundred meters, you obey. When a map shows you a contour line, you imagine the slope.”
+      </blockquote>
+
+      <h2 class="font-display text-2xl sm:text-3xl font-bold text-ink pt-4">
+        The Memory of Landmarks
+      </h2>
+      <p>
+        Cognitive geographers have long noted that turn-by-turn navigation flattens spatial memory. Without the need to scan the horizon for a church spire, a bend in the river, or a stand of birches, the brain stops building a mental model. Paper forces you to triangulate between ink and stone.
+      </p>
+      <p>
+        And when the battery dies at dusk, or the canyon walls block the satellite signal, the sheet in your pocket does not dim. It waits, patient and legible, ready to be folded back along its worn seams.
+      </p>
+    </article>
+
+    <!-- Related Stories -->
+    <section id="related" class="max-w-4xl mx-auto px-6 mt-16 pt-10 border-t border-rule">
+      <h2 class="font-display text-2xl font-bold text-ink mb-6">Related Stories</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="#story" class="block p-6 bg-paperTint border border-rule rounded hover:border-pine transition-colors">
+          <span class="text-xs uppercase tracking-[0.14em] text-pine font-semibold">Craft</span>
+          <h3 class="font-display text-xl font-bold text-ink mt-2 mb-2">How Swiss Relief Shaders Paint Light onto Paper</h3>
+          <p class="text-sm text-inkMuted leading-relaxed max-w-prose">Inside the century-old convention of northwest illumination that makes flat mountains look three-dimensional.</p>
+        </a>
+        <a href="#story" class="block p-6 bg-paperTint border border-rule rounded hover:border-pine transition-colors">
+          <span class="text-xs uppercase tracking-[0.14em] text-pine font-semibold">Urbanism</span>
+          <h3 class="font-display text-xl font-bold text-ink mt-2 mb-2">The Pocket Atlas of Lost Footpaths</h3>
+          <p class="text-sm text-inkMuted leading-relaxed max-w-prose">A collective of walkers is documenting every alley, stair, and shortcut missing from municipal transit maps.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section id="newsletter" class="max-w-4xl mx-auto px-6 mt-14">
+      <div class="bg-ink text-paper rounded p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="max-w-prose">
+          <p class="text-xs uppercase tracking-[0.16em] text-paperTint/80 mb-2">Sunday Dispatch</p>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold mb-2">Field &amp; Meridian Weekly</h2>
+          <p class="text-paperTint/90 text-base leading-relaxed">
+            One long-form essay on landscape, cartography, and slow travel delivered every Sunday morning.
+          </p>
+        </div>
+        <form class="flex flex-col sm:flex-row gap-3 shrink-0" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed';">
+          <label for="nl-email" class="sr-only">Email address</label>
+          <input id="nl-email" type="email" required placeholder="reader@domain.com" class="px-4 py-3 rounded bg-paper text-ink placeholder:text-inkMuted text-base min-w-[220px] focus:outline-none focus:ring-2 focus:ring-pine">
+          <button type="submit" class="px-5 py-3 rounded bg-pine hover:bg-pineDark text-paper font-semibold text-base transition-colors min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-rule mt-12">
+    <div class="max-w-4xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-inkMuted">
+      <span>Field &amp; Meridian · Print &amp; Digital</span>
+      <span>Set in Fraunces &amp; Source Serif 4</span>
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.getElementById('grid-toggle');
+    const grid = document.getElementById('utm-grid');
+    btn.addEventListener('click', () => {
+      const pressed = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!pressed));
+      grid.style.display = pressed ? 'none' : '';
+      btn.textContent = pressed ? 'Show UTM Grid' : 'Hide UTM Grid';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DoodleFlip — Kids Drawing &amp; Animation Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#FFFDF7',
+            peach: '#FFEAD5',
+            ink: '#211A2D',
+            plum: '#4F4460',
+            berry: '#BE185D',
+            gold: '#FACC15',
+            cobalt: '#1D4ED8',
+            grass: '#15803D',
+          },
+          fontFamily: {
+            display: ['"Baloo 2"', 'cursive'],
+            sans: ['Nunito', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="bg-paper text-ink font-sans antialiased">
+  <header class="sticky top-0 z-30 bg-paper/95 backdrop-blur border-b-2 border-ink/10">
+    <nav class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between" aria-label="Primary">
+      <a href="#" class="flex items-center gap-2.5 font-display text-2xl font-extrabold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berry rounded-lg px-1">
+        <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-gold border-2 border-ink shadow-[2px_2px_0_#211A2D]" aria-hidden="true">
+          <svg class="w-5 h-5 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+        </span>
+        DoodleFlip
+      </a>
+      <div class="hidden md:flex items-center gap-7 text-sm font-bold text-plum">
+        <a href="#gallery" class="hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berry rounded px-1">Kid Gallery</a>
+        <a href="#features" class="hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berry rounded px-1">Features</a>
+        <a href="#parents" class="hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berry rounded px-1">For Parents</a>
+      </div>
+      <a href="#parents" class="inline-flex items-center justify-center min-h-[44px] px-5 rounded-full bg-berry text-white font-extrabold text-sm border-2 border-ink shadow-[3px_3px_0_#211A2D] hover:translate-y-[-1px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink">
+        Download Free
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="max-w-6xl mx-auto px-5 py-12 lg:py-16 grid lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-6 space-y-6">
+        <span class="inline-block px-3.5 py-1 rounded-full bg-peach border-2 border-ink text-xs font-extrabold uppercase tracking-wider text-ink">
+          Sketchbook + Flipbook for Ages 5–11
+        </span>
+        <h1 class="font-display text-5xl sm:text-6xl font-extrabold leading-[1.03] tracking-tight text-ink">
+          Draw a monster.<br />
+          <span class="text-berry">Make it dance.</span>
+        </h1>
+        <p class="text-lg text-plum max-w-prose leading-relaxed font-semibold">
+          DoodleFlip gives kids chunky crayons, onion-skin frames, and silly sound effects—so every drawing becomes a 5-second cartoon.
+        </p>
+        <div class="flex flex-wrap items-center gap-4 pt-1">
+          <a href="#parents" class="inline-flex items-center justify-center min-h-[48px] px-7 rounded-full bg-berry text-white font-extrabold text-base border-2 border-ink shadow-[4px_4px_0_#211A2D] hover:translate-y-[-2px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink">
+            Start Drawing Free
+          </a>
+          <a href="#gallery" class="inline-flex items-center justify-center min-h-[44px] px-4 font-extrabold text-ink underline decoration-2 decoration-gold underline-offset-4 hover:text-berry focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berry rounded">
+            See kid creations
+          </a>
+        </div>
+      </div>
+
+      <!-- Signature Element: Interactive Flipbook Monster -->
+      <div class="lg:col-span-6">
+        <div class="bg-peach rounded-[28px] border-2 border-ink shadow-[6px_6px_0_#211A2D] p-6 sm:p-8 flex flex-col items-center">
+          <svg id="flip-svg" class="w-48 h-48" viewBox="0 0 200 200" fill="none" aria-label="Animated doodle monster">
+            <rect x="44" y="52" width="112" height="106" rx="36" fill="#1D4ED8" stroke="#211A2D" stroke-width="5"/>
+            <circle cx="80" cy="96" r="14" fill="#FFFDF7" stroke="#211A2D" stroke-width="4"/>
+            <circle cx="120" cy="96" r="14" fill="#FFFDF7" stroke="#211A2D" stroke-width="4"/>
+            <circle id="eye-l" cx="82" cy="96" r="6" fill="#211A2D"/>
+            <circle id="eye-r" cx="122" cy="96" r="6" fill="#211A2D"/>
+            <path d="M78 128 Q100 144 122 128" stroke="#FACC15" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M68 52 L56 26 M132 52 L144 26" stroke="#211A2D" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="56" cy="24" r="7" fill="#BE185D" stroke="#211A2D" stroke-width="4"/>
+            <circle cx="144" cy="24" r="7" fill="#BE185D" stroke="#211A2D" stroke-width="4"/>
+          </svg>
+          <div class="mt-4 flex items-center gap-3">
+            <button id="flip-btn" type="button" class="min-h-[44px] px-5 rounded-full bg-ink text-white font-extrabold text-sm hover:bg-berry transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berry">
+              Flip Frame (1 / 2)
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery of Kid Creations -->
+    <section id="gallery" class="bg-peach border-y-2 border-ink/15 py-16">
+      <div class="max-w-6xl mx-auto px-5">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+          <div>
+            <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-ink">Made by kids this week</h2>
+            <p class="text-plum font-semibold mt-1 max-w-prose">Real 4-frame loops drawn on iPad and Chromebook.</p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <article class="bg-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#211A2D] p-5">
+            <div class="h-40 rounded-2xl bg-cobalt/10 border-2 border-ink flex items-center justify-center">
+              <svg class="w-28 h-28" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                <path d="M60 16 L76 56 L60 48 L44 56 Z" fill="#BE185D" stroke="#211A2D" stroke-width="4" stroke-linejoin="round"/>
+                <rect x="48" y="52" width="24" height="36" rx="8" fill="#FACC15" stroke="#211A2D" stroke-width="4"/>
+                <path d="M52 88 L60 108 L68 88" fill="#1D4ED8" stroke="#211A2D" stroke-width="3"/>
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-extrabold text-ink mt-4">Disco Rocket</h3>
+            <p class="text-sm font-bold text-plum">By Leo, age 8 · 6 frames</p>
+          </article>
+          <article class="bg-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#211A2D] p-5 rotate-[-1deg]">
+            <div class="h-40 rounded-2xl bg-grass/10 border-2 border-ink flex items-center justify-center">
+              <svg class="w-28 h-28" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                <circle cx="60" cy="64" r="28" fill="#15803D" stroke="#211A2D" stroke-width="4"/>
+                <circle cx="46" cy="40" r="10" fill="#15803D" stroke="#211A2D" stroke-width="4"/>
+                <circle cx="74" cy="40" r="10" fill="#15803D" stroke="#211A2D" stroke-width="4"/>
+                <circle cx="46" cy="40" r="4" fill="#FFFDF7"/>
+                <circle cx="74" cy="40" r="4" fill="#FFFDF7"/>
+                <path d="M48 70 Q60 80 72 70" stroke="#FACC15" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-extrabold text-ink mt-4">Jumping Frog</h3>
+            <p class="text-sm font-bold text-plum">By Nora, age 6 · 4 frames</p>
+          </article>
+          <article class="bg-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#211A2D] p-5">
+            <div class="h-40 rounded-2xl bg-gold/20 border-2 border-ink flex items-center justify-center">
+              <svg class="w-28 h-28" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                <circle cx="60" cy="60" r="26" fill="#FACC15" stroke="#211A2D" stroke-width="4"/>
+                <path d="M60 18 L60 26 M60 94 L60 102 M18 60 L26 60 M94 60 L102 60" stroke="#211A2D" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="51" cy="56" r="4" fill="#211A2D"/>
+                <circle cx="69" cy="56" r="4" fill="#211A2D"/>
+                <path d="M50 68 Q60 76 70 68" stroke="#BE185D" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-extrabold text-ink mt-4">Sleepy Sun</h3>
+            <p class="text-sm font-bold text-plum">By Sam, age 10 · 8 frames</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Three Feature Highlights -->
+    <section id="features" class="max-w-6xl mx-auto px-5 py-16">
+      <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-ink mb-8">Three tools, zero clutter</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <article class="bg-gold rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#211A2D] p-7">
+          <h3 class="font-display text-2xl font-extrabold text-ink">1. Chunky Brushes</h3>
+          <p class="text-ink/90 font-bold mt-2 max-w-prose">Crayon, marker, and glitter-stamp brushes sized for little fingers.</p>
+        </article>
+        <article class="bg-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#211A2D] p-7">
+          <h3 class="font-display text-2xl font-extrabold text-ink">2. Onion-Skin Flip</h3>
+          <p class="text-plum font-semibold mt-2 max-w-prose">See a faint ghost of the previous drawing so kids can animate smoothly.</p>
+        </article>
+        <article class="bg-ink text-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#BE185D] p-7">
+          <h3 class="font-display text-2xl font-extrabold text-gold">3. Boing &amp; Pop Audio</h3>
+          <p class="text-paper/90 font-semibold mt-2 max-w-prose">Tap to add cartoon sound effects or record your own silly voice.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Parent Section -->
+    <section id="parents" class="bg-cobalt text-white border-t-2 border-ink py-16">
+      <div class="max-w-5xl mx-auto px-5 grid md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4">
+          <span class="inline-block px-3 py-1 rounded-full bg-gold text-ink text-xs font-extrabold uppercase">For Parents</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-extrabold">Screen time you can feel good about.</h2>
+          <p class="text-white/95 font-semibold max-w-prose">No ads, no in-app chat, and no algorithmic feeds. Export your child's cartoons as MP4s to share with family.</p>
+        </div>
+        <div class="bg-paper text-ink rounded-[24px] border-2 border-ink shadow-[6px_6px_0_#211A2D] p-7 space-y-4">
+          <div class="font-display text-2xl font-extrabold">DoodleFlip Family</div>
+          <div class="font-display text-4xl font-extrabold text-berry">$6 <span class="text-base font-bold text-plum">/ month</span></div>
+          <p class="text-sm font-semibold text-plum max-w-prose">Includes offline tablet mode, unlimited flipbooks, and up to 4 kid profiles.</p>
+          <a href="#" class="w-full inline-flex items-center justify-center min-h-[48px] rounded-full bg-berry text-white font-extrabold text-base border-2 border-ink shadow-[3px_3px_0_#211A2D] hover:translate-y-[-1px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink">
+            Start 7-Day Free Trial
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-ink text-paper/80 py-8 text-center text-sm font-semibold">
+    <p>© 2026 DoodleFlip Studio · Made for young animators</p>
+  </footer>
+
+  <script>
+    const flipBtn = document.getElementById('flip-btn');
+    const eyeL = document.getElementById('eye-l');
+    const eyeR = document.getElementById('eye-r');
+    let frame = 1;
+    flipBtn.addEventListener('click', () => {
+      frame = frame === 1 ? 2 : 1;
+      flipBtn.textContent = `Flip Frame (${frame} / 2)`;
+      const offset = frame === 2 ? '78' : '82';
+      const offsetR = frame === 2 ? '118' : '122';
+      eyeL.setAttribute('cx', offset);
+      eyeR.setAttribute('cx', offsetR);
+    });
+  </script>
+</body>
+</html>

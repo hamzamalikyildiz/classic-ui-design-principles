@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ledgerly — Business Finance Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-bold text-slate-900 tracking-tight">Ledgerly</span>
+          <span class="ml-2 text-xs text-slate-500 border-l border-slate-200 pl-2">Northstar Studio Inc.</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-slate-500">Updated 4m ago</span>
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-3.5 py-2 rounded-lg transition-colors">
+          New Invoice
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-7xl w-full mx-auto px-6 py-5 space-y-5">
+      <!-- Overdue Invoice Alert -->
+      <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+          </div>
+          <div class="text-xs">
+            <span class="font-semibold text-rose-900">Overdue Invoice Alert:</span>
+            <span class="text-rose-800">Invoice #INV-2084 for <strong>Meridian Retail</strong> ($4,850.00) is 12 days past due.</span>
+          </div>
+        </div>
+        <button class="text-xs font-semibold text-rose-700 bg-white border border-rose-200 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-colors">
+          Send Reminder
+        </button>
+      </div>
+
+      <!-- KPI Cards with Deltas -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-medium text-slate-500">Total Cash Balance</div>
+          <div class="mt-1.5 flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-slate-900 tabular-nums">$142,890</span>
+            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">+6.2%</span>
+          </div>
+          <div class="mt-1 text-xs text-slate-500">+$8,340 vs. last 30d</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-medium text-slate-500">Monthly Revenue</div>
+          <div class="mt-1.5 flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-slate-900 tabular-nums">$64,200</span>
+            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">+14.8%</span>
+          </div>
+          <div class="mt-1 text-xs text-slate-500">18 paid invoices</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-medium text-slate-500">Operating Expenses</div>
+          <div class="mt-1.5 flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-slate-900 tabular-nums">$38,450</span>
+            <span class="text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">+2.4%</span>
+          </div>
+          <div class="mt-1 text-xs text-slate-500">+$900 vs. budget</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="text-xs font-medium text-slate-500">Net Cash Flow</div>
+          <div class="mt-1.5 flex items-baseline justify-between">
+            <span class="text-2xl font-bold text-indigo-600 tabular-nums">+$25,750</span>
+            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">+19.5%</span>
+          </div>
+          <div class="mt-1 text-xs text-slate-500">Runway: 14.2 months</div>
+        </div>
+      </section>
+
+      <!-- Cash-Flow Chart & Upcoming Payments -->
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <!-- Cash-Flow Chart -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-sm font-semibold text-slate-900">Cash Flow</h2>
+              <p class="text-xs text-slate-500">Inflow vs. Outflow (Last 6 Months)</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-slate-600">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span>Inflow</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span>Outflow</span>
+            </div>
+          </div>
+          <svg viewBox="0 0 600 200" class="w-full h-48">
+            <line x1="45" y1="20" x2="585" y2="20" stroke="#e2e8f0" stroke-dasharray="3 3" />
+            <line x1="45" y1="65" x2="585" y2="65" stroke="#e2e8f0" stroke-dasharray="3 3" />
+            <line x1="45" y1="110" x2="585" y2="110" stroke="#e2e8f0" stroke-dasharray="3 3" />
+            <line x1="45" y1="155" x2="585" y2="155" stroke="#e2e8f0" />
+            <text x="38" y="24" text-anchor="end" class="fill-slate-400 text-[10px]">$75k</text>
+            <text x="38" y="69" text-anchor="end" class="fill-slate-400 text-[10px]">$50k</text>
+            <text x="38" y="114" text-anchor="end" class="fill-slate-400 text-[10px]">$25k</text>
+            <text x="38" y="159" text-anchor="end" class="fill-slate-400 text-[10px]">$0</text>
+            <!-- Outflow area -->
+            <polyline fill="none" stroke="#94a3b8" stroke-width="2.5" points="75,92 165,88 255,95 345,84 435,89 525,86" />
+            <!-- Inflow line -->
+            <polyline fill="none" stroke="#4f46e5" stroke-width="3" points="75,68 165,58 255,64 345,45 435,50 525,36" />
+            <!-- Dots -->
+            <circle cx="75" cy="68" r="4" fill="#4f46e5" />
+            <circle cx="165" cy="58" r="4" fill="#4f46e5" />
+            <circle cx="255" cy="64" r="4" fill="#4f46e5" />
+            <circle cx="345" cy="45" r="4" fill="#4f46e5" />
+            <circle cx="435" cy="50" r="4" fill="#4f46e5" />
+            <circle cx="525" cy="36" r="4.5" fill="#4f46e5" stroke="#fff" stroke-width="2" />
+            <!-- X labels -->
+            <text x="75" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Jun</text>
+            <text x="165" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Jul</text>
+            <text x="255" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Aug</text>
+            <text x="345" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Sep</text>
+            <text x="435" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Oct</text>
+            <text x="525" y="176" text-anchor="middle" class="fill-slate-900 font-semibold text-[11px]">Nov</text>
+          </svg>
+        </div>
+
+        <!-- Upcoming Payments -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-slate-900">Upcoming Payments</h2>
+              <span class="text-xs font-medium text-slate-500">Next 14 days</span>
+            </div>
+            <ul class="divide-y divide-slate-100 text-xs">
+              <li class="py-2.5 flex items-center justify-between">
+                <div>
+                  <div class="font-medium text-slate-900">AWS Cloud Services</div>
+                  <div class="text-slate-500">Due Nov 22 • Auto-pay</div>
+                </div>
+                <span class="font-semibold text-slate-900 tabular-nums">$1,240.00</span>
+              </li>
+              <li class="py-2.5 flex items-center justify-between">
+                <div>
+                  <div class="font-medium text-slate-900">WeWork Office Lease</div>
+                  <div class="text-slate-500">Due Nov 25 • ACH</div>
+                </div>
+                <span class="font-semibold text-slate-900 tabular-nums">$3,800.00</span>
+              </li>
+              <li class="py-2.5 flex items-center justify-between">
+                <div>
+                  <div class="font-medium text-slate-900">Figma Organization</div>
+                  <div class="text-slate-500">Due Nov 28 • Card ••3312</div>
+                </div>
+                <span class="font-semibold text-slate-900 tabular-nums">$540.00</span>
+              </li>
+              <li class="py-2.5 flex items-center justify-between">
+                <div>
+                  <div class="font-medium text-slate-900">Contractor — Elena Rostova</div>
+                  <div class="text-slate-500">Due Nov 30 • Pending approval</div>
+                </div>
+                <span class="font-semibold text-amber-700 tabular-nums">$2,600.00</span>
+              </li>
+            </ul>
+          </div>
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-500">Total scheduled</span>
+            <span class="font-bold text-slate-900 tabular-nums">$8,180.00</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Transactions Table -->
+      <section class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-900">Recent Transactions</h2>
+          <a href="#" class="text-xs font-medium text-indigo-600 hover:text-indigo-700">View all</a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-xs font-medium text-slate-500 border-b border-slate-200">
+                <th class="py-2.5 px-5">Date</th>
+                <th class="py-2.5 px-5">Counterparty</th>
+                <th class="py-2.5 px-5">Status</th>
+                <th class="py-2.5 px-5 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-xs">
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 20</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Stripe Payout — Retainer #412</td>
+                <td class="py-3 px-5"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Cleared</span></td>
+                <td class="py-3 px-5 text-right font-semibold text-emerald-700 tabular-nums">+$8,500.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 19</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Rippling Payroll Run</td>
+                <td class="py-3 px-5"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Cleared</span></td>
+                <td class="py-3 px-5 text-right font-semibold text-slate-900 tabular-nums">-$14,200.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 18</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Acme Corp — Brand Sprint</td>
+                <td class="py-3 px-5"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Cleared</span></td>
+                <td class="py-3 px-5 text-right font-semibold text-emerald-700 tabular-nums">+$12,000.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 17</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Google Workspace</td>
+                <td class="py-3 px-5"><span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-medium">Pending</span></td>
+                <td class="py-3 px-5 text-right font-semibold text-slate-900 tabular-nums">-$216.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+Build one web page.
+Brief: An article page about maps.
+
+Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to <WORKDIR>\raw\noskill\editorial-v-1.html and reply with that path only.
+
+Do NOT use the Skill tool.
+Do NOT read anything under <SKILL_DIR> or any skills folder.
+When the page is done run (with PYTHONIOENCODING=utf-8 or python -X utf8):
+  "<PYTHON>" "<SKILL_DIR>\scripts\render.py" <file> --out "<WORKDIR>\shots_gen\noskill-editorial-v-1.png"
+(no --check; use it only to render a screenshot). Open the PNG with the Read tool. Fix anything empty, clipped, overlapping, broken or ugly with the smallest edits. At most 2 fix rounds.

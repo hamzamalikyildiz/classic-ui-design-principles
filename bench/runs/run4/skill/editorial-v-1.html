@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Grammar of Margins — On Early Cartography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            vellum: '#FAF6EE',
+            vellumDeep: '#F2EAD9',
+            ink: '#1C1917',
+            inkMuted: '#575049',
+            vermilion: '#B4432C',
+            vermilionDark: '#8F321F',
+            sage: '#4A5D4E',
+            rule: '#DDD3C2',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            body: ['Lora', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-enter { animation: fadeUp 0.6s ease-out both; }
+    .hero-enter-delay { animation: fadeUp 0.6s ease-out 0.12s both; }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-enter, .hero-enter-delay { animation: none; }
+    }
+    .drop-cap::first-letter {
+      float: left;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 3.5rem;
+      line-height: 0.85;
+      padding-right: 0.6rem;
+      padding-top: 0.25rem;
+      color: #B4432C;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-vellum text-ink font-body antialiased selection:bg-vermilion/20">
+  <header class="border-b border-rule">
+    <div class="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="#top" class="font-display font-bold text-lg tracking-tight text-ink">Meridian Quarterly</a>
+      <nav aria-label="Primary" class="flex items-center gap-6 text-sm text-inkMuted">
+        <a href="#essay" class="hover:text-vermilion transition-colors">Essay</a>
+        <a href="#plate" class="hover:text-vermilion transition-colors">Plate I</a>
+        <a href="#notes" class="hover:text-vermilion transition-colors">Field Notes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="py-12 lg:py-16">
+    <!-- Wide Frame: Headline & Metadata -->
+    <div class="max-w-4xl mx-auto px-6 text-center hero-enter">
+      <p class="text-sm uppercase tracking-[0.18em] text-vermilion font-semibold mb-4">Cartography &amp; Print · Issue XIV</p>
+      <h1 class="font-display text-4xl sm:text-6xl font-bold tracking-tight text-ink leading-[1.08] mb-6">
+        The Grammar of Margins: How Rhumb Lines Taught Us to See
+      </h1>
+      <p class="text-lg sm:text-xl text-inkMuted max-w-2xl mx-auto leading-relaxed mb-8">
+        Before satellite telemetry flattened the globe into a scrollable grid, portolan charts recorded the sea as a web of lived bearings, shoals, and calculated silences.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-inkMuted border-y border-rule py-3">
+        <span>By <strong class="text-ink font-semibold">Clara Lindqvist</strong></span>
+        <span aria-hidden="true">·</span>
+        <time datetime="2026-10-14">October 14, 2026</time>
+        <span aria-hidden="true">·</span>
+        <span>7 min read</span>
+      </div>
+    </div>
+
+    <!-- Wide Frame: Signature Interactive SVG Map Plate -->
+    <figure id="plate" class="max-w-4xl mx-auto px-6 my-12 hero-enter-delay">
+      <div class="bg-vellumDeep border border-rule rounded p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-4 mb-4 border-b border-rule">
+          <div>
+            <span class="text-xs uppercase tracking-[0.14em] text-inkMuted block">Plate I · Interactive Reconstruction</span>
+            <strong class="font-display text-lg text-ink">Portolan Bearing Network, Aegean Basin (c. 1512)</strong>
+          </div>
+          <div class="flex items-center gap-2" role="group" aria-label="Map layer controls">
+            <button type="button" data-layer="rhumb" aria-pressed="true" class="layer-btn px-3 py-2 text-sm rounded bg-vermilion text-vellum font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Rhumb Lines</button>
+            <button type="button" data-layer="contours" aria-pressed="true" class="layer-btn px-3 py-2 text-sm rounded bg-vellum text-ink border border-rule hover:border-vermilion transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Bathymetry</button>
+            <button type="button" data-layer="labels" aria-pressed="true" class="layer-btn px-3 py-2 text-sm rounded bg-vellum text-ink border border-rule hover:border-vermilion transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-vermilion">Harbors</button>
+          </div>
+        </div>
+
+        <svg viewBox="0 0 800 380" class="w-full h-auto block bg-vellum rounded border border-rule" role="img" aria-label="Portolan chart diagram showing Aegean coastline, compass rose, and rhumb lines">
+          <!-- Subtle latitude/longitude hairlines -->
+          <g stroke="#DDD3C2" stroke-width="1">
+            <line x1="0" y1="95" x2="800" y2="95"/>
+            <line x1="0" y1="190" x2="800" y2="190"/>
+            <line x1="0" y1="285" x2="800" y2="285"/>
+            <line x1="200" y1="0" x2="200" y2="380"/>
+            <line x1="400" y1="0" x2="400" y2="380"/>
+            <line x1="600" y1="0" x2="600" y2="380"/>
+          </g>
+
+          <!-- Bathymetry Contours -->
+          <g id="layer-contours" fill="none" stroke="#4A5D4E" stroke-opacity="0.45">
+            <path d="M90,290 C170,250 240,275 310,220 C380,165 480,195 570,150 C650,110 720,140 760,115" stroke-width="1.5" stroke-dasharray="6 4"/>
+            <path d="M120,330 C210,295 290,310 370,255 C450,200 540,235 630,190 C690,160 740,175 780,160" stroke-width="1" stroke-dasharray="3 4"/>
+            <ellipse cx="470" cy="245" rx="68" ry="34" stroke-width="1.2"/>
+          </g>
+
+          <!-- Landmass Silhouettes -->
+          <path d="M0,0 L270,0 L250,65 L215,95 L235,140 L185,175 L155,155 L110,195 L70,185 L40,230 L0,245 Z" fill="#EAE0CC" stroke="#575049" stroke-width="1.5"/>
+          <path d="M580,0 L800,0 L800,260 L745,245 L710,205 L665,215 L635,170 L660,125 L615,85 L595,40 Z" fill="#EAE0CC" stroke="#575049" stroke-width="1.5"/>
+          <path d="M330,270 L385,255 L415,280 L390,315 L340,305 Z" fill="#EAE0CC" stroke="#575049" stroke-width="1.5"/>
+
+          <!-- Rhumb Lines from Compass Rose -->
+          <g id="layer-rhumb" stroke="#B4432C" stroke-opacity="0.55" stroke-width="1">
+            <line x1="400" y1="175" x2="400" y2="10"/>
+            <line x1="400" y1="175" x2="400" y2="370"/>
+            <line x1="400" y1="175" x2="20" y2="175"/>
+            <line x1="400" y1="175" x2="780" y2="175"/>
+            <line x1="400" y1="175" x2="140" y2="20"/>
+            <line x1="400" y1="175" x2="660" y2="330"/>
+            <line x1="400" y1="175" x2="660" y2="20"/>
+            <line x1="400" y1="175" x2="140" y2="330"/>
+          </g>
+
+          <!-- Compass Rose -->
+          <g transform="translate(400,175)">
+            <circle r="28" fill="#FAF6EE" stroke="#1C1917" stroke-width="1.5"/>
+            <polygon points="0,-24 5,-5 0,0 -5,-5" fill="#B4432C"/>
+            <polygon points="0,24 5,5 0,0 -5,5" fill="#1C1917"/>
+            <polygon points="24,0 5,5 0,0 5,-5" fill="#1C1917"/>
+            <polygon points="-24,0 -5,5 0,0 -5,-5" fill="#1C1917"/>
+            <circle r="3" fill="#FAF6EE" stroke="#1C1917" stroke-width="1.2"/>
+          </g>
+
+          <!-- Harbor Labels (placed clear of lines) -->
+          <g id="layer-labels" font-family="Fraunces, Georgia, serif" font-size="13" fill="#1C1917">
+            <circle cx="215" cy="95" r="4" fill="#B4432C"/>
+            <text x="115" y="90" font-weight="600">Thessaloniki</text>
+
+            <circle cx="635" cy="170" r="4" fill="#B4432C"/>
+            <text x="652" y="174" font-weight="600">Smyrna</text>
+
+            <circle cx="385" cy="255" r="4" fill="#B4432C"/>
+            <text x="275" y="252" font-weight="600">Cyclades</text>
+
+            <text x="415" y="142" font-size="11" fill="#575049" font-style="italic">NNE · 22.5°</text>
+          </g>
+        </svg>
+        <figcaption class="text-sm text-inkMuted mt-3 leading-relaxed">
+          <strong class="text-ink">Figure 1.</strong> Sixteen-point wind rose and coastal soundings. Toggle layers above to isolate the compass network from bathymetric contours.
+        </figcaption>
+      </div>
+    </figure>
+
+    <!-- Reading Column (65ch) -->
+    <article id="essay" class="max-w-prose mx-auto px-6 space-y-6 text-lg leading-[1.75] text-ink">
+      <p class="drop-cap">
+        Every map is an argument about what deserves to be remembered. When sixteenth-century Mediterranean pilots unrolled a sheepskin portolan on a salt-stained chart table, they were not looking for an objective portrait of the earth’s curvature. They wanted to know where a vessel could anchor before a squall, which headland hid a reef, and how many leagues separated two harbors.
+      </p>
+      <p>
+        Notice how the inland territories on these charts remain almost entirely blank. Where modern atlases fill every square kilometer with elevation shading and municipal boundaries, early sea charts treated the interior as irrelevant. The coastline, by contrast, is drawn with obsessive density—names written perpendicular to the shore so a navigator could read them without turning the parchment.
+      </p>
+
+      <blockquote class="border-l-2 border-vermilion pl-6 py-2 my-8 font-display text-2xl leading-relaxed text-ink italic">
+        “A chart does not depict the world as it is; it depicts the world as a navigator must survive it.”
+      </blockquote>
+
+      <h2 class="font-display text-2xl sm:text-3xl font-bold text-ink pt-4">
+        The Geometry of Wind
+      </h2>
+      <p>
+        The web of intersecting lines radiating from the compass rose—known as rhumb lines or <em>loxodromes</em>—looks decorative to the modern eye. In practice, it was a mechanical calculator. By placing one leg of a brass divider on the ship’s estimated position and the other on the nearest parallel rhumb line, a pilot could transfer a bearing directly to the rose and read the required compass heading.
+      </p>
+      <p>
+        Ink color carried operational meaning. Black ink marked ordinary harbors; red ink flagged major ports with fresh water, timber, and customs houses; green or gold was reserved for the cardinal winds. Even the margin had a grammar: decorative cartouches were not mere vanity, but a way to anchor the eye in an expanse of open sea.
+      </p>
+    </article>
+
+    <!-- Closing Band -->
+    <section id="notes" class="max-w-4xl mx-auto px-6 mt-16">
+      <div class="bg-ink text-vellum rounded p-8 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="max-w-prose">
+          <p class="text-xs uppercase tracking-[0.16em] text-vellumDeep/80 mb-2">Archival Dispatch</p>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold mb-2">Read the full field notes</h2>
+          <p class="text-vellumDeep/90 text-base leading-relaxed">
+            Receive one illustrated essay on historical cartography, typography, and printmaking each month.
+          </p>
+        </div>
+        <form class="flex flex-col sm:flex-row gap-3 shrink-0" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed';">
+          <label for="email-input" class="sr-only">Email address</label>
+          <input id="email-input" type="email" required placeholder="you@example.com" class="px-4 py-3 rounded bg-vellum text-ink placeholder:text-inkMuted text-base min-w-[220px] focus:outline-none focus:ring-2 focus:ring-vermilion">
+          <button type="submit" class="px-5 py-3 rounded bg-vermilion hover:bg-vermilionDark text-vellum font-semibold text-base transition-colors min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-vellum">
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-rule mt-12">
+    <div class="max-w-4xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-inkMuted">
+      <span>Meridian Quarterly · Cartographic Archive</span>
+      <span>Set in Fraunces &amp; Lora</span>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.layer-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const layer = document.getElementById('layer-' + btn.dataset.layer);
+        const pressed = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', String(!pressed));
+        if (layer) layer.style.display = pressed ? 'none' : '';
+        btn.classList.toggle('bg-vermilion', !pressed);
+        btn.classList.toggle('text-vellum', !pressed);
+        btn.classList.toggle('bg-vellum', pressed);
+        btn.classList.toggle('text-ink', pressed);
+        btn.classList.toggle('border', pressed);
+        btn.classList.toggle('border-rule', pressed);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova X1 — Wireless Acoustic Headphones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#090B0A',
+            panel: '#121614',
+            panelAlt: '#1A201D',
+            limePulse: '#A3E635',
+            limeBright: '#BEF264',
+            ink: '#F4F7F5',
+            muted: '#A3B0A8',
+            skyAccent: '#38BDF8'
+          },
+          fontFamily: {
+            display: ['"Space Grotesk"', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .anim-up { animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @media (prefers-reduced-motion: reduce) {
+      .anim-up { animation: none !important; opacity: 1 !important; transform: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-obsidian text-ink font-sans antialiased selection:bg-limePulse selection:text-obsidian">
+  <header class="sticky top-0 z-50 bg-obsidian/90 backdrop-blur border-b border-white/10">
+    <nav aria-label="Primary" class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="font-display text-xl tracking-tight flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-limePulse rounded">
+        <span class="w-2.5 h-2.5 bg-limePulse rotate-45 inline-block" aria-hidden="true"></span>
+        NOVA X1
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-muted">
+        <a href="#features" class="hover:text-ink transition-colors focus-visible:outline-2 focus-visible:outline-limePulse rounded px-1">Features</a>
+        <a href="#specs" class="hover:text-ink transition-colors focus-visible:outline-2 focus-visible:outline-limePulse rounded px-1">Specs</a>
+        <a href="#reviews" class="hover:text-ink transition-colors focus-visible:outline-2 focus-visible:outline-limePulse rounded px-1">Reviews</a>
+      </div>
+      <a href="#preorder" class="bg-limePulse hover:bg-limeBright text-obsidian font-bold text-sm px-5 py-2.5 rounded-xl min-h-[44px] inline-flex items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limePulse">
+        Pre-order $399
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Dramatic Hero -->
+    <section class="relative overflow-hidden py-16 lg:py-24">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[640px] h-[360px] rounded-full bg-limePulse/15 blur-[130px] pointer-events-none" aria-hidden="true"></div>
+      <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 anim-up">
+          <p class="font-mono text-xs uppercase tracking-[0.2em] text-limePulse mb-4">Flagship Wireless • 2026 Edition</p>
+          <h1 class="font-display text-5xl sm:text-7xl lg:text-[80px] leading-[0.95] tracking-tight uppercase mb-6">
+            Hear Every<br><span class="text-limePulse">Micro-Detail.</span>
+          </h1>
+          <p class="text-lg text-muted max-w-prose leading-relaxed mb-8">
+            Nova X1 pairs 50mm planar-magnetic drivers with adaptive -50dB noise cancellation and 60-hour endurance. Engineered for zero-compromise wireless listening.
+          </p>
+          <div class="flex flex-wrap items-center gap-4">
+            <a href="#preorder" class="bg-limePulse hover:bg-limeBright text-obsidian font-bold px-7 py-3.5 rounded-xl min-h-[48px] inline-flex items-center transition-colors shadow-lg shadow-limePulse/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limePulse">
+              Pre-order Nova X1 — $399
+            </a>
+            <a href="#specs" class="bg-panelAlt hover:bg-white/10 text-ink font-semibold px-6 py-3.5 rounded-xl min-h-[48px] inline-flex items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limePulse">
+              View Full Specs
+            </a>
+          </div>
+        </div>
+
+        <!-- Drawn Nova X1 Headphones -->
+        <div class="lg:col-span-5 flex justify-center">
+          <svg viewBox="0 0 400 400" class="w-full max-w-md" role="img" aria-label="Nova X1 wireless headphones illustration">
+            <defs>
+              <radialGradient id="novaGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#A3E635" stop-opacity="0.28"/>
+                <stop offset="100%" stop-color="#090B0A" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="200" cy="200" r="180" fill="url(#novaGlow)"/>
+            <!-- Headband -->
+            <path d="M 80 215 C 80 85, 320 85, 320 215" fill="none" stroke="#242C28" stroke-width="24" stroke-linecap="round"/>
+            <path d="M 102 175 C 122 102, 278 102, 298 175" fill="none" stroke="#A3E635" stroke-width="3" stroke-linecap="round"/>
+            <!-- Left Cup -->
+            <rect x="60" y="215" width="46" height="110" rx="23" fill="#121614" stroke="#36423C" stroke-width="3"/>
+            <rect x="96" y="227" width="20" height="86" rx="10" fill="#1E2521"/>
+            <circle cx="83" cy="270" r="16" fill="#090B0A" stroke="#A3E635" stroke-width="2.5"/>
+            <!-- Right Cup -->
+            <rect x="294" y="215" width="46" height="110" rx="23" fill="#121614" stroke="#36423C" stroke-width="3"/>
+            <rect x="284" y="227" width="20" height="86" rx="10" fill="#1E2521"/>
+            <circle cx="317" cy="270" r="16" fill="#090B0A" stroke="#A3E635" stroke-width="2.5"/>
+            <!-- Spatial Sensor -->
+            <circle cx="317" cy="270" r="5" fill="#38BDF8"/>
+            <circle cx="83" cy="270" r="5" fill="#A3E635"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature Highlights + Interactive Mode Switcher -->
+    <section id="features" class="py-20 max-w-7xl mx-auto px-6">
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-panel rounded-2xl p-8 shadow-lg flex flex-col justify-between">
+          <div>
+            <p class="font-mono text-xs uppercase text-limePulse mb-2">Adaptive Acoustics</p>
+            <h2 class="font-display text-3xl uppercase mb-3">Real-Time Noise Floor</h2>
+            <p class="text-muted max-w-prose mb-6">Test how Nova X1's 8-mic array reacts to your environment.</p>
+          </div>
+          <div class="flex flex-wrap gap-3 mb-6" role="group" aria-label="Listening Modes">
+            <button type="button" data-mode="anc" class="mode-btn bg-limePulse text-obsidian font-bold text-xs px-4 py-2.5 rounded-lg min-h-[44px] focus-visible:outline-2 focus-visible:outline-ink">Max ANC (-50dB)</button>
+            <button type="button" data-mode="trans" class="mode-btn bg-panelAlt text-ink font-semibold text-xs px-4 py-2.5 rounded-lg min-h-[44px] hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-limePulse">Transparency</button>
+            <button type="button" data-mode="studio" class="mode-btn bg-panelAlt text-ink font-semibold text-xs px-4 py-2.5 rounded-lg min-h-[44px] hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-limePulse">Pure Studio</button>
+          </div>
+          <div class="bg-obsidian rounded-xl p-5 border border-white/5 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p class="font-mono text-xs text-muted uppercase">Active Attenuation</p>
+              <p id="mode-db" class="font-display text-3xl text-limePulse tabular-nums">-50 dB</p>
+            </div>
+            <div>
+              <p class="font-mono text-xs text-muted uppercase">Battery Estimate</p>
+              <p id="mode-bat" class="font-display text-3xl text-ink tabular-nums">60 hrs</p>
+            </div>
+            <p id="mode-note" class="text-sm text-muted max-w-xs">Blocks jet-engine rumble and office chatter.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <div class="bg-panelAlt rounded-2xl p-6 shadow-lg flex-1">
+            <p class="font-mono text-xs text-skyAccent uppercase mb-2">Drivers</p>
+            <h3 class="font-display text-xl uppercase mb-2">50mm Planar</h3>
+            <p class="text-sm text-muted max-w-prose leading-relaxed">Ultra-thin 2-micron diaphragm delivers instantaneous transient attack with zero breakup.</p>
+          </div>
+          <div class="bg-panel rounded-2xl p-6 shadow-lg flex-1">
+            <p class="font-mono text-xs text-limePulse uppercase mb-2">Connectivity</p>
+            <h3 class="font-display text-xl uppercase mb-2">Lossless 24-Bit</h3>
+            <p class="text-sm text-muted max-w-prose leading-relaxed">Bluetooth 5.4 aptX Lossless plus direct USB-C DAC mode for studio mastering.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Specs Table -->
+    <section id="specs" class="bg-panel py-16 lg:py-20 border-y border-white/5">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="font-display text-3xl uppercase mb-8">Technical Specifications</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-obsidian rounded-xl p-5">
+            <p class="font-mono text-xs text-muted uppercase">Frequency</p>
+            <p class="font-display text-2xl mt-1 tabular-nums">5Hz – 45kHz</p>
+          </div>
+          <div class="bg-obsidian rounded-xl p-5">
+            <p class="font-mono text-xs text-muted uppercase">Battery</p>
+            <p class="font-display text-2xl mt-1 tabular-nums">60 Hours</p>
+          </div>
+          <div class="bg-obsidian rounded-xl p-5">
+            <p class="font-mono text-xs text-muted uppercase">Fast Charge</p>
+            <p class="font-display text-2xl mt-1 tabular-nums">10m = 8h</p>
+          </div>
+          <div class="bg-obsidian rounded-xl p-5">
+            <p class="font-mono text-xs text-muted uppercase">Weight</p>
+            <p class="font-display text-2xl mt-1 tabular-nums">252 Grams</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section id="reviews" class="py-20 max-w-7xl mx-auto px-6">
+      <h2 class="font-display text-3xl uppercase mb-10">Early Listeners</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <blockquote class="bg-panel rounded-2xl p-6 shadow-lg">
+          <p class="text-sm text-ink leading-relaxed mb-4 max-w-prose">"The planar bass extension on Nova X1 is unreal. Clean sub-30Hz rumble without ever clouding vocals."</p>
+          <footer class="font-mono text-xs text-limePulse">— Maya Lin, Sound Designer</footer>
+        </blockquote>
+        <blockquote class="bg-panelAlt rounded-2xl p-6 shadow-lg">
+          <p class="text-sm text-ink leading-relaxed mb-4 max-w-prose">"Sixty hours of battery means I flew London to Tokyo and back without packing a charger."</p>
+          <footer class="font-mono text-xs text-limePulse">— Devon Brooks, Touring DJ</footer>
+        </blockquote>
+        <blockquote class="bg-panel rounded-2xl p-6 shadow-lg">
+          <p class="text-sm text-ink leading-relaxed mb-4 max-w-prose">"USB-C DAC mode turns these into legitimate studio reference cans on the road."</p>
+          <footer class="font-mono text-xs text-limePulse">— Elena Rostova, Producer</footer>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- Closing Pre-order CTA Band -->
+    <section id="preorder" class="bg-limePulse text-obsidian py-16">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <h2 class="font-display text-4xl sm:text-5xl uppercase tracking-tight mb-4">Reserve Nova X1 Today</h2>
+        <p class="text-base font-medium max-w-prose mx-auto mb-8">Batch 01 ships May 15 with a serialized aluminum travel case and 30-day home trial.</p>
+        <button type="button" class="bg-obsidian hover:bg-panelAlt text-ink font-bold px-8 py-4 rounded-xl min-h-[48px] inline-flex items-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-obsidian">
+          Pre-order Now — $399
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-8 text-center text-xs font-mono text-muted border-t border-white/10">
+    © 2026 NOVA ACOUSTICS • NOVA X1 WIRELESS
+  </footer>
+
+  <script>
+    const modes = {
+      anc: { db: '-50 dB', bat: '60 hrs', note: 'Blocks jet-engine rumble and office chatter.' },
+      trans: { db: '0 dB', bat: '64 hrs', note: 'Natural ambient pass-through with zero hiss.' },
+      studio: { db: '-22 dB', bat: '75 hrs', note: 'Passive seal with DSP bypassed for pure reference.' }
+    };
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const m = modes[btn.dataset.mode];
+        document.getElementById('mode-db').textContent = m.db;
+        document.getElementById('mode-bat').textContent = m.bat;
+        document.getElementById('mode-note').textContent = m.note;
+        document.querySelectorAll('.mode-btn').forEach(b => {
+          b.className = 'mode-btn bg-panelAlt text-ink font-semibold text-xs px-4 py-2.5 rounded-lg min-h-[44px] hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-limePulse';
+        });
+        btn.className = 'mode-btn bg-limePulse text-obsidian font-bold text-xs px-4 py-2.5 rounded-lg min-h-[44px] focus-visible:outline-2 focus-visible:outline-ink';
+      });
+    });
+  </script>
+</body>
+</html>

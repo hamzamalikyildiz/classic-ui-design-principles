@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KubePulse — Server Fleet Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ink: { 950: '#090d11', 900: '#0f151c', 850: '#141c25', 800: '#1a2430', 700: '#263445' },
+            telemetry: { 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488' },
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { background-color: #090d11; color: #e2e8f0; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col">
+  <header class="border-b border-ink-700 bg-ink-900/90 sticky top-0 z-20 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 min-h-14 py-2 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded bg-telemetry-500/15 border border-telemetry-500/40 flex items-center justify-center text-telemetry-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="7" rx="1.5" />
+            <rect x="2" y="14" width="20" height="7" rx="1.5" />
+            <circle cx="6" cy="6.5" r="1" fill="currentColor" />
+            <circle cx="6" cy="17.5" r="1" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="font-semibold tracking-tight text-slate-100">KubePulse</span>
+        <span class="hidden sm:inline-block text-xs font-mono text-slate-400 border-l border-ink-700 pl-3">fleet-ops / prod</span>
+      </div>
+      <nav aria-label="Primary" class="flex flex-wrap items-center gap-2">
+        <button type="button" data-region="all" class="region-btn h-8 px-3 rounded text-xs font-mono bg-transparent text-slate-100 border border-slate-500 hover:bg-ink-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-telemetry-400">ALL (10)</button>
+        <button type="button" data-region="eu-west" class="region-btn h-8 px-3 rounded text-xs font-mono bg-transparent text-slate-300 hover:bg-ink-800 border border-transparent hover:border-ink-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-telemetry-400">EU-WEST</button>
+        <button type="button" data-region="us-east" class="region-btn h-8 px-3 rounded text-xs font-mono bg-transparent text-slate-300 hover:bg-ink-800 border border-transparent hover:border-ink-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-telemetry-400">US-EAST</button>
+        <button type="button" id="provision-btn" class="h-11 px-4 rounded text-xs font-semibold bg-telemetry-500 text-ink-950 hover:bg-telemetry-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-telemetry-400">+ Provision Node</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
+    <!-- KPI Strip -->
+    <section aria-label="Fleet summary" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-ink-900 border border-ink-700 rounded-md p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-slate-400">Active Nodes</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold tabular-nums text-slate-100">42 <span class="text-sm font-normal text-slate-400">/ 44</span></span>
+          <span class="text-xs font-mono text-telemetry-400">95.4%</span>
+        </div>
+      </div>
+      <div class="bg-ink-900 border border-ink-700 rounded-md p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-slate-400">Fleet CPU</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold tabular-nums text-slate-100">64.2%</span>
+          <span class="text-xs font-mono text-amber-400">+4.1% 1h</span>
+        </div>
+      </div>
+      <div class="bg-ink-900 border border-ink-700 rounded-md p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-slate-400">Memory Allocated</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold tabular-nums text-slate-100">1.82 <span class="text-sm font-normal text-slate-400">TB</span></span>
+          <span class="text-xs font-mono text-slate-300">71.1%</span>
+        </div>
+      </div>
+      <div class="bg-ink-900 border border-ink-700 rounded-md p-4">
+        <div class="text-xs font-mono uppercase tracking-wider text-slate-400">P99 Net Latency</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold tabular-nums text-slate-100">18.4 <span class="text-sm font-normal text-slate-400">ms</span></span>
+          <span class="text-xs font-mono text-telemetry-400">SLO &lt; 25ms</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Split: Fleet Table + Selected Host Inspector -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div class="lg:col-span-8 bg-ink-900 border border-ink-700 rounded-md overflow-hidden">
+        <div class="px-4 py-3 border-b border-ink-700 flex items-center justify-between">
+          <h1 class="text-sm font-semibold text-slate-100">Server Fleet</h1>
+          <span class="text-xs font-mono text-slate-400" id="fleet-count">10 hosts</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-ink-700 bg-ink-850 text-[11px] font-mono uppercase tracking-wider text-slate-400">
+                <th class="py-2.5 px-4">Host</th>
+                <th class="py-2.5 px-3">Region</th>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3 text-right">CPU</th>
+                <th class="py-2.5 px-3 text-right">Mem</th>
+                <th class="py-2.5 px-3 text-right">Load 5m</th>
+                <th class="py-2.5 px-4 text-right">Uptime</th>
+              </tr>
+            </thead>
+            <tbody id="fleet-tbody" class="divide-y divide-ink-700/70 text-xs font-mono">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Selected Host Detail Panel -->
+      <aside aria-label="Host inspector" class="lg:col-span-4 bg-ink-900 border border-ink-700 rounded-md p-4 space-y-4">
+        <div class="flex items-start justify-between gap-2 border-b border-ink-700 pb-3">
+          <div>
+            <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Selected Host</div>
+            <h2 id="detail-host" class="text-base font-mono font-semibold text-slate-100 mt-0.5">prod-eu-west-03</h2>
+            <p id="detail-ip" class="text-xs font-mono text-slate-400">10.42.18.103 · c6i.4xlarge</p>
+          </div>
+          <span id="detail-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30">WARN</span>
+        </div>
+
+        <!-- Telemetry Chart -->
+        <div>
+          <div class="flex items-center justify-between text-xs font-mono mb-2">
+            <span class="text-slate-300">CPU &amp; Mem (60m)</span>
+            <span class="text-amber-400">Threshold 80%</span>
+          </div>
+          <svg viewBox="0 0 320 110" class="w-full h-28 bg-ink-950 border border-ink-700 rounded" role="img" aria-label="CPU and Memory 60 minute telemetry chart">
+            <line x1="0" y1="28" x2="320" y2="28" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3" opacity="0.7" />
+            <text x="6" y="23" fill="#fbbf24" font-size="9" font-family="JetBrains Mono, monospace">80% SLO</text>
+            <polyline id="cpu-line" fill="none" stroke="#2dd4bf" stroke-width="2" points="0,68 35,62 70,65 105,54 140,48 175,38 210,24 245,21 280,26 320,22" />
+            <polyline id="mem-line" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 2" points="0,46 35,45 70,44 105,43 140,41 175,40 210,38 245,37 280,36 320,35" />
+            <circle cx="245" cy="21" r="3.5" fill="#f59e0b" />
+          </svg>
+        </div>
+
+        <dl class="grid grid-cols-2 gap-3 text-xs font-mono pt-1">
+          <div class="bg-ink-950 border border-ink-700 rounded p-2.5">
+            <dt class="text-slate-400">Kernel</dt>
+            <dd id="detail-kernel" class="text-slate-100 mt-0.5">6.8.0-45-generic</dd>
+          </div>
+          <div class="bg-ink-950 border border-ink-700 rounded p-2.5">
+            <dt class="text-slate-400">Pods Running</dt>
+            <dd id="detail-pods" class="text-slate-100 mt-0.5 tabular-nums">38 / 40</dd>
+          </div>
+        </dl>
+
+        <div class="flex items-center gap-2 pt-1">
+          <button type="button" id="drain-btn" class="h-8 flex-1 rounded text-xs font-mono bg-transparent text-slate-200 border border-ink-700 hover:bg-ink-800 hover:border-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-telemetry-400">Drain Node</button>
+          <button type="button" id="ssh-btn" class="h-8 flex-1 rounded text-xs font-mono bg-transparent text-slate-200 border border-ink-700 hover:bg-ink-800 hover:border-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-telemetry-400">SSH Console</button>
+        </div>
+        <p id="action-status" class="text-xs font-mono text-telemetry-400 min-h-[1rem]"></p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const hosts = [
+      { id: 'prod-eu-west-01', region: 'eu-west', status: 'OK', cpu: '41.2%', mem: '62.0%', load: '2.14', up: '48d 12h', ip: '10.42.18.101 · c6i.4xlarge', kernel: '6.8.0-45-generic', pods: '29 / 40' },
+      { id: 'prod-eu-west-02', region: 'eu-west', status: 'OK', cpu: '52.8%', mem: '68.4%', load: '3.02', up: '48d 12h', ip: '10.42.18.102 · c6i.4xlarge', kernel: '6.8.0-45-generic', pods: '31 / 40' },
+      { id: 'prod-eu-west-03', region: 'eu-west', status: 'WARN', cpu: '84.6%', mem: '78.9%', load: '6.81', up: '19d 04h', ip: '10.42.18.103 · c6i.4xlarge', kernel: '6.8.0-45-generic', pods: '38 / 40' },
+      { id: 'prod-eu-west-04', region: 'eu-west', status: 'OK', cpu: '37.5%', mem: '54.1%', load: '1.88', up: '62d 09h', ip: '10.42.18.104 · c6i.2xlarge', kernel: '6.8.0-44-generic', pods: '18 / 30' },
+      { id: 'prod-eu-west-05', region: 'eu-west', status: 'CRIT', cpu: '96.1%', mem: '91.4%', load: '11.40', up: '04d 17h', ip: '10.42.18.105 · c6i.4xlarge', kernel: '6.8.0-45-generic', pods: '40 / 40' },
+      { id: 'prod-us-east-06', region: 'us-east', status: 'OK', cpu: '49.0%', mem: '61.2%', load: '2.45', up: '31d 22h', ip: '10.44.12.201 · m6i.2xlarge', kernel: '6.8.0-45-generic', pods: '22 / 30' },
+      { id: 'prod-us-east-07', region: 'us-east', status: 'OK', cpu: '58.3%', mem: '70.5%', load: '3.19', up: '31d 22h', ip: '10.44.12.202 · m6i.2xlarge', kernel: '6.8.0-45-generic', pods: '25 / 30' },
+      { id: 'prod-us-east-08', region: 'us-east', status: 'OK', cpu: '44.7%', mem: '59.8%', load: '2.08', up: '55d 03h', ip: '10.44.12.203 · m6i.2xlarge', kernel: '6.8.0-44-generic', pods: '20 / 30' },
+      { id: 'prod-us-east-09', region: 'us-east', status: 'WARN', cpu: '79.4%', mem: '82.1%', load: '5.92', up: '12d 15h', ip: '10.44.12.204 · c6i.4xlarge', kernel: '6.8.0-45-generic', pods: '36 / 40' },
+      { id: 'prod-us-east-10', region: 'us-east', status: 'OK', cpu: '33.9%', mem: '48.6%', load: '1.42', up: '71d 01h', ip: '10.44.12.205 · c6i.2xlarge', kernel: '6.8.0-44-generic', pods: '16 / 30' },
+    ];
+
+    let selectedId = 'prod-eu-west-03';
+    let activeRegion = 'all';
+
+    function renderTable() {
+      const tbody = document.getElementById('fleet-tbody');
+      const filtered = activeRegion === 'all' ? hosts : hosts.filter(h => h.region === activeRegion);
+      document.getElementById('fleet-count').textContent = `${filtered.length} hosts`;
+      tbody.innerHTML = filtered.map(h => {
+        const isSel = h.id === selectedId;
+        const dot = h.status === 'OK' ? 'bg-telemetry-400' : h.status === 'WARN' ? 'bg-amber-400' : 'bg-rose-500';
+        const badge = h.status === 'OK' ? 'text-telemetry-400' : h.status === 'WARN' ? 'text-amber-300' : 'text-rose-400';
+        return `<tr data-id="${h.id}" tabindex="0" class="cursor-pointer transition-colors ${isSel ? 'bg-ink-800/90' : 'hover:bg-ink-850'}">
+          <td class="py-2.5 px-4 font-medium text-slate-100">${h.id}</td>
+          <td class="py-2.5 px-3 text-slate-400">${h.region}</td>
+          <td class="py-2.5 px-3"><span class="inline-flex items-center gap-1.5 ${badge}"><span class="w-1.5 h-1.5 rounded-full ${dot}"></span>${h.status}</span></td>
+          <td class="py-2.5 px-3 text-right tabular-nums text-slate-200">${h.cpu}</td>
+          <td class="py-2.5 px-3 text-right tabular-nums text-slate-300">${h.mem}</td>
+          <td class="py-2.5 px-3 text-right tabular-nums text-slate-300">${h.load}</td>
+          <td class="py-2.5 px-4 text-right tabular-nums text-slate-400">${h.up}</td>
+        </tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('tr').forEach(row => {
+        row.addEventListener('click', () => selectHost(row.dataset.id));
+        row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectHost(row.dataset.id); } });
+      });
+    }
+
+    function selectHost(id) {
+      selectedId = id;
+      const h = hosts.find(x => x.id === id);
+      if (!h) return;
+      document.getElementById('detail-host').textContent = h.id;
+      document.getElementById('detail-ip').textContent = h.ip;
+      document.getElementById('detail-kernel').textContent = h.kernel;
+      document.getElementById('detail-pods').textContent = h.pods;
+      const badge = document.getElementById('detail-badge');
+      badge.textContent = h.status;
+      badge.className = 'px-2 py-0.5 rounded text-[11px] font-mono font-medium border ' +
+        (h.status === 'OK' ? 'bg-telemetry-500/15 text-telemetry-400 border-telemetry-500/30' :
+         h.status === 'WARN' ? 'bg-amber-500/15 text-amber-300 border-amber-500/30' :
+         'bg-rose-500/15 text-rose-300 border-rose-500/30');
+      document.getElementById('action-status').textContent = '';
+      renderTable();
+    }
+
+    document.querySelectorAll('.region-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeRegion = btn.dataset.region;
+        document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('bg-ink-800', 'text-slate-100', 'border-ink-700'));
+        btn.classList.add('bg-ink-800', 'text-slate-100', 'border-ink-700');
+        renderTable();
+      });
+    });
+
+    document.getElementById('provision-btn').addEventListener('click', () => {
+      document.getElementById('action-status').textContent = 'Provisioning request queued in eu-west-1a...';
+    });
+    document.getElementById('drain-btn').addEventListener('click', () => {
+      document.getElementById('action-status').textContent = `Cordoned & draining ${selectedId}...`;
+    });
+    document.getElementById('ssh-btn').addEventListener('click', () => {
+      document.getElementById('action-status').textContent = `Opening bastion session to ${selectedId}...`;
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>

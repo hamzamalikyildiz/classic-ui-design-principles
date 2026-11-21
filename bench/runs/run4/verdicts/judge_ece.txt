@@ -1,0 +1,15 @@
+cift1: B | 5 | Neon yeşil vurgular, etkileşimli gürültü engelleme paneli ve alt kısımdaki cesur bant B'yi çok daha havalı ve akılda kalıcı yapmış, A klasik mor karanlık şablon gibi duruyor. | A 6/6/7/6 B 9/8/8/8
+cift2: A | 4 | Canlı turuncu şerit, büyük iddialı başlık ve canlı EQ grafiği A'yı çok daha enerjik ve dikkat çekici kılmış, B daha sönük ve sıradan kalıyor. | A 9/8/8/9 B 7/7/7/7
+cift3: A | 4 | Piko maskotu, hafif eğik sarı kart ve koyu-açık bento düzeni A'yı gerçek bir oyun platformu gibi havalı göstermiş, B'deki standart emojiler ve pastel kutular daha çocuksu kalmış. | A 9/9/8/8 B 7/7/8/8
+cift4: B | 4 | Koyu petrol yeşili öne çıkan kart ve şık serif başlıklar sıkıcı olabilecek klinik ekranına bile karakter katmış, A çok düz ve sıradan hastane formu gibi duruyor. | A 5/7/7/7 B 8/9/8/8
+cift5: A | 3 | Renkli ilerleme çubukları, büyük grafik ve canlı durum kartları A'yı ilk bakışta çok daha dinamik ve okunaklı yapmış, B daha çok yoğun tablo gibi duruyor. | A 8/8/9/8 B 7/8/7/8
+cift6: A | 5 | Tabak illüstrasyonu, büyük renkli baş harf ve porsiyon seçici A'yı çok daha ilgi çekici yapmış, B görselsiz düz metin olduğu için ders kitabı gibi sıkıcı duruyor. | A 7/8/8/8 B 4/7/7/6
+cift7: A | 4 | Sıcak retro renkleri, oyuncak kutusu hissi veren bento düzeni, yorumları ve planlarıyla A çok daha dolu ve özgün duruyor, B tatlı ama daha kısa ve basit kalmış. | A 9/9/9/9 B 8/7/8/6
+cift8: B | 4 | Pembe hata çubuğu grafiği, mor-camgöbeği çizgiler ve büyük net metrik kartları B'yi hem çok havalı hem de kolay okunur yapmış, A'da kod kutusu biraz kesilmiş ve daha sıkışık duruyor. | A 7/7/7/8 B 9/8/9/9
+cift9: A | 5 | Üstte etkileşimli canavar çizimi, hafif eğik galeri kartları ve alttaki cesur kobalt mavi bölüm A'yı çok canlı ve akılda kalıcı yapmış, B'nin üst kısmı görselsiz ve daha sade kalıyor. | A 9/9/9/9 B 7/7/8/7
+cift10: A | 3 | Daha kalın modern başlık, haritadaki etkileşimli UTM düğmesi ve alttaki koyu bülten kutusu A'yı daha taze yapmış, B klasik eski gazete gibi biraz fazla resmi duruyor. | A 8/8/8/8 B 7/8/8/7
+cift11: B | 4 | Koyu zümrüt yeşili ana bakiye kartı, açıklamalı grafik ve şık tipografi B'ye pahalı ve özgün bir hava katmış, A klasik mor SaaS şablonu gibi duruyor. | A 6/7/8/7 B 9/9/9/9
+cift12: B | 4 | Siyah üstüne neon pembe tonlar, video editörlerindeki gibi hız eğrisi grafiği ve alttaki dev pembe bant B'yi inanılmaz havalı yapmış, A da güzel ama B çok daha iddialı. | A 8/8/8/8 B 9/9/9/9
+cift13: A | 4 | Renkli büyük çubuk grafiği en üste koyması, parlak mavi-yeşil-kırmızı vurgular ve ferah kart düzeni A'yı ilk bakışta çok daha havalı ve kolay anlaşılır yapmış, B daha kalabalık bir tablo gibi açılıyor. | A 9/8/9/8 B 7/8/7/8
+cift14: A | 4 | Haritanın üstündeki katman düğmeleri ve alttaki koyu kontrastlı kutu A'yı etkileşimli ve canlı kılmış, B daha durağan bir coğrafya yazısı gibi kalıyor. | A 8/9/8/9 B 7/8/8/7
+cift15: B | 4 | En üstteki koyu yeşil büyük nakit banner'ı, şık serif tipografi ve açıklamalı grafik B'yi modern bir finans uygulaması gibi havalı yapmış, A dört beyaz kutuyla daha klasik muhasebe ekranı gibi duruyor. | A 6/7/8/8 B 9/9/9/9

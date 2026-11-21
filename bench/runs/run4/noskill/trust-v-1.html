@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HarborBooks — Small Business Money Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+  <div class="min-h-screen flex flex-col">
+    <!-- Top Bar -->
+    <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-semibold text-slate-900 text-base tracking-tight">HarborBooks</span>
+          <span class="ml-2 text-xs text-slate-500 border-l border-slate-200 pl-2">Oakwood Bakery LLC</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center bg-slate-100 rounded-lg p-0.5 text-xs font-medium">
+          <button class="px-3 py-1.5 rounded-md bg-white text-slate-900 shadow-sm">This Month</button>
+          <button class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900">Quarter</button>
+          <button class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900">Year</button>
+        </div>
+        <button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3.5 py-2 rounded-lg transition-colors">
+          + Record Entry
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl w-full mx-auto px-6 py-6 space-y-6">
+      <!-- KPI Row -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+            <span>Cash on Hand</span>
+            <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">+8.4%</span>
+          </div>
+          <div class="mt-2 text-2xl font-bold text-slate-900 tabular-nums">$48,920.50</div>
+          <div class="mt-1 text-xs text-slate-500">Across 2 business accounts</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+            <span>Monthly Income</span>
+            <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">+12.1%</span>
+          </div>
+          <div class="mt-2 text-2xl font-bold text-slate-900 tabular-nums">$24,680.00</div>
+          <div class="mt-1 text-xs text-slate-500">vs. $22,015.00 last month</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+            <span>Monthly Expenses</span>
+            <span class="text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">+3.2%</span>
+          </div>
+          <div class="mt-2 text-2xl font-bold text-slate-900 tabular-nums">$15,340.25</div>
+          <div class="mt-1 text-xs text-slate-500">Payroll, supplies &amp; rent</div>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between text-xs font-medium text-slate-500">
+            <span>Net Profit</span>
+            <span class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">37.8% margin</span>
+          </div>
+          <div class="mt-2 text-2xl font-bold text-emerald-700 tabular-nums">$9,339.75</div>
+          <div class="mt-1 text-xs text-slate-500">Est. tax reserve: $2,335</div>
+        </div>
+      </section>
+
+      <!-- Middle Grid: Chart + Expense Breakdown -->
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Income vs Expenses Chart -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-sm font-semibold text-slate-900">Income vs. Expenses</h2>
+              <p class="text-xs text-slate-500">Last 6 months cash movement</p>
+            </div>
+            <div class="flex items-center gap-4 text-xs text-slate-600">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>Income</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-slate-300 inline-block"></span>Expenses</span>
+            </div>
+          </div>
+          <div class="w-full overflow-hidden">
+            <svg viewBox="0 0 600 210" class="w-full h-52">
+              <!-- Grid lines -->
+              <line x1="40" y1="20" x2="585" y2="20" stroke="#e2e8f0" stroke-dasharray="3 3" />
+              <line x1="40" y1="65" x2="585" y2="65" stroke="#e2e8f0" stroke-dasharray="3 3" />
+              <line x1="40" y1="110" x2="585" y2="110" stroke="#e2e8f0" stroke-dasharray="3 3" />
+              <line x1="40" y1="155" x2="585" y2="155" stroke="#e2e8f0" />
+              <!-- Y labels -->
+              <text x="34" y="24" text-anchor="end" class="fill-slate-400 text-[10px]">$30k</text>
+              <text x="34" y="69" text-anchor="end" class="fill-slate-400 text-[10px]">$20k</text>
+              <text x="34" y="114" text-anchor="end" class="fill-slate-400 text-[10px]">$10k</text>
+              <text x="34" y="159" text-anchor="end" class="fill-slate-400 text-[10px]">$0</text>
+              <!-- Bars: Jun, Jul, Aug, Sep, Oct, Nov -->
+              <g transform="translate(65,0)">
+                <rect x="0" y="69" width="22" height="86" rx="3" fill="#10b981" />
+                <rect x="26" y="96" width="22" height="59" rx="3" fill="#cbd5e1" />
+                <text x="24" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Jun</text>
+              </g>
+              <g transform="translate(152,0)">
+                <rect x="0" y="60" width="22" height="95" rx="3" fill="#10b981" />
+                <rect x="26" y="92" width="22" height="63" rx="3" fill="#cbd5e1" />
+                <text x="24" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Jul</text>
+              </g>
+              <g transform="translate(239,0)">
+                <rect x="0" y="65" width="22" height="90" rx="3" fill="#10b981" />
+                <rect x="26" y="88" width="22" height="67" rx="3" fill="#cbd5e1" />
+                <text x="24" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Aug</text>
+              </g>
+              <g transform="translate(326,0)">
+                <rect x="0" y="51" width="22" height="104" rx="3" fill="#10b981" />
+                <rect x="26" y="90" width="22" height="65" rx="3" fill="#cbd5e1" />
+                <text x="24" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Sep</text>
+              </g>
+              <g transform="translate(413,0)">
+                <rect x="0" y="56" width="22" height="99" rx="3" fill="#10b981" />
+                <rect x="26" y="88" width="22" height="67" rx="3" fill="#cbd5e1" />
+                <text x="24" y="176" text-anchor="middle" class="fill-slate-500 text-[11px]">Oct</text>
+              </g>
+              <g transform="translate(500,0)">
+                <rect x="0" y="44" width="22" height="111" rx="3" fill="#059669" />
+                <rect x="26" y="86" width="22" height="69" rx="3" fill="#94a3b8" />
+                <text x="24" y="176" text-anchor="middle" class="fill-slate-800 font-semibold text-[11px]">Nov</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Spending by Category -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between">
+          <div>
+            <h2 class="text-sm font-semibold text-slate-900">Spending Breakdown</h2>
+            <p class="text-xs text-slate-500 mb-4">November expenses ($15,340)</p>
+            <div class="space-y-3.5">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="font-medium text-slate-700">Payroll &amp; Contractors</span>
+                  <span class="tabular-nums text-slate-600">$6,850 (45%)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div class="bg-slate-800 h-2 rounded-full" style="width: 45%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="font-medium text-slate-700">Ingredients &amp; Supplies</span>
+                  <span class="tabular-nums text-slate-600">$4,120 (27%)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div class="bg-emerald-600 h-2 rounded-full" style="width: 27%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="font-medium text-slate-700">Rent &amp; Utilities</span>
+                  <span class="tabular-nums text-slate-600">$2,950 (19%)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div class="bg-amber-500 h-2 rounded-full" style="width: 19%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="font-medium text-slate-700">Software &amp; Delivery</span>
+                  <span class="tabular-nums text-slate-600">$1,420 (9%)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div class="bg-sky-500 h-2 rounded-full" style="width: 9%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="text-slate-500">Unreconciled receipts</span>
+            <span class="font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md">3 pending</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom: Recent Transactions -->
+      <section class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-900">Recent Transactions</h2>
+          <span class="text-xs text-slate-500">Showing latest 5 entries</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-slate-50 text-xs font-medium text-slate-500 border-b border-slate-200">
+                <th class="py-2.5 px-5">Date</th>
+                <th class="py-2.5 px-5">Description</th>
+                <th class="py-2.5 px-5">Category</th>
+                <th class="py-2.5 px-5">Account</th>
+                <th class="py-2.5 px-5 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-xs">
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 19</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Square POS Daily Settlement</td>
+                <td class="py-3 px-5"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Sales</span></td>
+                <td class="py-3 px-5 text-slate-500">Checking ••4821</td>
+                <td class="py-3 px-5 text-right font-semibold text-emerald-700 tabular-nums">+$1,842.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 18</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Sysco Wholesale Foods</td>
+                <td class="py-3 px-5"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Supplies</span></td>
+                <td class="py-3 px-5 text-slate-500">Business Visa ••1094</td>
+                <td class="py-3 px-5 text-right font-semibold text-slate-900 tabular-nums">-$648.50</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 17</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Gusto Biweekly Payroll</td>
+                <td class="py-3 px-5"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Payroll</span></td>
+                <td class="py-3 px-5 text-slate-500">Checking ••4821</td>
+                <td class="py-3 px-5 text-right font-semibold text-slate-900 tabular-nums">-$3,425.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 16</td>
+                <td class="py-3 px-5 font-medium text-slate-900">Catering Invoice #1042 — Westside Tech</td>
+                <td class="py-3 px-5"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Invoices</span></td>
+                <td class="py-3 px-5 text-slate-500">Checking ••4821</td>
+                <td class="py-3 px-5 text-right font-semibold text-emerald-700 tabular-nums">+$2,150.00</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-5 text-slate-500 tabular-nums">Nov 15</td>
+                <td class="py-3 px-5 font-medium text-slate-900">City Electric &amp; Gas</td>
+                <td class="py-3 px-5"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Utilities</span></td>
+                <td class="py-3 px-5 text-slate-500">Checking ••4821</td>
+                <td class="py-3 px-5 text-right font-semibold text-slate-900 tabular-nums">-$412.80</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

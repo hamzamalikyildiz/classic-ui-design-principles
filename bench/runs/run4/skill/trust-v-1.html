@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alder &amp; Finch Roasters — Cash Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#F7F8F5',
+            surface: '#FFFFFF',
+            mist: '#EDF1EC',
+            forest: {
+              DEFAULT: '#164234',
+              light: '#1E5643',
+              soft: '#E3ECE7',
+            },
+            brass: {
+              DEFAULT: '#9A5B25',
+              soft: '#F7EFE6',
+            },
+            ink: {
+              DEFAULT: '#13201B',
+              muted: '#465750',
+            },
+            line: '#DDE4DF',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up {
+      animation: fadeUp 450ms ease-out both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { animation: none; }
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-sans antialiased min-h-screen">
+  <header class="border-b border-line bg-surface/90 backdrop-blur-sm sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-lg bg-forest text-white flex items-center justify-center shrink-0" aria-hidden="true">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M3 12h18M3 18h12" />
+          </svg>
+        </div>
+        <div class="truncate">
+          <p class="font-display text-lg font-semibold leading-tight text-ink truncate">Alder &amp; Finch Roasters</p>
+          <p class="text-xs text-ink-muted">Operating Cash Desk &middot; Account #4820</p>
+        </div>
+      </div>
+
+      <nav aria-label="Timeframe" class="hidden sm:flex items-center bg-mist p-1 rounded-lg gap-1">
+        <button type="button" data-period="30d" class="period-btn px-3 py-1.5 text-sm font-medium rounded-md bg-surface text-ink shadow-sm transition focus-visible:outline-2 focus-visible:outline-forest">30D</button>
+        <button type="button" data-period="90d" class="period-btn px-3 py-1.5 text-sm font-medium rounded-md text-ink-muted hover:text-ink transition focus-visible:outline-2 focus-visible:outline-forest">90D</button>
+        <button type="button" data-period="ytd" class="period-btn px-3 py-1.5 text-sm font-medium rounded-md text-ink-muted hover:text-ink transition focus-visible:outline-2 focus-visible:outline-forest">YTD</button>
+      </nav>
+
+      <button id="toggleEntryBtn" type="button" class="min-h-[44px] px-4 py-2 rounded-lg bg-forest hover:bg-forest-light text-white text-sm font-semibold shadow-sm transition shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest">
+        + Record Entry
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+    <!-- Hero Cash Position Band -->
+    <section class="fade-up rounded-2xl bg-gradient-to-br from-forest to-forest-light text-white p-6 sm:p-8 shadow-sm">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-emerald-100">
+            <span class="w-2 h-2 rounded-full bg-emerald-300" aria-hidden="true"></span>
+            <span>Reserve healthy &middot; 4.2 months runway</span>
+          </div>
+          <h1 class="text-sm font-medium text-emerald-100/90 uppercase tracking-wider">Net Operating Cash</h1>
+          <p id="heroBalance" class="font-display text-4xl sm:text-5xl font-semibold tabular-nums tracking-tight">$48,920.40</p>
+          <p class="text-sm text-emerald-100/80">Updated today at 09:15 AM &middot; <span class="text-emerald-200 font-medium">+12.4% vs prior period</span></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 sm:gap-6 pt-4 lg:pt-0 border-t lg:border-t-0 border-white/15">
+          <div class="bg-white/10 rounded-xl px-4 py-3 min-w-[140px]">
+            <p class="text-xs text-emerald-100/80">Monthly Inflow</p>
+            <p id="heroInflow" class="font-mono text-xl font-medium tabular-nums mt-1">$34,210.00</p>
+          </div>
+          <div class="bg-white/10 rounded-xl px-4 py-3 min-w-[140px]">
+            <p class="text-xs text-emerald-100/80">Monthly Outflow</p>
+            <p id="heroOutflow" class="font-mono text-xl font-medium tabular-nums mt-1">$18,450.60</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Inline Quick-Record Form (hidden by default) -->
+    <section id="entryFormSection" class="hidden rounded-xl bg-surface border border-line p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-display text-lg font-semibold text-ink">Record Cash Entry</h2>
+        <button id="closeEntryBtn" type="button" class="text-sm text-ink-muted hover:text-ink px-2 py-1 rounded focus-visible:outline-2 focus-visible:outline-forest">Cancel</button>
+      </div>
+      <form id="entryForm" class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+        <div>
+          <label for="entryDesc" class="block text-xs font-medium text-ink-muted mb-1">Description</label>
+          <input id="entryDesc" type="text" required placeholder="e.g. Oak St Cafe Wholesale" class="w-full h-10 px-3 rounded-lg border border-line bg-paper text-sm text-ink focus:outline-none focus:border-forest" />
+        </div>
+        <div>
+          <label for="entryType" class="block text-xs font-medium text-ink-muted mb-1">Type</label>
+          <select id="entryType" class="w-full h-10 px-3 rounded-lg border border-line bg-paper text-sm text-ink focus:outline-none focus:border-forest">
+            <option value="inflow">Inflow (+)</option>
+            <option value="outflow">Outflow (-)</option>
+          </select>
+        </div>
+        <div>
+          <label for="entryAmount" class="block text-xs font-medium text-ink-muted mb-1">Amount (USD)</label>
+          <input id="entryAmount" type="number" step="0.01" min="0.01" required placeholder="450.00" class="w-full h-10 px-3 rounded-lg border border-line bg-paper text-sm font-mono text-ink focus:outline-none focus:border-forest" />
+        </div>
+        <button type="submit" class="h-10 px-4 rounded-lg bg-forest hover:bg-forest-light text-white text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-forest">Save to Ledger</button>
+      </form>
+    </section>
+
+    <!-- Main 2-Column Grid: Cashflow Chart + Upcoming Bills -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Annotated Cashflow Chart -->
+      <div class="lg:col-span-2 rounded-2xl bg-surface p-6 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="font-display text-xl font-semibold text-ink">Cashflow Trend</h2>
+            <p class="text-sm text-ink-muted">Weekly inflows vs outflows against $15k reserve floor</p>
+          </div>
+          <div class="flex items-center gap-4 text-xs font-medium text-ink-muted">
+            <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-forest" aria-hidden="true"></span>Inflow</span>
+            <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brass" aria-hidden="true"></span>Outflow</span>
+          </div>
+        </div>
+
+        <div class="w-full overflow-x-auto">
+          <svg viewBox="0 0 640 230" class="w-full h-auto min-w-[460px]" role="img" aria-label="Weekly cashflow chart showing inflows above outflows and a $15,000 reserve floor">
+            <!-- Grid lines & Y-axis labels -->
+            <g stroke="#DDE4DF" stroke-width="1">
+              <line x1="52" y1="25" x2="620" y2="25" />
+              <line x1="52" y1="75" x2="620" y2="75" />
+              <line x1="52" y1="125" x2="620" y2="125" />
+              <line x1="52" y1="175" x2="620" y2="175" />
+            </g>
+            <g fill="#465750" font-size="11" font-family="JetBrains Mono, monospace" text-anchor="end">
+              <text x="44" y="29">$45k</text>
+              <text x="44" y="79">$30k</text>
+              <text x="44" y="129">$15k</text>
+              <text x="44" y="179">$0</text>
+            </g>
+
+            <!-- Reserve floor threshold -->
+            <line x1="52" y1="125" x2="620" y2="125" stroke="#9A5B25" stroke-width="1.5" stroke-dasharray="5 4" />
+            <text x="616" y="119" fill="#9A5B25" font-size="11" font-family="Plus Jakarta Sans, sans-serif" font-weight="600" text-anchor="end">Reserve Floor ($15k)</text>
+
+            <!-- Inflow line -->
+            <polyline fill="none" stroke="#164234" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+              points="75,110 165,96 255,102 345,70 435,78 525,52 600,45" />
+            <!-- Outflow line -->
+            <polyline fill="none" stroke="#9A5B25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              points="75,148 165,142 255,150 345,136 435,140 525,132 600,135" />
+
+            <!-- Event annotation -->
+            <circle cx="345" cy="70" r="5" fill="#164234" stroke="#FFFFFF" stroke-width="2" />
+            <rect x="275" y="34" width="140" height="24" rx="6" fill="#E3ECE7" />
+            <text x="345" y="50" fill="#164234" font-size="11" font-family="Plus Jakarta Sans, sans-serif" font-weight="600" text-anchor="middle">Q3 Wholesale Settled</text>
+
+            <!-- X-axis labels -->
+            <g fill="#465750" font-size="11" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">
+              <text x="75" y="202">Wk 1</text>
+              <text x="165" y="202">Wk 2</text>
+              <text x="255" y="202">Wk 3</text>
+              <text x="345" y="202">Wk 4</text>
+              <text x="435" y="202">Wk 5</text>
+              <text x="525" y="202">Wk 6</text>
+              <text x="600" y="202">Now</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Upcoming Bills & Invoices -->
+      <div class="rounded-2xl bg-surface p-6 shadow-sm flex flex-col justify-between space-y-4">
+        <div>
+          <h2 class="font-display text-xl font-semibold text-ink">Due Next 7 Days</h2>
+          <p class="text-sm text-ink-muted">Scheduled payables &amp; expected settlements</p>
+        </div>
+        <ul class="divide-y divide-line">
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">Green Bean Imports</p>
+              <p class="text-xs text-ink-muted">Due Nov 24 &middot; Supplier</p>
+            </div>
+            <span class="font-mono text-sm font-medium text-red-800 tabular-nums shrink-0">-$3,420.00</span>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">Maple Street Bakery</p>
+              <p class="text-xs text-ink-muted">Expected Nov 25 &middot; Invoice #1094</p>
+            </div>
+            <span class="font-mono text-sm font-medium text-emerald-800 tabular-nums shrink-0">+$2,180.00</span>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">Roastery Lease</p>
+              <p class="text-xs text-ink-muted">Due Nov 28 &middot; Auto-debit</p>
+            </div>
+            <span class="font-mono text-sm font-medium text-red-800 tabular-nums shrink-0">-$2,850.00</span>
+          </li>
+          <li class="py-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate">City Utilities &amp; Gas</p>
+              <p class="text-xs text-ink-muted">Due Nov 29 &middot; Utility</p>
+            </div>
+            <span class="font-mono text-sm font-medium text-red-800 tabular-nums shrink-0">-$412.50</span>
+          </li>
+        </ul>
+        <div class="pt-2 border-t border-line flex items-center justify-between text-xs text-ink-muted">
+          <span>Net 7-day impact</span>
+          <span class="font-mono font-semibold text-ink tabular-nums">-$4,502.50</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Ledger Transactions -->
+    <section class="rounded-2xl bg-surface p-6 shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="font-display text-xl font-semibold text-ink">Recent Ledger</h2>
+          <p class="text-sm text-ink-muted">Verified bank feed &amp; manual entries</p>
+        </div>
+        <div class="flex items-center gap-2" role="group" aria-label="Filter transactions">
+          <button type="button" data-filter="all" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-forest text-white transition focus-visible:outline-2 focus-visible:outline-forest">All</button>
+          <button type="button" data-filter="inflow" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-mist text-ink-muted hover:text-ink transition focus-visible:outline-2 focus-visible:outline-forest">Inflow</button>
+          <button type="button" data-filter="outflow" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-mist text-ink-muted hover:text-ink transition focus-visible:outline-2 focus-visible:outline-forest">Outflow</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-line text-xs font-semibold text-ink-muted uppercase tracking-wider">
+              <th class="py-3 pr-4">Date</th>
+              <th class="py-3 pr-4">Description</th>
+              <th class="py-3 pr-4">Category</th>
+              <th class="py-3 text-right">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerBody" class="divide-y divide-line text-sm">
+            <tr data-type="inflow">
+              <td class="py-3.5 pr-4 font-mono text-xs text-ink-muted whitespace-nowrap">Nov 20</td>
+              <td class="py-3.5 pr-4 font-medium text-ink">Harbor Hotel Wholesale Order</td>
+              <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-forest-soft text-forest">Wholesale</span></td>
+              <td class="py-3.5 text-right font-mono font-medium text-emerald-800 tabular-nums whitespace-nowrap">+$4,850.00</td>
+            </tr>
+            <tr data-type="outflow">
+              <td class="py-3.5 pr-4 font-mono text-xs text-ink-muted whitespace-nowrap">Nov 19</td>
+              <td class="py-3.5 pr-4 font-medium text-ink">Pacific Packaging Co. (10k bags)</td>
+              <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-brass-soft text-brass">Supplies</span></td>
+              <td class="py-3.5 text-right font-mono font-medium text-red-800 tabular-nums whitespace-nowrap">-$1,240.00</td>
+            </tr>
+            <tr data-type="inflow">
+              <td class="py-3.5 pr-4 font-mono text-xs text-ink-muted whitespace-nowrap">Nov 18</td>
+              <td class="py-3.5 pr-4 font-medium text-ink">Tasting Room POS Settlement</td>
+              <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-forest-soft text-forest">Retail</span></td>
+              <td class="py-3.5 text-right font-mono font-medium text-emerald-800 tabular-nums whitespace-nowrap">+$1,920.40</td>
+            </tr>
+            <tr data-type="outflow">
+              <td class="py-3.5 pr-4 font-mono text-xs text-ink-muted whitespace-nowrap">Nov 17</td>
+              <td class="py-3.5 pr-4 font-medium text-ink">Bi-weekly Roastery Payroll</td>
+              <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-mist text-ink-muted">Payroll</span></td>
+              <td class="py-3.5 text-right font-mono font-medium text-red-800 tabular-nums whitespace-nowrap">-$6,400.00</td>
+            </tr>
+            <tr data-type="inflow">
+              <td class="py-3.5 pr-4 font-mono text-xs text-ink-muted whitespace-nowrap">Nov 15</td>
+              <td class="py-3.5 pr-4 font-medium text-ink">Online Subscription Batch #44</td>
+              <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-forest-soft text-forest">Subscriptions</span></td>
+              <td class="py-3.5 text-right font-mono font-medium text-emerald-800 tabular-nums whitespace-nowrap">+$3,115.00</td>
+            </tr>
+            <tr data-type="outflow">
+              <td class="py-3.5 pr-4 font-mono text-xs text-ink-muted whitespace-nowrap">Nov 14</td>
+              <td class="py-3.5 pr-4 font-medium text-ink">Loring S15 Falcon Maintenance</td>
+              <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-brass-soft text-brass">Equipment</span></td>
+              <td class="py-3.5 text-right font-mono font-medium text-red-800 tabular-nums whitespace-nowrap">-$680.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const periodData = {
+      '30d': { balance: '$48,920.40', inflow: '$34,210.00', outflow: '$18,450.60' },
+      '90d': { balance: '$48,920.40', inflow: '$98,640.00', outflow: '$54,120.20' },
+      'ytd': { balance: '$48,920.40', inflow: '$342,800.00', outflow: '$218,490.00' },
+    };
+
+    document.querySelectorAll('.period-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.period-btn').forEach((b) => {
+          b.classList.remove('bg-surface', 'text-ink', 'shadow-sm');
+          b.classList.add('text-ink-muted');
+        });
+        btn.classList.add('bg-surface', 'text-ink', 'shadow-sm');
+        btn.classList.remove('text-ink-muted');
+        const data = periodData[btn.dataset.period];
+        if (data) {
+          document.getElementById('heroInflow').textContent = data.inflow;
+          document.getElementById('heroOutflow').textContent = data.outflow;
+        }
+      });
+    });
+
+    document.querySelectorAll('.filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach((b) => {
+          b.classList.remove('bg-forest', 'text-white');
+          b.classList.add('bg-mist', 'text-ink-muted');
+        });
+        btn.classList.add('bg-forest', 'text-white');
+        btn.classList.remove('bg-mist', 'text-ink-muted');
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('#ledgerBody tr').forEach((row) => {
+          row.style.display = filter === 'all' || row.dataset.type === filter ? '' : 'none';
+        });
+      });
+    });
+
+    const entrySection = document.getElementById('entryFormSection');
+    document.getElementById('toggleEntryBtn').addEventListener('click', () => {
+      entrySection.classList.toggle('hidden');
+    });
+    document.getElementById('closeEntryBtn').addEventListener('click', () => {
+      entrySection.classList.add('hidden');
+    });
+
+    document.getElementById('entryForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const desc = document.getElementById('entryDesc').value.trim();
+      const type = document.getElementById('entryType').value;
+      const amount = parseFloat(document.getElementById('entryAmount').value);
+      if (!desc || isNaN(amount) || amount <= 0) return;
+
+      const tr = document.createElement('tr');
+      tr.dataset.type = type;
+      const isInflow = type === 'inflow';
+      tr.innerHTML = `
+        <td class="py-3.5 pr-4 font-mono text-xs text-ink-muted whitespace-nowrap">Today</td>
+        <td class="py-3.5 pr-4 font-medium text-ink"></td>
+        <td class="py-3.5 pr-4"><span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${isInflow ? 'bg-forest-soft text-forest' : 'bg-brass-soft text-brass'}">${isInflow ? 'Manual Inflow' : 'Manual Expense'}</span></td>
+        <td class="py-3.5 text-right font-mono font-medium ${isInflow ? 'text-emerald-800' : 'text-red-800'} tabular-nums whitespace-nowrap">${isInflow ? '+' : '-'}$${amount.toFixed(2)}</td>
+      `;
+      tr.children[1].textContent = desc;
+      document.getElementById('ledgerBody').prepend(tr);
+      e.target.reset();
+      entrySection.classList.add('hidden');
+    });
+  </script>
+</body>
+</html>

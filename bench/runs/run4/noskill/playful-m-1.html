@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DoodlePop — Drawing &amp; Animation for Kids</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #FFFDF9;
+      color: #1F2937;
+    }
+    h1, h2, h3, .font-display {
+      font-family: 'Fredoka', sans-serif;
+    }
+    .sketch-card {
+      border: 2.5px solid #1F2937;
+      box-shadow: 5px 5px 0 #1F2937;
+    }
+    .sketch-btn {
+      border: 2.5px solid #1F2937;
+      box-shadow: 0 4px 0 #1F2937;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .sketch-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #1F2937;
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <!-- Header -->
+  <header class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5">
+      <div class="w-10 h-10 rounded-2xl bg-pink-400 border-2 border-gray-800 flex items-center justify-center text-white font-display font-bold text-xl">✏️</div>
+      <span class="font-display text-2xl font-bold text-gray-900">DoodlePop</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-7 font-bold text-sm text-gray-700">
+      <a href="#gallery" class="hover:text-pink-600">Kid Gallery</a>
+      <a href="#features" class="hover:text-pink-600">Features</a>
+      <a href="#parents" class="hover:text-pink-600">For Parents</a>
+    </nav>
+    <a href="#download" class="sketch-btn bg-amber-300 px-5 py-2 rounded-xl font-display font-bold text-sm text-gray-900">Get App Free</a>
+  </header>
+
+  <!-- Hero -->
+  <section class="max-w-6xl mx-auto px-6 pt-8 pb-14 text-center">
+    <span class="inline-block bg-pink-100 border-2 border-gray-800 rounded-full px-4 py-1 text-xs font-extrabold uppercase tracking-wide text-pink-900 mb-5">
+      Draw • Animate • Share Safely
+    </span>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 max-w-3xl mx-auto leading-[1.08] mb-5">
+      Where every kid's doodle <span class="text-pink-500">comes to life!</span>
+    </h1>
+    <p class="text-lg text-gray-600 font-semibold max-w-xl mx-auto mb-8">
+      Magic brushes, easy flipbook animation, and silly sound effects—designed for little fingers and big imaginations.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="#download" class="sketch-btn bg-pink-400 text-white px-8 py-3.5 rounded-2xl font-display font-bold text-lg">Start Drawing Free</a>
+      <a href="#gallery" class="sketch-btn bg-white text-gray-900 px-7 py-3.5 rounded-2xl font-display font-bold text-lg">See Kid Creations</a>
+    </div>
+  </section>
+
+  <!-- Gallery of Kid Creations -->
+  <section id="gallery" class="max-w-6xl mx-auto px-6 py-12">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-2">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900">Made by Kids Like Yours</h2>
+        <p class="text-gray-600 font-semibold">Real flipbook animations created in DoodlePop Studio.</p>
+      </div>
+      <span class="text-sm font-extrabold text-pink-600">Updated Weekly ✨</span>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-7">
+      <!-- Creation 1: Space Cat -->
+      <div class="bg-sky-100 sketch-card rounded-3xl p-5">
+        <div class="bg-indigo-950 rounded-2xl h-44 flex items-center justify-center mb-4 border-2 border-gray-800">
+          <svg class="w-28 h-28" viewBox="0 0 120 120" fill="none">
+            <circle cx="22" cy="25" r="3" fill="#FDE047"/>
+            <circle cx="96" cy="30" r="2.5" fill="#FDE047"/>
+            <circle cx="60" cy="64" r="30" fill="#F472B6" stroke="#FFFFFF" stroke-width="3"/>
+            <polygon points="36,44 44,24 54,40" fill="#F472B6" stroke="#FFFFFF" stroke-width="3"/>
+            <polygon points="84,44 76,24 66,40" fill="#F472B6" stroke="#FFFFFF" stroke-width="3"/>
+            <circle cx="50" cy="60" r="4" fill="#1E1B4B"/>
+            <circle cx="70" cy="60" r="4" fill="#1E1B4B"/>
+            <path d="M54 70 Q60 76 66 70" stroke="#1E1B4B" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-lg">Astro Kitty</h3>
+            <p class="text-xs font-bold text-gray-600">By Maya, age 8</p>
+          </div>
+          <span class="bg-white border-2 border-gray-800 rounded-full px-3 py-1 text-xs font-extrabold">12 Frames</span>
+        </div>
+      </div>
+
+      <!-- Creation 2: Dancing Dino -->
+      <div class="bg-emerald-100 sketch-card rounded-3xl p-5">
+        <div class="bg-amber-50 rounded-2xl h-44 flex items-center justify-center mb-4 border-2 border-gray-800">
+          <svg class="w-28 h-28" viewBox="0 0 120 120" fill="none">
+            <rect x="38" y="34" width="44" height="52" rx="20" fill="#34D399" stroke="#1F2937" stroke-width="3.5"/>
+            <circle cx="52" cy="52" r="4" fill="#1F2937"/>
+            <circle cx="68" cy="52" r="4" fill="#1F2937"/>
+            <path d="M52 66 Q60 73 68 66" stroke="#1F2937" stroke-width="3" stroke-linecap="round"/>
+            <rect x="44" y="86" width="10" height="14" rx="4" fill="#34D399" stroke="#1F2937" stroke-width="3"/>
+            <rect x="66" y="86" width="10" height="14" rx="4" fill="#34D399" stroke="#1F2937" stroke-width="3"/>
+          </svg>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-lg">Happy Dino</h3>
+            <p class="text-xs font-bold text-gray-600">By Leo, age 6</p>
+          </div>
+          <span class="bg-white border-2 border-gray-800 rounded-full px-3 py-1 text-xs font-extrabold">8 Frames</span>
+        </div>
+      </div>
+
+      <!-- Creation 3: Rainbow Rocket -->
+      <div class="bg-amber-100 sketch-card rounded-3xl p-5">
+        <div class="bg-sky-200 rounded-2xl h-44 flex items-center justify-center mb-4 border-2 border-gray-800">
+          <svg class="w-28 h-28" viewBox="0 0 120 120" fill="none">
+            <path d="M60 20 C76 38 78 65 72 84 L48 84 C42 65 44 38 60 20 Z" fill="#FB7185" stroke="#1F2937" stroke-width="3.5"/>
+            <circle cx="60" cy="54" r="9" fill="#BAE6FD" stroke="#1F2937" stroke-width="3"/>
+            <path d="M50 86 L60 104 L70 86" fill="#FACC15" stroke="#1F2937" stroke-width="3"/>
+          </svg>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-lg">Zoom Rocket</h3>
+            <p class="text-xs font-bold text-gray-600">By Sam, age 10</p>
+          </div>
+          <span class="bg-white border-2 border-gray-800 rounded-full px-3 py-1 text-xs font-extrabold">24 Frames</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Three Feature Highlights -->
+  <section id="features" class="max-w-6xl mx-auto px-6 py-12">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-10">Made for Creative Kids</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-white sketch-card rounded-3xl p-6">
+        <div class="w-11 h-11 rounded-2xl bg-pink-200 border-2 border-gray-800 flex items-center justify-center text-xl mb-4">🎨</div>
+        <h3 class="text-xl font-bold mb-2">Magic Brushes</h3>
+        <p class="text-gray-600 text-sm font-semibold">Rainbow ink, glitter stamps, and symmetry tools that make every drawing look awesome.</p>
+      </div>
+      <div class="bg-white sketch-card rounded-3xl p-6">
+        <div class="w-11 h-11 rounded-2xl bg-amber-200 border-2 border-gray-800 flex items-center justify-center text-xl mb-4">🎞️</div>
+        <h3 class="text-xl font-bold mb-2">1-Tap Flipbook</h3>
+        <p class="text-gray-600 text-sm font-semibold">Onion-skinning lets kids trace their previous frame and watch their characters move.</p>
+      </div>
+      <div class="bg-white sketch-card rounded-3xl p-6">
+        <div class="w-11 h-11 rounded-2xl bg-sky-200 border-2 border-gray-800 flex items-center justify-center text-xl mb-4">🔊</div>
+        <h3 class="text-xl font-bold mb-2">Silly Soundtracks</h3>
+        <p class="text-gray-600 text-sm font-semibold">Record your own voice or add boings, pops, and space lasers to any animation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parent Section -->
+  <section id="parents" class="max-w-5xl mx-auto px-6 py-12">
+    <div id="download" class="bg-violet-100 sketch-card rounded-3xl p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="max-w-xl">
+        <span class="inline-block bg-white border-2 border-gray-800 rounded-full px-3 py-1 text-xs font-extrabold mb-3">FOR PARENTS</span>
+        <h2 class="text-3xl font-bold text-gray-900 mb-3">Safe, Ad-Free &amp; Offline-Ready</h2>
+        <p class="text-gray-700 font-semibold">
+          No ads, no in-app purchases without a parent gate, and private family sharing so kids can send their cartoons straight to Grandma.
+        </p>
+      </div>
+      <a href="#" class="sketch-btn bg-amber-300 text-gray-900 px-7 py-4 rounded-2xl font-display font-bold text-lg whitespace-nowrap">
+        Download Free
+      </a>
+    </div>
+  </section>
+
+  <footer class="max-w-6xl mx-auto px-6 py-8 text-center text-sm font-bold text-gray-500">
+    © 2026 DoodlePop Studio • Safe Creative Play
+  </footer>
+</body>
+</html>

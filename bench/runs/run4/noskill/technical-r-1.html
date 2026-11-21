@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tracewise — Developer Observability</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen">
+  <!-- Header -->
+  <header class="border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-violet-500/15 border border-violet-500/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v4m0 12v4M2 12h4m12 0h4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="font-semibold text-sm tracking-tight text-white">Tracewise</span>
+        <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">production</span>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <span class="hidden sm:inline font-mono text-zinc-400">Window: Last 15m</span>
+        <span class="px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 font-mono text-zinc-300">v2.14.0</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <!-- KPI Row -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4">
+        <div class="text-xs text-zinc-400">P95 Latency</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold font-mono text-white">142ms</span>
+          <span class="text-xs font-mono text-emerald-400">-12ms</span>
+        </div>
+      </div>
+      <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4">
+        <div class="text-xs text-zinc-400">Error Rate</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold font-mono text-rose-400">0.18%</span>
+          <span class="text-xs font-mono text-zinc-400">34 reqs</span>
+        </div>
+      </div>
+      <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4">
+        <div class="text-xs text-zinc-400">Throughput</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold font-mono text-white">18.4k</span>
+          <span class="text-xs font-mono text-violet-400">rpm</span>
+        </div>
+      </div>
+      <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-4">
+        <div class="text-xs text-zinc-400">Apdex Score</div>
+        <div class="mt-1.5 flex items-baseline justify-between">
+          <span class="text-2xl font-semibold font-mono text-emerald-400">0.98</span>
+          <span class="text-xs font-mono text-zinc-500">T=250ms</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Charts Row -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Latency Chart -->
+      <div class="lg:col-span-2 bg-zinc-900/70 border border-zinc-800 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-sm font-semibold text-white">Request Latency (ms)</h2>
+            <p class="text-xs text-zinc-400">P50, P95, and P99 percentiles</p>
+          </div>
+          <div class="flex items-center gap-4 text-xs font-mono">
+            <span class="flex items-center gap-1.5 text-violet-400"><span class="w-2.5 h-0.5 bg-violet-400 inline-block"></span>P95</span>
+            <span class="flex items-center gap-1.5 text-cyan-400"><span class="w-2.5 h-0.5 bg-cyan-400 inline-block"></span>P50</span>
+          </div>
+        </div>
+        <div class="w-full h-48">
+          <svg viewBox="0 0 600 180" class="w-full h-full overflow-visible">
+            <g stroke="#27272a" stroke-width="1" stroke-dasharray="3 3">
+              <line x1="36" y1="20" x2="590" y2="20" />
+              <line x1="36" y1="60" x2="590" y2="60" />
+              <line x1="36" y1="100" x2="590" y2="100" />
+              <line x1="36" y1="140" x2="590" y2="140" />
+            </g>
+            <g fill="#71717a" font-size="10" font-family="JetBrains Mono, monospace">
+              <text x="0" y="24">300ms</text>
+              <text x="0" y="64">200ms</text>
+              <text x="0" y="104">100ms</text>
+              <text x="12" y="144">0ms</text>
+            </g>
+            <!-- P95 -->
+            <path d="M36,88 L90,82 L145,94 L200,76 L255,68 L310,86 L365,78 L420,64 L475,72 L530,80 L590,74 L590,140 L36,140 Z" fill="rgba(167,139,250,0.12)" />
+            <polyline fill="none" stroke="#a78bfa" stroke-width="2" points="36,88 90,82 145,94 200,76 255,68 310,86 365,78 420,64 475,72 530,80 590,74" />
+            <!-- P50 -->
+            <polyline fill="none" stroke="#22d3ee" stroke-width="2" points="36,118 90,116 145,120 200,114 255,112 310,116 365,115 420,110 475,114 530,116 590,112" />
+            <g fill="#71717a" font-size="10" font-family="JetBrains Mono, monospace">
+              <text x="36" y="162">01:40</text>
+              <text x="175" y="162">01:45</text>
+              <text x="315" y="162">01:50</text>
+              <text x="455" y="162">01:55</text>
+              <text x="560" y="162">02:00</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Error Rate Chart -->
+      <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-5 flex flex-col justify-between">
+        <div>
+          <h2 class="text-sm font-semibold text-white">Error Rate (5xx / 4xx)</h2>
+          <p class="text-xs text-zinc-400">1-minute buckets</p>
+        </div>
+        <div class="w-full h-36 my-3">
+          <svg viewBox="0 0 260 120" class="w-full h-full">
+            <line x1="0" y1="100" x2="260" y2="100" stroke="#27272a" stroke-width="1" />
+            <g fill="#f43f5e">
+              <rect x="8" y="84" width="12" height="16" rx="2" opacity="0.6" />
+              <rect x="28" y="88" width="12" height="12" rx="2" opacity="0.6" />
+              <rect x="48" y="74" width="12" height="26" rx="2" opacity="0.8" />
+              <rect x="68" y="90" width="12" height="10" rx="2" opacity="0.6" />
+              <rect x="88" y="86" width="12" height="14" rx="2" opacity="0.6" />
+              <rect x="108" y="52" width="12" height="48" rx="2" />
+              <rect x="128" y="78" width="12" height="22" rx="2" opacity="0.8" />
+              <rect x="148" y="88" width="12" height="12" rx="2" opacity="0.6" />
+              <rect x="168" y="82" width="12" height="18" rx="2" opacity="0.7" />
+              <rect x="188" y="92" width="12" height="8" rx="2" opacity="0.5" />
+              <rect x="208" y="86" width="12" height="14" rx="2" opacity="0.6" />
+              <rect x="228" y="90" width="12" height="10" rx="2" opacity="0.6" />
+            </g>
+          </svg>
+        </div>
+        <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+          <span>Peak: 0.42% at 01:48</span>
+          <span class="text-emerald-400">Recovering</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services + SDK Install -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Services List -->
+      <div class="lg:col-span-2 bg-zinc-900/70 border border-zinc-800 rounded-xl overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-zinc-800 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-white">Instrumented Services</h2>
+          <span class="text-xs font-mono text-zinc-400">4 active</span>
+        </div>
+        <div class="divide-y divide-zinc-800/70 text-xs font-mono">
+          <div class="px-5 py-3 flex items-center justify-between hover:bg-zinc-800/30">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span class="text-white font-medium">api-gateway</span>
+            </div>
+            <div class="flex items-center gap-6 text-zinc-400">
+              <span>8.2k rpm</span>
+              <span>p95: 48ms</span>
+              <span class="text-emerald-400">0.02% err</span>
+            </div>
+          </div>
+          <div class="px-5 py-3 flex items-center justify-between hover:bg-zinc-800/30">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span class="text-white font-medium">checkout-svc</span>
+            </div>
+            <div class="flex items-center gap-6 text-zinc-400">
+              <span>2.1k rpm</span>
+              <span>p95: 194ms</span>
+              <span class="text-rose-400">0.41% err</span>
+            </div>
+          </div>
+          <div class="px-5 py-3 flex items-center justify-between hover:bg-zinc-800/30">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span class="text-white font-medium">auth-token-svc</span>
+            </div>
+            <div class="flex items-center gap-6 text-zinc-400">
+              <span>5.4k rpm</span>
+              <span>p95: 29ms</span>
+              <span class="text-emerald-400">0.01% err</span>
+            </div>
+          </div>
+          <div class="px-5 py-3 flex items-center justify-between hover:bg-zinc-800/30">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span class="text-white font-medium">billing-worker</span>
+            </div>
+            <div class="flex items-center gap-6 text-zinc-400">
+              <span>2.7k rpm</span>
+              <span>p95: 112ms</span>
+              <span class="text-emerald-400">0.05% err</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SDK Snippet -->
+      <div class="bg-zinc-900/70 border border-zinc-800 rounded-xl p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-white">Install SDK</h2>
+          <button onclick="navigator.clipboard?.writeText('npm i @tracewise/sdk')" class="text-xs font-mono text-violet-400 hover:text-violet-300">Copy</button>
+        </div>
+        <pre class="bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-xs font-mono text-zinc-300 overflow-x-auto leading-relaxed"><code><span class="text-zinc-500"># 1. Install package</span>
+npm install @tracewise/sdk
+
+<span class="text-zinc-500"># 2. Initialize</span>
+import { tracewise } from '@tracewise/sdk';
+tracewise.init({ dsn: process.env.TW_DSN });</code></pre>
+      </div>
+    </section>
+
+    <!-- Live Log Tail -->
+    <section class="bg-zinc-900/70 border border-zinc-800 rounded-xl overflow-hidden">
+      <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <h2 class="text-sm font-semibold text-white">Live Log Tail</h2>
+        </div>
+        <span class="text-xs font-mono text-zinc-500">streaming stdout/stderr</span>
+      </div>
+      <div class="bg-zinc-950 p-4 font-mono text-xs space-y-1.5 overflow-x-auto">
+        <div class="flex gap-3 text-zinc-400">
+          <span class="text-zinc-600">01:54:28.104</span>
+          <span class="text-emerald-400 w-10">INFO</span>
+          <span class="text-violet-400 w-28">api-gateway</span>
+          <span class="text-zinc-300">GET /v1/orders 200 OK (38ms) trace_id=9f8a21c</span>
+        </div>
+        <div class="flex gap-3 text-zinc-400">
+          <span class="text-zinc-600">01:54:29.412</span>
+          <span class="text-amber-400 w-10">WARN</span>
+          <span class="text-violet-400 w-28">checkout-svc</span>
+          <span class="text-zinc-300">Stripe webhook retry #1 scheduled (timeout 2000ms) trace_id=4b19e02</span>
+        </div>
+        <div class="flex gap-3 text-zinc-400">
+          <span class="text-zinc-600">01:54:30.008</span>
+          <span class="text-rose-400 w-10">ERR</span>
+          <span class="text-violet-400 w-28">checkout-svc</span>
+          <span class="text-rose-300">POST /v1/pay 502 Bad Gateway: upstream connection reset trace_id=7c31d90</span>
+        </div>
+        <div class="flex gap-3 text-zinc-400">
+          <span class="text-zinc-600">01:54:31.229</span>
+          <span class="text-emerald-400 w-10">INFO</span>
+          <span class="text-violet-400 w-28">auth-token</span>
+          <span class="text-zinc-300">JWT verified for usr_88219 (11ms) trace_id=1a04f88</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

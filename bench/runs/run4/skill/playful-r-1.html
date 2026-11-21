@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PikoLab — Coding Arcade for Kids 7–12</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#F7FBF9',
+            mintbg: '#E3F5EC',
+            ink: '#162320',
+            slateink: '#3C4F4A',
+            tangerine: '#C2410C',
+            amber: '#FBBF24',
+            teal: '#0F766E',
+            berry: '#BE185D',
+          },
+          fontFamily: {
+            display: ['Fredoka', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @keyframes hop {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .piko-hop { animation: hop 3.5s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .piko-hop { animation: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-sans antialiased">
+  <header class="sticky top-0 z-30 bg-paper/95 backdrop-blur border-b-2 border-ink/10">
+    <nav class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between" aria-label="Primary">
+      <a href="#" class="flex items-center gap-2.5 font-display text-2xl font-bold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded-lg px-1">
+        <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-teal text-white border-2 border-ink shadow-[2px_2px_0_#162320]" aria-hidden="true">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </span>
+        PikoLab
+      </a>
+      <div class="hidden md:flex items-center gap-7 text-sm font-bold text-slateink">
+        <a href="#features" class="hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded px-1">Features</a>
+        <a href="#minigame" class="hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded px-1">Mini-Game</a>
+        <a href="#pricing" class="hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded px-1">Pricing</a>
+        <a href="#faq" class="hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded px-1">FAQ</a>
+      </div>
+      <a href="#pricing" class="inline-flex items-center justify-center min-h-[44px] px-5 rounded-full bg-tangerine text-white font-extrabold text-sm border-2 border-ink shadow-[3px_3px_0_#162320] hover:translate-y-[-1px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink">
+        Join Free
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero with Mascot -->
+    <section class="max-w-6xl mx-auto px-5 py-12 lg:py-16 grid lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-6 space-y-6">
+        <span class="inline-block px-3.5 py-1 rounded-full bg-mintbg border-2 border-ink text-xs font-extrabold uppercase tracking-wider text-ink">
+          Ages 7–12 · Build real arcade games
+        </span>
+        <h1 class="font-display text-5xl sm:text-6xl font-bold leading-[1.04] tracking-tight text-ink">
+          Code your own <span class="text-teal">pixel arcade</span> with Piko.
+        </h1>
+        <p class="text-lg text-slateink max-w-prose leading-relaxed font-semibold">
+          PikoLab turns curious players into game makers. Snap logic blocks, remix levels, and test your creations in seconds.
+        </p>
+        <div class="flex flex-wrap items-center gap-4 pt-1">
+          <a href="#pricing" class="inline-flex items-center justify-center min-h-[48px] px-7 rounded-full bg-tangerine text-white font-extrabold text-base border-2 border-ink shadow-[4px_4px_0_#162320] hover:translate-y-[-2px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink">
+            Start Building Free
+          </a>
+          <a href="#minigame" class="inline-flex items-center justify-center min-h-[44px] px-4 font-extrabold text-ink underline decoration-2 decoration-amber underline-offset-4 hover:text-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal rounded">
+            Try the mini-game
+          </a>
+        </div>
+      </div>
+
+      <!-- Custom SVG Mascot: Piko the Cat-Bot -->
+      <div class="lg:col-span-6 flex justify-center">
+        <div class="bg-mintbg rounded-[32px] border-2 border-ink shadow-[6px_6px_0_#162320] p-8 w-full max-w-md flex flex-col items-center">
+          <svg class="w-52 h-52 piko-hop" viewBox="0 0 220 220" fill="none" aria-label="Piko the cat-bot mascot">
+            <polygon points="56,66 76,28 96,62" fill="#FBBF24" stroke="#162320" stroke-width="5" stroke-linejoin="round"/>
+            <polygon points="164,66 144,28 124,62" fill="#FBBF24" stroke="#162320" stroke-width="5" stroke-linejoin="round"/>
+            <rect x="46" y="56" width="128" height="100" rx="34" fill="#0F766E" stroke="#162320" stroke-width="5"/>
+            <rect x="64" y="76" width="92" height="54" rx="16" fill="#F7FBF9" stroke="#162320" stroke-width="4"/>
+            <circle cx="90" cy="102" r="8" fill="#162320"/>
+            <circle cx="130" cy="102" r="8" fill="#162320"/>
+            <path d="M104 114 L110 120 L116 114" stroke="#C2410C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="74" y="160" width="72" height="32" rx="14" fill="#FBBF24" stroke="#162320" stroke-width="5"/>
+            <circle cx="62" cy="176" r="10" fill="#BE185D" stroke="#162320" stroke-width="4"/>
+            <circle cx="158" cy="176" r="10" fill="#BE185D" stroke="#162320" stroke-width="4"/>
+          </svg>
+          <div class="mt-3 px-4 py-1.5 rounded-full bg-paper border-2 border-ink text-sm font-extrabold text-ink">
+            "Let's build Level 1!" — Piko
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features (Asymmetric) -->
+    <section id="features" class="bg-mintbg border-y-2 border-ink/15 py-16">
+      <div class="max-w-6xl mx-auto px-5">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-ink mb-8">Everything kids need to ship a game</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <article class="md:col-span-2 bg-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#162320] p-7">
+            <span class="inline-block px-3 py-1 rounded-full bg-teal text-white text-xs font-extrabold mb-3">Visual + Python Bridge</span>
+            <h3 class="font-display text-2xl font-bold text-ink">Snap blocks today, peek at real code tomorrow</h3>
+            <p class="text-slateink font-semibold mt-2 max-w-prose">Every block has a one-click "Peek Code" toggle so kids naturally connect loops and variables to real syntax.</p>
+          </article>
+          <article class="bg-amber rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#162320] p-7 rotate-[1deg]">
+            <h3 class="font-display text-2xl font-bold text-ink">Sprite &amp; Sound Kit</h3>
+            <p class="text-ink/90 font-bold mt-2 max-w-prose">200+ pixel heroes, retro bleeps, and custom tilemaps included.</p>
+          </article>
+          <article class="bg-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#162320] p-7">
+            <h3 class="font-display text-xl font-bold text-ink">Safe Family Sharing</h3>
+            <p class="text-slateink font-semibold mt-2 max-w-prose">Send playable links to grandparents—no public comments or ads.</p>
+          </article>
+          <article class="md:col-span-2 bg-ink text-paper rounded-[24px] border-2 border-ink shadow-[4px_4px_0_#0F766E] p-7">
+            <h3 class="font-display text-2xl font-bold text-amber">Weekend Game Jams</h3>
+            <p class="text-paper/90 font-semibold mt-2 max-w-prose">Optional 48-hour themed prompts ("Space Bakery", "Frog Taxi") with printable certificates.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mini-Game Teaser -->
+    <section id="minigame" class="max-w-5xl mx-auto px-5 py-16">
+      <div class="bg-paper rounded-[28px] border-2 border-ink shadow-[6px_6px_0_#162320] p-7 sm:p-10 grid md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4">
+          <span class="inline-block px-3 py-1 rounded-full bg-berry text-white text-xs font-extrabold uppercase">Mini-Game Teaser</span>
+          <h2 class="font-display text-3xl font-bold text-ink">Catch the Star!</h2>
+          <p class="text-slateink font-semibold max-w-prose">Kids build this exact 4-block game in their first 10 minutes on PikoLab. Click the button to test the loop.</p>
+          <div class="flex items-center gap-4">
+            <button id="star-btn" type="button" class="min-h-[44px] px-6 rounded-full bg-teal text-white font-extrabold text-sm border-2 border-ink shadow-[3px_3px_0_#162320] hover:translate-y-[-1px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink">
+              Jump Piko!
+            </button>
+            <span class="font-display text-xl font-bold text-ink">Score: <span id="star-score" class="text-tangerine">0</span></span>
+          </div>
+        </div>
+        <div class="bg-ink rounded-2xl border-2 border-ink p-6 h-48 relative overflow-hidden flex items-end justify-between">
+          <div class="text-xs font-bold text-amber/90 absolute top-3 left-4">LEVEL 1 · STAR_LOOP.PIKO</div>
+          <div id="game-piko" class="w-12 h-12 rounded-xl bg-teal border-2 border-paper flex items-center justify-center text-white font-display font-bold transition-transform duration-200">
+            P
+          </div>
+          <div class="w-10 h-10 rounded-full bg-amber border-2 border-paper flex items-center justify-center text-ink font-extrabold">★</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="bg-mintbg border-y-2 border-ink/15 py-16">
+      <div class="max-w-4xl mx-auto px-5">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-ink text-center mb-10">Pick your lab pass</h2>
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div class="bg-paper rounded-[24px] border-2 border-ink p-7 flex flex-col justify-between">
+            <div>
+              <h3 class="font-display text-2xl font-bold text-ink">Free Explorer</h3>
+              <div class="font-display text-4xl font-bold text-ink mt-2">$0 <span class="text-base font-semibold text-slateink">/ month</span></div>
+              <ul class="mt-4 space-y-2 text-slateink font-semibold text-sm">
+                <li>• 10 starter arcade quests</li>
+                <li>• Catch the Star mini-game kit</li>
+                <li>• 1 kid profile</li>
+              </ul>
+            </div>
+            <a href="#" class="mt-6 inline-flex items-center justify-center min-h-[44px] rounded-full border-2 border-ink bg-paper text-ink font-extrabold text-sm hover:bg-mintbg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal">
+              Start Free
+            </a>
+          </div>
+          <div class="bg-paper rounded-[24px] border-2 border-ink shadow-[5px_5px_0_#162320] p-7 flex flex-col justify-between">
+            <div>
+              <span class="inline-block px-3 py-0.5 rounded-full bg-amber text-ink text-xs font-extrabold border border-ink mb-2">Best Value</span>
+              <h3 class="font-display text-2xl font-bold text-ink">PikoLab Pro</h3>
+              <div class="font-display text-4xl font-bold text-tangerine mt-2">$8 <span class="text-base font-semibold text-slateink">/ month</span></div>
+              <ul class="mt-4 space-y-2 text-slateink font-semibold text-sm">
+                <li>• All 80+ quests &amp; Python Peek</li>
+                <li>• Up to 3 kid profiles</li>
+                <li>• Weekend Game Jams + offline mode</li>
+              </ul>
+            </div>
+            <a href="#" class="mt-6 inline-flex items-center justify-center min-h-[44px] rounded-full bg-tangerine text-white font-extrabold text-sm border-2 border-ink shadow-[3px_3px_0_#162320] hover:translate-y-[-1px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink">
+              Try Pro 14 Days Free
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="max-w-3xl mx-auto px-5 py-16 space-y-4">
+      <h2 class="font-display text-3xl font-bold text-ink mb-6">Parent FAQ</h2>
+      <details class="bg-mintbg rounded-2xl border-2 border-ink p-5" open>
+        <summary class="font-extrabold text-ink cursor-pointer">Is prior coding experience needed?</summary>
+        <p class="mt-2 text-slateink font-semibold text-sm max-w-prose">Not at all. Kids start with visual blocks and step-by-step quests designed for ages 7–12.</p>
+      </details>
+      <details class="bg-mintbg rounded-2xl border-2 border-ink p-5">
+        <summary class="font-extrabold text-ink cursor-pointer">Can siblings share one account?</summary>
+        <p class="mt-2 text-slateink font-semibold text-sm max-w-prose">Yes! PikoLab Pro includes up to 3 separate kid profiles with their own saved games.</p>
+      </details>
+    </section>
+
+    <!-- CTA Band -->
+    <section class="bg-teal text-white border-t-2 border-ink py-14">
+      <div class="max-w-4xl mx-auto px-5 text-center space-y-4">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold">Ready to launch their first arcade game?</h2>
+        <p class="text-white/95 font-semibold max-w-md mx-auto">Join 30,000+ young makers building on PikoLab today.</p>
+        <a href="#pricing" class="inline-flex items-center justify-center min-h-[48px] px-8 rounded-full bg-amber text-ink font-extrabold text-base border-2 border-ink shadow-[4px_4px_0_#162320] hover:translate-y-[-2px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+          Create Free Account
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-ink text-paper/80 py-8 text-center text-sm font-semibold">
+    <p>© 2026 PikoLab · Safe coding arcade for kids</p>
+  </footer>
+
+  <script>
+    const starBtn = document.getElementById('star-btn');
+    const starScore = document.getElementById('star-score');
+    const gamePiko = document.getElementById('game-piko');
+    let score = 0;
+    starBtn.addEventListener('click', () => {
+      score += 1;
+      starScore.textContent = String(score);
+      gamePiko.style.transform = 'translateY(-36px)';
+      setTimeout(() => { gamePiko.style.transform = 'translateY(0px)'; }, 200);
+    });
+  </script>
+</body>
+</html>

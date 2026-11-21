@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charred Figs with Brown Butter &amp; Labneh — Table &amp; Hearth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            linen: '#FBF8F3',
+            linenTint: '#F3EDE2',
+            ink: '#1E1A17',
+            inkMuted: '#5C534A',
+            saffron: '#B44823',
+            saffronDark: '#913819',
+            herb: '#4F5E41',
+            rule: '#E2D9CB',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            body: ['Lora', 'Georgia', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-enter { animation: fadeUp 0.55s ease-out both; }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-enter { animation: none; }
+    }
+    .drop-cap::first-letter {
+      float: left;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 3.4rem;
+      line-height: 0.85;
+      padding-right: 0.55rem;
+      padding-top: 0.2rem;
+      color: #B84A24;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-linen text-ink font-body antialiased selection:bg-saffron/20">
+  <header class="border-b border-rule">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#top" class="font-display font-bold text-xl tracking-tight text-ink">Table &amp; Hearth</a>
+      <nav aria-label="Primary" class="flex items-center gap-6 text-sm text-inkMuted">
+        <a href="#essay" class="hover:text-saffron transition-colors">Essay</a>
+        <a href="#method" class="hover:text-saffron transition-colors">Method</a>
+        <a href="#related" class="hover:text-saffron transition-colors">Related</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="py-12 lg:py-16">
+    <!-- Wide Frame: Headline & Botanical Illustration -->
+    <div class="max-w-5xl mx-auto px-6 hero-enter">
+      <p class="text-sm uppercase tracking-[0.18em] text-saffron font-semibold mb-3">Late Summer Table · Recipe &amp; Essay</p>
+      <h1 class="font-display text-4xl sm:text-6xl font-bold tracking-tight text-ink leading-[1.08] mb-5">
+        Charred Figs with Brown Butter &amp; Salted Labneh
+      </h1>
+      <p class="text-lg sm:text-xl text-inkMuted max-w-prose leading-relaxed mb-8">
+        When late-August figs turn jammy at the stem, a hot cast-iron skillet and nutty brown butter coax out their deepest honeyed notes.
+      </p>
+
+      <figure class="bg-linenTint border border-rule rounded p-5 mb-12">
+        <svg viewBox="0 0 800 260" class="w-full h-auto block bg-linen rounded border border-rule" role="img" aria-label="Botanical illustration of halved figs, rosemary sprig, and ceramic platter">
+          <!-- Ceramic Platter -->
+          <ellipse cx="400" cy="145" rx="230" ry="82" fill="#F3EDE2" stroke="#5C534A" stroke-width="1.5"/>
+          <ellipse cx="400" cy="145" rx="195" ry="62" fill="none" stroke="#E2D9CB" stroke-width="1"/>
+          <!-- Labneh Swirl -->
+          <path d="M275,145 C310,115 385,115 430,140 C475,165 510,140 525,135" fill="none" stroke="#FAF6EE" stroke-width="18" stroke-linecap="round"/>
+          <!-- Fig Halves -->
+          <g transform="translate(335,135)">
+            <ellipse cx="0" cy="0" rx="24" ry="30" fill="#4A2E35" stroke="#1E1A17" stroke-width="1.2"/>
+            <ellipse cx="0" cy="2" rx="17" ry="22" fill="#B84A24"/>
+            <circle cx="-4" cy="-2" r="1.5" fill="#FBF8F3"/>
+            <circle cx="5" cy="4" r="1.5" fill="#FBF8F3"/>
+            <circle cx="-2" cy="9" r="1.5" fill="#FBF8F3"/>
+          </g>
+          <g transform="translate(415,152) rotate(18)">
+            <ellipse cx="0" cy="0" rx="24" ry="30" fill="#4A2E35" stroke="#1E1A17" stroke-width="1.2"/>
+            <ellipse cx="0" cy="2" rx="17" ry="22" fill="#B84A24"/>
+            <circle cx="-3" cy="0" r="1.5" fill="#FBF8F3"/>
+            <circle cx="4" cy="6" r="1.5" fill="#FBF8F3"/>
+          </g>
+          <!-- Rosemary Sprig -->
+          <g stroke="#4F5E41" stroke-width="2" stroke-linecap="round">
+            <line x1="465" y1="165" x2="545" y2="110"/>
+            <line x1="485" y1="150" x2="478" y2="132"/>
+            <line x1="505" y1="138" x2="522" y2="142"/>
+            <line x1="520" y1="127" x2="514" y2="110"/>
+          </g>
+        </svg>
+        <figcaption class="text-sm text-inkMuted mt-3 leading-relaxed">
+          <strong class="text-ink">Serves 4</strong> · Prep 15 min · Cook 10 min · Best served warm over chilled labneh.
+        </figcaption>
+      </figure>
+    </div>
+
+    <!-- Two-Column Editorial + Ingredient Rail -->
+    <div class="max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-[minmax(0,65ch)_280px] gap-12 items-start">
+      <div class="space-y-6 text-lg leading-[1.75] text-ink">
+        <section id="essay" class="space-y-6 max-w-prose">
+          <p class="drop-cap">
+            There is a brief fortnight at the end of summer when figs stop behaving like fruit and start behaving like pastry. Their skins thin to the texture of worn suede, and a single drop of amber syrup beads at the base. Eaten raw, they are quiet and floral; touched by high heat, they turn into something altogether darker.
+          </p>
+          <p>
+            The trick is restraint. Instead of burying them in sugar, sear the cut faces in foaming brown butter until the natural fructose blisters. Against cold, tangy labneh and flaky sea salt, the contrast does all the work.
+          </p>
+        </section>
+
+        <blockquote class="border-l-2 border-saffron pl-6 py-2 my-8 font-display text-2xl leading-relaxed text-ink italic">
+          “Good late-summer cooking is mostly knowing when to take the pan off the flame.”
+        </blockquote>
+
+        <section id="method" class="pt-4">
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-ink mb-6">Method</h2>
+          <ol class="space-y-5 list-decimal pl-6 marker:font-display marker:font-bold marker:text-saffron">
+            <li>
+              <strong class="text-ink">Spread the labneh:</strong> Spoon the chilled labneh onto a wide, shallow platter and swirl it into a thick bed with the back of a spoon. Season lightly with flaky sea salt.
+            </li>
+            <li>
+              <strong class="text-ink">Brown the butter:</strong> Melt the unsalted butter in a heavy cast-iron skillet over medium heat. Swirl for 2 to 3 minutes until the milk solids turn hazelnut brown and smell toasted.
+            </li>
+            <li>
+              <strong class="text-ink">Sear the figs:</strong> Place the halved figs cut-side down in the foaming butter. Cook undisturbed for 3 minutes until caramelized at the edges, then add rosemary and honey.
+            </li>
+            <li>
+              <strong class="text-ink">Finish &amp; serve:</strong> Transfer the warm figs onto the labneh, spooning the warm brown butter and crisp rosemary needles over the top. Serve immediately with torn sourdough.
+            </li>
+          </ol>
+        </section>
+      </div>
+
+      <!-- Ingredient Rail -->
+      <aside aria-label="Ingredients" class="bg-linenTint border border-rule rounded p-6 lg:sticky lg:top-8">
+        <div class="flex items-center justify-between gap-2 pb-4 mb-4 border-b border-rule">
+          <h2 class="font-display text-xl font-bold text-ink">Ingredients</h2>
+          <div class="flex items-center gap-1" role="group" aria-label="Scale servings">
+            <button type="button" data-scale="0.5" class="scale-btn px-2.5 py-1.5 text-xs rounded border border-rule bg-linen text-ink hover:border-saffron min-h-[32px]">2x</button>
+            <button type="button" data-scale="1" aria-pressed="true" class="scale-btn px-2.5 py-1.5 text-xs rounded bg-saffron text-linen font-semibold min-h-[32px]">4x</button>
+            <button type="button" data-scale="1.5" class="scale-btn px-2.5 py-1.5 text-xs rounded border border-rule bg-linen text-ink hover:border-saffron min-h-[32px]">6x</button>
+          </div>
+        </div>
+        <ul class="space-y-3 text-base leading-relaxed text-ink">
+          <li><strong class="qty tabular-nums" data-base="8">8</strong> ripe black mission figs, halved</li>
+          <li><strong class="qty tabular-nums" data-base="40">40</strong>g unsalted butter</li>
+          <li><strong class="qty tabular-nums" data-base="250">250</strong>g thick labneh, chilled</li>
+          <li><strong class="qty tabular-nums" data-base="1">1</strong> tbsp wildflower honey</li>
+          <li><strong class="qty tabular-nums" data-base="2">2</strong> sprigs fresh rosemary</li>
+          <li>Flaky sea salt &amp; cracked pepper</li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- Related Recipes -->
+    <section id="related" class="max-w-5xl mx-auto px-6 mt-16 pt-10 border-t border-rule">
+      <h2 class="font-display text-2xl font-bold text-ink mb-6">Related Recipes</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="#essay" class="block p-6 bg-linenTint border border-rule rounded hover:border-saffron transition-colors">
+          <span class="text-xs uppercase tracking-[0.14em] text-saffron font-semibold">Side Dish</span>
+          <h3 class="font-display text-xl font-bold text-ink mt-2 mb-2">Blistered Padron Peppers with Anchovy Crumb</h3>
+          <p class="text-sm text-inkMuted leading-relaxed max-w-prose">Crisp toasted sourdough crumbs and lemon zest lift a five-minute skillet classic.</p>
+        </a>
+        <a href="#essay" class="block p-6 bg-linenTint border border-rule rounded hover:border-saffron transition-colors">
+          <span class="text-xs uppercase tracking-[0.14em] text-saffron font-semibold">Baking</span>
+          <h3 class="font-display text-xl font-bold text-ink mt-2 mb-2">Olive Oil &amp; Polenta Cake with Roasted Plums</h3>
+          <p class="text-sm text-inkMuted leading-relaxed max-w-prose">A tender, coarse-crumbed afternoon cake built for stone fruit season.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-rule mt-12">
+    <div class="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-inkMuted">
+      <span>Table &amp; Hearth · Seasonal Kitchen</span>
+      <span>Set in Fraunces &amp; Lora</span>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.scale-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const factor = parseFloat(btn.dataset.scale);
+        document.querySelectorAll('.qty').forEach(el => {
+          const base = parseFloat(el.dataset.base);
+          const val = base * factor;
+          el.textContent = Number.isInteger(val) ? val : val.toFixed(1).replace(/\.0$/, '');
+        });
+        document.querySelectorAll('.scale-btn').forEach(b => {
+          const active = b === btn;
+          b.setAttribute('aria-pressed', String(active));
+          b.classList.toggle('bg-saffron', active);
+          b.classList.toggle('text-linen', active);
+          b.classList.toggle('font-semibold', active);
+          b.classList.toggle('bg-linen', !active);
+          b.classList.toggle('text-ink', !active);
+          b.classList.toggle('border', !active);
+          b.classList.toggle('border-rule', !active);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

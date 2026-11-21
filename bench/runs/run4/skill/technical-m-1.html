@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuildForge — CI/CD Pipeline Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ink: { 950: '#090c10', 900: '#10151c', 850: '#151c26', 800: '#1b2431', 700: '#273446' },
+            emeraldops: { 400: '#34d399', 500: '#10b981', 600: '#059669' },
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { background-color: #090c10; color: #e2e8f0; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    .dark-scroll { scrollbar-width: thin; scrollbar-color: #273446 #090c10; }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col">
+  <header class="border-b border-ink-700 bg-ink-900/90 sticky top-0 z-20 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded bg-emeraldops-500/15 border border-emeraldops-500/40 flex items-center justify-center text-emeraldops-400">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="6" cy="6" r="3" /><circle cx="18" cy="18" r="3" /><path d="M6 9v6a3 3 0 0 0 3 3h6" />
+          </svg>
+        </div>
+        <span class="font-semibold tracking-tight text-slate-100">BuildForge</span>
+        <span class="hidden sm:inline-block text-xs font-mono text-slate-400 border-l border-ink-700 pl-3">acme/core-platform · main</span>
+      </div>
+      <nav aria-label="Primary" class="flex items-center gap-2">
+        <button type="button" id="rerun-btn" class="h-11 px-4 rounded text-xs font-semibold bg-emeraldops-500 text-ink-950 hover:bg-emeraldops-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emeraldops-400">Trigger Build</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
+    <!-- Top Row: Recent Builds + Build Duration Chart -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div class="lg:col-span-7 bg-ink-900 border border-ink-700 rounded-md overflow-hidden">
+        <div class="px-4 py-3 border-b border-ink-700 flex items-center justify-between">
+          <h1 class="text-sm font-semibold text-slate-100">Recent Builds</h1>
+          <span class="text-xs font-mono text-slate-400">Click row to inspect log</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs font-mono">
+            <thead>
+              <tr class="border-b border-ink-700 bg-ink-850 text-[11px] uppercase text-slate-400">
+                <th class="py-2 px-4">Build</th>
+                <th class="py-2 px-3">Branch / SHA</th>
+                <th class="py-2 px-3">Status</th>
+                <th class="py-2 px-3 text-right">Duration</th>
+                <th class="py-2 px-4 text-right">Finished</th>
+              </tr>
+            </thead>
+            <tbody id="builds-tbody" class="divide-y divide-ink-700/70 tabular-nums"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 bg-ink-900 border border-ink-700 rounded-md p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-semibold text-slate-100">Build Duration (Last 10)</h2>
+            <p class="text-xs font-mono text-slate-400">Target SLO &lt; 4m 00s</p>
+          </div>
+          <span class="text-xs font-mono text-emeraldops-400">avg 3m 18s</span>
+        </div>
+        <svg viewBox="0 0 360 130" class="w-full h-36 bg-ink-950 border border-ink-700 rounded" role="img" aria-label="Build duration bar chart">
+          <line x1="0" y1="38" x2="360" y2="38" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3" opacity="0.75" />
+          <text x="8" y="32" fill="#fbbf24" font-size="9" font-family="JetBrains Mono, monospace">4m 00s SLO</text>
+          <rect x="18" y="56" width="22" height="62" rx="2" fill="#34d399" />
+          <rect x="52" y="48" width="22" height="70" rx="2" fill="#34d399" />
+          <rect x="86" y="24" width="22" height="94" rx="2" fill="#f43f5e" />
+          <rect x="120" y="60" width="22" height="58" rx="2" fill="#34d399" />
+          <rect x="154" y="52" width="22" height="66" rx="2" fill="#34d399" />
+          <rect x="188" y="44" width="22" height="74" rx="2" fill="#34d399" />
+          <rect x="222" y="30" width="22" height="88" rx="2" fill="#f59e0b" />
+          <rect x="256" y="58" width="22" height="60" rx="2" fill="#34d399" />
+          <rect x="290" y="50" width="22" height="68" rx="2" fill="#34d399" />
+          <rect x="324" y="64" width="22" height="54" rx="2" fill="#34d399" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- Bottom Row: Terminal Log + Flaky Tests & Deploy History -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div class="lg:col-span-7 bg-ink-900 border border-ink-700 rounded-md overflow-hidden">
+        <div class="px-4 py-3 border-b border-ink-700 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <h2 id="log-title" class="text-sm font-semibold text-slate-100">Build Log · #4821</h2>
+            <span id="log-status" class="text-xs font-mono text-rose-400">FAILED</span>
+          </div>
+          <span class="text-xs font-mono text-slate-400">runner-linux-04</span>
+        </div>
+        <pre id="build-log" class="p-4 bg-ink-950 font-mono text-xs text-slate-300 overflow-x-auto max-h-64 overflow-y-auto dark-scroll leading-relaxed"></pre>
+      </div>
+
+      <div class="lg:col-span-5 space-y-6">
+        <div class="bg-ink-900 border border-ink-700 rounded-md p-4">
+          <h2 class="text-sm font-semibold text-slate-100 mb-3">Flaky Tests (7d)</h2>
+          <ul class="space-y-2 text-xs font-mono">
+            <li class="flex items-center justify-between"><span class="text-slate-200 truncate">checkout/payment_retry.spec.ts</span><span class="text-rose-400 tabular-nums">14.2%</span></li>
+            <li class="flex items-center justify-between"><span class="text-slate-200 truncate">auth/oauth_pkce_timeout.test.go</span><span class="text-amber-300 tabular-nums">6.8%</span></li>
+            <li class="flex items-center justify-between"><span class="text-slate-200 truncate">search/index_race.spec.ts</span><span class="text-amber-300 tabular-nums">4.1%</span></li>
+          </ul>
+        </div>
+        <div class="bg-ink-900 border border-ink-700 rounded-md p-4">
+          <h2 class="text-sm font-semibold text-slate-100 mb-3">Deploy History</h2>
+          <ul class="space-y-2 text-xs font-mono tabular-nums">
+            <li class="flex items-center justify-between"><span class="text-emeraldops-400">prod-us-east</span><span class="text-slate-300">v2.14.8 · #4820</span><span class="text-slate-400">18m ago</span></li>
+            <li class="flex items-center justify-between"><span class="text-emeraldops-400">prod-eu-west</span><span class="text-slate-300">v2.14.8 · #4820</span><span class="text-slate-400">21m ago</span></li>
+            <li class="flex items-center justify-between"><span class="text-slate-300">staging-all</span><span class="text-slate-300">v2.14.9 · #4822</span><span class="text-slate-400">4m ago</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const builds = [
+      { id: '#4822', branch: 'main · 9f2a1c', status: 'PASS', dur: '2m 54s', ago: '4m ago', log: '[04:42:10] Step 1/4: checkout @ 9f2a1c\n[04:42:18] Step 2/4: pnpm install --frozen-lockfile (cached)\n[04:43:44] Step 3/4: vitest run (412 passed, 0 failed)\n[04:45:04] Step 4/4: docker push ghcr.io/acme/core:9f2a1c\n[04:45:04] Build #4822 succeeded in 2m 54s' },
+      { id: '#4821', branch: 'feat/retry · 4b8e0d', status: 'FAIL', dur: '4m 48s', ago: '12m ago', log: '[04:31:02] Step 1/4: checkout @ 4b8e0d\n[04:31:15] Step 2/4: pnpm install --frozen-lockfile\n[04:34:50] Step 3/4: vitest run\n  FAIL checkout/payment_retry.spec.ts > retries 503 upstream\n  Expected: 200, Received: 504 (timeout 5000ms)\n[04:35:50] Error: Process exited with code 1' },
+      { id: '#4820', branch: 'main · 7c11a9', status: 'PASS', dur: '3m 12s', ago: '24m ago', log: '[04:18:00] Step 1/4: checkout @ 7c11a9\n[04:20:10] Step 3/4: vitest run (412 passed)\n[04:21:12] Deployed v2.14.8 to prod-us-east & prod-eu-west' },
+      { id: '#4819', branch: 'fix/pkce · 2e90f1', status: 'WARN', dur: '4m 15s', ago: '41m ago', log: '[04:01:10] Step 1/4: checkout @ 2e90f1\n[04:04:40] WARN: auth/oauth_pkce_timeout.test.go retried (1/3)\n[04:05:25] Build #4819 passed with warnings' },
+      { id: '#4818', branch: 'main · 1a04d7', status: 'PASS', dur: '3m 05s', ago: '1h ago', log: '[03:40:00] Build #4818 succeeded in 3m 05s' },
+      { id: '#4817', branch: 'chore/deps · 8d33c2', status: 'PASS', dur: '3m 28s', ago: '2h ago', log: '[02:55:12] Build #4817 succeeded in 3m 28s' },
+      { id: '#4816', branch: 'main · 6c44e2', status: 'PASS', dur: '2m 59s', ago: '3h ago', log: '[01:48:05] Build #4816 succeeded in 2m 59s' },
+      { id: '#4815', branch: 'feat/idx · 5a10f8', status: 'PASS', dur: '3m 19s', ago: '4h ago', log: '[00:50:19] Build #4815 succeeded in 3m 19s' }
+    ];
+
+    let selectedBuild = '#4821';
+    function renderBuilds() {
+      const tbody = document.getElementById('builds-tbody');
+      tbody.innerHTML = builds.map(b => {
+        const sel = b.id === selectedBuild;
+        const cls = b.status === 'PASS' ? 'text-emeraldops-400' : b.status === 'FAIL' ? 'text-rose-400' : 'text-amber-300';
+        return `<tr data-id="${b.id}" tabindex="0" class="cursor-pointer ${sel ? 'bg-ink-800/90' : 'hover:bg-ink-850'}">
+          <td class="py-2 px-4 font-medium text-slate-100">${b.id}</td>
+          <td class="py-2 px-3 text-slate-300">${b.branch}</td>
+          <td class="py-2 px-3 ${cls}">${b.status}</td>
+          <td class="py-2 px-3 text-right text-slate-200">${b.dur}</td>
+          <td class="py-2 px-4 text-right text-slate-400">${b.ago}</td>
+        </tr>`;
+      }).join('');
+      tbody.querySelectorAll('tr').forEach(r => r.addEventListener('click', () => selectBuild(r.dataset.id)));
+    }
+
+    function selectBuild(id) {
+      selectedBuild = id;
+      const b = builds.find(x => x.id === id);
+      if (!b) return;
+      document.getElementById('log-title').textContent = `Build Log · ${b.id}`;
+      const st = document.getElementById('log-status');
+      st.textContent = b.status === 'PASS' ? 'PASSED' : b.status === 'FAIL' ? 'FAILED' : 'WARNING';
+      st.className = 'text-xs font-mono ' + (b.status === 'PASS' ? 'text-emeraldops-400' : b.status === 'FAIL' ? 'text-rose-400' : 'text-amber-300');
+      document.getElementById('build-log').textContent = b.log;
+      renderBuilds();
+    }
+
+    document.getElementById('rerun-btn').addEventListener('click', (e) => {
+      e.target.textContent = 'Build Queued';
+      setTimeout(() => { e.target.textContent = 'Trigger Build'; }, 1500);
+    });
+
+    selectBuild('#4821');
+  </script>
+</body>
+</html>

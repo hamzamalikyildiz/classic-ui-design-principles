@@ -2,3 +2,4 @@
 
 - `run2/`: pilot, 10 pairs, one Sonnet judge, 1 fix round, Haiku generators. Indicative only.
 - `run3/`: protocol v2 (see `../PROTOCOL.md`): 20 pairs, 5 persona judges, 2 fix rounds. `RESULTS.md` has the numbers and caveats; `skill/` and `noskill/` hold the generated pages; `verdicts/` and `maps/` let anyone re-score with `python bench/score.py`.
+- `run4/`: cross-model v6 run (post-content-floor refactor, commit `577491a`): 15 pairs across all 3 brief types (`v,r,m`), Gemini 4 Hydrogen Low generators (2 fix rounds), 5 Gemini 4 Neon Medium persona judges (75 blind votes). See `run4/RESULTS.md`.

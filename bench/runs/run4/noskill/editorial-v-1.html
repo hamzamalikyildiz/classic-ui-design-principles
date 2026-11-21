@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Grammar of Contours — Meridian</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#FAF8F4',
+            ink: '#1C1B18',
+            muted: '#66625B',
+            rule: '#E4DFD5',
+            accent: '#9E3E22',
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'Georgia', 'serif'],
+            serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .dropcap::first-letter {
+      float: left;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 3.75rem;
+      line-height: 0.85;
+      padding-right: 0.6rem;
+      padding-top: 0.25rem;
+      color: #9E3E22;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-serif antialiased selection:bg-accent/15">
+  <header class="border-b border-rule">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#" class="font-display text-2xl font-bold tracking-tight">MERIDIAN</a>
+      <nav class="hidden sm:flex gap-7 font-sans text-xs uppercase tracking-[0.14em] text-muted">
+        <a href="#" class="hover:text-ink transition-colors">Cartography</a>
+        <a href="#" class="hover:text-ink transition-colors">Essays</a>
+        <a href="#" class="hover:text-ink transition-colors">Field Notes</a>
+        <a href="#" class="hover:text-ink transition-colors">Archive</a>
+      </nav>
+      <span class="font-sans text-xs text-muted">Issue 42</span>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 pt-12 pb-20">
+    <div class="text-center max-w-2xl mx-auto">
+      <p class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-accent mb-4">
+        Cartography &amp; Perception
+      </p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold leading-[1.12] tracking-tight mb-5">
+        The Grammar of Contours: How Maps Teach Us to See Distance
+      </h1>
+      <p class="text-lg sm:text-xl text-muted leading-relaxed mb-7">
+        Every line on a topographic sheet is an argument about what matters on the ground—and what can be safely left out.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-sans text-xs text-muted border-y border-rule py-3">
+        <span>By <strong class="text-ink font-medium">Clara Lindqvist</strong></span>
+        <span>•</span>
+        <span>October 14, 2026</span>
+        <span>•</span>
+        <span>7 min read</span>
+      </div>
+    </div>
+
+    <figure class="my-10">
+      <div class="bg-[#F2EFE8] border border-rule rounded-sm p-4 sm:p-6">
+        <svg viewBox="0 0 800 380" class="w-full h-auto block" role="img" aria-label="Topographic contour map illustration">
+          <rect width="800" height="380" fill="#F6F3EC" />
+          <!-- Grid -->
+          <g stroke="#E2DDD2" stroke-width="1">
+            <line x1="160" y1="0" x2="160" y2="380" />
+            <line x1="320" y1="0" x2="320" y2="380" />
+            <line x1="480" y1="0" x2="480" y2="380" />
+            <line x1="640" y1="0" x2="640" y2="380" />
+            <line x1="0" y1="95" x2="800" y2="95" />
+            <line x1="0" y1="190" x2="800" y2="190" />
+            <line x1="0" y1="285" x2="800" y2="285" />
+          </g>
+          <!-- Contour rings -->
+          <g fill="none" stroke="#8C7B65" stroke-width="1.4" opacity="0.75">
+            <path d="M90,320 C140,250 220,270 280,210 C340,150 430,170 500,120 C570,70 660,100 720,60" />
+            <path d="M120,335 C175,275 245,290 305,235 C365,180 450,195 520,145 C590,95 675,120 735,85" />
+            <path d="M160,350 C215,300 280,315 335,260 C395,205 475,215 545,170 C610,125 690,145 750,115" />
+            <ellipse cx="470" cy="185" rx="145" ry="82" transform="rotate(-12 470 185)" />
+            <ellipse cx="470" cy="185" rx="108" ry="58" transform="rotate(-12 470 185)" />
+            <ellipse cx="470" cy="185" rx="70" ry="36" transform="rotate(-12 470 185)" stroke="#9E3E22" stroke-width="1.8" />
+            <ellipse cx="470" cy="185" rx="34" ry="17" transform="rotate(-12 470 185)" stroke="#9E3E22" stroke-width="1.8" />
+          </g>
+          <!-- River -->
+          <path d="M40,80 C130,110 170,180 250,195 C330,210 350,290 440,325 C510,350 610,335 740,355" fill="none" stroke="#3B6E8C" stroke-width="2.5" />
+          <!-- Trail -->
+          <path d="M110,295 C195,260 270,220 355,205 C415,195 450,185 470,185" fill="none" stroke="#9E3E22" stroke-width="2" stroke-dasharray="6 5" />
+          <circle cx="470" cy="185" r="4.5" fill="#9E3E22" />
+          <text x="482" y="182" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1C1B18">SUMMIT 1,420m</text>
+          <!-- Compass -->
+          <g transform="translate(720, 310)">
+            <circle cx="0" cy="0" r="24" fill="#FAF8F4" stroke="#C9C2B4" stroke-width="1" />
+            <polygon points="0,-16 4,0 0,-3 -4,0" fill="#9E3E22" />
+            <polygon points="0,16 4,0 0,3 -4,0" fill="#8C7B65" />
+            <text x="-3.5" y="-27" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#1C1B18">N</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption class="font-sans text-xs text-muted mt-2.5 flex justify-between gap-4">
+        <span>Elevation intervals compress three-dimensional terrain into readable rhythm.</span>
+        <span class="shrink-0">Scale 1:25,000</span>
+      </figcaption>
+    </figure>
+
+    <article class="space-y-6 text-[18px] leading-[1.78]">
+      <p class="dropcap">
+        Before a hiker ever steps onto a ridge, the ridge has already been translated into ink. A contour line is an act of disciplined imagination: it asks you to picture a horizontal slice through a mountain, repeated every twenty vertical meters, until the slope reveals its steepness by how tightly the lines crowd together.
+      </p>
+
+      <p>
+        Digital navigation has made it effortless to follow a glowing blue dot across a screen, yet something subtle is lost when the map centers itself around us. A printed sheet refuses to rotate when we turn our shoulders. It insists that we orient ourselves to north, to the valley floor, and to the broader geometry of the watershed.
+      </p>
+
+      <blockquote class="my-9 pl-6 border-l-2 border-accent font-display italic text-2xl leading-snug text-ink">
+        “A good map does not tell you where you are; it teaches you how to ask where you stand in relation to everything else.”
+      </blockquote>
+
+      <h2 class="font-display text-2xl font-bold pt-2">The Art of Omission</h2>
+      <p>
+        Cartographers have a word for what they leave out: generalization. If every boulder, footpath, and seasonal creek appeared at full fidelity, the page would collapse into unreadable noise. Clarity depends on editing. A map is always a compromise between truthfulness and legibility.
+      </p>
+
+      <aside class="bg-[#F2EFE8] border border-rule p-5 my-8 rounded-sm">
+        <p class="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-accent mb-1.5">Field Note</p>
+        <p class="text-sm leading-relaxed text-muted">
+          In 19th-century alpine surveys, engravers used hachures—short, directional strokes—to convey slope angle before standardized contour intervals became universal.
+        </p>
+      </aside>
+
+      <p>
+        When we unfold a paper map on a windy pass, we are reading centuries of visual convention: blue for water, brown for relief, dashed lines for footpaths. Learning that grammar turns a flat sheet into a three-dimensional room you can walk through with your eyes.
+      </p>
+    </article>
+
+    <section class="mt-14 pt-8 border-t border-rule">
+      <p class="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-muted mb-4">Further Reading</p>
+      <div class="grid sm:grid-cols-2 gap-6">
+        <a href="#" class="group block">
+          <p class="font-sans text-xs text-accent mb-1">Archive</p>
+          <h3 class="font-display text-lg font-bold group-hover:text-accent transition-colors">
+            Why Sea Charts Still Carry Soundings in Fathoms
+          </h3>
+        </a>
+        <a href="#" class="group block">
+          <p class="font-sans text-xs text-accent mb-1">Field Notes</p>
+          <h3 class="font-display text-lg font-bold group-hover:text-accent transition-colors">
+            Walking the Old Parish Boundaries of Somerset
+          </h3>
+        </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

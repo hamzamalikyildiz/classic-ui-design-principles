@@ -1,0 +1,11 @@
+Build one web page.
+Brief: A dashboard for monitoring servers.
+
+Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to <WORKDIR>\raw\skill\technical-v-1.html and reply with that path only.
+
+Do NOT use the Skill tool.
+First read <SKILL_DIR>\SKILL.md and the files it tells you to read (mood technical: moods\technical.md, reference\visual-quality.md; reference\rules.md when fixing findings). Follow it. Do not read anything else in the skill folder (bench/ is off limits).
+When the page is done run (with PYTHONIOENCODING=utf-8 or python -X utf8):
+  "<PYTHON>" "<SKILL_DIR>\scripts\uitools.py" audit <file> --mood technical
+  "<PYTHON>" "<SKILL_DIR>\scripts\render.py" <file> --out "<WORKDIR>\shots_gen\skill-technical-v-1.png" --check
+Open the PNG with the Read tool. Fix every WARN and anything empty, clipped, overlapping or broken with the smallest edits. Repeat audit and render after fixes. At most 2 fix rounds.

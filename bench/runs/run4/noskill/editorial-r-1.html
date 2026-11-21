@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Quiet Return of the Paper Map — The Compass Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F9F7F2',
+            ink: '#181816',
+            slate: '#5F5D57',
+            border: '#E2DDD2',
+            forest: '#2B4C3F',
+          },
+          fontFamily: {
+            display: ['"Instrument Serif"', 'Georgia', 'serif'],
+            body: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    .drop-cap::first-letter {
+      float: left;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 4.2rem;
+      line-height: 0.8;
+      padding-right: 0.55rem;
+      padding-top: 0.2rem;
+      color: #2B4C3F;
+    }
+  </style>
+</head>
+<body class="bg-cream text-ink font-body antialiased">
+  <!-- Masthead & Section Nav -->
+  <header class="border-b border-border">
+    <div class="max-w-5xl mx-auto px-6 pt-5 pb-3 flex items-center justify-between">
+      <span class="font-sans text-[11px] uppercase tracking-[0.16em] text-slate">Vol. XIV • Autumn</span>
+      <a href="#" class="font-display text-3xl tracking-tight">The Compass Review</a>
+      <a href="#newsletter" class="font-sans text-[11px] uppercase tracking-[0.16em] text-forest font-semibold hover:underline">Subscribe</a>
+    </div>
+    <nav class="max-w-5xl mx-auto px-6 py-2.5 border-t border-border/70 flex justify-center gap-6 sm:gap-9 font-sans text-xs uppercase tracking-[0.14em] text-slate">
+      <a href="#" class="text-ink font-medium">Essays</a>
+      <a href="#" class="hover:text-ink transition-colors">Travel</a>
+      <a href="#" class="hover:text-ink transition-colors">Design</a>
+      <a href="#" class="hover:text-ink transition-colors">Books</a>
+      <a href="#" class="hover:text-ink transition-colors">Dispatches</a>
+    </nav>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 pt-12 pb-16">
+    <!-- Kicker, Headline, Standfirst, Byline -->
+    <div class="text-center max-w-2xl mx-auto">
+      <p class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-forest mb-3">
+        Long Read • Material Culture
+      </p>
+      <h1 class="font-display text-5xl sm:text-6xl leading-[1.04] tracking-tight mb-5">
+        The Quiet Return of the Paper Map
+      </h1>
+      <p class="text-xl text-slate leading-relaxed mb-6">
+        In an era of turn-by-turn voice prompts, hikers, cyclists, and city wanderers are unfolding creased sheets again—not out of nostalgia, but to reclaim a sense of place.
+      </p>
+      <div class="font-sans text-xs text-slate flex items-center justify-center gap-3 pb-6 border-b border-border">
+        <span>By <strong class="text-ink font-medium">Julian Mercer</strong></span>
+        <span>•</span>
+        <span>Illustrations by <strong class="text-ink font-medium">Studio Nori</strong></span>
+        <span>•</span>
+        <span>11 min read</span>
+      </div>
+    </div>
+
+    <!-- Hero Illustration with Caption -->
+    <figure class="my-10">
+      <div class="bg-[#EFECE3] border border-border p-4 sm:p-6">
+        <svg viewBox="0 0 820 400" class="w-full h-auto block" role="img" aria-label="Folded paper map with route and compass">
+          <rect width="820" height="400" fill="#EFECE3" />
+          <!-- Folded map panels -->
+          <polygon points="80,65 290,45 290,340 80,355" fill="#FAF8F2" stroke="#D5CFC2" stroke-width="1.5" />
+          <polygon points="290,45 520,70 520,355 290,340" fill="#F3EFE5" stroke="#D5CFC2" stroke-width="1.5" />
+          <polygon points="520,70 740,50 740,335 520,355" fill="#FAF8F2" stroke="#D5CFC2" stroke-width="1.5" />
+          <!-- Topographic lines -->
+          <g fill="none" stroke="#B7AF9E" stroke-width="1.2">
+            <path d="M100,260 C160,210 230,240 290,190 C360,130 440,180 520,145 C590,115 660,150 720,110" />
+            <path d="M100,295 C170,255 235,275 290,230 C365,170 445,215 520,185 C595,155 665,185 720,150" />
+            <ellipse cx="405" cy="215" rx="75" ry="42" />
+            <ellipse cx="405" cy="215" rx="45" ry="24" />
+          </g>
+          <!-- River -->
+          <path d="M120,110 C190,140 230,190 290,210 C350,230 430,285 520,275 C600,265 655,235 715,250" fill="none" stroke="#4D7C8A" stroke-width="3" />
+          <!-- Red route -->
+          <path d="M150,300 C210,270 250,235 290,215 C340,190 375,215 405,215 C460,215 490,175 560,160 C620,148 665,135 695,125" fill="none" stroke="#2B4C3F" stroke-width="2.4" stroke-dasharray="7 5" />
+          <circle cx="150" cy="300" r="5" fill="#2B4C3F" />
+          <circle cx="695" cy="125" r="5" fill="#B84A32" />
+        </svg>
+      </div>
+      <figcaption class="font-sans text-xs text-slate mt-2.5 leading-relaxed">
+        A creased sheet holds an entire valley in view at once, letting the eye trace ridgelines and river bends without zooming.
+      </figcaption>
+    </figure>
+
+    <!-- Body with Drop Cap & Pull Quote -->
+    <article class="space-y-6 text-[19px] leading-[1.78]">
+      <p class="drop-cap">
+        At a small outdoor shop in Kendal, the clerk keeps a wooden rack of folded Ordnance Survey maps beside the register. Five years ago, he told me, those shelves gathered dust while customers asked only for GPX files and phone mounts. Lately, the paper sheets are moving again—bought by twenty-somethings planning weekend traverses and by commuters who simply want to learn the names of the hills outside their train window.
+      </p>
+      <p>
+        The appeal is not anti-technology. Almost everyone carrying a paper map also carries a smartphone in their pack. What has changed is the recognition that a five-inch screen is a keyhole. It excels at answering <em>what is the next turn?</em>, yet it struggles to answer <em>what kind of country am I in?</em>
+      </p>
+
+      <blockquote class="my-10 py-6 border-y border-border text-center font-display italic text-3xl leading-snug text-forest">
+        “On paper, the whole landscape stays put while you think.”
+      </blockquote>
+
+      <p>
+        When you spread a map across a kitchen table the night before a walk, you notice relationships that a search bar hides: how a quiet lane shadows a Roman road, or why a cluster of farms sits just above the flood line. Paper invites lingering. It rewards curiosity with context.
+      </p>
+    </article>
+
+    <!-- Related Stories -->
+    <section class="mt-14 pt-8 border-t border-border">
+      <h2 class="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-slate mb-5">Related Stories</h2>
+      <div class="grid sm:grid-cols-3 gap-6">
+        <a href="#" class="group block">
+          <p class="font-sans text-[11px] uppercase tracking-wider text-forest mb-1">Design</p>
+          <h3 class="font-display text-xl leading-snug group-hover:underline">The Typefaces Built for Mountain Signs</h3>
+        </a>
+        <a href="#" class="group block">
+          <p class="font-sans text-[11px] uppercase tracking-wider text-forest mb-1">Travel</p>
+          <h3 class="font-display text-xl leading-snug group-hover:underline">Crossing the Pyrenees Without a Charger</h3>
+        </a>
+        <a href="#" class="group block">
+          <p class="font-sans text-[11px] uppercase tracking-wider text-forest mb-1">Books</p>
+          <h3 class="font-display text-xl leading-snug group-hover:underline">An Atlas of Islands That Never Existed</h3>
+        </a>
+      </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section id="newsletter" class="mt-14 bg-[#EFECE3] border border-border p-7 sm:p-9 text-center">
+      <p class="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-forest mb-2">Weekly Dispatch</p>
+      <h2 class="font-display text-3xl mb-2">Read slowly, every Sunday</h2>
+      <p class="text-slate text-base max-w-md mx-auto mb-5">
+        One long-form essay on craft, landscape, and attention—delivered to your inbox.
+      </p>
+      <form class="flex flex-col sm:flex-row gap-2.5 max-w-md mx-auto" onsubmit="event.preventDefault();">
+        <input type="email" placeholder="you@example.com" aria-label="Email address" class="flex-1 bg-cream border border-border px-3.5 py-2.5 font-sans text-sm focus:outline-none focus:border-forest" />
+        <button type="submit" class="bg-forest text-cream font-sans text-xs uppercase tracking-[0.14em] font-semibold px-5 py-2.5 hover:bg-ink transition-colors">
+          Subscribe
+        </button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
