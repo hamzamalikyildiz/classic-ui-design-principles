@@ -300,6 +300,8 @@ class RenderOptions:
     states: list | None = None
     motion: bool = False
     motion_trigger: str | None = None
+    format: str = 'text'
+    fail_on: str = 'none'
 
 
 def _coerce_options(opts):
@@ -1651,6 +1653,86 @@ def _count_severities(findings):
     return fails, warns, infos
 
 
+def _extract_selector(msg):
+    """Best-effort extraction of a CSS selector from a finding message, or None."""
+    if not isinstance(msg, str):
+        return None
+    for pat in (
+        r'selector[:=]\s*[`\'"]?([^\s`\'",;]+)',
+        r'`([#.\[][^`]+)`',
+        r'(?:^|\s)([#\.][A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]+)*)',
+    ):
+        m = re.search(pat, msg)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _build_json_report(results, single_target=None):
+    """Build a structured JSON-serializable report dict from route results or a single capture."""
+    if single_target is not None:
+        r = single_target
+        items = [{
+            'route': r.get('route') or r.get('url') or r.get('html') or 'page',
+            'viewport': r.get('viewport') or f"{r.get('width', 0)}x{r.get('height', 0)}",
+            'state': r.get('state') or 'default',
+            'width': r.get('width', 0),
+            'height': r.get('height', 0),
+            'scroll_height': r.get('scroll_height', 0),
+            'out': r.get('out'),
+            'findings': r.get('findings') or [],
+        }]
+    else:
+        items = results
+
+    total_fail = 0
+    total_warn = 0
+    total_info = 0
+    captures = []
+    findings_out = []
+
+    for item in items:
+        item_findings = item.get('findings') or []
+        f_cnt, w_cnt, i_cnt = _count_severities(item_findings)
+        total_fail += f_cnt
+        total_warn += w_cnt
+        total_info += i_cnt
+        captures.append({
+            'route': item.get('route'),
+            'viewport': item.get('viewport'),
+            'state': item.get('state'),
+            'width': item.get('width'),
+            'height': item.get('height'),
+            'scroll_height': item.get('scroll_height'),
+            'out': item.get('out'),
+        })
+        for sev, rule, msg in item_findings:
+            findings_out.append({
+                'route': item.get('route'),
+                'viewport': item.get('viewport'),
+                'state': item.get('state'),
+                'rule': rule,
+                'severity': sev,
+                'message': msg,
+                'selector': _extract_selector(msg),
+            })
+
+    return {
+        'summary': {'FAIL': total_fail, 'WARN': total_warn, 'INFO': total_info},
+        'captures': captures,
+        'findings': findings_out,
+    }
+
+
+def _should_fail(summary_counts, fail_on):
+    """Return True if the exit code should be non-zero for the given fail_on policy."""
+    if fail_on == 'fail':
+        return summary_counts.get('FAIL', 0) > 0
+    if fail_on == 'warn':
+        return summary_counts.get('FAIL', 0) > 0 or summary_counts.get('WARN', 0) > 0
+    return False
+
+
 def _write_route_check_file(route_dir, route_name, route_path, route_results):
     """Write per-route findings summary to shots/<route>/check.txt."""
     check_path = route_dir / 'check.txt'
@@ -1669,13 +1751,40 @@ def _write_route_check_file(route_dir, route_name, route_path, route_results):
 
 def _write_report_md(out_dir, results):
     """Write shots/REPORT.md containing the Markdown summary table and detailed findings list."""
-    report_path = pathlib.Path(out_dir) / 'REPORT.md'
+    out_path = pathlib.Path(out_dir)
+    report_path = out_path / 'REPORT.md'
+    total_fails = 0
+    total_warns = 0
+    total_infos = 0
+    for item in results:
+        f_cnt, w_cnt, i_cnt = _count_severities(item['findings'])
+        total_fails += f_cnt
+        total_warns += w_cnt
+        total_infos += i_cnt
+
     lines = [
         '# Multi-Route UI Capture & Check Report',
         '',
+        f'**Summary:** FAIL: {total_fails} | WARN: {total_warns} | INFO: {total_infos}',
+        '',
+    ]
+
+    artifacts = []
+    if (out_path / 'contact-sheet.png').is_file():
+        artifacts.append('[contact-sheet.png](contact-sheet.png)')
+    if (out_path / 'filmstrip.png').is_file():
+        artifacts.append('[filmstrip.png](filmstrip.png)')
+    for fs in sorted(out_path.glob('*/filmstrip.png')):
+        rel_fs = fs.relative_to(out_path).as_posix()
+        artifacts.append(f'[{rel_fs}]({rel_fs})')
+    if artifacts:
+        lines.append('**Artifacts:** ' + ' | '.join(artifacts))
+        lines.append('')
+
+    lines.extend([
         '| Route | State | Viewport | Size | FAIL | WARN | INFO | Screenshot |',
         '| --- | --- | --- | --- | --- | --- | --- | --- |',
-    ]
+    ])
     for item in results:
         fails, warns, infos = _count_severities(item['findings'])
         rel_shot = f"{item['route']}/{item['state']}-{item['viewport']}.png"
@@ -1997,11 +2106,18 @@ def render_routes(opts, browser=None):
             if owns_context and context is not None:
                 context.close()
 
-        report_path = _write_report_md(out_dir, all_results)
         contact_sheet_path = _build_contact_sheet(all_results, out_dir / 'contact-sheet.png')
+        report_path = _write_report_md(out_dir, all_results)
+        json_report = _build_json_report(all_results)
+        report_json_path = None
+        if getattr(opts, 'format', 'text') == 'json':
+            report_json_path = out_dir / 'report.json'
+            report_json_path.write_text(json.dumps(json_report, indent=2), encoding='utf-8')
         return {
             'out_dir': str(out_dir),
             'report': str(report_path),
+            'report_json': str(report_json_path) if report_json_path else None,
+            'json_report': json_report,
             'contact_sheet': str(contact_sheet_path) if contact_sheet_path else None,
             'results': all_results,
             'routes': route_summaries,
@@ -2057,6 +2173,10 @@ def build_parser():
                     help='run motion & animation audit (layout properties, reduced-motion, CLS, feedback latency, long UI transitions, infinite motion) and capture filmstrip frames')
     ap.add_argument('--motion-trigger', metavar='SELECTOR',
                     help='CSS selector of interactive element to trigger during --motion audit (defaults to first visible [data-motion-trigger], button, [role=tab])')
+    ap.add_argument('--format', choices=('text', 'json'), default='text',
+                    help='output format for findings and summary (default: text)')
+    ap.add_argument('--fail-on', choices=('none', 'fail', 'warn'), default='none',
+                    help='exit with code 1 when findings reach this severity (default: none)')
     ap.epilog = (
         'Record a session:  python -m playwright codegen --save-storage=auth.json http://localhost:3000/login\n'
         'then:              python scripts/render.py --url http://localhost:3000/dashboard --storage-state auth.json --out p.png\n'
@@ -2102,6 +2222,8 @@ def parse_options(argv=None):
             states=states,
             motion=a.motion,
             motion_trigger=a.motion_trigger,
+            format=a.format,
+            fail_on=a.fail_on,
         )
 
     if bool(a.html) == bool(a.url):
@@ -2131,6 +2253,8 @@ def parse_options(argv=None):
         states=states,
         motion=a.motion,
         motion_trigger=a.motion_trigger,
+        format=a.format,
+        fail_on=a.fail_on,
     )
 
 
@@ -2175,19 +2299,31 @@ def main(argv=None):
     opts = parse_options(argv)
     if opts.routes:
         summary = render_routes(opts)
-        for item in summary['results']:
-            for sev, rule, msg in item['findings']:
-                print(f"  [{sev}] {rule}: {msg}")
-            print(f"{item['out']} ({item['width']}x{item['scroll_height']})")
-        print(f"REPORT: {summary['report']}")
-        if summary.get('contact_sheet'):
-            print(f"CONTACT_SHEET: {summary['contact_sheet']}")
+        json_report = summary.get('json_report') or _build_json_report(summary['results'])
+        if opts.format == 'json':
+            print(json.dumps(json_report, indent=2))
+        else:
+            for item in summary['results']:
+                for sev, rule, msg in item['findings']:
+                    print(f"  [{sev}] {rule}: {msg}")
+                print(f"{item['out']} ({item['width']}x{item['scroll_height']})")
+            print(f"REPORT: {summary['report']}")
+            if summary.get('contact_sheet'):
+                print(f"CONTACT_SHEET: {summary['contact_sheet']}")
+        if _should_fail(json_report['summary'], opts.fail_on):
+            sys.exit(1)
         return
     result = render(opts)
-    if opts.check or opts.motion:
-        for sev, rule, msg in result['findings']:
-            print(f"  [{sev}] {rule}: {msg}")
-    print(f"{result['out']} ({result['width']}x{result['scroll_height']})")
+    json_report = _build_json_report([], single_target=result)
+    if opts.format == 'json':
+        print(json.dumps(json_report, indent=2))
+    else:
+        if opts.check or opts.motion:
+            for sev, rule, msg in result['findings']:
+                print(f"  [{sev}] {rule}: {msg}")
+        print(f"{result['out']} ({result['width']}x{result['scroll_height']})")
+    if _should_fail(json_report['summary'], opts.fail_on):
+        sys.exit(1)
 
 
 if __name__ == '__main__':
