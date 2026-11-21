@@ -24,11 +24,10 @@ def rules(issues, rule):
 
 
 class GoldenFalsePositives(unittest.TestCase):
-    """Real-app false-positive cases; marked expectedFailure until Phase A lands."""
+    """Real-app false-positive cases; verified green after Phase A."""
 
-    @unittest.expectedFailure
     def test_scorecard_cross_component_contrast(self):
-        """İP-A3: ScoreBars rendered inside ScoreCard's bg-slate-900 should not FAIL wcag-aa."""
+        """İP-A3/A6: ScoreBars rendered inside ScoreCard's bg-slate-900 should not FAIL wcag-aa."""
         iss = rules(audit_fixture('ScoreCard.tsx'), 'wcag-aa')
         self.assertEqual([i for i in iss if i[0] in ('FAIL', 'WARN')], [])
 
@@ -42,7 +41,6 @@ class GoldenFalsePositives(unittest.TestCase):
         iss = rules(audit_fixture('Actions.tsx'), 'single-primary-cta')
         self.assertEqual([i for i in iss if i[0] in ('FAIL', 'WARN')], [])
 
-    @unittest.expectedFailure
     def test_sidebar_component_no_hero_surface_not_warn(self):
         """İP-A6: Component file (components/Sidebar.tsx) should not emit WARN for no-hero-surface."""
         iss = rules(audit_fixture('components/Sidebar.tsx', mood='trust'), 'no-hero-surface')

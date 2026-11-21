@@ -7,6 +7,15 @@ if _SCRIPTS_DIR not in sys.path:
     sys.path.insert(0, _SCRIPTS_DIR)
 
 from uiignore import apply_ignores, filter_baseline, issue_hash, load_baseline, write_baseline
+from uiroute import (
+    COMPONENT_RULE_NOTE,
+    SCREEN_RULES,
+    VirtualMarkup,
+    compose_route,
+    find_project_root,
+    inline_local_components,
+    is_component_file,
+)
 from uicolor import (
     HEX,
     NAMED,
@@ -839,9 +848,38 @@ def mood_specific(txt, nodes, mood):
     return out
 
 
-def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None, return_suppressed=False):
+def audit(
+    path,
+    grid,
+    tokens,
+    dark_tokens=None,
+    mood=None,
+    txt=None,
+    return_suppressed=False,
+    *,
+    route_mode=False,
+    root_dir=None,
+    tsconfig_path=None,
+):
     if txt is None:
-        txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
+        raw_txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
+    elif isinstance(txt, VirtualMarkup):
+        raw_txt = txt.raw_txt
+    else:
+        raw_txt = txt
+
+    if isinstance(txt, VirtualMarkup):
+        pass
+    elif route_mode:
+        txt = compose_route(path, txt=raw_txt, root_dir=root_dir, tsconfig_path=tsconfig_path)
+    else:
+        suf = pathlib.Path(path).suffix.lower() if path else ''
+        if suf not in ('.html', '.htm', '.css'):
+            txt = inline_local_components(raw_txt, source_path=path, root_dir=root_dir, tsconfig_path=tsconfig_path)
+        else:
+            txt = raw_txt
+
+    component_file = is_component_file(path, txt=raw_txt, route_mode=route_mode)
     masked = mask_non_markup(txt)
     nodes = list(walk(masked))
     issues = []
@@ -1048,9 +1086,12 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None, return_supp
         idx = next((i for i in range(len(anc) - 1, -1, -1) if BLOCK.match(anc[i][0])), None)
         key = anc[idx][3] if idx is not None else -1
         counts.setdefault(key, []).append((line_of(txt, s), b_regions, cond_options))
-    for block_items in counts.values():
+    screen_cta_issue_idxs = set()
+    for block_key, block_items in counts.items():
         lines = _max_simultaneous_ctas(block_items)
         if len(lines) > 1:
+            if block_key == -1:
+                screen_cta_issue_idxs.add(len(issues))
             add('WARN', 'single-primary-cta', f"{len(lines)} solid buttons in one block (lines {lines}); keep 1 solid, rest outline/ghost")
 
     # nested radius: child radius should equal parent radius - parent padding
@@ -1104,20 +1145,67 @@ def audit(path, grid, tokens, dark_tokens=None, mood=None, txt=None, return_supp
         add('INFO', 'skeleton-empty', "list rendering without skeleton/empty state")
     if re.search(r'<(?:html|body)\b', masked, re.I) and not re.search(r'<main\b|role=["\']main', masked, re.I):
         add('WARN', 'landmark-main', 'full page without a <main> landmark; wrap the primary content in <main> (and use <header>/<footer>/<nav>)')
+    if component_file:
+        downgraded = []
+        for idx_i, (sev, r, m) in enumerate(issues):
+            if r in SCREEN_RULES or (r == 'single-primary-cta' and idx_i in screen_cta_issue_idxs):
+                note_m = m if m.endswith(COMPONENT_RULE_NOTE) else m + COMPONENT_RULE_NOTE
+                downgraded.append(('INFO', r, note_m))
+            else:
+                downgraded.append((sev, r, m))
+        issues = downgraded
     if mood in EXPRESSIVE:
         issues = [(('INFO', r, m + ' [relaxed in expressive moods]') if sev != 'INFO' and r in RELAXED else (sev, r, m))
                   for sev, r, m in issues]
-    kept, suppressed, meta = apply_ignores(txt, issues)
+    kept, suppressed, meta = apply_ignores(raw_txt, issues)
     final_issues = kept + meta
     if return_suppressed:
         return final_issues, suppressed
     return final_issues
 
 
+def _expand_routes_glob(patterns, root_dir=None):
+    base = pathlib.Path(root_dir).resolve() if root_dir else pathlib.Path.cwd()
+    found = []
+    seen = set()
+    for pat in patterns:
+        p_obj = pathlib.Path(pat)
+        if p_obj.is_absolute():
+            anchor = pathlib.Path(p_obj.anchor)
+            rel_pat = str(p_obj.relative_to(anchor))
+            matches = sorted(anchor.glob(rel_pat))
+        else:
+            matches = sorted(base.glob(pat))
+        for m in matches:
+            if m.is_file():
+                rm = str(m.resolve())
+                if rm not in seen:
+                    seen.add(rm)
+                    found.append(str(m))
+    return found
+
+
 def cmd_audit(a):
     if a.grid <= 0:
         sys.exit(f"error: --grid must be > 0 (got {a.grid})")
-    missing = [p for p in a.files + (a.css or []) if not pathlib.Path(p).is_file()]
+    route_arg_lists = getattr(a, 'routes', None) or []
+    route_paths = [p for grp in route_arg_lists for p in grp]
+    routes_glob_pats = getattr(a, 'routes_glob', None) or []
+    root_dir = getattr(a, 'root', None)
+    tsconfig_path = getattr(a, 'tsconfig', None)
+
+    if tsconfig_path and not pathlib.Path(tsconfig_path).is_file():
+        sys.exit(f"error: tsconfig not found: {tsconfig_path}")
+
+    glob_routes = _expand_routes_glob(routes_glob_pats, root_dir=root_dir) if routes_glob_pats else []
+    if routes_glob_pats and not glob_routes:
+        sys.exit(f"error: no files matched --routes-glob: {', '.join(routes_glob_pats)}")
+
+    all_routes = list(dict.fromkeys(route_paths + glob_routes))
+    if not a.files and not all_routes:
+        sys.exit("error: provide files, --route, or --routes-glob")
+
+    missing = [p for p in a.files + all_routes + (a.css or []) if not pathlib.Path(p).is_file()]
     if missing:
         sys.exit(f"error: file not found: {', '.join(missing)}")
     css_texts = [pathlib.Path(p).read_text(encoding='utf-8', errors='ignore') for p in (a.css or [])]
@@ -1130,12 +1218,49 @@ def cmd_audit(a):
     write_baseline_flag = getattr(a, 'write_baseline', False)
     baseline_entries = load_baseline(baseline_path) if (baseline_path and not write_baseline_flag) else None
     collected_hashes = []
+    route_summaries = []
 
-    for p in a.files:
+    targets = [(p, False) for p in a.files] + [(p, True) for p in all_routes]
+    for p, is_route in targets:
         p_txt = pathlib.Path(p).read_text(encoding='utf-8', errors='ignore')
-        tokens = {**shared_tokens, **css_tokens([p_txt])}
-        dark_tokens = {**shared_dark, **css_tokens([p_txt], r'\.dark')}
-        iss, suppressed = audit(p, a.grid, tokens, dark_tokens, a.mood, txt=p_txt, return_suppressed=True)
+        if is_route:
+            eff_root = pathlib.Path(root_dir).resolve() if root_dir else find_project_root(p)
+            composed = compose_route(p, txt=p_txt, root_dir=eff_root, tsconfig_path=tsconfig_path)
+            extra_texts = [p_txt] + [
+                pathlib.Path(fp).read_text(encoding='utf-8', errors='ignore')
+                for fp in composed.inlined_files
+                if pathlib.Path(fp).is_file()
+            ]
+            tokens = {**shared_tokens, **css_tokens(extra_texts)}
+            dark_tokens = {**shared_dark, **css_tokens(extra_texts, r'\.dark')}
+            iss, suppressed = audit(
+                p,
+                a.grid,
+                tokens,
+                dark_tokens,
+                a.mood,
+                txt=composed,
+                return_suppressed=True,
+                route_mode=True,
+                root_dir=eff_root,
+                tsconfig_path=tsconfig_path,
+            )
+        else:
+            tokens = {**shared_tokens, **css_tokens([p_txt])}
+            dark_tokens = {**shared_dark, **css_tokens([p_txt], r'\.dark')}
+            iss, suppressed = audit(
+                p,
+                a.grid,
+                tokens,
+                dark_tokens,
+                a.mood,
+                txt=p_txt,
+                return_suppressed=True,
+                root_dir=root_dir,
+                tsconfig_path=tsconfig_path,
+            )
+            composed = None
+
         total_suppressed += len(suppressed)
         if write_baseline_flag:
             for _sev, rule, msg in iss:
@@ -1144,7 +1269,29 @@ def cmd_audit(a):
             filtered, skipped = filter_baseline([(p, sev, rule, msg, p_txt) for sev, rule, msg in iss], baseline_entries)
             iss = [(sev, rule, msg) for _p, sev, rule, msg, _txt in filtered]
             total_baseline_skipped += skipped
-        print(f"== {p}: {len(iss)} issue(s)")
+
+        if is_route and composed is not None:
+            inlined_n = composed.inlined_count
+            print(f"== {p} [inlined {inlined_n} component(s)]: {len(iss)} issue(s)")
+            if composed.inlined_files:
+                rel_inlined = []
+                for fp in composed.inlined_files:
+                    try:
+                        rel_inlined.append(pathlib.Path(fp).resolve().relative_to(eff_root).as_posix())
+                    except ValueError:
+                        rel_inlined.append(fp)
+                print(f"  inlined files: {', '.join(rel_inlined)}")
+            rc = {'FAIL': 0, 'WARN': 0, 'INFO': 0}
+            for sev, _rule, _msg in iss:
+                rc[sev] += 1
+            try:
+                disp_p = pathlib.Path(p).resolve().relative_to(eff_root).as_posix()
+            except ValueError:
+                disp_p = str(p)
+            route_summaries.append((disp_p, rc, inlined_n))
+        else:
+            print(f"== {p}: {len(iss)} issue(s)")
+
         for sev, rule, msg in iss:
             total[sev] += 1
             print(f"  [{sev}] {rule}: {msg}")
@@ -1157,6 +1304,11 @@ def cmd_audit(a):
         write_baseline(target, collected_hashes)
         print(f"\nWrote {len(set(collected_hashes))} baseline entries to {target}")
         sys.exit(0)
+
+    if len(route_summaries) > 1:
+        print("\nROUTE SUMMARY:")
+        for r_name, rc, inl in route_summaries:
+            print(f"  {r_name} | FAIL={rc['FAIL']} WARN={rc['WARN']} INFO={rc['INFO']} | inlined={inl}")
 
     summary = f"\nSUMMARY FAIL={total['FAIL']} WARN={total['WARN']} INFO={total['INFO']}"
     if total_suppressed > 0 or show_suppressed:
@@ -1179,7 +1331,15 @@ def main(argv=None):
     n = sp.add_parser('snap', help='round values to grid')
     n.add_argument('values', type=float, nargs='+'); n.add_argument('--grid', type=int, default=8); n.set_defaults(f=cmd_snap)
     d = sp.add_parser('audit', help='scan HTML/JSX/Vue/CSS files for rule violations')
-    d.add_argument('files', nargs='+')
+    d.add_argument('files', nargs='*')
+    d.add_argument('--route', nargs='+', action='append', dest='routes', metavar='PATH',
+                   help='route entry file(s) to audit with cross-file component inlining')
+    d.add_argument('--routes-glob', action='append', metavar='GLOB',
+                   help='glob pattern for route entry files (e.g. "app/**/page.tsx")')
+    d.add_argument('--root', metavar='DIR',
+                   help='project root directory for @/ and tsconfig path resolution')
+    d.add_argument('--tsconfig', metavar='PATH',
+                   help='path to tsconfig.json for alias path resolution')
     d.add_argument('--grid', type=int, default=8, help='soft grid (default 8); values off the 4px grid are always WARN')
     d.add_argument('--css', nargs='*', help='CSS files with :root tokens, e.g. app/globals.css for shadcn')
     d.add_argument('--mood', choices=['playful', 'trust', 'bold', 'editorial', 'technical'],
