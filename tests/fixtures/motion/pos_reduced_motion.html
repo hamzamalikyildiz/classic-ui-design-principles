@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Positive Motion — Prefers-Reduced-Motion Fallback</title>
+  <style>
+    :root {
+      --dur-base: 220ms;
+      --ease-enter: cubic-bezier(0, 0, .2, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 2rem;
+    }
+    main { max-width: 38rem; margin: 0 auto; }
+    .hero-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      animation: hero-enter var(--dur-base) var(--ease-enter) both;
+    }
+    @keyframes hero-enter {
+      from { opacity: 0.01; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    h1 { font-size: 1.375rem; margin-bottom: 0.5rem; }
+    p { color: #334155; font-size: 0.9375rem; margin-bottom: 1rem; }
+    .btn {
+      min-height: 2.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 80ms cubic-bezier(.2, 0, 0, 1), opacity 120ms linear;
+    }
+    .btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+    .btn:active { transform: scale(0.98); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        animation-duration: 0s !important;
+        transition-duration: 100ms !important;
+        transition-property: opacity, background-color, border-color, color !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero-card" id="hero-card">
+      <h1>Reduced-Motion Safe Entrance</h1>
+      <p>Collapses spatial transform and long keyframe animations immediately when reduced motion is enabled.</p>
+      <button type="button" class="btn" id="verify-btn">Verify Status</button>
+    </section>
+  </main>
+  <script>
+    const btn = document.getElementById('verify-btn');
+    const card = document.getElementById('hero-card');
+    btn.addEventListener('click', () => {
+      card.setAttribute('data-verified', 'true');
+      btn.textContent = 'Status Verified';
+    });
+  </script>
+</body>
+</html>

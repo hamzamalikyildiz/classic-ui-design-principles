@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Negative Motion — High Cumulative Layout Shift (CLS &gt; 0.15)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 1.5rem;
+    }
+    main { max-width: 56rem; margin: 0 auto; }
+    .injected-banner {
+      display: none;
+      width: 100%;
+      height: 360px;
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .injected-banner.visible {
+      display: block;
+    }
+    .content-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.75rem;
+      padding: 2rem;
+      min-height: 420px;
+    }
+    .btn {
+      margin-top: 1rem;
+      min-height: 2.75rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main id="main-root">
+    <div id="late-slot"></div>
+    <div class="injected-banner" id="promo-banner">
+      <h2>Late Unsized Banner Injected Above Content</h2>
+      <p>Pushes the entire primary workspace down by 380px without reserved space, causing CLS &gt; 0.25.</p>
+    </div>
+    <section class="content-card" id="primary-content">
+      <h1>Primary Workspace</h1>
+      <p>Users reading or clicking inside this card experience a severe layout jump when async content inserts above.</p>
+      <button type="button" class="btn" id="shift-btn">Load Async Header Banner</button>
+    </section>
+  </main>
+  <script>
+    const banner = document.getElementById('promo-banner');
+    const slot = document.getElementById('late-slot');
+    const btn = document.getElementById('shift-btn');
+    function triggerShift() {
+      banner.classList.add('visible');
+      const extra = document.createElement('div');
+      extra.style.height = '280px';
+      extra.style.marginBottom = '24px';
+      extra.style.background = '#e0f2fe';
+      extra.style.padding = '16px';
+      extra.textContent = 'Dynamically inserted unsized block causing layout shift';
+      slot.appendChild(extra);
+    }
+    setTimeout(triggerShift, 180);
+    btn.addEventListener('click', triggerShift);
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Positive Motion — Sliding Active Tab Indicator</title>
+  <style>
+    :root {
+      --dur-base: 220ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 2rem;
+    }
+    main { max-width: 36rem; margin: 0 auto; }
+    h1 { font-size: 1.375rem; margin-bottom: 1rem; }
+    .tablist {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #e2e8f0;
+      padding: 0.25rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .tab-pill {
+      position: absolute;
+      top: 0.25rem;
+      bottom: 0.25rem;
+      left: 0.25rem;
+      width: calc((100% - 0.5rem) / 3);
+      background: #ffffff;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+      transition: transform var(--dur-base) var(--ease-standard);
+      transform: translateX(calc(var(--tab, 0) * 100%));
+      pointer-events: none;
+    }
+    .tab {
+      position: relative;
+      z-index: 1;
+      min-height: 2.5rem;
+      border: none;
+      background: transparent;
+      color: #334155;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 0.5rem;
+    }
+    .tab[aria-selected="true"] { color: #0f172a; }
+    .tab:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+    .panel {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      font-size: 0.9375rem;
+      color: #334155;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Pipeline Stage Filter</h1>
+    <div class="tablist" role="tablist" aria-label="Pipeline views" id="tablist">
+      <div class="tab-pill" id="tab-pill" aria-hidden="true"></div>
+      <button type="button" class="tab" role="tab" aria-selected="true" data-idx="0">Overview</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-idx="1">Interviews</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" data-idx="2">Offers</button>
+    </div>
+    <div class="panel" id="tab-panel" role="tabpanel">
+      Showing 24 active candidates in Overview stage.
+    </div>
+  </main>
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const pill = document.getElementById('tab-pill');
+    const panel = document.getElementById('tab-panel');
+    const labels = ['Overview', 'Interviews', 'Offers'];
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const idx = Number(tab.dataset.idx);
+        tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+        pill.style.setProperty('--tab', String(idx));
+        panel.textContent = `Showing ${24 - idx * 7} active candidates in ${labels[idx]} stage.`;
+      });
+    });
+  </script>
+</body>
+</html>
