@@ -156,16 +156,27 @@ class Helpers(unittest.TestCase):
 
 
 class JsPayloads(unittest.TestCase):
+    PAYLOAD_FILES = (
+        ('CHECK_JS', 'check.js'),
+        ('MOBILE_JS', 'mobile.js'),
+        ('INTERACT_JS', 'interact.js'),
+        ('SCROLL_SWEEP_JS', 'sweep.js'),
+    )
+
+    def _read_payload(self, attr, fname):
+        js_path = ROOT / 'scripts' / 'checks' / fname
+        self.assertTrue(js_path.is_file(), f'Missing JS payload file: {js_path}')
+        content = js_path.read_text(encoding='utf-8').strip()
+        self.assertEqual(getattr(rd, attr), content)
+        return content
+
     def test_js_syntax_valid_with_node(self):
+        self.assertEqual(rd.CHECKS_DIR, ROOT / 'scripts' / 'checks')
+        payloads = [(name, self._read_payload(name, fname)) for name, fname in self.PAYLOAD_FILES]
         node = shutil.which('node')
         if not node:
             self.skipTest('node not on PATH')
-        for name, js in (
-            ('CHECK_JS', rd.CHECK_JS),
-            ('MOBILE_JS', rd.MOBILE_JS),
-            ('INTERACT_JS', rd.INTERACT_JS),
-            ('SCROLL_SWEEP_JS', rd.SCROLL_SWEEP_JS),
-        ):
+        for name, js in payloads:
             with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as tf:
                 tf.write(f'const _fn = ({js});\n')
                 path = pathlib.Path(tf.name)
@@ -177,34 +188,39 @@ class JsPayloads(unittest.TestCase):
                 path.unlink(missing_ok=True)
 
     def test_js_invariants(self):
+        check_js = self._read_payload('CHECK_JS', 'check.js')
+        mobile_js = self._read_payload('MOBILE_JS', 'mobile.js')
+        interact_js = self._read_payload('INTERACT_JS', 'interact.js')
+        sweep_js = self._read_payload('SCROLL_SWEEP_JS', 'sweep.js')
+
         # CHECK_JS invariants
-        self.assertIn("cs.webkitLineClamp === 'none'", rd.CHECK_JS)
-        self.assertIn("cs.clipPath === 'inset(50%)'", rd.CHECK_JS)
-        self.assertIn("cs.overflowX !== 'auto' && cs.overflowX !== 'scroll'", rd.CHECK_JS)
-        self.assertIn("position !== 'absolute'", rd.CHECK_JS)
-        self.assertIn("position === 'sticky'", rd.CHECK_JS)
-        self.assertIn("getComputedStyle(ch).position === 'sticky'", rd.CHECK_JS)
-        self.assertIn("position === 'fixed'", rd.CHECK_JS)
-        self.assertIn("col.c.matches('nav') || (col.c.matches('aside') && col.c.querySelector('nav'))", rd.CHECK_JS)
-        self.assertIn('Math.abs(r.top - sib.r.top) < 80', rd.CHECK_JS)
-        self.assertIn('nd.nodeType === 3 && nd.textContent.trim()', rd.CHECK_JS)
+        self.assertIn("cs.webkitLineClamp === 'none'", check_js)
+        self.assertIn("cs.clipPath === 'inset(50%)'", check_js)
+        self.assertIn("cs.overflowX !== 'auto' && cs.overflowX !== 'scroll'", check_js)
+        self.assertIn("position !== 'absolute'", check_js)
+        self.assertIn("position === 'sticky'", check_js)
+        self.assertIn("getComputedStyle(ch).position === 'sticky'", check_js)
+        self.assertIn("position === 'fixed'", check_js)
+        self.assertIn("col.c.matches('nav') || (col.c.matches('aside') && col.c.querySelector('nav'))", check_js)
+        self.assertIn('Math.abs(r.top - sib.r.top) < 80', check_js)
+        self.assertIn('nd.nodeType === 3 && nd.textContent.trim()', check_js)
         for tag in ('svg', 'img', 'canvas', 'video', 'iframe', 'input', 'textarea', 'select'):
-            self.assertIn(f"'{tag}'", rd.CHECK_JS)
-        self.assertIn("document.querySelectorAll('svg')", rd.CHECK_JS)
-        self.assertIn('isHiddenOrRotated', rd.CHECK_JS)
-        self.assertIn('hollow-text', rd.CHECK_JS)
-        self.assertIn('desktop-tiny-text', rd.CHECK_JS)
-        self.assertIn("cs.fill === 'none'", rd.CHECK_JS)
-        self.assertNotIn("if (tag === 'button' && text === ''", rd.CHECK_JS)
+            self.assertIn(f"'{tag}'", check_js)
+        self.assertIn("document.querySelectorAll('svg')", check_js)
+        self.assertIn('isHiddenOrRotated', check_js)
+        self.assertIn('hollow-text', check_js)
+        self.assertIn('desktop-tiny-text', check_js)
+        self.assertIn("cs.fill === 'none'", check_js)
+        self.assertNotIn("if (tag === 'button' && text === ''", check_js)
 
         # INTERACT_JS invariants (focus check runs before button clicks)
-        self.assertLess(rd.INTERACT_JS.index('focusEls'), rd.INTERACT_JS.index('b.click()'))
-        self.assertIn('mo.observe(document.documentElement', rd.INTERACT_JS)
-        self.assertIn('Math.abs(scrollY - y) > 5', rd.INTERACT_JS)
-        self.assertIn('if (scrollY !== y || scrollX !== x) scrollTo(x, y)', rd.INTERACT_JS)
-        self.assertIn("b.getAttribute('aria-disabled') !== 'true'", rd.INTERACT_JS)
-        self.assertNotIn('const focusable =', rd.INTERACT_JS)
-        focus_re = re.search(r'/(.+)/\.test\(cls\)', rd.INTERACT_JS)
+        self.assertLess(interact_js.index('focusEls'), interact_js.index('b.click()'))
+        self.assertIn('mo.observe(document.documentElement', interact_js)
+        self.assertIn('Math.abs(scrollY - y) > 5', interact_js)
+        self.assertIn('if (scrollY !== y || scrollX !== x) scrollTo(x, y)', interact_js)
+        self.assertIn("b.getAttribute('aria-disabled') !== 'true'", interact_js)
+        self.assertNotIn('const focusable =', interact_js)
+        focus_re = re.search(r'/(.+)/\.test\(cls\)', interact_js)
         self.assertIsNotNone(focus_re)
         py_focus_re = re.compile(focus_re.group(1))
         for bad_cls in ('focus:outline-none', 'focus:ring-0', 'focus:outline-0', 'focus:border-transparent'):
@@ -213,12 +229,12 @@ class JsPayloads(unittest.TestCase):
             self.assertIsNotNone(py_focus_re.search(ok_cls), ok_cls)
 
         # SCROLL_SWEEP_JS & MOBILE_JS invariants
-        self.assertIn("behavior: 'instant'", rd.SCROLL_SWEEP_JS)
-        self.assertIn('parseFloat(cs.opacity) !== 0', rd.MOBILE_JS)
-        self.assertIn("e.tagName === 'INPUT' && (e.type || '').toLowerCase() === 'hidden'", rd.MOBILE_JS)
-        self.assertIn('r.height < 36 && r.width <= 120', rd.MOBILE_JS)
-        self.assertIn("e.getAttribute('aria-label') || e.placeholder || e.tagName", rd.MOBILE_JS)
-        self.assertIn('nd.nodeType === 3 && nd.textContent.trim().length > 3', rd.MOBILE_JS)
+        self.assertIn("behavior: 'instant'", sweep_js)
+        self.assertIn('parseFloat(cs.opacity) !== 0', mobile_js)
+        self.assertIn("e.tagName === 'INPUT' && (e.type || '').toLowerCase() === 'hidden'", mobile_js)
+        self.assertIn('r.height < 36 && r.width <= 120', mobile_js)
+        self.assertIn("e.getAttribute('aria-label') || e.placeholder || e.tagName", mobile_js)
+        self.assertIn('nd.nodeType === 3 && nd.textContent.trim().length > 3', mobile_js)
 
     def test_run_axe_handles_script_error(self):
         fake_page = mock.MagicMock()
