@@ -664,5 +664,98 @@ class Regressions(unittest.TestCase):
         self.assertTrue(rules(run(cta_tok, suffix='.html'), 'fitts-primary'))
 
 
+class VariantAwareAudit(unittest.TestCase):
+    def test_branch_labeled_contrast_failure(self):
+        src = (
+            '<button className={cn("px-3 py-1", selected ? "bg-slate-100 text-slate-300" : "bg-slate-900 text-white")}>'
+            'Chip</button>'
+        )
+        iss = rules(run(src), 'wcag-aa')
+        self.assertEqual(len(iss), 1)
+        self.assertEqual(iss[0][0], 'FAIL')
+        self.assertIn('[selected=true] text-slate-300 on bg-slate-100', iss[0][2])
+
+        uncond = '<p className="bg-slate-100 text-slate-300">Static</p>'
+        u_iss = rules(run(uncond), 'wcag-aa')
+        self.assertEqual(len(u_iss), 1)
+        self.assertTrue(u_iss[0][2].startswith('L1 text-slate-300 on bg-slate-100'))
+
+        grad_branch = (
+            '<div className={cn("p-4", isHero ? "bg-gradient-to-r from-yellow-300 to-pink-600" : "bg-slate-900")}>'
+            '<p className="text-white">Banner</p></div>'
+        )
+        g_iss = rules(run(grad_branch), 'wcag-aa')
+        self.assertEqual(len(g_iss), 1)
+        self.assertIn('[isHero=true] text-white on gradient stop from-yellow-300', g_iss[0][2])
+
+    def test_branch_explosion_info_emitted_once_per_node(self):
+        exploded_src = (
+            '<div className={cn(c1 && "p-1", c2 && "m-1", c3 && "w-4", c4 && "h-4")}>x</div>'
+        )
+        iss = rules(run(exploded_src), 'branch-explosion')
+        self.assertEqual(len(iss), 1)
+        self.assertEqual(iss[0][0], 'INFO')
+        self.assertIn('>8 conditional class combinations; auditing first 8 branches', iss[0][2])
+
+        within_limit = '<div className={cn(c1 && "p-1", c2 && "m-1", c3 && "w-4")}>x</div>'
+        self.assertEqual(rules(run(within_limit), 'branch-explosion'), [])
+
+    def test_ancestor_child_same_condition_group_consistency(self):
+        consistent = (
+            '<div className={cn("p-4", isDark ? "bg-slate-900" : "bg-white")}>'
+            '<span className={cn("text-sm", isDark ? "text-white" : "text-slate-900")}>Text</span>'
+            '</div>'
+        )
+        self.assertEqual(rules(run(consistent), 'wcag-aa'), [])
+
+        negated = (
+            '<div className={isDark ? "bg-slate-900" : "bg-white"}>'
+            '<span className={!isDark ? "text-slate-900" : "text-white"}>Text</span>'
+            '</div>'
+        )
+        self.assertEqual(rules(run(negated), 'wcag-aa'), [])
+
+        bad_in_true_branch = (
+            '<div className={isDark ? "bg-slate-900" : "bg-white"}>'
+            '<span className={isDark ? "text-slate-700" : "text-slate-900"}>Text</span>'
+            '</div>'
+        )
+        iss = rules(run(bad_in_true_branch), 'wcag-aa')
+        self.assertEqual(len(iss), 1)
+        self.assertIn('[isDark=true] text-slate-700 on bg-slate-900', iss[0][2])
+
+    def test_fitts_primary_variant_consistency(self):
+        no_cross = '<button className={cn(isPrimary ? "bg-indigo-600 text-white h-11" : "border text-slate-700 h-8")}>Act</button>'
+        self.assertEqual(rules(run(no_cross), 'fitts-primary'), [])
+
+        compact_fail = '<button className={cn("bg-indigo-600 text-white", compact ? "h-8" : "h-11")}>Act</button>'
+        iss = rules(run(compact_fail), 'fitts-primary')
+        self.assertEqual(len(iss), 1)
+        self.assertIn('32px tall', iss[0][2])
+
+    def test_jsx_conditional_cta_branches(self):
+        ternary = '<section>{isEditing ? <Button>Save</Button> : <Button>Edit</Button>}</section>'
+        self.assertEqual(rules(run(ternary), 'single-primary-cta'), [])
+
+        paired_and = '<section>{isEditing && <Button>Save</Button>}{!isEditing && <Button>Edit</Button>}</section>'
+        self.assertEqual(rules(run(paired_and), 'single-primary-cta'), [])
+
+        lookup = '<section>{{ a: <Button>Alpha</Button>, b: <Button>Beta</Button> }[mode]}</section>'
+        self.assertEqual(rules(run(lookup), 'single-primary-cta'), [])
+
+        single_btn_variants = (
+            '<section><button className={cn("px-4", isPrimary ? "bg-indigo-600 text-white" : "border text-slate-700")}>'
+            'Go</button></section>'
+        )
+        self.assertEqual(rules(run(single_btn_variants), 'single-primary-cta'), [])
+
+        same_branch_two = (
+            '<section>{isEditing ? (<><Button>Save</Button><Button>Publish</Button></>) : <Button>Edit</Button>}</section>'
+        )
+        iss = rules(run(same_branch_two), 'single-primary-cta')
+        self.assertEqual(len(iss), 1)
+        self.assertIn('2 solid buttons in one block', iss[0][2])
+
+
 if __name__ == '__main__':
     unittest.main()

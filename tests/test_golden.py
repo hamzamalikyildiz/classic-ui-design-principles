@@ -32,13 +32,11 @@ class GoldenFalsePositives(unittest.TestCase):
         iss = rules(audit_fixture('ScoreCard.tsx'), 'wcag-aa')
         self.assertEqual([i for i in iss if i[0] in ('FAIL', 'WARN')], [])
 
-    @unittest.expectedFailure
     def test_chip_conditional_branch_no_cross_match(self):
         """İP-A4: cn() conditional branches must not cross-match bg from one branch with text from another."""
         iss = rules(audit_fixture('Chip.tsx'), 'wcag-aa')
         self.assertEqual([i for i in iss if i[0] in ('FAIL', 'WARN')], [])
 
-    @unittest.expectedFailure
     def test_actions_mutually_exclusive_ctas_no_warning(self):
         """İP-A4: Mutually exclusive ternary <Button> branches must not trigger single-primary-cta."""
         iss = rules(audit_fixture('Actions.tsx'), 'single-primary-cta')
