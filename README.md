@@ -225,6 +225,13 @@ Blind A/B runs using 5 persona judges (`bench/judges.json`), rendered with Playw
 - **`run3/` (`r,m` briefs, Haiku/Haiku):** 20 pairs (40 pages, 100 votes):
   - **90/100 (90%)** skill win rate (95% CI 83%–96%, **20/20** pair majorities, `0/20 vs 18/20` serious axe issues; see [bench/runs/run3/RESULTS.md](bench/runs/run3/RESULTS.md))
 
+### What the benchmark does not show
+
+- The judges are language models playing personas, not people, and generators and judges come from the same model family in each run. Treat the numbers as evidence that the skill helps cheap models under this rubric, not as proof of human preference.
+- Samples are small (6 to 20 pairs per run). Read the confidence intervals, not only the win rates.
+- Skill pages are somewhat longer than no-skill pages, which can help with judges; run8 narrowed the gap to about 6%.
+- **Editorial is the least certain mood.** Pairs from runs whose rules were not tuned on the judges' reasons (`run3`, `run4`, `run5`, `run7`, `run8`) give 11 of 17 pair wins (about 65%), a little below the other moods, and the evidence points in different directions: pages without a picture lost on a recipe brief (`run5`), a figurative bowl-and-flame illustration lost on a profile brief (`run7`), pure typography won on a profile brief (`run8`). `moods/editorial.md` is therefore frozen as it is, and it has not been re-tested on a recipe brief since the "visuals are optional" change. Do not keep tuning it against model judges; revisit it with human raters.
+
 ## Tests
 
 ```bash
