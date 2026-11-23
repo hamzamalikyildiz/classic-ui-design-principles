@@ -1,0 +1,5 @@
+cift1: B | 3 | B daha iri ve güçlü başlık, belirgin alıntı ve okunaklı dikey zaman çizelgesiyle daha hiyerarşik ve zengin, A ise düzgün ama daha küçük ve sönük kalıyor. | A 7/7/7/7 B 8/8/8/8
+cift2: B | 4 | B daha cilalı ve tutarlı: ders kartlarında görseller, gölgeli düğmeler, bayrak rozeti ve ebeveyn bağlantılı alt bilgi güven veriyor, A ise düz ve yoğun renk bloklarıyla daha şablon duruyor. | A 7/6/7/7 B 8/8/8/8
+cift3: A | 3 | A gerçek bir olay yönetim aracı gibi dolu ve tutarlı (Acknowledge/Escalate, zengin zaman çizelgesi, kopyalanabilir runbook), B özet kartlarıyla iyi ama runbook satırı sağdan kesiliyor ve daha seyrek. | A 8/8/7/9 B 8/7/8/7
+cift4: B | 3 | B daha dengeli ve ikna edici: daha iyi çizilmiş bisiklet, işe yarayan menzil çubukları ve sakin başlıklar, A ise iri büyük harfli başlıklarla bağırıyor ve bisiklet çizimi zayıf kalıyor. | A 7/6/7/8 B 8/7/8/8
+cift5: A | 2 | A daha işe yarar: uyarıdan doğrudan Transfer düğmesi, her çubukta değer, dört hedef, sonraki otomatik transfer notu ve From/To ayrımlı tablo var, B ise durum etiketleriyle temiz ama biraz daha az içerikli. | A 8/8/8/8 B 8/8/8/7

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Last Lighthouse Keepers</title>
+<meta name="description" content="How automation ended the keepers' watch on Britain's and Ireland's last manned lights.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        paper: '#F6F1E7',
+        ink: '#1C2531',
+        brass: '#7D5417',
+        tide: '#4F6470',
+        rule: '#D8CDB8'
+      },
+      fontFamily: {
+        serif: ['Newsreader', 'Georgia', 'serif'],
+        sans: ['Source Sans 3', 'system-ui', 'sans-serif']
+      }
+    }
+  }
+};
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: light; }
+  body { background: #F6F1E7; color: #1C2531; }
+  .drop-cap::first-letter {
+    float: left; font-family: 'Newsreader', Georgia, serif; font-weight: 500;
+    font-size: 4.25rem; line-height: 0.9; padding: 0.35rem 0.6rem 0 0; color: #7D5417;
+  }
+  .fade-up { animation: fadeUp 600ms ease-out both; }
+  .fade-up-2 { animation: fadeUp 600ms 120ms ease-out both; }
+  .fade-up-3 { animation: fadeUp 600ms 240ms ease-out both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up, .fade-up-2, .fade-up-3 { animation: none; }
+  }
+  .focus-ring:focus-visible { outline: 2px solid #7D5417; outline-offset: 3px; }
+</style>
+</head>
+<body class="font-serif antialiased">
+
+<header class="border-b border-rule">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 py-4 flex items-center justify-between font-sans text-sm">
+    <span class="font-semibold tracking-wide uppercase text-ink">The Coastline Review</span>
+    <nav aria-label="Sections" class="flex gap-5 text-tide">
+      <a href="#" class="focus-ring py-2 hover:text-ink">Features</a>
+      <a href="#" class="focus-ring py-2 hover:text-ink">Coast</a>
+      <a href="#" class="focus-ring py-2 hover:text-ink">Archive</a>
+    </nav>
+  </div>
+</header>
+
+<main class="mx-auto max-w-4xl px-4 sm:px-6">
+
+  <article class="pt-16 pb-12 text-center">
+    <p class="fade-up font-sans text-xs font-semibold uppercase tracking-[0.18em] text-brass">Feature &middot; Maritime Life</p>
+
+    <h1 class="fade-up-2 mt-4 font-serif font-medium text-[2.75rem] sm:text-[3.5rem] leading-[1.05] text-balance text-center text-ink">
+      The Last Lighthouse Keepers
+    </h1>
+
+    <p class="fade-up-2 mt-6 max-w-2xl mx-auto text-xl leading-relaxed text-tide text-pretty">
+      For more than a century, a person climbed the stairs every night to trim the wick. Automation arrived quietly, and the keepers who were left had to decide what a light is for.
+    </p>
+
+    <div class="fade-up-3 mt-8 mx-auto max-w-2xl flex flex-wrap justify-center items-center gap-4 font-sans text-sm text-tide border-y border-rule py-4">
+      <span class="font-semibold text-ink">By Eleanor Marsh</span>
+      <span aria-hidden="true">/</span>
+      <span>Photographs and reporting from the west coast</span>
+      <span aria-hidden="true">/</span>
+      <time datetime="2026-11-02">2 November 2026</time>
+    </div>
+  </article>
+
+  <div class="mx-auto max-w-2xl">
+
+    <section class="text-lg leading-[1.8] text-ink">
+      <p class="drop-cap text-pretty">
+        The light at Ardnish Point was lit by hand for one hundred and twelve years. Each dusk the keeper walked the iron stairs, checked the lamp and the clockwork that turned the lens, and wrote the weather in a ledger that the Commissioners would later read. The work was dull for most of every night and urgent for about ten minutes at a time, when fog came in off the water.
+      </p>
+
+      <p class="mt-6 text-pretty">
+        Automation did not arrive with a ceremony. A sensor on the gallery rail began to switch the lamp on when the light failed, and a radio link reported the state of the lamp to a control room some two hundred miles inland. For a while the keepers stayed on, doing maintenance and keeping the ledgers. Then the ledgers stopped being needed, and the houses were offered for sale.
+      </p>
+
+      <blockquote class="my-12 border-l-2 border-brass pl-6">
+        <p class="font-serif text-2xl sm:text-3xl leading-[1.4] text-ink text-balance">
+          &ldquo;You stop being the person who keeps the light and become the person who notices when it stops.&rdquo;
+        </p>
+        <footer class="mt-4 font-sans text-sm text-tide">&mdash; Iain Carrick, keeper at Ardnish, 1978&ndash;2003</footer>
+      </blockquote>
+
+      <p class="text-pretty">
+        Keepers describe the change in terms of attention. A flame that needs watching keeps a person awake in a particular way. A sensor that reports its own failure does not need the same kind of watching, and the job that was once continuous became a set of checks made at intervals by people many miles away. Most of the men and women who held the post for decades say they miss the nights more than the wages.
+      </p>
+
+      <p class="mt-6 text-pretty">
+        Heritage bodies now keep a handful of the old stations working as tourist sites and as back-up beacons. The lenses are polished by volunteers. The ledgers, bound in green cloth, are kept in a reading room on the mainland, where visitors can turn the pages and see the weather of a single night written in a neat hand.
+      </p>
+    </section>
+
+    <section class="mt-16 border-t border-rule pt-10" aria-labelledby="timeline-heading">
+      <h2 id="timeline-heading" class="font-serif text-3xl font-medium text-ink">A short timeline of automation</h2>
+      <ol class="mt-6 font-sans text-base text-ink">
+        <li class="grid grid-cols-[6rem_1fr] gap-4 py-3 border-b border-rule">
+          <time class="font-semibold text-brass" datetime="1986">1986</time>
+          <span>Remote monitoring trials begin at three stations on the north coast.</span>
+        </li>
+        <li class="grid grid-cols-[6rem_1fr] gap-4 py-3 border-b border-rule">
+          <time class="font-semibold text-brass" datetime="1998">1998</time>
+          <span>Automatic lamp changeover replaces the keeper on night watch at most sites.</span>
+        </li>
+        <li class="grid grid-cols-[6rem_1fr] gap-4 py-3 border-b border-rule">
+          <time class="font-semibold text-brass" datetime="2003">2003</time>
+          <span>Ardnish Point becomes unmanned, and the final keeper leaves the house.</span>
+        </li>
+        <li class="grid grid-cols-[6rem_1fr] gap-4 py-3">
+          <time class="font-semibold text-brass" datetime="2019">2019</time>
+          <span>The last staffed light in the region is switched to remote control.</span>
+        </li>
+      </ol>
+    </section>
+
+  </div>
+
+  <section class="mt-20 border-t border-rule pt-10 pb-16" aria-labelledby="related-heading">
+    <h2 id="related-heading" class="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-brass">Related stories</h2>
+    <div class="mt-6 grid gap-10 sm:grid-cols-3">
+      <a href="#" class="focus-ring group block">
+        <p class="font-sans text-xs uppercase tracking-wide text-tide">Harbours</p>
+        <h3 class="mt-2 font-serif text-xl font-medium leading-snug text-ink group-hover:underline underline-offset-4">The boatmen who still read the tide by hand</h3>
+        <p class="mt-2 font-sans text-sm text-tide">A week on the slipway at Kilbride.</p>
+      </a>
+      <a href="#" class="focus-ring group block">
+        <p class="font-sans text-xs uppercase tracking-wide text-tide">Archive</p>
+        <h3 class="mt-2 font-serif text-xl font-medium leading-snug text-ink group-hover:underline underline-offset-4">Inside the lighthouse ledgers, one year at a time</h3>
+        <p class="mt-2 font-sans text-sm text-tide">What a century of weather notes can tell us.</p>
+      </a>
+      <a href="#" class="focus-ring group block">
+        <p class="font-sans text-xs uppercase tracking-wide text-tide">Coast</p>
+        <h3 class="mt-2 font-serif text-xl font-medium leading-snug text-ink group-hover:underline underline-offset-4">Why the shipping lanes moved north in 2011</h3>
+        <p class="mt-2 font-sans text-sm text-tide">A short history of the charts.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="border-t border-rule py-14" aria-labelledby="newsletter-heading">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 id="newsletter-heading" class="font-serif text-3xl font-medium text-ink">Get the Coast letter</h2>
+      <p class="mt-3 font-sans text-base text-tide">One considered essay from the coastline each month. No tracking, unsubscribe at any time.</p>
+      <form class="mt-8 flex flex-col sm:flex-row gap-3 font-sans" action="#" method="post" onsubmit="return false;">
+        <label for="email" class="sr-only">Email address</label>
+        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com"
+               class="focus-ring flex-1 min-h-11 rounded border border-rule bg-white px-4 text-base text-ink placeholder:text-tide/70">
+        <button type="submit" class="focus-ring min-h-11 rounded bg-ink px-6 text-base font-semibold text-paper hover:bg-brass">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t border-rule">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 py-6 font-sans text-sm text-tide flex flex-wrap gap-4 justify-between">
+    <span>&copy; 2026 The Coastline Review</span>
+    <a href="#" class="focus-ring hover:text-ink">About the magazine</a>
+  </div>
+</footer>
+
+</body>
+</html>

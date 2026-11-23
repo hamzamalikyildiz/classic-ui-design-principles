@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aero 9 - The electric folding bike</title>
+<meta name="description" content="Aero 9 folds in 9 seconds, rides 90 km on one charge, and weighs 14.8 kg.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { ink: '#0B0C0E', volt: '#D4FF3A', chalk: '#F4F4F0', mist: '#A9AFB9', steel: '#1C1F24' },
+      fontFamily: { display: ['"Archivo Black"', 'sans-serif'], body: ['Inter', 'system-ui', 'sans-serif'] }
+    }
+  }
+}
+</script>
+<style>
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  @keyframes ride { from { transform: translateX(6%); } to { transform: translateX(-2%); } }
+  .rise { animation: rise 0.6s cubic-bezier(.2,.7,.2,1) both; }
+  .d1 { animation-delay: 0.08s; } .d2 { animation-delay: 0.18s; } .d3 { animation-delay: 0.3s; }
+  .glow { background: radial-gradient(closest-side, rgba(212,255,58,.22), transparent 70%); }
+  .ride { animation: ride 1.6s cubic-bezier(.2,.7,.2,1) both; }
+  @media (prefers-reduced-motion: reduce) {
+    .rise, .ride { animation: none; }
+  }
+</style>
+</head>
+<body class="bg-ink text-chalk font-body antialiased">
+
+<header class="sticky top-0 z-20 border-b border-white/10 bg-ink/90 backdrop-blur">
+  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+    <span class="font-display text-xl tracking-tight">AERO<span class="text-volt">9</span></span>
+    <nav aria-label="Main" class="hidden gap-8 text-sm text-mist md:flex">
+      <a href="#features" class="hover:text-chalk">Features</a>
+      <a href="#specs" class="hover:text-chalk">Range and specs</a>
+      <a href="#riders" class="hover:text-chalk">Riders</a>
+    </nav>
+    <a href="#preorder" class="rounded-full bg-volt px-5 py-2.5 text-sm font-semibold text-ink hover:brightness-110">Pre-order</a>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="glow pointer-events-none absolute -top-40 right-0 h-[38rem] w-[38rem]" aria-hidden="true"></div>
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-14 lg:grid-cols-12 lg:pt-24">
+      <div class="lg:col-span-6">
+        <p class="rise text-sm font-semibold uppercase tracking-[0.2em] text-volt">Launch edition, 500 units</p>
+        <h1 class="rise d1 mt-4 font-display text-[3.4rem] leading-[0.92] tracking-tight sm:text-7xl lg:text-8xl">
+          FOLDS<br>IN 9 SEC.<br>RIDES <span class="text-volt">FOREVER</span>.
+        </h1>
+        <p class="rise d2 mt-6 max-w-md text-lg leading-relaxed text-mist">
+          Aero 9 is the electric folding bike built for trains, stairwells and the last mile. 14.8 kg, 90 km of range, and a frame you can carry up three floors.
+        </p>
+        <div class="rise d3 mt-8 flex flex-wrap items-center gap-4">
+          <a href="#preorder" class="inline-flex min-h-[48px] items-center rounded-full bg-volt px-7 py-3 font-semibold text-ink hover:brightness-110">Pre-order for $1,890</a>
+          <span class="text-sm text-mist">Ships March. Refundable deposit of $100.</span>
+        </div>
+      </div>
+
+      <!-- Signature: side-profile drawn bike, bleeding off the right edge -->
+      <div class="lg:col-span-6 lg:-mr-24" aria-hidden="true">
+        <svg viewBox="0 0 560 360" class="ride w-full" role="img">
+          <title>Aero 9 folding electric bike in side profile</title>
+          <ellipse cx="280" cy="330" rx="230" ry="14" fill="#D4FF3A" opacity="0.12"/>
+          <g fill="none" stroke="#F4F4F0" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="130" cy="260" r="78"/>
+            <circle cx="430" cy="260" r="78"/>
+          </g>
+          <g fill="none" stroke="#D4FF3A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M130 260 L228 178 L330 178 L430 260"/>
+            <path d="M228 178 L268 260 L130 260"/>
+            <path d="M330 178 L352 118 L392 118"/>
+            <path d="M268 260 L330 178"/>
+          </g>
+          <g fill="none" stroke="#F4F4F0" stroke-width="8" stroke-linecap="round">
+            <path d="M338 112 L318 80 L366 80"/>
+            <path d="M226 178 L214 160"/>
+          </g>
+          <rect x="196" y="150" width="64" height="20" rx="6" fill="#F4F4F0"/>
+          <circle cx="268" cy="260" r="16" fill="#D4FF3A"/>
+          <g fill="#D4FF3A">
+            <rect x="314" y="62" width="60" height="10" rx="5"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature highlights -->
+  <section id="features" class="border-t border-white/10 bg-steel">
+    <div class="mx-auto max-w-6xl px-4 py-20 lg:py-28">
+      <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Three things it does better.</h2>
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <article class="rounded-2xl bg-ink p-8 md:col-span-2 md:row-span-1">
+          <p class="font-display text-6xl text-volt">9 s</p>
+          <h3 class="mt-4 text-xl font-semibold">One-motion fold</h3>
+          <p class="mt-2 leading-relaxed text-mist">A single hinge and a quick-release stem fold the bike to 62 x 58 cm. It rolls on its own wheels when folded, so you can pull it onto a train without lifting.</p>
+        </article>
+        <article class="rounded-2xl bg-volt p-8 text-ink">
+          <p class="font-display text-6xl">90</p>
+          <h3 class="mt-4 text-xl font-semibold">km on one charge</h3>
+          <p class="mt-2 leading-relaxed">Measured at 25 km/h on flat ground. A 4.2 Ah pack refills to 80 percent in 90 minutes.</p>
+        </article>
+        <article class="rounded-2xl bg-ink p-8 md:col-span-3 md:flex md:items-center md:gap-10">
+          <div class="md:w-1/3">
+            <p class="font-display text-6xl text-volt">14.8<span class="text-3xl"> kg</span></p>
+          </div>
+          <div class="mt-4 md:mt-0 md:w-2/3">
+            <h3 class="text-xl font-semibold">Light enough for the stairs</h3>
+            <p class="mt-2 leading-relaxed text-mist">Aluminium frame, hollow carbon fork and a 6-speed hub. Tested to carry 120 kg of rider and cargo.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Range and specs -->
+  <section id="specs" class="py-20 lg:py-28">
+    <div class="mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-2">
+      <div>
+        <h2 class="font-display text-4xl tracking-tight sm:text-5xl">Range that fits your commute.</h2>
+        <p class="mt-4 max-w-md leading-relaxed text-mist">Pick the assist level that matches your route. Estimates are for a 75 kg rider on flat tarmac.</p>
+        <ul class="mt-8 space-y-5">
+          <li>
+            <div class="flex justify-between text-sm"><span>Eco</span><span class="tabular-nums">90 km</span></div>
+            <div class="mt-2 h-3 rounded-full bg-steel"><div class="h-3 w-full rounded-full bg-mist/60"></div></div>
+          </li>
+          <li>
+            <div class="flex justify-between text-sm"><span>Balanced</span><span class="tabular-nums">62 km</span></div>
+            <div class="mt-2 h-3 rounded-full bg-steel"><div class="h-3 w-[69%] rounded-full bg-volt"></div></div>
+          </li>
+          <li>
+            <div class="flex justify-between text-sm"><span>Turbo</span><span class="tabular-nums">38 km</span></div>
+            <div class="mt-2 h-3 rounded-full bg-steel"><div class="h-3 w-[42%] rounded-full bg-mist/60"></div></div>
+          </li>
+        </ul>
+      </div>
+      <dl class="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-white/10 text-sm">
+        <div class="bg-ink p-6"><dt class="text-mist">Top speed</dt><dd class="mt-1 font-display text-2xl tabular-nums">25 km/h</dd></div>
+        <div class="bg-ink p-6"><dt class="text-mist">Motor</dt><dd class="mt-1 font-display text-2xl">250 W rear</dd></div>
+        <div class="bg-ink p-6"><dt class="text-mist">Wheels</dt><dd class="mt-1 font-display text-2xl">20 in</dd></div>
+        <div class="bg-ink p-6"><dt class="text-mist">Charge time</dt><dd class="mt-1 font-display text-2xl tabular-nums">3.5 h</dd></div>
+        <div class="bg-ink p-6"><dt class="text-mist">Folded size</dt><dd class="mt-1 font-display text-2xl">62 x 58 cm</dd></div>
+        <div class="bg-ink p-6"><dt class="text-mist">Brakes</dt><dd class="mt-1 font-display text-2xl">Hydraulic disc</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Riders -->
+  <section id="riders" class="border-y border-white/10 bg-steel py-20 lg:py-28">
+    <div class="mx-auto max-w-6xl px-4">
+      <h2 class="font-display text-4xl tracking-tight sm:text-5xl">From the first beta ride.</h2>
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <figure class="rounded-2xl border-l-4 border-volt bg-ink p-8">
+          <blockquote class="text-lg leading-relaxed">"I fold it under my desk at the office. Nobody has ever stolen it. Nobody has ever noticed it."</blockquote>
+          <figcaption class="mt-6 text-sm text-mist">Elif K., courier, Istanbul</figcaption>
+        </figure>
+        <figure class="rounded-2xl border-l-4 border-volt bg-ink p-8 md:mt-10">
+          <blockquote class="text-lg leading-relaxed">"Three flights of stairs, every morning, and I still have legs left for the hills."</blockquote>
+          <figcaption class="mt-6 text-sm text-mist">Marco D., physio, Lisbon</figcaption>
+        </figure>
+        <figure class="rounded-2xl border-l-4 border-volt bg-ink p-8">
+          <blockquote class="text-lg leading-relaxed">"The turbo button is a bit rude. I've stopped pretending it isn't my favourite feature."</blockquote>
+          <figcaption class="mt-6 text-sm text-mist">Sam R., architect, Leeds</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pre-order CTA -->
+  <section id="preorder" class="relative overflow-hidden py-24 lg:py-32">
+    <div class="glow pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-4xl px-4 text-center">
+      <h2 class="font-display text-5xl leading-[0.95] tracking-tight sm:text-7xl">Be first on the train.</h2>
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-mist">Reserve an Aero 9 today. A $100 deposit holds your place, and the balance is due when your bike ships in March.</p>
+      <a href="#preorder" class="mt-10 inline-flex min-h-[56px] items-center rounded-full bg-volt px-10 py-4 text-lg font-semibold text-ink hover:brightness-110">Pre-order Aero 9</a>
+      <p class="mt-4 text-sm text-mist">Free returns within 30 days of delivery.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-white/10">
+  <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-mist sm:flex-row sm:justify-between">
+    <span class="font-display text-chalk">AERO<span class="text-volt">9</span></span>
+    <span>Specs are pre-production estimates and may change before shipping.</span>
+  </div>
+</footer>
+
+</body>
+</html>

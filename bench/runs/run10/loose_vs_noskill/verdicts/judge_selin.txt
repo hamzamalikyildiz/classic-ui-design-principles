@@ -1,0 +1,5 @@
+cift1: B | 4 | B daha zengin ve tutarlı bir operasyon paneli sunuyor (SLO çizgisi, PromQL runbook, gerçekçi veri), A ise temiz ama sığ ve genel kalıyor. | A 6/6/7/5 B 8/8/8/8
+cift2: B | 4 | B daha cesur ve renkli bölümlerle, ilerleme çubukları, farklı diller ve yıllık plan gibi inandırıcı detaylarla daha el yapımı hissettiriyor, A ise pastel şablona yakın ve daha sönük kalıyor. | A 7/6/7/6 B 8/8/8/8
+cift3: B | 3 | B özgün bir fener illüstrasyonu, yan sütun ve dergi hissi veren başlık düzeniyle daha el işi görünüyor, A ise düzgün ve okunaklı ama görselsiz ve düz kalıyor. | A 7/7/8/7 B 8/8/8/7
+cift4: A | 4 | A serif başlıklar, koyu yeşil-altın paleti ve tutarlı gerçekçi veriyle ayırt edici bir kimlik kurarken B tipik fintech panel şablonu gibi duruyor. | A 8/8/8/8 B 7/6/7/6
+cift5: A | 4 | A asimetrik bento düzeni, cesur tipografisi ve somut sayılarla karakterli dururken B numaralı üç eş kart ve turuncu gradient ile tanıdık şablon hissi veriyor. | A 9/8/8/8 B 7/6/7/7

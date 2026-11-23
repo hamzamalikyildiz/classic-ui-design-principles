@@ -22,3 +22,5 @@
 | run8 | Held-out validation (v2, n=6, post-hardening) | High (small sample): unseen briefs, frozen skill (`fc3a31b`), cross-family judges, near-matched line length (`260.8 vs 246.5`), p = 0.0312 |
 | reg_v2 | Single-page mini-regression check (n=5, 3 judges) | Low-Medium: quick check confirming `0/5` axe violations and shorter HTML (`205.2 vs 248.2` lines) without regression on `bold/editorial/technical` |
 | run9 | Multi-screen app flow + `noskill_check` ablation (`n=6` × 3 arms) | High methodology / mixed headline (`p = 0.69`): unseen flow briefs, frozen skill (`bffa262`), honest motion/switcher artifact findings (`63%` 5-judge Neon, `6/6` Claude Selin probe, `0.83` vs `8.0` motion WARNs); human rating kit pending real raters |
+
+- `run10/`: loose-rules trial, 5 moods x 3 arms (loose, strict, noskill). Loose lost to strict (28% of votes, 1 of 5 pairs) and saved no tokens, so it was not adopted. Efficiency metrics (tokens, tool calls, time per page) were recorded for the first time.

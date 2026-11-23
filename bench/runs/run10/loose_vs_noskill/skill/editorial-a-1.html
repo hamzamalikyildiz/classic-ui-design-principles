@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Last Lighthouse Keepers</title>
+  <meta name="description" content="How the work of tending a light moved from keepers on the rock to clocks, sensors and a few people who still climb the stairs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#f5f1e8',
+            ink: '#1c1a17',
+            mute: '#5b5246',
+            rule: '#d6cdbb',
+            signal: '#9b2f22',
+            brass: '#8a5a1f'
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .hero > * { animation: fade-up 600ms ease-out both; }
+    .hero > :nth-child(2) { animation-delay: 80ms; }
+    .hero > :nth-child(3) { animation-delay: 160ms; }
+    .hero > :nth-child(4) { animation-delay: 240ms; }
+    .drop-cap::first-letter {
+      font-family: 'Newsreader', Georgia, serif;
+      float: left;
+      font-size: 4.25rem;
+      line-height: 0.9;
+      padding: 0.35rem 0.5rem 0 0;
+      color: #9b2f22;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero > * { animation: none; }
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-serif antialiased">
+
+  <header class="border-b border-rule">
+    <div class="mx-auto flex max-w-2xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-5 sm:px-6">
+      <a href="#" class="font-sans text-sm font-semibold uppercase tracking-[0.2em]">The Long View</a>
+      <nav aria-label="Sections" class="font-sans text-sm text-mute">
+        <ul class="flex flex-wrap gap-x-5 gap-y-2">
+          <li><a href="#" class="hover:text-ink underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal">Coasts</a></li>
+          <li><a href="#" class="hover:text-ink underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal">Engineering</a></li>
+          <li><a href="#" class="hover:text-ink underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal">Archive</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:py-20">
+
+    <article>
+      <header class="hero">
+        <p class="font-sans text-sm font-semibold uppercase tracking-[0.18em] text-signal">Feature &middot; Coasts</p>
+        <h1 class="mt-4 text-balance text-5xl font-semibold leading-[1.05] sm:text-6xl">The Last Lighthouse Keepers</h1>
+        <p class="mt-6 text-balance text-xl leading-normal text-mute sm:text-2xl">For two centuries a light was kept by people who lived beside it. Now most of them are gone, and the job is done by clocks, sensors and a few visits a year.</p>
+        <p class="mt-8 font-sans text-sm text-mute">By <span class="font-semibold text-ink">Mara Holloway</span> &middot; November 2026 &middot; 12 min read</p>
+      </header>
+
+      <hr class="my-12 border-rule">
+
+      <div class="space-y-6 text-lg leading-relaxed">
+        <p class="drop-cap">Every night at dusk, somewhere on a rocky shore, a lamp is switched on and a lens turns. For most of recorded history someone had to make that happen. A keeper climbed the stairs with a can of paraffin, trimmed the wick, wound the clockwork that spun the lens and wrote the log by hand before dawn.</p>
+        <p>The keepers did more than light the lamp. They watched the weather, recorded the barometer, fired signals in fog and kept the brass polished so that the light would be seen clearly from a ship. On many stations the whole family lived in the tower or in cottages at its foot, and a posting could last a lifetime.</p>
+      </div>
+
+      <blockquote class="my-14 border-y border-rule py-10 text-center">
+        <p class="font-serif text-3xl italic leading-normal text-signal sm:text-4xl">&ldquo;You did not own the light. You simply made sure it never went out on your watch.&rdquo;</p>
+        <footer class="mt-5 font-sans text-sm text-mute">A retired principal keeper, speaking about his final years on the rock</footer>
+      </blockquote>
+
+      <div class="space-y-6 text-lg leading-relaxed">
+        <h2 class="text-balance pt-4 text-3xl font-semibold leading-tight">How the work left the rock</h2>
+        <p>Automation did not arrive in one stroke. Sealed lamps, electric power and timers came first, then remote monitoring that let a shore station see a fault before a ship did. Each change looked small on paper. Together they removed the reason a family had to stay.</p>
+        <p>The savings were real, and so were the costs. Keepers knew the sound a failing bulb made and the smell of a generator about to quit. Those habits went quietly out of the service with them, and few of the replacement systems were built to be listened to.</p>
+      </div>
+
+      <section class="mt-14" aria-labelledby="timeline-heading">
+        <h2 id="timeline-heading" class="font-sans text-sm font-semibold uppercase tracking-[0.18em] text-mute">A short timeline</h2>
+        <ol class="mt-6 space-y-7 border-l border-rule pl-6 font-sans">
+          <li class="relative">
+            <span class="absolute -left-[31px] top-2 h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true"></span>
+            <p class="text-sm font-semibold tabular-nums text-signal">1810</p>
+            <p class="mt-1 text-base leading-relaxed">The Bell Rock light, built on a reef off Scotland, is lit and staffed by keepers living on the rock.</p>
+          </li>
+          <li class="relative">
+            <span class="absolute -left-[31px] top-2 h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true"></span>
+            <p class="text-sm font-semibold tabular-nums text-signal">1990</p>
+            <p class="mt-1 text-base leading-relaxed">Keeper numbers fall across the major services as remote monitoring spreads to coastal stations.</p>
+          </li>
+          <li class="relative">
+            <span class="absolute -left-[31px] top-2 h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true"></span>
+            <p class="text-sm font-semibold tabular-nums text-signal">1998</p>
+            <p class="mt-1 text-base leading-relaxed">The last manned stations in the service are switched to automatic operation, and the keepers&rsquo; cottages are sold or left empty.</p>
+          </li>
+        </ol>
+      </section>
+
+      <div class="mt-14 space-y-6 text-lg leading-relaxed">
+        <h2 class="text-3xl font-semibold leading-tight">What is still climbed</h2>
+        <p>Some towers still need a person. Lenses are cleaned, batteries replaced and salt scrubbed from glass that no machine can reach. A visiting crew arrives by boat, works through the day and leaves before the tide turns. Their log is shorter than a keeper&rsquo;s, but the stairs are the same.</p>
+      </div>
+    </article>
+
+    <section class="mt-20 border-t border-rule pt-12" aria-labelledby="related-heading">
+      <h2 id="related-heading" class="font-sans text-sm font-semibold uppercase tracking-[0.18em] text-mute">Related</h2>
+      <ul class="mt-6 divide-y divide-rule font-sans">
+        <li class="py-6">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-signal">Coasts</p>
+          <h3 class="mt-2 font-serif text-2xl font-semibold leading-snug"><a href="#" class="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal">The reef that never got a road</a></h3>
+          <p class="mt-2 text-base leading-relaxed text-mute">Why some of the most exposed lights were built before anyone thought to connect them to the mainland.</p>
+        </li>
+        <li class="py-6">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-signal">Engineering</p>
+          <h3 class="mt-2 font-serif text-2xl font-semibold leading-snug"><a href="#" class="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal">Clockwork that ran for a century</a></h3>
+          <p class="mt-2 text-base leading-relaxed text-mute">The weights, gears and governors that turned a lens long before a motor did.</p>
+        </li>
+        <li class="py-6">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-signal">Archive</p>
+          <h3 class="mt-2 font-serif text-2xl font-semibold leading-snug"><a href="#" class="underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal">The logbooks, read end to end</a></h3>
+          <p class="mt-2 text-base leading-relaxed text-mute">Forty years of weather, signals and small domestic notes from one station.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mt-20 border-t border-rule pt-12" aria-labelledby="newsletter-heading">
+      <h2 id="newsletter-heading" class="text-balance text-3xl font-semibold leading-tight">Get the long view</h2>
+      <p class="mt-4 font-sans text-base leading-relaxed text-mute">One considered essay a month on coasts, engineering and the people who keep things running. No tracking pixels, and you can leave at any time.</p>
+      <form class="mt-6 flex flex-col gap-3 font-sans sm:flex-row" action="#" method="post">
+        <label for="email" class="sr-only">Email address</label>
+        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" class="min-h-11 flex-1 rounded-sm border border-rule bg-paper px-4 py-2 text-base text-ink placeholder:text-mute focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal">
+        <button type="submit" class="min-h-11 rounded-sm bg-signal px-6 py-2 text-base font-semibold text-paper hover:bg-[#7f2619] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">Subscribe</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-rule">
+    <div class="mx-auto max-w-2xl px-4 py-8 font-sans text-sm text-mute sm:px-6">
+      <p>&copy; 2026 The Long View. Essays on the places and machines that hold the coast together.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

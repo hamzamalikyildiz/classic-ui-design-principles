@@ -1,0 +1,5 @@
+cift1: A | 3 | A görsel, yan sütun ve bülten kutusuyla gerçek bir dergi sayfası gibi duruyor, B temiz ama düz ve görselsiz kalıyor. | A 8/8/8/8 B 6/7/8/7
+cift2: A | 2 | A ilerleme çubukları, dört dil ve yıllık plan gibi daha somut içerik sunuyor, B daha sakin ve düzenli ama biraz daha yüzeysel. | A 8/7/8/8 B 7/8/8/7
+cift3: A | 2 | A açık temada net okunuyor ve seçili olay ile zaman çizelgesi birbirine bağlı, B şık ama koyu ve yoğun, runbook kodu da kutudan taşıyor. | A 7/7/8/7 B 8/7/7/8
+cift4: A | 2 | A fiyatı, depozitoyu, garantiyi ve teknik özellikleri açıkça veriyor, B daha sakin görünse de fiyat vermeyip e-posta kutusuna yönlendiriyor. | A 8/7/8/9 B 8/8/8/7
+cift5: B | 4 | B yeşil banka tonu, gezinme çubuğu, hedef ilerleme notları, eksenli grafik ve dipnotuyla daha güven veren ve daha bilgilendirici bir finans ekranı. | A 7/7/8/6 B 8/8/8/8

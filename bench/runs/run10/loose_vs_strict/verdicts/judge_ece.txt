@@ -1,0 +1,5 @@
+cift1: B | 4 | B daha cesur ve akılda kalıcı; kalın gölgeler, dalgalı hero, kart içi çizimler ve sayaç kartı onu oyun gibi hissettiriyor, A ise düz ve daha az dolu.| A 7/6/8/6 B 9/8/8/8
+cift2: A | 3 | A başlığı daha iri ve cesur, kırmızı vurgu ve alıntı ile bölümlü yapı daha akılda kalıyor, B ise sakin ama daha sönük kalıyor.| A 7/8/8/8 B 6/8/8/7
+cift3: A | 3 | A renkli etiketleri, canlı zaman çizelgesi ve komut bloğuyla daha hacker-havalı ve dolu görünüyor, B temiz ama daha düz ve runbook kodu taşıp kesiliyor.| A 8/8/7/9 B 7/8/8/7
+cift4: B | 4 | B dev büyük harfli başlıklar, tam ekran limon yeşili çağrı bloğu ve vurgulu yorum kartıyla çok daha cesur ve akılda kalıcı, A daha sönük ve sıradan.| A 7/7/8/8 B 9/8/8/8
+cift5: A | 2 | A altın rengi vurgu çubuğu ve renkli durum etiketleriyle biraz daha canlı ve akılda kalıcı, B daha derli toplu ama tek tonlu ve sıkıcı.| A 7/8/8/8 B 6/8/8/8

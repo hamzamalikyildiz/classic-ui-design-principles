@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pagerline - Incident Response</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink: #09090b; --panel: #18181b; --line: #27272a; --accent: #22d3ee; }
+  body { background: var(--ink); color: #e4e4e7; font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+  .row { border-radius: 6px; border: 1px solid transparent; }
+  .row[aria-selected="true"] { background: #1f1f23; border-color: var(--line); box-shadow: inset 2px 0 0 var(--accent); }
+  .row:hover { background: #1f1f23; }
+  .row:focus-visible, button:focus-visible, pre:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .live { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+  .rise { animation: rise 500ms ease-out both; }
+  .rise-2 { animation: rise 500ms 120ms ease-out both; }
+  @media (prefers-reduced-motion: reduce) { .live, .rise, .rise-2 { animation: none } }
+  .scroll { scrollbar-color: #3f3f46 transparent; }
+  .sev { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; border-radius: 4px; padding: 2px 6px; border: 1px solid; }
+  .sev1 { color: #f87171; border-color: rgb(248 113 113 / .45); background: rgb(239 68 68 / .12); }
+  .sev2 { color: #fb923c; border-color: rgb(251 146 60 / .45); background: rgb(249 115 22 / .12); }
+  .sev3 { color: #fcd34d; border-color: rgb(252 211 77 / .45); background: rgb(245 158 11 / .12); }
+  .sev4 { color: #7dd3fc; border-color: rgb(125 211 252 / .45); background: rgb(14 165 233 / .12); }
+</style>
+</head>
+<body class="min-h-screen antialiased">
+<header class="border-b border-zinc-800">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+    <div class="flex items-center gap-3">
+      <span class="mono text-base font-semibold text-zinc-100">pagerline</span>
+      <span class="mono text-xs tracking-widest text-zinc-400">incident response</span>
+    </div>
+    <div class="flex items-center gap-4 text-sm text-zinc-400">
+      <span class="flex items-center gap-2"><span class="live h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span>Live</span>
+      <span class="mono">synced 12s ago</span>
+      <button class="h-8 rounded-md border border-zinc-700 bg-zinc-800 px-3 text-sm text-zinc-200 hover:bg-zinc-700">New incident</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl space-y-4 px-4 py-6 sm:px-6">
+
+  <!-- Active incidents (focal list) -->
+  <section class="panel rise" aria-labelledby="inc-h">
+    <div class="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
+      <h1 id="inc-h" class="text-sm font-semibold text-zinc-100">Active incidents <span class="mono text-zinc-400">(4)</span></h1>
+      <span class="mono text-xs tracking-widest text-zinc-400">1 SEV1 open</span>
+    </div>
+    <ul id="incidents" role="listbox" aria-label="Active incidents" class="scroll grid gap-1 overflow-x-auto p-2">
+      <li role="option" aria-selected="true" tabindex="0" data-id="INC-2214" class="row grid cursor-pointer grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 px-3 py-2.5 sm:grid-cols-[auto_auto_1fr_auto_auto]">
+        <span class="sev sev1">SEV1</span>
+        <span class="mono text-sm text-zinc-400 sm:w-24">INC-2214</span>
+        <span class="min-w-0 truncate text-sm text-zinc-100 sm:col-auto">Checkout API 5xx spike, us-east-1</span>
+        <span class="mono text-sm text-zinc-400">47m</span>
+        <span class="text-sm text-zinc-400">Ayşe Demir</span>
+      </li>
+      <li role="option" aria-selected="false" tabindex="0" data-id="INC-2211" class="row grid cursor-pointer grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 px-3 py-2.5 sm:grid-cols-[auto_auto_1fr_auto_auto]">
+        <span class="sev sev2">SEV2</span>
+        <span class="mono text-sm text-zinc-400 sm:w-24">INC-2211</span>
+        <span class="min-w-0 truncate text-sm text-zinc-100">Search index lag above 8 min</span>
+        <span class="mono text-sm text-zinc-400">1h 12m</span>
+        <span class="text-sm text-zinc-400">Jonas Keller</span>
+      </li>
+      <li role="option" aria-selected="false" tabindex="0" data-id="INC-2209" class="row grid cursor-pointer grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 px-3 py-2.5 sm:grid-cols-[auto_auto_1fr_auto_auto]">
+        <span class="sev sev3">SEV3</span>
+        <span class="mono text-sm text-zinc-400 sm:w-24">INC-2209</span>
+        <span class="min-w-0 truncate text-sm text-zinc-100">Webhook retries climbing, EU tenant</span>
+        <span class="mono text-sm text-zinc-400">3h 05m</span>
+        <span class="text-sm text-zinc-400">Priya Raman</span>
+      </li>
+      <li role="option" aria-selected="false" tabindex="0" data-id="INC-2207" class="row grid cursor-pointer grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 px-3 py-2.5 sm:grid-cols-[auto_auto_1fr_auto_auto]">
+        <span class="sev sev4">SEV4</span>
+        <span class="mono text-sm text-zinc-400 sm:w-24">INC-2207</span>
+        <span class="min-w-0 truncate text-sm text-zinc-100">Certificate expiring in 9 days, status host</span>
+        <span class="mono text-sm text-zinc-400">1d 4h</span>
+        <span class="text-sm text-zinc-400">Tomás Ruiz</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    <!-- Timeline of selected incident -->
+    <section class="panel rise-2 lg:col-span-2 min-w-0" aria-labelledby="tl-h">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 px-4 py-3">
+        <div class="min-w-0">
+          <p class="mono text-xs tracking-widest text-zinc-400">Timeline</p>
+          <h2 id="tl-h" class="truncate text-base font-semibold text-zinc-100">Checkout API 5xx spike, us-east-1</h2>
+        </div>
+        <div class="flex gap-2">
+          <button class="h-8 rounded-md bg-cyan-400 px-3 text-sm font-semibold text-zinc-950 hover:bg-cyan-300">Acknowledge</button>
+          <button class="h-8 rounded-md border border-zinc-700 bg-zinc-800 px-3 text-sm text-zinc-200 hover:bg-zinc-700">Escalate</button>
+        </div>
+      </div>
+      <ol id="timeline" class="scroll max-h-96 space-y-0 overflow-y-auto px-4 py-3"></ol>
+    </section>
+
+    <!-- On-call rotation -->
+    <section class="panel rise-2 min-w-0" aria-labelledby="oc-h">
+      <div class="border-b border-zinc-800 px-4 py-3">
+        <p class="mono text-xs tracking-widest text-zinc-400">Rotation</p>
+        <h2 id="oc-h" class="text-base font-semibold text-zinc-100">On call, platform-core</h2>
+      </div>
+      <ul class="divide-y divide-zinc-800">
+        <li class="flex items-center justify-between gap-3 px-4 py-3">
+          <div class="min-w-0"><p class="truncate text-sm text-zinc-100">Ayşe Demir</p><p class="text-sm text-zinc-400">Primary, 08:00-16:00 UTC</p></div>
+          <span class="mono flex items-center gap-2 text-xs text-emerald-400"><span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span>ON</span>
+        </li>
+        <li class="flex items-center justify-between gap-3 px-4 py-3">
+          <div class="min-w-0"><p class="truncate text-sm text-zinc-100">Jonas Keller</p><p class="text-sm text-zinc-400">Secondary, 08:00-16:00 UTC</p></div>
+          <span class="mono flex items-center gap-2 text-xs text-emerald-400"><span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span>ON</span>
+        </li>
+        <li class="flex items-center justify-between gap-3 px-4 py-3">
+          <div class="min-w-0"><p class="truncate text-sm text-zinc-100">Priya Raman</p><p class="text-sm text-zinc-400">Escalation, 16:00-24:00 UTC</p></div>
+          <span class="mono flex items-center gap-2 text-xs text-zinc-400"><span class="h-2 w-2 rounded-full bg-zinc-600" aria-hidden="true"></span>NEXT</span>
+        </li>
+        <li class="flex items-center justify-between gap-3 px-4 py-3">
+          <div class="min-w-0"><p class="truncate text-sm text-zinc-100">Tomás Ruiz</p><p class="text-sm text-zinc-400">Backup, 00:00-08:00 UTC</p></div>
+          <span class="mono flex items-center gap-2 text-xs text-zinc-400"><span class="h-2 w-2 rounded-full bg-zinc-600" aria-hidden="true"></span>OFF</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- MTTR trend -->
+    <section class="panel lg:col-span-2 min-w-0 p-4" aria-labelledby="mt-h">
+      <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="mono text-xs tracking-widest text-zinc-400">Last 10 weeks</p>
+          <h2 id="mt-h" class="text-base font-semibold text-zinc-100">Mean time to resolve, minutes</h2>
+        </div>
+        <ul class="flex gap-4 text-sm text-zinc-400">
+          <li class="flex items-center gap-2"><span class="h-0.5 w-5 bg-cyan-400" aria-hidden="true"></span>MTTR</li>
+          <li class="flex items-center gap-2"><span class="w-5 border-t-2 border-dashed border-amber-300" aria-hidden="true"></span>SLO 30 min</li>
+        </ul>
+      </div>
+      <svg id="mttr" viewBox="0 0 640 260" class="w-full" role="img" aria-label="MTTR by week, falling from 52 to 26 minutes"></svg>
+    </section>
+
+    <!-- Runbook snippet -->
+    <section class="panel min-w-0 p-4" aria-labelledby="rb-h">
+      <div class="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <p class="mono text-xs tracking-widest text-zinc-400">RB-07</p>
+          <h2 id="rb-h" class="text-base font-semibold text-zinc-100">Roll back checkout</h2>
+        </div>
+        <button id="copy" class="h-8 rounded-md border border-zinc-700 bg-zinc-800 px-3 text-sm text-zinc-200 hover:bg-zinc-700">Copy</button>
+      </div>
+      <pre id="runbook" tabindex="0" class="scroll mono max-w-full min-w-0 whitespace-pre-wrap break-words rounded-md border border-zinc-800 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300"><span class="text-zinc-400"># 1. Confirm the bad release</span>
+kubectl -n checkout get deploy checkout-svc -o wide
+
+<span class="text-zinc-400"># 2. Roll back to the previous ReplicaSet</span>
+kubectl -n checkout rollout undo deploy/checkout-svc
+kubectl -n checkout rollout status deploy/checkout-svc --timeout=5m
+
+<span class="text-zinc-400"># 3. Verify: 5xx under 1% for 10 min on /v2/charge</span></pre>
+    </section>
+  </div>
+</main>
+
+<script>
+  const incidents = {
+    'INC-2214': { title: 'Checkout API 5xx spike, us-east-1', events: [
+      ['14:02', 'ALERT', 'checkout 5xx at 9.8%, threshold 2%'],
+      ['14:04', 'ACK', 'Paged Ayşe Demir, acknowledged in 2m'],
+      ['14:09', 'ACTION', 'Rollback of checkout-svc 4.12.3 started'],
+      ['14:17', 'METRIC', '5xx down to 3.1%'],
+      ['14:21', 'ACTION', 'Rollback complete, 4.12.2 serving 100%'],
+      ['14:31', 'METRIC', '5xx at 0.4%, holding'],
+      ['14:38', 'COMMS', 'Status page set to Monitoring, ticket CHK-881 opened'] ] },
+    'INC-2211': { title: 'Search index lag above 8 min', events: [
+      ['12:40', 'ALERT', 'index lag 8.6 min on shard group B'],
+      ['12:43', 'ACK', 'Acknowledged by Jonas Keller'],
+      ['13:05', 'ACTION', 'Consumer group rebalanced, 3 pods restarted'],
+      ['13:52', 'METRIC', 'lag 1.1 min, falling'] ] },
+    'INC-2209': { title: 'Webhook retries climbing, EU tenant', events: [
+      ['10:58', 'ALERT', 'retry queue depth 4,210, threshold 1,000'],
+      ['11:02', 'ACK', 'Acknowledged by Priya Raman'],
+      ['11:30', 'ACTION', 'Paused retries for one endpoint, owner notified'] ] },
+    'INC-2207': { title: 'Certificate expiring in 9 days, status host', events: [
+      ['Mon 09:15', 'ALERT', 'cert expires 2026-12-02, renewal window open'],
+      ['Mon 09:40', 'ACK', 'Assigned to Tomás Ruiz'] ] }
+  };
+
+  const tlColor = { ALERT: 'text-red-400', ACK: 'text-cyan-400', ACTION: 'text-zinc-200', METRIC: 'text-amber-300', COMMS: 'text-zinc-400' };
+
+  function esc(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+  function showIncident(id) {
+    const inc = incidents[id];
+    if (!inc) return;
+    document.querySelectorAll('#incidents [role="option"]').forEach(li => li.setAttribute('aria-selected', li.dataset.id === id));
+    document.getElementById('tl-h').textContent = inc.title;
+    document.getElementById('timeline').innerHTML = inc.events.map(([t, tag, text]) =>
+      `<li class="grid grid-cols-[auto_auto_1fr] items-baseline gap-x-4 border-l border-zinc-800 py-2 pl-4">
+         <span class="mono text-sm text-zinc-400">${esc(t)}</span>
+         <span class="mono text-xs font-semibold ${tlColor[tag] || 'text-zinc-400'}">${tag}</span>
+         <span class="text-sm text-zinc-200">${esc(text)}</span>
+       </li>`).join('');
+  }
+
+  document.querySelectorAll('#incidents [role="option"]').forEach(li => {
+    li.addEventListener('click', () => showIncident(li.dataset.id));
+    li.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showIncident(li.dataset.id); } });
+  });
+  showIncident('INC-2214');
+
+  // MTTR chart (weekly, minutes)
+  (function drawMttr() {
+    const data = [52, 47, 49, 41, 38, 44, 33, 29, 31, 26];
+    const weeks = ['W36','W37','W38','W39','W40','W41','W42','W43','W44','W45'];
+    const L = 48, R = 616, T = 16, B = 220, MAX = 60, SLO = 30;
+    const x = i => L + i * (R - L) / (data.length - 1);
+    const y = v => B - (v / MAX) * (B - T);
+    let s = '';
+    [0, 15, 30, 45, 60].forEach(v => {
+      s += `<line x1="${L}" x2="${R}" y1="${y(v)}" y2="${y(v)}" stroke="#27272a"/>`;
+      s += `<text x="${L - 10}" y="${y(v) + 5}" text-anchor="end" font-size="14" fill="#a1a1aa" class="mono">${v}</text>`;
+    });
+    s += `<line x1="${L}" x2="${R}" y1="${y(SLO)}" y2="${y(SLO)}" stroke="#fcd34d" stroke-dasharray="6 5" stroke-width="1.5"/>`;
+    s += `<text x="${L + 6}" y="${y(SLO) - 8}" text-anchor="start" font-size="14" fill="#fcd34d">SLO 30 min</text>`;
+    s += `<polyline fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linejoin="round" points="${data.map((v, i) => `${x(i)},${y(v)}`).join(' ')}"/>`;
+    data.forEach((v, i) => {
+      s += `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="#09090b" stroke="#22d3ee" stroke-width="2"/>`;
+      s += `<text x="${x(i)}" y="${y(v) - 10}" text-anchor="middle" font-size="14" fill="#e4e4e7" class="mono">${v}</text>`;
+      s += `<text x="${x(i)}" y="${B + 24}" text-anchor="middle" font-size="14" fill="#a1a1aa" class="mono">${weeks[i]}</text>`;
+    });
+    document.getElementById('mttr').innerHTML = s;
+  })();
+
+  document.getElementById('copy').addEventListener('click', async e => {
+    const btn = e.currentTarget;
+    try {
+      await navigator.clipboard.writeText(document.getElementById('runbook').innerText);
+      btn.textContent = 'Copied';
+    } catch (err) {
+      btn.textContent = 'Copy failed';
+    }
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  });
+</script>
+</body>
+</html>

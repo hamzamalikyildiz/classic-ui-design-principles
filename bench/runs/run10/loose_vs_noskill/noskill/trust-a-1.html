@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Savings Goals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .bar-fill { transition: width .6s ease; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+<main class="max-w-6xl mx-auto px-4 py-6 md:py-8 space-y-6">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between gap-4">
+    <div>
+      <p class="text-sm text-slate-500">Good morning</p>
+      <h1 class="text-2xl font-bold text-slate-900">Savings goals</h1>
+    </div>
+    <div class="h-10 w-10 rounded-full bg-emerald-600 text-white grid place-items-center font-semibold">HM</div>
+  </header>
+
+  <!-- Low balance alert -->
+  <div role="alert" class="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
+    <svg class="h-5 w-5 flex-none text-amber-600 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+    <div class="flex-1 text-sm">
+      <p class="font-semibold text-amber-900">Low balance on Everyday Checking</p>
+      <p class="text-amber-800">Balance is $412.60, below your $500 alert threshold. Move funds in to avoid fees.</p>
+    </div>
+    <button class="text-sm font-medium text-amber-900 underline underline-offset-2">Dismiss</button>
+  </div>
+
+  <!-- Balance cards -->
+  <section class="grid gap-4 sm:grid-cols-3">
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <p class="text-sm text-slate-500">Total savings</p>
+      <p class="mt-2 text-3xl font-bold text-slate-900">$18,420.35</p>
+      <p class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700">
+        <span aria-hidden="true">&#9650;</span> +$1,240.00 this month
+      </p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <p class="text-sm text-slate-500">Everyday checking</p>
+      <p class="mt-2 text-3xl font-bold text-slate-900">$412.60</p>
+      <p class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-rose-600">
+        <span aria-hidden="true">&#9660;</span> -$286.10 this week
+      </p>
+    </article>
+    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <p class="text-sm text-slate-500">Saved this year</p>
+      <p class="mt-2 text-3xl font-bold text-slate-900">$9,870.00</p>
+      <p class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700">
+        <span aria-hidden="true">&#9650;</span> +12.4% vs last year
+      </p>
+    </article>
+  </section>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+    <!-- Goals -->
+    <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 lg:col-span-1">
+      <h2 class="text-lg font-semibold text-slate-900">Goals</h2>
+      <ul class="mt-4 space-y-5">
+        <li>
+          <div class="flex justify-between text-sm">
+            <span class="font-medium">Emergency fund</span>
+            <span class="text-slate-500">$7,200 / $10,000</span>
+          </div>
+          <div class="mt-2 h-2.5 rounded-full bg-slate-100" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
+            <div class="bar-fill h-2.5 rounded-full bg-emerald-600" style="width:72%"></div>
+          </div>
+        </li>
+        <li>
+          <div class="flex justify-between text-sm">
+            <span class="font-medium">Home deposit</span>
+            <span class="text-slate-500">$6,500 / $25,000</span>
+          </div>
+          <div class="mt-2 h-2.5 rounded-full bg-slate-100" role="progressbar" aria-valuenow="26" aria-valuemin="0" aria-valuemax="100">
+            <div class="bar-fill h-2.5 rounded-full bg-sky-600" style="width:26%"></div>
+          </div>
+        </li>
+        <li>
+          <div class="flex justify-between text-sm">
+            <span class="font-medium">Trip to Japan</span>
+            <span class="text-slate-500">$2,100 / $3,000</span>
+          </div>
+          <div class="mt-2 h-2.5 rounded-full bg-slate-100" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">
+            <div class="bar-fill h-2.5 rounded-full bg-violet-600" style="width:70%"></div>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Monthly savings chart -->
+    <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 lg:col-span-2">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-slate-900">Monthly savings</h2>
+        <span class="text-sm text-slate-500">Last 6 months</span>
+      </div>
+      <svg viewBox="0 0 380 200" class="mt-4 w-full h-56" role="img" aria-label="Monthly savings bar chart">
+        <line x1="0" y1="180" x2="380" y2="180" stroke="#cbd5e1"/>
+        <line x1="0" y1="100" x2="380" y2="100" stroke="#e2e8f0" stroke-dasharray="4 4"/>
+        <line x1="0" y1="20" x2="380" y2="20" stroke="#e2e8f0" stroke-dasharray="4 4"/>
+        <!-- bars: value/2400*160 tall -->
+        <rect x="20"  y="100" width="40" height="80"  rx="6" fill="#a7f3d0"/>
+        <rect x="80"  y="70"  width="40" height="110" rx="6" fill="#a7f3d0"/>
+        <rect x="140" y="87"  width="40" height="93"  rx="6" fill="#a7f3d0"/>
+        <rect x="200" y="40"  width="40" height="140" rx="6" fill="#a7f3d0"/>
+        <rect x="260" y="57"  width="40" height="123" rx="6" fill="#a7f3d0"/>
+        <rect x="320" y="20"  width="40" height="160" rx="6" fill="#059669"/>
+        <g font-family="Inter, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">
+          <text x="40" y="195">Jun</text>
+          <text x="100" y="195">Jul</text>
+          <text x="160" y="195">Aug</text>
+          <text x="220" y="195">Sep</text>
+          <text x="280" y="195">Oct</text>
+          <text x="340" y="195">Nov</text>
+        </g>
+      </svg>
+    </section>
+  </div>
+
+  <!-- Recent transfers -->
+  <section class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+    <div class="flex items-center justify-between p-5 pb-3">
+      <h2 class="text-lg font-semibold text-slate-900">Recent transfers</h2>
+      <button class="text-sm font-medium text-emerald-700 hover:underline">View all</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-left text-slate-500">
+          <tr>
+            <th class="px-5 py-3 font-medium">Date</th>
+            <th class="px-5 py-3 font-medium">Description</th>
+            <th class="px-5 py-3 font-medium">To / From</th>
+            <th class="px-5 py-3 font-medium text-right">Amount</th>
+            <th class="px-5 py-3 font-medium">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr>
+            <td class="px-5 py-3 whitespace-nowrap">Nov 21</td>
+            <td class="px-5 py-3">Auto-save to Emergency fund</td>
+            <td class="px-5 py-3 text-slate-500">Everyday checking</td>
+            <td class="px-5 py-3 text-right font-medium text-slate-900">-$250.00</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Completed</span></td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3 whitespace-nowrap">Nov 19</td>
+            <td class="px-5 py-3">Salary deposit</td>
+            <td class="px-5 py-3 text-slate-500">Payroll ACH</td>
+            <td class="px-5 py-3 text-right font-medium text-emerald-700">+$3,400.00</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Completed</span></td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3 whitespace-nowrap">Nov 17</td>
+            <td class="px-5 py-3">Transfer to Home deposit</td>
+            <td class="px-5 py-3 text-slate-500">Savings Plus</td>
+            <td class="px-5 py-3 text-right font-medium text-slate-900">-$500.00</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700">Scheduled</span></td>
+          </tr>
+          <tr>
+            <td class="px-5 py-3 whitespace-nowrap">Nov 14</td>
+            <td class="px-5 py-3">Round-up savings</td>
+            <td class="px-5 py-3 text-slate-500">Trip to Japan</td>
+            <td class="px-5 py-3 text-right font-medium text-slate-900">-$18.40</td>
+            <td class="px-5 py-3"><span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Completed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

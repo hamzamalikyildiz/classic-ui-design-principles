@@ -1,0 +1,11 @@
+Build one web page.
+Brief: Incident response dashboard "Pagerline": active incidents with severity, the on-call rotation, an MTTR trend chart, a timeline of the selected incident and a runbook snippet.
+
+Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to C:\Users\hamza\AppData\Local\Temp\trial_strict\raw\skill\technical-a-1.html and reply with that path only.
+
+Do NOT use the Skill tool.
+First read C:\Users\hamza\AppData\Local\Temp\strict_skill\SKILL.md and the files it tells you to read (mood technical: moods\technical.md, reference\visual-quality.md; reference\rules.md when fixing findings). Follow it. Do not read anything else in the skill folder (bench/ is off limits).
+When the page is done run (set the environment variable PYTHONIOENCODING=utf-8 first; the command starts with the python.exe path in quotes):
+  "C:\Users\hamza\AppData\Local\Programs\Python\Python312\python.exe" "C:\Users\hamza\AppData\Local\Temp\strict_skill\scripts\uitools.py" audit <file> --mood technical
+  "C:\Users\hamza\AppData\Local\Programs\Python\Python312\python.exe" "C:\Users\hamza\AppData\Local\Temp\strict_skill\scripts\render.py" <file> --out "C:\Users\hamza\AppData\Local\Temp\trial_strict\shots_gen\skill-technical-a-1.png" --check
+Open the PNG with the Read tool. Fix every WARN and anything empty, clipped, overlapping or broken with the smallest edits. Repeat audit and render after fixes. At most 2 fix rounds.

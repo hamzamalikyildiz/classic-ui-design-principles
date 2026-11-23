@@ -1,0 +1,5 @@
+cift1: A | 4 | A tam renkli bantlarıyla canlı ve cesur, B ise daha sönük ve şablon gibi duruyor. | A 9/8/8/8 B 7/6/7/6
+cift2: B | 4 | B fener illüstrasyonu ve yan sütunuyla gözü tutuyor, A ise sadece düz yazıdan oluşan sıkıcı bir ders kitabı gibi. | A 5/7/8/6 B 8/8/8/7
+cift3: B | 3 | B koyu temasıyla daha havalı ve dolu görünüyor, A ise açık renkli ve biraz sönük bir panel gibi. | A 6/7/7/6 B 8/8/8/8
+cift4: B | 5 | B neon yeşil ve dev başlıklarıyla çok cesur ve akılda kalıcı, A ise temiz ama tanıdık koyu şablon gibi. | A 7/6/8/7 B 9/8/8/8
+cift5: A | 3 | A koyu yeşil kartı, serif başlığı ve altın vurgusuyla kendine has bir kimlik taşıyor, B ise tanıdık bir bankacılık şablonu gibi. | A 8/8/8/8 B 6/6/8/6

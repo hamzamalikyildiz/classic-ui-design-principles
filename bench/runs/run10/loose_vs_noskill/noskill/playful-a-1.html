@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hoppity - Learn languages through play</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { display: ['Fredoka', 'sans-serif'], body: ['Nunito', 'sans-serif'] },
+        colors: { sun: '#FFC83D', leaf: '#34C77B', sky: '#4DB6FF', berry: '#FF6B9A', ink: '#27304A' }
+      }
+    }
+  };
+</script>
+<style>
+  body { font-family: 'Nunito', sans-serif; }
+  .bounce-slow { animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+</style>
+</head>
+<body class="bg-[#FFF8EC] text-ink">
+
+<!-- Top bar -->
+<header class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+  <a href="#" class="font-display text-2xl font-bold text-leaf">Hoppity</a>
+  <nav class="hidden gap-6 font-semibold md:flex">
+    <a href="#lessons" class="hover:text-berry">Lessons</a>
+    <a href="#streak" class="hover:text-berry">Streaks</a>
+    <a href="#pricing" class="hover:text-berry">Pricing</a>
+    <a href="#faq" class="hover:text-berry">For parents</a>
+  </nav>
+  <a href="#cta" class="rounded-full bg-leaf px-4 py-2 font-bold text-white shadow-md hover:bg-emerald-500">Start free</a>
+</header>
+
+<!-- Hero -->
+<section class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 md:grid-cols-2 md:py-16">
+  <div>
+    <p class="inline-block rounded-full bg-sun/30 px-4 py-1 text-sm font-bold">For kids aged 6 to 9</p>
+    <h1 class="font-display mt-4 text-4xl font-bold leading-tight sm:text-6xl">Learn a new language, one <span class="text-berry">hop</span> at a time.</h1>
+    <p class="mt-5 text-lg text-ink/80">Short, silly lessons with Hoppity the frog. Ten minutes a day, no tears, lots of giggles.</p>
+    <div class="mt-8 flex flex-wrap gap-4">
+      <a href="#cta" class="rounded-full bg-berry px-6 py-3 font-bold text-white shadow-lg hover:bg-pink-500">Try a lesson</a>
+      <a href="#lessons" class="rounded-full border-2 border-ink px-6 py-3 font-bold hover:bg-ink hover:text-white">See lessons</a>
+    </div>
+  </div>
+
+  <!-- Mascot (inline SVG) -->
+  <div class="relative mx-auto flex w-full max-w-sm items-center justify-center">
+    <div class="absolute h-72 w-72 rounded-full bg-sky/30"></div>
+    <svg viewBox="0 0 300 300" class="bounce-slow relative w-full max-w-xs" role="img" aria-label="Hoppity the frog mascot">
+      <ellipse cx="150" cy="250" rx="110" ry="18" fill="#27304A" opacity="0.12"/>
+      <ellipse cx="150" cy="170" rx="120" ry="100" fill="#34C77B"/>
+      <circle cx="100" cy="110" r="42" fill="#34C77B"/>
+      <circle cx="200" cy="110" r="42" fill="#34C77B"/>
+      <circle cx="100" cy="108" r="28" fill="#fff"/>
+      <circle cx="200" cy="108" r="28" fill="#fff"/>
+      <circle cx="106" cy="112" r="12" fill="#27304A"/>
+      <circle cx="206" cy="112" r="12" fill="#27304A"/>
+      <circle cx="110" cy="106" r="4" fill="#fff"/>
+      <circle cx="210" cy="106" r="4" fill="#fff"/>
+      <path d="M110 200 Q150 232 190 200" stroke="#27304A" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <circle cx="78" cy="196" r="14" fill="#FF6B9A" opacity="0.6"/>
+      <circle cx="222" cy="196" r="14" fill="#FF6B9A" opacity="0.6"/>
+      <ellipse cx="60" cy="262" rx="28" ry="14" fill="#34C77B"/>
+      <ellipse cx="240" cy="262" rx="28" ry="14" fill="#34C77B"/>
+      <g transform="translate(232 52)">
+        <rect x="-38" y="-20" width="76" height="40" rx="20" fill="#FFC83D"/>
+        <text x="0" y="6" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="18" fill="#27304A">Hola!</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- Lessons preview -->
+<section id="lessons" class="bg-white py-16">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <h2 class="font-display text-3xl font-bold sm:text-4xl">Three lessons to try today</h2>
+    <p class="mt-2 text-ink/70">Pick a card and hop right in.</p>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <article class="rounded-3xl bg-sun/25 p-6">
+        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-sun font-display text-3xl font-bold">1</div>
+        <h3 class="font-display text-2xl font-bold">Animal friends</h3>
+        <p class="mt-2 text-ink/80">Meet the cat, the dog and the bunny. Say "gato", "perro" and "conejo" out loud.</p>
+        <p class="mt-4 text-sm font-bold">5 minutes</p>
+      </article>
+      <article class="rounded-3xl bg-sky/25 p-6">
+        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-sky font-display text-3xl font-bold text-white">2</div>
+        <h3 class="font-display text-2xl font-bold">Colors in the garden</h3>
+        <p class="mt-2 text-ink/80">Find the red flower and the green leaf. Colors stick best when you can see them.</p>
+        <p class="mt-4 text-sm font-bold">6 minutes</p>
+      </article>
+      <article class="rounded-3xl bg-berry/20 p-6">
+        <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-berry font-display text-3xl font-bold text-white">3</div>
+        <h3 class="font-display text-2xl font-bold">Counting snacks</h3>
+        <p class="mt-2 text-ink/80">Count apples, then count again in the new language. Numbers one to ten, with a snack break.</p>
+        <p class="mt-4 text-sm font-bold">7 minutes</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Streak teaser -->
+<section id="streak" class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+  <div class="flex flex-col items-center gap-8 rounded-[2.5rem] bg-ink p-8 text-white md:flex-row md:p-12">
+    <div class="flex-1">
+      <h2 class="font-display text-3xl font-bold sm:text-4xl">Keep your daily streak alive</h2>
+      <p class="mt-3 text-white/80">Every day you hop in, a new leaf grows on Hoppity's log. Seven days in a row unlocks a sticker.</p>
+    </div>
+    <div class="flex gap-3" aria-label="Seven day streak preview">
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-leaf font-bold">M</span>
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-leaf font-bold">T</span>
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-leaf font-bold">W</span>
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-leaf font-bold">T</span>
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sun font-bold text-ink">F</span>
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 font-bold">S</span>
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 font-bold">S</span>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="bg-[#FFF8EC] py-16">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <h2 class="font-display text-center text-3xl font-bold sm:text-4xl">Simple pricing for busy families</h2>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <div class="rounded-3xl border-2 border-ink/10 bg-white p-8">
+        <h3 class="font-display text-2xl font-bold">Free</h3>
+        <p class="mt-2 text-4xl font-bold">$0</p>
+        <ul class="mt-6 space-y-2 text-ink/80"><li>3 lessons a week</li><li>Daily streak</li></ul>
+        <a href="#cta" class="mt-8 block rounded-full border-2 border-ink py-3 text-center font-bold hover:bg-ink hover:text-white">Start free</a>
+      </div>
+      <div class="relative rounded-3xl bg-leaf p-8 text-white shadow-xl md:-translate-y-4">
+        <span class="absolute -top-3 right-6 rounded-full bg-sun px-3 py-1 text-sm font-bold text-ink">Most popular</span>
+        <h3 class="font-display text-2xl font-bold">Family</h3>
+        <p class="mt-2 text-4xl font-bold">$9<span class="text-base font-semibold">/mo</span></p>
+        <ul class="mt-6 space-y-2"><li>All lessons, every day</li><li>Up to 3 kids</li><li>Parent progress reports</li></ul>
+        <a href="#cta" class="mt-8 block rounded-full bg-white py-3 text-center font-bold text-leaf hover:bg-sun hover:text-ink">Choose Family</a>
+      </div>
+      <div class="rounded-3xl border-2 border-ink/10 bg-white p-8">
+        <h3 class="font-display text-2xl font-bold">School</h3>
+        <p class="mt-2 text-4xl font-bold">$4<span class="text-base font-semibold">/child</span></p>
+        <ul class="mt-6 space-y-2 text-ink/80"><li>Classroom dashboard</li><li>Teacher tools</li></ul>
+        <a href="#cta" class="mt-8 block rounded-full border-2 border-ink py-3 text-center font-bold hover:bg-ink hover:text-white">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Parents FAQ -->
+<section id="faq" class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+  <h2 class="font-display text-center text-3xl font-bold sm:text-4xl">Parents ask, we answer</h2>
+  <div class="mt-10 space-y-4">
+    <details class="group rounded-2xl bg-white p-5 shadow-sm" open>
+      <summary class="cursor-pointer list-none font-display text-lg font-bold">Is it safe for my child?</summary>
+      <p class="mt-3 text-ink/80">Yes. There are no ads, no chat with strangers and no in-app purchases. Progress reports stay in the parent area.</p>
+    </details>
+    <details class="group rounded-2xl bg-white p-5 shadow-sm">
+      <summary class="cursor-pointer list-none font-display text-lg font-bold">How long is each lesson?</summary>
+      <p class="mt-3 text-ink/80">Five to seven minutes. Kids can finish one lesson a day and still have time to play.</p>
+    </details>
+    <details class="group rounded-2xl bg-white p-5 shadow-sm">
+      <summary class="cursor-pointer list-none font-display text-lg font-bold">Do I need to speak the language?</summary>
+      <p class="mt-3 text-ink/80">No. Hoppity says every word out loud first, and parents can cheer along with the audio.</p>
+    </details>
+  </div>
+</section>
+
+<!-- Closing CTA -->
+<section id="cta" class="px-4 pb-20 sm:px-6">
+  <div class="mx-auto max-w-4xl rounded-[2.5rem] bg-sky px-8 py-14 text-center text-white shadow-xl">
+    <h2 class="font-display text-3xl font-bold sm:text-5xl">Ready for your first hop?</h2>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-white/90">Start free today. Your child can finish a whole lesson before bedtime.</p>
+    <a href="#" class="mt-8 inline-block rounded-full bg-sun px-8 py-4 font-display text-xl font-bold text-ink shadow-lg hover:bg-yellow-300">Start learning free</a>
+  </div>
+</section>
+
+<footer class="border-t border-ink/10 py-8 text-center text-sm text-ink/60">
+  <p>Hoppity. Languages for curious kids.</p>
+</footer>
+
+</body>
+</html>

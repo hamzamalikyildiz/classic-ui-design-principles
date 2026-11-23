@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hoppity: learn languages, one hop at a time</title>
+<meta name="description" content="Hoppity is a language-learning app for kids aged 6-9. Short lessons, a daily streak and no ads.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        sun: '#FFC93C', sky: '#5BC0EB', leaf: '#1A6E45', coral: '#FF6B5B',
+        ink: '#1F2A5A', cream: '#FFF8E7', paper: '#FFFDF6'
+      },
+      fontFamily: { display: ['"Baloo 2"', 'cursive'], body: ['Nunito', 'sans-serif'] },
+      boxShadow: { pop: '0 8px 0 0 #1F2A5A', sun: '0 10px 0 0 #E0A200' }
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: Nunito, sans-serif; }
+  .display { font-family: "Baloo 2", cursive; letter-spacing: -0.01em; }
+  .rise { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+  .rise-2 { animation-delay: .12s; }
+  .rise-3 { animation-delay: .24s; }
+  .hop { animation: hop 2.8s ease-in-out infinite; transform-origin: 50% 100%; }
+  .wiggle:hover { animation: wiggle .5s ease-in-out; }
+  .btn { transition: transform .15s ease; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: scale(.98); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes hop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+  .faq summary { list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq[open] .chev { transform: rotate(45deg); }
+</style>
+</head>
+<body class="bg-cream text-ink antialiased">
+
+<header class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+  <a href="#top" class="display flex items-center gap-2 text-2xl font-extrabold">
+    <span class="grid h-9 w-9 place-items-center rounded-full bg-leaf text-white" aria-hidden="true">
+      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 14c2-6 14-6 16 0"/><path d="M7 14l-2 5M17 14l2 5"/></svg>
+    </span>
+    Hoppity
+  </a>
+  <nav aria-label="Main" class="hidden gap-7 text-base font-bold md:flex">
+    <a href="#lessons" class="hover:underline underline-offset-4">Lessons</a>
+    <a href="#streak" class="hover:underline underline-offset-4">Streaks</a>
+    <a href="#pricing" class="hover:underline underline-offset-4">Pricing</a>
+    <a href="#parents" class="hover:underline underline-offset-4">For parents</a>
+  </nav>
+  <a href="#start" class="btn rounded-full bg-sun px-5 py-2.5 text-base font-extrabold shadow-pop">Start free</a>
+</header>
+
+<main id="top">
+  <!-- Hero: saturated sky stage, drawn frog mascot -->
+  <section class="relative overflow-hidden bg-sky">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-20 pt-10 sm:px-6 lg:grid-cols-2 lg:pb-24 lg:pt-16">
+      <div class="rise">
+        <p class="inline-block -rotate-2 rounded-full bg-paper px-4 py-1.5 text-sm font-extrabold">Ages 6 to 9 · 5 minutes a day</p>
+        <h1 class="display mt-5 text-6xl font-extrabold leading-[0.95] sm:text-7xl">Learn a new language, one hop at a time.</h1>
+        <p class="mt-6 max-w-xl text-xl leading-relaxed">Hoppity turns Spanish, French and Japanese words into games kids want to finish. Short lessons, big cheers, no ads.</p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <a id="start" href="#lessons" class="btn rounded-full bg-sun px-8 py-4 text-lg font-extrabold shadow-pop">Start learning free</a>
+          <a href="#lessons" class="btn rounded-full px-4 py-3 text-lg font-bold underline underline-offset-4">See a lesson</a>
+        </div>
+      </div>
+
+      <div class="rise rise-2 relative mx-auto w-full max-w-md">
+        <div class="absolute -left-4 top-10 h-24 w-24 rotate-12 rounded-3xl bg-sun" aria-hidden="true"></div>
+        <div class="absolute -right-2 bottom-8 h-16 w-16 -rotate-6 rounded-2xl bg-coral" aria-hidden="true"></div>
+        <svg viewBox="0 0 400 380" class="hop relative w-full" role="img" aria-label="Hoppity the frog waving on a lily pad">
+          <ellipse cx="200" cy="350" rx="170" ry="26" fill="#1F9A5C"/>
+          <ellipse cx="200" cy="342" rx="150" ry="22" fill="#2FA56A"/>
+          <path d="M200 342 L232 330 L200 318 Z" fill="#5BC0EB" opacity="0"/>
+          <!-- legs -->
+          <ellipse cx="118" cy="300" rx="34" ry="22" fill="#2FA56A"/>
+          <ellipse cx="282" cy="300" rx="34" ry="22" fill="#2FA56A"/>
+          <!-- body -->
+          <ellipse cx="200" cy="230" rx="120" ry="104" fill="#3DBE7A"/>
+          <ellipse cx="200" cy="262" rx="80" ry="46" fill="#A6E5BE"/>
+          <!-- eyes -->
+          <circle cx="150" cy="132" r="48" fill="#3DBE7A"/>
+          <circle cx="250" cy="132" r="48" fill="#3DBE7A"/>
+          <circle cx="150" cy="132" r="32" fill="#FFFDF6"/>
+          <circle cx="250" cy="132" r="32" fill="#FFFDF6"/>
+          <circle cx="156" cy="138" r="14" fill="#1F2A5A"/>
+          <circle cx="256" cy="138" r="14" fill="#1F2A5A"/>
+          <circle cx="161" cy="132" r="4" fill="#FFFDF6"/>
+          <circle cx="261" cy="132" r="4" fill="#FFFDF6"/>
+          <!-- smile and cheeks -->
+          <path d="M160 228 Q200 262 240 228" fill="none" stroke="#1F2A5A" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="112" cy="214" r="14" fill="#FF6B5B" opacity=".75"/>
+          <circle cx="288" cy="214" r="14" fill="#FF6B5B" opacity=".75"/>
+          <!-- waving arm -->
+          <path d="M318 250 Q360 220 352 170" fill="none" stroke="#3DBE7A" stroke-width="30" stroke-linecap="round"/>
+          <circle cx="352" cy="158" r="22" fill="#3DBE7A"/>
+          <!-- flag badge -->
+          <g transform="translate(60 60) rotate(-8)">
+            <rect x="0" y="0" width="92" height="40" rx="20" fill="#FFC93C"/>
+            <text x="46" y="26" text-anchor="middle" font-family="Baloo 2, cursive" font-weight="800" font-size="18" fill="#1F2A5A">Hola!</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <svg class="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 C240 0 480 60 720 30 C960 0 1200 50 1440 20 L1440 60 L0 60 Z" fill="#FFF8E7"/></svg>
+  </section>
+
+  <!-- Lessons preview -->
+  <section id="lessons" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="text-sm font-extrabold uppercase tracking-wider text-leaf">Inside the app</p>
+        <h2 class="display mt-2 text-4xl font-extrabold sm:text-5xl">Three lessons, zero boring drills</h2>
+      </div>
+      <p class="max-w-sm text-lg">Every lesson ends with a game. Kids pick it, play it and want one more.</p>
+    </div>
+
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <article class="wiggle rounded-[24px] bg-sun p-6 shadow-sun">
+        <div class="flex items-center justify-between">
+          <span class="rounded-full bg-paper px-3 py-1 text-sm font-extrabold">Spanish · Animals</span>
+          <span class="text-sm font-bold">4 min</span>
+        </div>
+        <div class="my-6 grid h-32 place-items-center rounded-2xl bg-paper">
+          <svg viewBox="0 0 120 90" class="h-24 w-28" aria-hidden="true">
+            <ellipse cx="60" cy="52" rx="38" ry="28" fill="#FF6B5B"/>
+            <circle cx="60" cy="26" r="20" fill="#FF6B5B"/>
+            <circle cx="52" cy="22" r="4" fill="#1F2A5A"/><circle cx="68" cy="22" r="4" fill="#1F2A5A"/>
+            <path d="M54 32 Q60 37 66 32" fill="none" stroke="#1F2A5A" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="display text-2xl font-extrabold">Perro means dog!</h3>
+        <p class="mt-2 text-base">Match five animal words to their pictures, then say them out loud.</p>
+      </article>
+
+      <article class="wiggle rounded-[24px] bg-leaf p-6 text-paper shadow-pop md:translate-y-6">
+        <div class="flex items-center justify-between">
+          <span class="rounded-full bg-paper px-3 py-1 text-sm font-extrabold text-ink">French · Food</span>
+          <span class="text-sm font-bold">5 min</span>
+        </div>
+        <div class="my-6 grid h-32 place-items-center rounded-2xl bg-paper">
+          <svg viewBox="0 0 120 90" class="h-24 w-28" aria-hidden="true">
+            <path d="M18 50 A42 38 0 0 1 102 50 Z" fill="#FFC93C"/>
+            <rect x="14" y="50" width="92" height="12" rx="6" fill="#FF6B5B"/>
+            <rect x="18" y="62" width="84" height="10" rx="5" fill="#2FA56A"/>
+            <path d="M18 72 H102 Q96 84 60 84 Q24 84 18 72 Z" fill="#FFC93C"/>
+          </svg>
+        </div>
+        <h3 class="display text-2xl font-extrabold">Le pain, the bread</h3>
+        <p class="mt-2 text-base">Build a sandwich by naming each layer in French.</p>
+      </article>
+
+      <article class="wiggle rounded-[24px] bg-paper p-6 shadow-pop">
+        <div class="flex items-center justify-between">
+          <span class="rounded-full bg-sky px-3 py-1 text-sm font-extrabold">Japanese · Colors</span>
+          <span class="text-sm font-bold">3 min</span>
+        </div>
+        <div class="my-6 grid h-32 place-items-center rounded-2xl bg-cream">
+          <div class="flex gap-3" aria-hidden="true">
+            <span class="h-14 w-14 rounded-full bg-coral"></span>
+            <span class="h-14 w-14 rounded-full bg-sun"></span>
+            <span class="h-14 w-14 rounded-full bg-sky"></span>
+          </div>
+        </div>
+        <h3 class="display text-2xl font-extrabold">Aka, ki, ao</h3>
+        <p class="mt-2 text-base">Red, yellow and blue, with a tap-the-color race at the end.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Streak teaser -->
+  <section id="streak" class="bg-ink text-paper">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-20">
+      <div>
+        <p class="text-sm font-extrabold uppercase tracking-wider text-sun">Daily streak</p>
+        <h2 class="display mt-2 text-4xl font-extrabold sm:text-5xl">Keep the flame alive, one day at a time</h2>
+        <p class="mt-5 max-w-lg text-lg leading-relaxed">Finish one lesson a day to grow the flame. Miss a day and Hoppity waits with a rescue lily pad, so a streak never ends in tears.</p>
+      </div>
+      <div class="rounded-[24px] bg-paper p-6 text-ink shadow-sun sm:p-8">
+        <div class="flex items-center gap-4">
+          <svg viewBox="0 0 48 56" class="h-14 w-12 shrink-0" aria-hidden="true">
+            <path d="M24 2 C34 14 44 22 44 36 A20 20 0 0 1 4 36 C4 24 12 18 16 10 C18 18 20 20 24 2 Z" fill="#FF6B5B"/>
+            <path d="M24 26 C29 32 34 36 34 42 A10 10 0 0 1 14 42 C14 36 19 33 24 26 Z" fill="#FFC93C"/>
+          </svg>
+          <div>
+            <p class="display text-4xl font-extrabold">12 days</p>
+            <p class="text-base font-bold">Your current streak</p>
+          </div>
+        </div>
+        <ol class="mt-6 grid grid-cols-7 gap-2 text-center text-sm font-extrabold" aria-label="Last seven days">
+          <li class="rounded-xl bg-leaf py-3 text-paper">Mon</li>
+          <li class="rounded-xl bg-leaf py-3 text-paper">Tue</li>
+          <li class="rounded-xl bg-leaf py-3 text-paper">Wed</li>
+          <li class="rounded-xl bg-leaf py-3 text-paper">Thu</li>
+          <li class="rounded-xl bg-leaf py-3 text-paper">Fri</li>
+          <li class="rounded-xl bg-sun py-3">Sat</li>
+          <li class="rounded-xl border-2 border-dashed border-ink py-3">Sun</li>
+        </ol>
+        <p class="mt-5 rounded-2xl bg-cream px-4 py-3 text-base font-bold">Two more lessons and you unlock the Frog Crown badge.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="text-center">
+      <p class="text-sm font-extrabold uppercase tracking-wider text-leaf">Pricing</p>
+      <h2 class="display mt-2 text-4xl font-extrabold sm:text-5xl">Start free. Upgrade when they are hooked.</h2>
+    </div>
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      <div class="rounded-[24px] border-2 border-ink bg-paper p-7">
+        <h3 class="display text-2xl font-extrabold">Hop Start</h3>
+        <p class="mt-3 display text-5xl font-extrabold">Free</p>
+        <p class="mt-2 text-base">One language, three lessons a day.</p>
+        <ul class="mt-6 space-y-3 text-base">
+          <li>One language of your choice</li>
+          <li>Daily streak and flame</li>
+          <li>Parent progress email each week</li>
+        </ul>
+        <a href="#start" class="btn mt-8 block rounded-full border-2 border-ink px-6 py-3.5 text-center text-lg font-extrabold">Try it free</a>
+      </div>
+      <div class="rounded-[24px] bg-sun p-7 shadow-pop md:-translate-y-4">
+        <p class="inline-block rounded-full bg-ink px-3 py-1 text-sm font-extrabold text-paper">Most families pick this</p>
+        <h3 class="display mt-3 text-2xl font-extrabold">Family Pond</h3>
+        <p class="mt-3 display text-5xl font-extrabold">$6<span class="text-lg font-bold"> / month</span></p>
+        <p class="mt-2 text-base">Up to four kids, every language.</p>
+        <ul class="mt-6 space-y-3 text-base">
+          <li>All languages and all lessons</li>
+          <li>Four child profiles</li>
+          <li>Offline lessons for the car</li>
+        </ul>
+        <a href="#start" class="btn mt-8 block rounded-full bg-ink px-6 py-3.5 text-center text-lg font-extrabold text-paper">Get Family Pond</a>
+      </div>
+      <div class="rounded-[24px] bg-paper p-7 shadow-pop">
+        <h3 class="display text-2xl font-extrabold">Yearly Lily</h3>
+        <p class="mt-3 display text-5xl font-extrabold">$54<span class="text-lg font-bold"> / year</span></p>
+        <p class="mt-2 text-base">The Family plan for a full year, two months free.</p>
+        <ul class="mt-6 space-y-3 text-base">
+          <li>Everything in Family Pond</li>
+          <li>Printable word cards</li>
+          <li>Cancel any time in one tap</li>
+        </ul>
+        <a href="#start" class="btn mt-8 block rounded-full border-2 border-ink px-6 py-3.5 text-center text-lg font-extrabold">Choose yearly</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parents FAQ -->
+  <section id="parents" class="bg-sky/25">
+    <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:py-20">
+      <p class="text-sm font-extrabold uppercase tracking-wider text-leaf">For parents</p>
+      <h2 class="display mt-2 text-4xl font-extrabold sm:text-5xl">Questions we hear most</h2>
+      <div class="mt-8 space-y-4">
+        <details class="faq rounded-2xl bg-paper p-5 shadow-pop" open>
+          <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-extrabold">Is it safe for my child?<span class="chev grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sun text-xl transition-transform" aria-hidden="true">+</span></summary>
+          <p class="mt-3 max-w-prose text-base leading-relaxed">Yes. There are no ads, no in-app purchases aimed at kids, no chat with strangers and no public profiles. We store only the progress needed for lessons.</p>
+        </details>
+        <details class="faq rounded-2xl bg-paper p-5 shadow-pop">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-extrabold">How much time a day does it take?<span class="chev grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sun text-xl transition-transform" aria-hidden="true">+</span></summary>
+          <p class="mt-3 max-w-prose text-base leading-relaxed">About five minutes. Lessons are short on purpose, so kids finish before they lose interest.</p>
+        </details>
+        <details class="faq rounded-2xl bg-paper p-5 shadow-pop">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-extrabold">Do they need to read well first?<span class="chev grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sun text-xl transition-transform" aria-hidden="true">+</span></summary>
+          <p class="mt-3 max-w-prose text-base leading-relaxed">No. Every word is paired with a picture and read aloud, so early readers can follow along with a grown-up or on their own.</p>
+        </details>
+        <details class="faq rounded-2xl bg-paper p-5 shadow-pop">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-extrabold">Can I see what they learned?<span class="chev grid h-8 w-8 shrink-0 place-items-center rounded-full bg-sun text-xl transition-transform" aria-hidden="true">+</span></summary>
+          <p class="mt-3 max-w-prose text-base leading-relaxed">Yes. A weekly email lists the words learned, the streak and the lessons to try next. You can also turn the email off.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="relative rounded-[32px] bg-coral px-6 py-14 text-center text-ink sm:px-12">
+      <div class="absolute left-4 top-4 h-20 w-20 rounded-full bg-sun sm:h-32 sm:w-32" aria-hidden="true"></div>
+      <div class="absolute bottom-4 right-4 h-20 w-20 rounded-full bg-sky sm:h-32 sm:w-32" aria-hidden="true"></div>
+      <h2 class="display relative text-4xl font-extrabold sm:text-6xl">Ready for the first hop?</h2>
+      <p class="relative mx-auto mt-4 max-w-xl text-lg">Give your child one free lesson today. It takes five minutes and no card.</p>
+      <a href="#start" class="btn relative mt-8 inline-block rounded-full bg-sun px-10 py-4 text-lg font-extrabold shadow-pop">Start learning free</a>
+    </div>
+  </section>
+</main>
+
+<footer class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 pb-10 text-base sm:px-6">
+  <p class="display text-xl font-extrabold">Hoppity</p>
+  <nav aria-label="Footer" class="flex flex-wrap gap-2 font-bold sm:gap-6">
+    <a href="#pricing" class="flex min-h-[44px] items-center underline underline-offset-4">Pricing</a>
+    <a href="#parents" class="flex min-h-[44px] items-center underline underline-offset-4">Parent FAQ</a>
+    <a href="#top" class="flex min-h-[44px] items-center underline underline-offset-4">Privacy</a>
+  </nav>
+</footer>
+
+</body>
+</html>

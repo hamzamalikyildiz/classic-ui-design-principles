@@ -1,6 +1,6 @@
 # Plan: Kalıpları azaltmak, zorunlulukları tabana indirmek
 
-Durum: taslak, uygulanmadı. Hedef sürüm: `v1.0.0` öncesi.
+Durum: uygulandı ve ölçüldü (bench/runs/run10). Esnek sürüm katı sürüme karşı kaybetti (oyların %28'i, 5 çiftten 1'i) ve token/süre kazandırmadı, bu yüzden ön kayıtlı karar kuralına göre kabul edilmedi. Deney `loose-rules` dalında ve `loose-v1` etiketinde duruyor; `main` katı kurallarla devam ediyor. Küçük işler (Bölüm 7) `main`'de.
 
 ## 1. Neden
 

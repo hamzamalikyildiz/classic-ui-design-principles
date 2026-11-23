@@ -1,0 +1,5 @@
+cift1: A | 3 | A daha el işi ve gerçekçi duruyor (zaman çizelgesi, vardiya listesi, kopyalanabilir runbook), B ise düzgün ama daha standart bir panel ve runbook kodu kenarda taşıp kesiliyor | A 8/8/8/9 B 7/7/7/7
+cift2: A | 4 | A daha el yapımı ve tutarlı (ofset gölgeler, çizili kurbağa, ders kartlarında küçük çizimler, alevli seri takvimi), B ise düz renk bloklarıyla daha şablon kalıyor | A 9/8/8/8 B 7/6/7/7
+cift3: B | 2 | B somut ayrıntılarla (Ardnish Point, adı geçen bekçi, tarihli zaman çizelgesi) daha gerçek bir dergi yazısı gibi okunuyor ve başlık düzeni daha oturmuş, A ise düzgün ama biraz daha genel kalıyor | A 7/7/8/7 B 8/8/8/8
+cift4: B | 3 | B hedef çizgisi, değer etiketli sütunlar, sıradaki otomatik transfer ve renk kodlu tutarlarla daha dolu ve işe yarar bir panel sunuyor, A güzel ama daha ince ve yarım kalmış gibi | A 7/7/8/7 B 8/8/8/8
+cift5: A | 2 | A cesur başlıklar, tek vurgu rengi ve bütün sayfayı toparlayan limon yeşili ön sipariş bandıyla daha karakterli ve net bir hiyerarşi kuruyor, B daha iyi bisiklet çizimine ve güzel bir menzil çubuğuna sahip ama genel olarak daha sönük | A 8/7/8/8 B 7/7/7/8

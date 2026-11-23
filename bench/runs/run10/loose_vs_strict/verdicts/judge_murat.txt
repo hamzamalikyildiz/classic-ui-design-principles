@@ -1,0 +1,5 @@
+cift1: A | 2 | A daha dolu içerik sunuyor (uyarı, üç kart, etiketli grafik, hedefler, işlem tablosu) ve hiyerarşisi tutarlı, B ise durum etiketleriyle şık ama biraz daha seyrek. | A 8/7/8/8 B 8/7/8/7
+cift2: B | 2 | B tipografik olarak daha rafine ve dengeli (ortalı başlık, temiz zaman çizelgesi tablosu, üç sütunlu ilgili yazılar) ve A ile aynı derecede okunaklı, A ise alt başlıklarla daha zengin ama biraz daha tekdüze. | A 8/8/8/8 B 8/8/8/7
+cift3: A | 2 | A daha dengeli ve ürüne özgü (güçlü bisiklet çizimi, menzil çubukları, özellik tablosu), B ise iri büyük harf başlıkları ve küçücük bisikletiyle heroda dengesiz kalıyor. | A 8/7/8/8 B 8/7/7/7
+cift4: A | 4 | A tutarlı ofset gölgeler, dalgalı hero kenarı, ders illüstrasyonları ve düşünülmüş seri kartıyla belirgin biçimde daha işlenmiş, B ise daha düz ve şablona yakın bloklardan oluşuyor. | A 9/8/8/9 B 7/6/7/7
+cift5: B | 3 | B tek bir mono tipografi dili ve net bir hiyerarşiyle gerçek bir olay müdahale aracı gibi duruyor, A KPI kartlarıyla zengin olsa da runbook kod bloğu taşıp kesiliyor. | A 7/7/7/8 B 8/8/8/8

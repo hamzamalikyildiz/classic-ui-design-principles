@@ -1,0 +1,5 @@
+cift1: A | 3 | A daha kalın ve büyük başlık, koyu metin ve net kırmızı vurgularla daha rahat okunuyor, B ise soluk gri ve ince yazılı. | A 8/7/9/8 B 7/7/6/7
+cift2: B | 4 | B başlıkları büyük ama normal harfle yazılmış, bisiklet çizimi daha anlaşılır ve düzen sakin, A ise koca harflerle bağıran ve yorucu. | A 7/6/6/8 B 8/8/8/8
+cift3: A | 3 | A üstteki büyük özet kutularıyla sayfanın ne işe yaradığını hemen anlatıyor ve yazısı daha iri ve sade, B ise küçük daktilo yazısıyla yoğun. | A 7/7/8/7 B 7/6/6/8
+cift4: A | 2 | A her sütuna yazılan tutarlar, belirgin uyarı kutusu ve daha dolu hedef/işlem listesiyle biraz daha net ve zengin, B ise durum etiketleriyle iyi ama grafiği daha az açıklayıcı. | A 8/8/8/8 B 8/8/8/7
+cift5: A | 3 | A daha tutarlı bir tasarıma, derslerde küçük resimlere ve net kontrastlı bölümlere sahip, B ise sade ama bölümleri düz renk bloklarından ibaret. | A 9/8/8/8 B 8/7/8/7

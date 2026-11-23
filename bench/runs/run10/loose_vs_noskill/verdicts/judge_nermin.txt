@@ -1,0 +1,5 @@
+cift1: B | 3 | B daha büyük ve koyu başlıkla, illüstrasyonu ve yan sütunuyla daha okunaklı ve zengin, A ise ince ve küçük yazılı bir sütunda kalıyor. | A 7/7/7/7 B 8/8/8/8
+cift2: B | 4 | B büyük harfli neon yeşil bağırma havası yerine sakin, okunaklı ve düzenli bir hiyerarşi sunuyor, A ise çok gürültülü ve küçük soluk metinli. | A 6/6/6/8 B 8/8/8/7
+cift3: B | 4 | B açık zeminde koyu yazıyla daha net kontrast ve sade bir düzen sunuyor, A ise koyu temada küçük ve sıkışık yazılarla gözü yoruyor. | A 6/7/5/8 B 8/8/8/7
+cift4: B | 3 | B büyük serif başlığı, açıklayıcı yüzde metinleri ve eksen etiketli grafiğiyle daha anlaşılır ve zengin, A ise daha silik ve küçük yazılı. | A 7/6/6/6 B 8/8/8/8
+cift5: A | 3 | A daha sakin ve sade renklerle amacını hemen anlatıyor, B ise art arda parlak renkli bloklarla karışık ve yorucu görünüyor. | A 8/7/8/7 B 7/7/6/8

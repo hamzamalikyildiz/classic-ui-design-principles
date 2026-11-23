@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Savings Goals</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #1F4D3A;
+    --accent-ink: #163828;
+    --brass: #B08D57;
+    --bg: #F3F5F1;
+    --surface: #FFFFFF;
+    --ink: #1A2620;
+    --muted: #5B6B62;
+    --line: #DCE3DC;
+    --warn: #9A5B00;
+    --warn-bg: #FFF4DE;
+    --ok: #2E7D4F;
+    --bad: #A23B2C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #101A15; --surface: #18241D; --ink: #E6EEE8; --muted: #9FB2A6; --line: #2A3A31; --accent: #2F6B52; --warn-bg: #3A2A10; --warn: #F2C27A; }
+  }
+  :root[data-theme="dark"] { --bg: #101A15; --surface: #18241D; --ink: #E6EEE8; --muted: #9FB2A6; --line: #2A3A31; --accent: #2F6B52; --warn-bg: #3A2A10; --warn: #F2C27A; }
+  body { background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+  .serif { font-family: Fraunces, Georgia, serif; }
+  .num { font-variant-numeric: tabular-nums; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 2px rgba(22,56,40,.06); }
+  .fade-up { animation: fadeUp .6s ease both; }
+  .fade-up.d1 { animation-delay: .08s; } .fade-up.d2 { animation-delay: .16s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .bar-grow { transform-origin: bottom; animation: grow .8s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @media (prefers-reduced-motion: reduce) { .fade-up, .bar-grow { animation: none; } }
+  .progress > span { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var root = document.documentElement, btn = document.getElementById('theme');
+    function isDark() { return root.getAttribute('data-theme') === 'dark' || (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches); }
+    function sync() { btn.textContent = isDark() ? 'Light mode' : 'Dark mode'; btn.setAttribute('aria-pressed', String(isDark())); }
+    btn.addEventListener('click', function () {
+      root.setAttribute('data-theme', isDark() ? 'light' : 'dark');
+      try { localStorage.setItem('theme', root.getAttribute('data-theme')); } catch (e) {}
+      sync();
+    });
+    try { var saved = localStorage.getItem('theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+    sync();
+  });
+</script>
+</head>
+<body>
+<header class="border-b border-[--line] bg-[--surface]">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+    <div class="flex items-center gap-3">
+      <span class="grid h-9 w-9 place-items-center rounded-xl bg-[--accent] text-white" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-8 9 8M5 10v10h14V10"/></svg>
+      </span>
+      <span class="serif text-lg font-semibold">Harbor Bank</span>
+    </div>
+    <div class="flex items-center gap-6">
+      <nav class="hidden gap-6 text-sm text-[--muted] md:flex" aria-label="Main">
+        <a href="#" class="text-[--ink] font-medium">Savings</a><a href="#">Accounts</a><a href="#">Payments</a><a href="#">Cards</a>
+      </nav>
+      <button id="theme" type="button" class="min-h-10 rounded-lg border border-[--line] px-3 text-sm text-[--muted] hover:text-[--ink] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[--brass]">Dark mode</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6">
+  <section class="fade-up flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="text-sm text-[--muted]">Thursday, 23 November 2026</p>
+      <h1 class="serif text-3xl font-semibold text-balance">Your savings are growing</h1>
+    </div>
+    <button class="rounded-xl bg-[--accent] px-5 py-3 text-sm font-semibold text-white hover:bg-[--accent-ink] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[--brass]">New goal</button>
+  </section>
+
+  <!-- Low-balance alert -->
+  <div role="alert" class="fade-up d1 flex items-start gap-3 rounded-[14px] border border-[--warn] bg-[--warn-bg] p-4 text-sm text-[--warn]">
+    <svg class="mt-0.5 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+    <p class="max-w-prose flex-1"><strong class="font-semibold">Checking balance is low.</strong> Your balance is $412.18, below your $500 floor. Move $250 from savings to stay covered for upcoming bills on 27 Nov.</p>
+    <button class="min-h-10 shrink-0 rounded-lg border border-[--warn] px-3 py-2 font-medium hover:bg-[--surface]">Transfer</button>
+  </div>
+
+  <!-- Balance cards -->
+  <section class="fade-up d1 grid gap-4 md:grid-cols-3" aria-label="Balances">
+    <article class="rounded-[14px] bg-[--accent] p-5 text-white shadow-sm">
+      <p class="text-sm font-medium">Total savings</p>
+      <p class="serif num mt-2 text-3xl font-semibold">$24,806.40</p>
+      <p class="num mt-2 text-sm">+$1,240.00 vs last month</p>
+    </article>
+    <article class="card p-5">
+      <p class="text-sm text-[--muted]">Emergency fund</p>
+      <p class="serif num mt-2 text-3xl font-semibold">$9,150.00</p>
+      <p class="num mt-2 text-sm text-[--ok]">+$310.50 this month</p>
+    </article>
+    <article class="card p-5">
+      <p class="text-sm text-[--muted]">Checking</p>
+      <p class="serif num mt-2 text-3xl font-semibold">$412.18</p>
+      <p class="num mt-2 text-sm text-[--bad]">-$640.22 this month</p>
+    </article>
+  </section>
+
+  <div class="fade-up d2 grid gap-6 lg:grid-cols-3">
+    <!-- Monthly chart -->
+    <section class="card p-5 lg:col-span-2" aria-labelledby="chart-h">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="chart-h" class="serif text-xl font-semibold">Monthly savings</h2>
+        <div class="flex items-center gap-4 text-sm text-[--muted]">
+          <span class="flex items-center gap-2"><i class="inline-block h-3 w-3 rounded-sm bg-[--accent]"></i>Saved</span>
+          <span class="flex items-center gap-2"><i class="inline-block h-0.5 w-4 bg-[--brass]"></i>Target $1,000</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 600 260" class="mt-4 w-full" role="img" aria-label="Bar chart of monthly savings, June to November 2026, with a $1,000 target line">
+        <g stroke="var(--line)" stroke-width="1">
+          <line x1="48" y1="20" x2="588" y2="20"/><line x1="48" y1="90" x2="588" y2="90"/><line x1="48" y1="160" x2="588" y2="160"/><line x1="48" y1="220" x2="588" y2="220"/>
+        </g>
+        <g fill="var(--muted)" font-size="12" class="num">
+          <text x="40" y="24" text-anchor="end">$1.5k</text><text x="40" y="94" text-anchor="end">$1.0k</text><text x="40" y="164" text-anchor="end">$0.5k</text><text x="40" y="224" text-anchor="end">$0</text>
+        </g>
+        <!-- target line at $1,000 (y=90) -->
+        <line x1="48" y1="90" x2="588" y2="90" stroke="var(--brass)" stroke-width="2" stroke-dasharray="6 4"/>
+        <g fill="var(--accent)">
+          <rect class="bar-grow" x="72"  y="130" width="50" height="90" rx="6"/>
+          <rect class="bar-grow" x="162" y="112" width="50" height="108" rx="6"/>
+          <rect class="bar-grow" x="252" y="100" width="50" height="120" rx="6"/>
+          <rect class="bar-grow" x="342" y="118" width="50" height="102" rx="6"/>
+          <rect class="bar-grow" x="432" y="84"  width="50" height="136" rx="6"/>
+          <rect class="bar-grow" x="522" y="66"  width="50" height="154" rx="6"/>
+        </g>
+        <g fill="var(--muted)" font-size="12" text-anchor="middle">
+          <text x="97" y="242">Jun</text><text x="187" y="242">Jul</text><text x="277" y="242">Aug</text><text x="367" y="242">Sep</text><text x="457" y="242">Oct</text><text x="547" y="242">Nov</text>
+        </g>
+        <g fill="var(--ink)" font-size="12" class="num" text-anchor="middle" font-weight="600">
+          <text x="97" y="122">$820</text><text x="187" y="104">$960</text><text x="277" y="92">$1,000</text><text x="367" y="110">$940</text><text x="457" y="76">$1,120</text><text x="547" y="58">$1,240</text>
+        </g>
+      </svg>
+      <p class="mt-3 max-w-prose rounded-lg bg-[--bg] p-3 text-sm text-[--muted]">November is your best month so far: you passed the $1,000 target for the second time this quarter.</p>
+    </section>
+
+    <!-- Goal progress -->
+    <section class="card p-5" aria-labelledby="goals-h">
+      <h2 id="goals-h" class="serif text-xl font-semibold">Goals</h2>
+      <ul class="mt-4 space-y-5 text-sm">
+        <li>
+          <div class="flex justify-between"><span class="font-medium">Emergency fund</span><span class="num text-[--muted]">$9,150 / $12,000</span></div>
+          <div class="progress mt-2 h-2.5 overflow-hidden rounded-full bg-[--line]"><span style="width:76%"></span></div>
+        </li>
+        <li>
+          <div class="flex justify-between"><span class="font-medium">Home deposit</span><span class="num text-[--muted]">$11,600 / $30,000</span></div>
+          <div class="progress mt-2 h-2.5 overflow-hidden rounded-full bg-[--line]"><span style="width:39%"></span></div>
+        </li>
+        <li>
+          <div class="flex justify-between"><span class="font-medium">Holiday trip</span><span class="num text-[--muted]">$2,056 / $3,000</span></div>
+          <div class="progress mt-2 h-2.5 overflow-hidden rounded-full bg-[--line]"><span style="width:69%"></span></div>
+        </li>
+        <li>
+          <div class="flex justify-between"><span class="font-medium">New car</span><span class="num text-[--muted]">$1,850 / $6,000</span></div>
+          <div class="progress mt-2 h-2.5 overflow-hidden rounded-full bg-[--line]"><span style="width:31%"></span></div>
+        </li>
+      </ul>
+      <p class="mt-6 max-w-prose rounded-lg border border-dashed border-[--line] p-3 text-sm text-[--muted]">Next automatic transfer: $150.00 to Emergency fund on 22 Dec 2026.</p>
+    </section>
+  </div>
+
+  <!-- Recent transfers -->
+  <section class="fade-up d2 card overflow-hidden" aria-labelledby="tx-h">
+    <div class="flex items-center justify-between px-5 py-4">
+      <h2 id="tx-h" class="serif text-xl font-semibold">Recent transfers</h2>
+      <a href="#" class="inline-flex min-h-10 items-center text-sm font-medium text-[--accent]">View all</a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[560px] text-left text-sm">
+        <thead class="border-y border-[--line] bg-[--bg] text-[--muted]">
+          <tr><th scope="col" class="px-5 py-3 font-medium">Date</th><th scope="col" class="px-5 py-3 font-medium">Description</th><th scope="col" class="px-5 py-3 font-medium">From</th><th scope="col" class="px-5 py-3 font-medium">To</th><th scope="col" class="px-5 py-3 text-right font-medium">Amount</th></tr>
+        </thead>
+        <tbody class="divide-y divide-[--line]">
+          <tr><td class="num px-5 py-3">22 Nov</td><td class="px-5 py-3">Automatic savings rule</td><td class="px-5 py-3">Checking</td><td class="px-5 py-3">Emergency fund</td><td class="num px-5 py-3 text-right">$150.00</td></tr>
+          <tr><td class="num px-5 py-3">20 Nov</td><td class="px-5 py-3">Round-up contributions</td><td class="px-5 py-3">Checking</td><td class="px-5 py-3">Holiday trip</td><td class="num px-5 py-3 text-right">$18.40</td></tr>
+          <tr><td class="num px-5 py-3">18 Nov</td><td class="px-5 py-3">Monthly top-up</td><td class="px-5 py-3">Checking</td><td class="px-5 py-3">Home deposit</td><td class="num px-5 py-3 text-right">$500.00</td></tr>
+          <tr><td class="num px-5 py-3">15 Nov</td><td class="px-5 py-3">Withdrawal for car service</td><td class="px-5 py-3">Emergency fund</td><td class="px-5 py-3">Checking</td><td class="num px-5 py-3 text-right text-[--bad]">-$380.00</td></tr>
+          <tr><td class="num px-5 py-3">12 Nov</td><td class="px-5 py-3">Salary split</td><td class="px-5 py-3">Payroll</td><td class="px-5 py-3">Checking</td><td class="num px-5 py-3 text-right text-[--ok]">+$2,400.00</td></tr>
+          <tr><td class="num px-5 py-3">08 Nov</td><td class="px-5 py-3">Interest credited</td><td class="px-5 py-3">Savings</td><td class="px-5 py-3">Savings</td><td class="num px-5 py-3 text-right text-[--ok]">+$21.65</td></tr>
+          <tr><td class="num px-5 py-3">03 Nov</td><td class="px-5 py-3">Monthly top-up</td><td class="px-5 py-3">Checking</td><td class="px-5 py-3">Home deposit</td><td class="num px-5 py-3 text-right">$500.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+ "cift1": {
+  "orig": "cift5",
+  "skill": "B",
+  "mood": "trust",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift2": {
+  "orig": "cift2",
+  "skill": "A",
+  "mood": "editorial",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift3": {
+  "orig": "cift4",
+  "skill": "B",
+  "mood": "bold",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift4": {
+  "orig": "cift3",
+  "skill": "B",
+  "mood": "playful",
+  "brief": "a",
+  "rep": "1"
+ },
+ "cift5": {
+  "orig": "cift1",
+  "skill": "A",
+  "mood": "technical",
+  "brief": "a",
+  "rep": "1"
+ }
+}

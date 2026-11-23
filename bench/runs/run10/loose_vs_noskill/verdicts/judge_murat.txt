@@ -1,0 +1,5 @@
+cift1: B | 4 | B serif başlık, koyu hero kart ve vurgulu en iyi ay çubuğuyla belirgin bir kimlik kurarken A temiz ama jenerik bir şablon gibi duruyor. | A 6/6/7/6 B 8/8/8/8
+cift2: B | 3 | B özgün illüstrasyonu, yan sütunu ve güçlü Playfair başlığıyla bir dergi sayfası gibi okunurken A zarif ama görselsiz ve daha sönük kalıyor. | A 7/7/8/6 B 8/8/8/8
+cift3: B | 4 | B cesur büyük harfli başlıklar, limon vurgusu, bento ızgarası ve fiyatlı kapanış bloğuyla çok daha kararlı ve özgün dururken A tanıdık bir koyu-turuncu şablon hissi veriyor. | A 7/6/7/6 B 9/8/8/8
+cift4: B | 3 | B ilerleme çubuklu derslerle, dört dil vurgusuyla ve cesur renk bantlarıyla çocuklara daha özgün ve zengin hitap ederken A daha temiz ama tanıdık bir pastel şablon. | A 7/6/8/6 B 8/7/8/8
+cift5: A | 3 | A SLO çizgili MTTR grafiği, ciddiyet rozetleri, mono zaman damgaları ve yoğun ama tutarlı koyu arayüzüyle gerçek bir operasyon panosu gibi dururken B daha seyrek ve sıradan kalıyor. | A 8/8/8/9 B 7/7/7/7

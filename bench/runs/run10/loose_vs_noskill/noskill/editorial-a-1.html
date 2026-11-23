@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Last Lighthouse Keepers</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { background: #f6f1e7; color: #1c1b19; font-family: 'Source Serif 4', Georgia, serif; }
+  .display { font-family: 'Playfair Display', Georgia, serif; }
+  .ui { font-family: 'Inter', system-ui, sans-serif; }
+  .dropcap::first-letter { float: left; font-family: 'Playfair Display', serif; font-weight: 800; font-size: 4.2rem; line-height: .9; padding: .35rem .5rem 0 0; color: #9a3412; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<header class="border-b border-stone-800">
+  <div class="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between ui text-xs tracking-widest uppercase text-stone-600">
+    <span>Long Reads</span>
+    <span class="display text-base tracking-normal normal-case font-bold text-stone-900">The Coastline Review</span>
+    <span>Autumn Issue</span>
+  </div>
+</header>
+
+<main class="mx-auto max-w-5xl px-4 py-10">
+
+  <!-- Headline block -->
+  <section class="text-center max-w-3xl mx-auto">
+    <p class="ui text-xs font-semibold tracking-[0.25em] uppercase text-orange-800">Feature</p>
+    <h1 class="display text-5xl sm:text-6xl font-extrabold leading-[1.05] mt-4">The Last Lighthouse Keepers</h1>
+    <p class="mt-6 text-xl sm:text-2xl leading-snug italic text-stone-700">
+      Across the northern coasts, the automatic beacon has replaced the people who once climbed the tower every night. Some keepers stayed on anyway.
+    </p>
+    <p class="ui mt-6 text-sm text-stone-600">By <span class="font-semibold text-stone-900">Elif Arslan</span> &middot; 12 min read</p>
+  </section>
+
+  <!-- Hero illustration (inline SVG, no web images) -->
+  <section class="mt-10 max-w-3xl mx-auto">
+    <svg viewBox="0 0 800 260" class="w-full h-auto rounded-sm" role="img" aria-label="Lighthouse silhouette over a dusk sea">
+      <rect width="800" height="260" fill="#1e293b"/>
+      <circle cx="640" cy="60" r="70" fill="#fde68a" opacity=".18"/>
+      <rect x="0" y="200" width="800" height="60" fill="#0f172a"/>
+      <path d="M0 200 Q100 188 200 200 T400 200 T600 200 T800 200 V260 H0Z" fill="#334155" opacity=".6"/>
+      <polygon points="360,200 380,70 420,70 440,200" fill="#e7e5e4"/>
+      <rect x="372" y="48" width="56" height="26" fill="#44403c"/>
+      <polygon points="366,48 400,22 434,48" fill="#9a3412"/>
+      <rect x="386" y="60" width="28" height="14" fill="#fde68a"/>
+      <rect x="392" y="120" width="16" height="22" fill="#1c1917"/>
+      <polygon points="300,200 380,118 380,200" fill="#0f172a" opacity=".5"/>
+      <polygon points="440,200 500,108 500,200" fill="#fde68a" opacity=".08"/>
+      <polygon points="380,60 60,20 60,110" fill="#fde68a" opacity=".12"/>
+      <caption class="sr-only">Lighthouse</caption>
+    </svg>
+    <p class="ui mt-2 text-xs text-stone-500">Illustration: a single beam over the last working station on the northern headland.</p>
+  </section>
+
+  <!-- Body + sidebar -->
+  <div class="mt-12 grid gap-10 md:grid-cols-[minmax(0,1fr)_16rem]">
+    <article class="max-w-2xl text-lg leading-relaxed space-y-6">
+      <p class="dropcap">For forty years the rhythm of the headland was set by a man with a logbook. He wound the clockwork, trimmed the wick, and wrote the weather down by hand every four hours, whatever the sea was doing.</p>
+      <p>Now the light turns by itself. A sensor on the mast reads the dusk, a relay clicks, and a lamp that once needed oil and attention runs for months without anyone setting foot inside. The coastal authority calls this a success. The shipping log calls it quiet.</p>
+
+      <blockquote class="my-8 border-y-2 border-orange-800 py-6 text-center">
+        <p class="display text-2xl sm:text-3xl italic leading-snug text-stone-900">&ldquo;The light never needed me. The people who passed the station did.&rdquo;</p>
+        <footer class="ui mt-3 text-sm text-stone-600">Former keeper, interviewed in the station kitchen</footer>
+      </blockquote>
+
+      <p>Not every station has gone dark. On three rocky points, a handful of keepers remain on paid contracts to watch the instruments, climb the stairs when the fog bell fails, and answer calls from fishing boats that still prefer a human voice on the radio.</p>
+      <p>Their days are less about the lamp and more about the coast around it: clearing gull nests from the gallery rail, logging erosion on the path, and keeping a patient eye on the weather that the automated systems describe in numbers but cannot quite feel.</p>
+
+      <h2 class="display text-3xl font-bold pt-4">A short timeline of automation</h2>
+      <ol class="ui text-base space-y-4 border-l-2 border-stone-400 pl-6 leading-snug">
+        <li class="relative"><span class="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-orange-800"></span><span class="font-semibold">1950s</span> &middot; Clockwork and oil lamps give way to electric lamps on the main headlands.</li>
+        <li class="relative"><span class="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-orange-800"></span><span class="font-semibold">1980s</span> &middot; Remote monitoring links the stations to a central office on the mainland.</li>
+        <li class="relative"><span class="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-orange-800"></span><span class="font-semibold">2002</span> &middot; The first fully automated station is switched on without a resident keeper.</li>
+        <li class="relative"><span class="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-orange-800"></span><span class="font-semibold">2015</span> &middot; The last staffed station on the eastern shelf is de-manned.</li>
+        <li class="relative"><span class="absolute -left-[31px] top-1 h-3 w-3 rounded-full bg-orange-800"></span><span class="font-semibold">Today</span> &middot; Three staffed points remain, on contracts renewed each year.</li>
+      </ol>
+
+      <p>The question is no longer whether the lights will run. It is who will notice when something in the dark goes wrong, and whether a sensor can be trusted to say so.</p>
+    </article>
+
+    <aside class="ui space-y-8 text-sm">
+      <section class="border-t-4 border-stone-900 pt-4">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-stone-600">Related stories</h2>
+        <ul class="mt-4 space-y-4">
+          <li><a href="#" class="font-semibold text-stone-900 hover:text-orange-800">Salt, Rope and the Last Net Mender</a><p class="text-stone-600 mt-1">A harbour craft holding on in a shrinking port.</p></li>
+          <li><a href="#" class="font-semibold text-stone-900 hover:text-orange-800">When the Ferry Stopped Calling</a><p class="text-stone-600 mt-1">Island schools and the timetable that changed them.</p></li>
+          <li><a href="#" class="font-semibold text-stone-900 hover:text-orange-800">Mapping a Coast That Moves</a><p class="text-stone-600 mt-1">Erosion surveys from the cliffs of the north.</p></li>
+        </ul>
+      </section>
+
+      <section class="bg-stone-900 text-stone-100 p-5">
+        <h2 class="display text-xl font-bold">The Coastline Letter</h2>
+        <p class="mt-2 text-stone-300 leading-snug">One long read each Sunday, straight to your inbox.</p>
+        <form class="mt-4 space-y-3" onsubmit="event.preventDefault(); this.querySelector('p.ok').classList.remove('hidden');">
+          <label class="block">
+            <span class="sr-only">Email address</span>
+            <input type="email" required placeholder="you@example.com" class="w-full bg-stone-100 text-stone-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700">
+          </label>
+          <button type="submit" class="w-full bg-orange-800 hover:bg-orange-700 text-white font-semibold py-2 transition">Sign up</button>
+          <p class="ok hidden text-xs text-orange-200">Thanks, you are on the list.</p>
+        </form>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer class="mt-16 border-t border-stone-800">
+  <div class="mx-auto max-w-5xl px-4 py-6 ui text-xs text-stone-600 flex flex-wrap justify-between gap-2">
+    <span>&copy; The Coastline Review</span>
+    <span>Photography and illustration are original to this feature.</span>
+  </div>
+</footer>
+
+</body>
+</html>

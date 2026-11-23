@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Savings Goals</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          forest: { 900: '#123A2E', 800: '#1A4B3C', 700: '#1F5A47', 100: '#E3EEE8' },
+          brass: { 500: '#B08D3C', 200: '#EFE3C4' },
+          stone: { 50: '#F6F8F5', 100: '#EDF1EC', 200: '#D9E1DA', 600: '#55655D', 900: '#17241F' }
+        },
+        fontFamily: {
+          display: ['Fraunces', 'Georgia', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .font-display { font-family: 'Fraunces', Georgia, serif; }
+  .fade-up { animation: fadeUp 600ms cubic-bezier(.2,.7,.2,1) both; }
+  .fade-up-2 { animation: fadeUp 600ms 120ms cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .lift { transition: transform 200ms cubic-bezier(.2,.7,.2,1), box-shadow 200ms; }
+  .lift:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgb(18 58 46 / .10); }
+  :focus-visible { outline: 3px solid #B08D3C; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up, .fade-up-2 { animation: none; }
+    .lift { transition: none; }
+    .lift:hover { transform: none; }
+  }
+</style>
+</head>
+<body class="bg-stone-50 text-stone-900 min-h-screen">
+
+<header class="border-b border-stone-200 bg-white">
+  <div class="mx-auto max-w-6xl px-4 py-4 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+        <rect width="28" height="28" rx="8" fill="#1F5A47"/>
+        <path d="M7 19 L14 8 L21 19" fill="none" stroke="#EFE3C4" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+      <span class="font-semibold text-forest-900">Harbor Savings</span>
+    </div>
+    <nav aria-label="Primary" class="hidden sm:flex gap-5 text-sm text-stone-600">
+      <a href="#" class="hover:text-forest-900 focus-visible:outline-none">Accounts</a>
+      <a href="#" aria-current="page" class="text-forest-900 font-semibold">Savings goals</a>
+      <a href="#" class="hover:text-forest-900 focus-visible:outline-none">Payments</a>
+    </nav>
+  </div>
+</header>
+
+<main class="mx-auto max-w-6xl px-4 py-10 space-y-8">
+
+  <div class="fade-up">
+    <p class="text-sm text-stone-600">Monday, 23 November</p>
+    <h1 class="font-display text-3xl sm:text-4xl font-bold text-forest-900 text-balance">Your savings are on track</h1>
+  </div>
+
+  <div role="alert" class="fade-up-2 flex gap-3 rounded-xl border border-brass-500/40 bg-brass-200 p-4 text-sm text-stone-900">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" class="shrink-0 mt-0.5">
+      <path d="M10 2 L19 18 H1 Z" fill="#B08D3C"/>
+      <rect x="9.25" y="7" width="1.5" height="6" fill="#17241F"/>
+      <rect x="9.25" y="14.5" width="1.5" height="1.5" fill="#17241F"/>
+    </svg>
+    <p class="max-w-prose"><span class="font-semibold">Low balance warning:</span> Everyday account is at $412.60, below your $500 minimum. Move $150 from Holiday fund to avoid overdraft fees.</p>
+  </div>
+
+  <section aria-labelledby="balances" class="grid gap-4 md:grid-cols-3">
+    <h2 id="balances" class="sr-only">Balances</h2>
+
+    <article class="lift fade-up rounded-2xl bg-forest-900 p-6 text-white shadow-sm md:col-span-1">
+      <p class="text-sm text-white">Total balance</p>
+      <p class="mt-2 font-display text-4xl font-bold tabular-nums">$24,980.35</p>
+      <p class="mt-3 text-sm text-white">
+        <span class="inline-block rounded-full bg-white/15 px-2 py-0.5 font-semibold">+$1,240.10</span>
+        vs last month
+      </p>
+    </article>
+
+    <article class="lift rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <p class="text-sm text-stone-600">Available to save</p>
+      <p class="mt-2 text-3xl font-semibold tabular-nums">$6,320.00</p>
+      <p class="mt-3 text-sm text-forest-700 font-semibold">+$310.00 this week</p>
+    </article>
+
+    <article class="lift rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <p class="text-sm text-stone-600">Saved in November</p>
+      <p class="mt-2 text-3xl font-semibold tabular-nums">$1,850.00</p>
+      <p class="mt-3 text-sm text-red-800 font-semibold">-$120.00 vs October</p>
+    </article>
+  </section>
+
+  <div class="grid gap-8 lg:grid-cols-3">
+
+    <section aria-labelledby="goals" class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm lg:col-span-1">
+      <div class="flex items-center justify-between">
+        <h2 id="goals" class="font-display text-xl font-semibold text-forest-900">Goals</h2>
+        <button type="button" class="rounded-lg border border-stone-200 px-3 py-2 text-sm font-semibold text-forest-900 hover:bg-forest-100 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brass-500">New goal</button>
+      </div>
+
+      <ul class="mt-6 space-y-6">
+        <li>
+          <div class="flex justify-between text-sm">
+            <span class="font-semibold">Emergency fund</span>
+            <span class="tabular-nums text-stone-600">$8,400 / $10,000</span>
+          </div>
+          <div role="progressbar" aria-label="Emergency fund progress" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100" class="mt-2 h-2.5 rounded-full bg-stone-200">
+            <div class="h-2.5 rounded-full bg-forest-700" style="width: 84%"></div>
+          </div>
+          <p class="mt-1 text-sm text-stone-600">84% done, about 4 months left</p>
+        </li>
+        <li>
+          <div class="flex justify-between text-sm">
+            <span class="font-semibold">Home deposit</span>
+            <span class="tabular-nums text-stone-600">$21,000 / $60,000</span>
+          </div>
+          <div role="progressbar" aria-label="Home deposit progress" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" class="mt-2 h-2.5 rounded-full bg-stone-200">
+            <div class="h-2.5 rounded-full bg-forest-700" style="width: 35%"></div>
+          </div>
+          <p class="mt-1 text-sm text-stone-600">35% done, on pace for March 2029</p>
+        </li>
+        <li>
+          <div class="flex justify-between text-sm">
+            <span class="font-semibold">Holiday fund</span>
+            <span class="tabular-nums text-stone-600">$1,150 / $2,000</span>
+          </div>
+          <div role="progressbar" aria-label="Holiday fund progress" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100" class="mt-2 h-2.5 rounded-full bg-stone-200">
+            <div class="h-2.5 rounded-full bg-brass-500" style="width: 58%"></div>
+          </div>
+          <p class="mt-1 text-sm text-stone-600">58% done, due 15 December</p>
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="chart" class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm lg:col-span-2">
+      <div class="flex flex-wrap items-end justify-between gap-2">
+        <h2 id="chart" class="font-display text-xl font-semibold text-forest-900">Monthly savings</h2>
+        <p class="flex items-center gap-4 text-sm text-stone-600">
+          <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-sm bg-forest-700"></span>Saved</span>
+          <span class="flex items-center gap-1.5"><span class="inline-block h-3 w-3 rounded-sm bg-brass-500"></span>Best month</span>
+        </p>
+      </div>
+
+      <svg viewBox="0 0 560 240" class="mt-6 w-full h-auto" role="img" aria-labelledby="chart-title chart-desc">
+        <title id="chart-title">Monthly savings, June to November</title>
+        <desc id="chart-desc">Savings were highest in September at $2,400. November is $1,850.</desc>
+        <g stroke="#D9E1DA" stroke-width="1">
+          <line x1="48" y1="20" x2="548" y2="20"/>
+          <line x1="48" y1="80" x2="548" y2="80"/>
+          <line x1="48" y1="140" x2="548" y2="140"/>
+          <line x1="48" y1="200" x2="548" y2="200"/>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="14" fill="#55655D" text-anchor="end">
+          <text x="40" y="25">$3k</text>
+          <text x="40" y="85">$2k</text>
+          <text x="40" y="145">$1k</text>
+          <text x="40" y="205">$0</text>
+        </g>
+        <g>
+          <rect x="76" y="92" width="40" height="108" rx="4" fill="#1F5A47"/>
+          <rect x="156" y="77" width="40" height="123" rx="4" fill="#1F5A47"/>
+          <rect x="236" y="104" width="40" height="96" rx="4" fill="#1F5A47"/>
+          <rect x="316" y="56" width="40" height="144" rx="4" fill="#B08D3C"/>
+          <rect x="396" y="83" width="40" height="117" rx="4" fill="#1F5A47"/>
+          <rect x="476" y="89" width="40" height="111" rx="4" fill="#1F5A47"/>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="14" fill="#55655D" text-anchor="middle">
+          <text x="96" y="222">Jun</text>
+          <text x="176" y="222">Jul</text>
+          <text x="256" y="222">Aug</text>
+          <text x="336" y="222">Sep</text>
+          <text x="416" y="222">Oct</text>
+          <text x="496" y="222">Nov</text>
+        </g>
+        <text x="496" y="78" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#17241F" text-anchor="middle">$1,850</text>
+      </svg>
+
+      <p class="mt-4 max-w-prose text-sm text-stone-600">Best month: September at $2,400, after a $600 bonus was moved to goals.</p>
+    </section>
+  </div>
+
+  <section aria-labelledby="transfers" class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+    <div class="flex items-center justify-between">
+      <h2 id="transfers" class="font-display text-xl font-semibold text-forest-900">Recent transfers</h2>
+      <a href="#" class="inline-flex items-center py-2 text-sm font-semibold text-forest-700 underline underline-offset-4">View all</a>
+    </div>
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full min-w-[520px] text-left text-sm">
+        <caption class="sr-only">Last six transfers between your accounts and goals</caption>
+        <thead class="border-b border-stone-200 text-stone-600">
+          <tr>
+            <th scope="col" class="py-2 pr-4 font-semibold">Date</th>
+            <th scope="col" class="py-2 pr-4 font-semibold">Description</th>
+            <th scope="col" class="py-2 pr-4 font-semibold">Goal</th>
+            <th scope="col" class="py-2 pr-4 font-semibold text-right">Amount</th>
+            <th scope="col" class="py-2 font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100">
+          <tr><td class="py-3 pr-4 tabular-nums">21 Nov</td><td class="py-3 pr-4">Payroll split</td><td class="py-3 pr-4">Emergency fund</td><td class="py-3 pr-4 text-right tabular-nums">+$400.00</td><td class="py-3"><span class="rounded-full bg-forest-100 px-2 py-0.5 text-forest-900 font-semibold">Completed</span></td></tr>
+          <tr><td class="py-3 pr-4 tabular-nums">19 Nov</td><td class="py-3 pr-4">Round-up savings</td><td class="py-3 pr-4">Home deposit</td><td class="py-3 pr-4 text-right tabular-nums">+$38.20</td><td class="py-3"><span class="rounded-full bg-forest-100 px-2 py-0.5 text-forest-900 font-semibold">Completed</span></td></tr>
+          <tr><td class="py-3 pr-4 tabular-nums">17 Nov</td><td class="py-3 pr-4">Transfer to Everyday</td><td class="py-3 pr-4">Holiday fund</td><td class="py-3 pr-4 text-right tabular-nums">-$150.00</td><td class="py-3"><span class="rounded-full bg-brass-200 px-2 py-0.5 text-stone-900 font-semibold">Pending</span></td></tr>
+          <tr><td class="py-3 pr-4 tabular-nums">14 Nov</td><td class="py-3 pr-4">Monthly deposit</td><td class="py-3 pr-4">Home deposit</td><td class="py-3 pr-4 text-right tabular-nums">+$500.00</td><td class="py-3"><span class="rounded-full bg-forest-100 px-2 py-0.5 text-forest-900 font-semibold">Completed</span></td></tr>
+          <tr><td class="py-3 pr-4 tabular-nums">11 Nov</td><td class="py-3 pr-4">Utilities top-up</td><td class="py-3 pr-4">Everyday</td><td class="py-3 pr-4 text-right tabular-nums">-$220.45</td><td class="py-3"><span class="rounded-full bg-forest-100 px-2 py-0.5 text-forest-900 font-semibold">Completed</span></td></tr>
+          <tr><td class="py-3 pr-4 tabular-nums">08 Nov</td><td class="py-3 pr-4">Holiday fund top-up</td><td class="py-3 pr-4">Holiday fund</td><td class="py-3 pr-4 text-right tabular-nums">+$200.00</td><td class="py-3"><span class="rounded-full bg-red-100 px-2 py-0.5 text-red-900 font-semibold">Failed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mx-auto max-w-6xl px-4 pb-10 text-sm text-stone-600">
+  <p class="max-w-prose">Figures are shown in USD. Transfers can take up to one business day to appear.</p>
+</footer>
+
+</body>
+</html>
