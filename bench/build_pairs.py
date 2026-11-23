@@ -129,7 +129,7 @@ def _render_single_page_mode(files, ids, W, args):
     tw_offline = args.offline or not R.reachable('https://cdn.tailwindcss.com')
     gf_offline = args.offline or not R.reachable('https://fonts.googleapis.com/css2?family=Inter')
     with sync_playwright() as p:
-        br = p.chromium.launch(executable_path=R.chrome_path() or None, args=['--no-sandbox'])
+        br = p.chromium.launch(executable_path=R.chrome_path() or None, args=R.chromium_args())
         for f, i in zip(files, ids):
             arm = f.parent.name
             mood, brief, rep = parse_page_stem(f.stem)

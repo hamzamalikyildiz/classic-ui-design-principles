@@ -79,7 +79,7 @@ def compile_tailwind(html):
         return html
     tw_bin = CACHE / 'node_modules' / '.bin' / ('tailwindcss.cmd' if os.name == 'nt' else 'tailwindcss')
     if not tw_bin.exists():
-        r = npm('install', '--silent', 'tailwindcss@3')
+        r = npm('install', '--silent', 'tailwindcss@3.4.17')
         if r.returncode:
             log(f'could not install tailwindcss: {r.stderr.strip()[:200]}')
             return html
@@ -123,7 +123,7 @@ def inline_fonts(html):
     for fam in sorted(families):
         slug = re.sub(r'[^a-z0-9]+', '-', fam.lower()).strip('-')
         pkg = CACHE / 'node_modules' / '@fontsource' / slug / 'files'
-        if not pkg.exists() and npm('install', '--silent', f'@fontsource/{slug}').returncode:
+        if not pkg.exists() and npm('install', '--silent', f'@fontsource/{slug}@5').returncode:
             log(f'font {fam} unavailable; falling back to system fonts')
             continue
         for f in sorted(pkg.glob('*-latin*-normal.woff2')):
@@ -175,13 +175,12 @@ MOTION_FILMSTRIP_MS = [0, 80, 160, 320, 640, 1000]
 
 
 def find_axe():
-    for c in [os.environ.get('AXE_JS', ''), '/tmp/axe/node_modules/axe-core/axe.min.js',
-              str(CACHE / 'node_modules/axe-core/axe.min.js')]:
+    for c in [os.environ.get('AXE_JS', ''), str(CACHE / 'node_modules/axe-core/axe.min.js')]:
         if c and pathlib.Path(c).is_file():
             return pathlib.Path(c).read_text(encoding='utf-8')
     if not shutil.which('npm'):
         return None
-    npm('install', '--silent', 'axe-core')
+    npm('install', '--silent', 'axe-core@4.10.2')
     f = CACHE / 'node_modules/axe-core/axe.min.js'
     return f.read_text(encoding='utf-8') if f.is_file() else None
 
@@ -638,10 +637,16 @@ def prepare_html_target(html_path):
     return write_temp_render(src, html)
 
 
+def chromium_args():
+    """Chromium keeps its sandbox by default; containers and root users (CI) cannot run it, so opt out there or with UITOOLS_NO_SANDBOX=1."""
+    is_root = hasattr(os, 'geteuid') and os.geteuid() == 0
+    return ['--no-sandbox'] if is_root or os.environ.get('UITOOLS_NO_SANDBOX') == '1' else []
+
+
 def launch_browser(playwright):
     """Launch headless Chromium using a detected local Chrome/Chromium executable if present."""
     exe = chrome_path()
-    return playwright.chromium.launch(**({'executable_path': exe} if exe else {}), args=['--no-sandbox'])
+    return playwright.chromium.launch(**({'executable_path': exe} if exe else {}), args=chromium_args())
 
 
 def _attach_error_listeners(page, console_errors, network_errors, online):

@@ -59,7 +59,13 @@ classic-ui-design-principles/
 git clone https://github.com/hamzamalikyildiz/classic-ui-design-principles ~/.claude/skills/classic-ui-design-principles
 ```
 
-**claude.ai:** zip the `classic-ui-design-principles` folder and upload it in the Skills section of Settings.
+**claude.ai:** build the light bundle and upload it in the Skills section of Settings (it leaves out `bench/`, `tests/` and `examples/`, about 150 KB instead of several MB):
+
+```bash
+python package_skill.py   # writes dist/classic-ui-design-principles.zip
+```
+
+Python and browser requirements for the optional tools are listed in `requirements.txt`.
 
 `uitools.py` runs standalone with zero dependencies (Python 3 stdlib only). **Copying scripts into another repo?** Copy the entire `scripts/` folder (`uitools.py`, `render.py`, `uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`, and `checks/*.js`) together — `uitools.py` and `render.py` import those modules and JS payloads directly.
 
@@ -98,7 +104,7 @@ The **mood** sets how much color, depth, radius and decoration the page gets. A 
 After writing the UI, the agent runs the audit on the files it touched:
 
 ```
-$ python3 scripts/uitools.py audit src/components/PricingCard.tsx
+$ python scripts/uitools.py audit src/components/PricingCard.tsx
 == src/components/PricingCard.tsx: 3 issue(s)
   [FAIL] wcag-aa: L5 text-slate-400 on bg-white = 2.56:1 (need 4.5, fix -> text-slate-500, keep the hue)
   [WARN] single-primary-cta: 2 solid buttons in one block (lines [6, 7]); keep 1 solid, rest outline/ghost
@@ -110,7 +116,7 @@ SUMMARY FAIL=1 WARN=1 INFO=1
 It fixes every FAIL, fixes or justifies each WARN, and repeats until FAIL is 0. Then it renders the page and checks the screenshot: where the eye lands first, whether it matches the mood, whether anything looks empty, stretched or boxed-in. A page can pass every rule and still look grey and flat; the screenshot catches that.
 
 ```
-$ python3 scripts/render.py index.html --out shot.png --check --dark
+$ python scripts/render.py index.html --out shot.png --check --dark
 ```
 
 | Level | Meaning | What happens |
@@ -129,11 +135,11 @@ The script works on its own:
 
 ```bash
 # Is this color pair readable? (supports hex, Tailwind names, oklch, oklab, color-mix)
-python3 scripts/uitools.py contrast slate-400 white
-python3 scripts/uitools.py contrast "oklch(0.70 0.18 250)" white
+python scripts/uitools.py contrast slate-400 white
+python scripts/uitools.py contrast "oklch(0.70 0.18 250)" white
 
 # Audit a route with cross-file component inlining and a baseline file
-python3 scripts/uitools.py audit --route app/cv/page.tsx --css app/globals.css --baseline .uitools-baseline.json
+python scripts/uitools.py audit --route app/cv/page.tsx --css app/globals.css --baseline .uitools-baseline.json
 ```
 
 #### Recording an authenticated session (Playwright `storageState`)
@@ -152,7 +158,7 @@ python scripts/render.py --url http://localhost:3000/dashboard --storage-state a
 To run the static audit on every pull request (exits 1 on FAIL):
 
 ```yaml
-- run: python3 path/to/classic-ui-design-principles/scripts/uitools.py audit $(git ls-files '*.tsx') --css src/app/globals.css
+- run: python path/to/classic-ui-design-principles/scripts/uitools.py audit $(git ls-files '*.tsx') --css src/app/globals.css
 ```
 
 To run multi-route rendered, state, and motion checks against a built app (see [examples/app-demo/](examples/app-demo/) and [.github/workflows/app-e2e.yml](.github/workflows/app-e2e.yml)):
@@ -168,18 +174,18 @@ To run multi-route rendered, state, and motion checks against a built app (see [
 `uitools.py` runs standalone with zero dependencies (Python 3 stdlib only); `render.py` needs Playwright + Chromium.
 
 ```bash
-python3 scripts/uitools.py contrast pink-400 pink-100
+python scripts/uitools.py contrast pink-400 pink-100
 # #f472b6 on #fce7f3: 2.25:1 | AA text(4.5): FAIL | AA large/UI(3.0): FAIL
 #   fix -> pink-700 / #cc1072 (>= 4.5:1, same hue)
 
-python3 scripts/uitools.py scale --base 16 --ratio perfect-fourth
-python3 scripts/uitools.py radius 24 8
-python3 scripts/uitools.py snap 13 22 --grid 8
-python3 scripts/uitools.py audit index.html src/App.tsx --css app/globals.css --mood trust
-python3 scripts/uitools.py audit --routes-glob "app/**/page.tsx" --root . --tsconfig tsconfig.json --write-baseline
-python3 scripts/render.py index.html --out shot.png --check [--dark] [--width 1440]
-python3 scripts/render.py --url http://localhost:3000/cv --storage-state auth.json --out cv.png --check --motion
-python3 scripts/render.py --routes examples/app-demo/routes.json --out-dir shots/ --check --motion --format json
+python scripts/uitools.py scale --base 16 --ratio perfect-fourth
+python scripts/uitools.py radius 24 8
+python scripts/uitools.py snap 13 22 --grid 8
+python scripts/uitools.py audit index.html src/App.tsx --css app/globals.css --mood trust
+python scripts/uitools.py audit --routes-glob "app/**/page.tsx" --root . --tsconfig tsconfig.json --write-baseline
+python scripts/render.py index.html --out shot.png --check [--dark] [--width 1440]
+python scripts/render.py --url http://localhost:3000/cv --storage-state auth.json --out cv.png --check --motion
+python scripts/render.py --routes examples/app-demo/routes.json --out-dir shots/ --check --motion --format json
 ```
 
 The audit works per element, not per file:
@@ -235,7 +241,7 @@ Blind A/B runs using 5 persona judges (`bench/judges.json`), rendered with Playw
 ## Tests
 
 ```bash
-python3 -m unittest discover -s tests -v
+python -m unittest discover -s tests -v
 ```
 
 GitHub Actions runs the suite on Python 3.10 and 3.13 for every push and pull request.

@@ -1,0 +1,5 @@
+# Only needed for screenshots, --check, --url/--routes/--motion and the benchmark tools.
+# uitools.py (audit, contrast, scale, radius, snap) runs on the Python 3.10+ standard library alone.
+# render.py also needs a Chromium (python -m playwright install chromium) and node/npm for axe-core and the offline Tailwind fallback.
+playwright>=1.45
+pillow>=10.0
