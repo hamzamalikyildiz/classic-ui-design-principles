@@ -31,7 +31,7 @@ def _run_audit(args):
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         try:
-            ut.main(['audit', *args])
+            ut.main(['audit', '--strict', *args])
             code = 0
         except SystemExit as exc:
             code = int(exc.code) if exc.code is not None else 0

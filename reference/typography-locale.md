@@ -23,7 +23,7 @@
 
 ## 2. Optical Sizing (`opsz`) & Display Tracking
 
-- **Optical-size axis (`opsz`):** Variable fonts (`Fraunces` `opsz 9..144`, `Newsreader` `opsz 6..72`, `Inter Display` vs `Inter Text`) must enable `font-optical-sizing: auto` and load the `opsz` axis in Google Fonts / `@fontsource` (e.g. `Fraunces:ital,opsz,wght@0,9..144,400..700`).
+- **Optical-size axis (`opsz`):** Variable fonts (`Fraunces` `opsz 9..144`, `Newsreader` `opsz 6..72`, `Inter Display` vs `Inter Text`) work best when you enable `font-optical-sizing: auto` and load the `opsz` axis in Google Fonts / `@fontsource` (e.g. `Fraunces:ital,opsz,wght@0,9..144,400..700`).
 - **Display & label tracking:** Tighten tracking at display sizes (`>= 36px`: `tracking-tight` / `-0.02em` to `-0.03em`); never apply negative tracking to body copy (`14–16px`) or `uppercase` labels (which need `tracking-wider` `0.05em–0.08em`).
 
 ```html
@@ -36,7 +36,7 @@
 
 ## 3. Numeric Discipline & `Intl` Formatting
 
-- **Tabular numerals & alignment:** All table columns, KPI cards, counters, timers, and score rings must set `tabular-nums` (`font-variant-numeric: tabular-nums lining-nums`) and right-align numeric table columns (`tabular-nums text-right`).
+- **Tabular numerals & alignment:** By default table columns, KPI cards, counters, timers, and score rings set `tabular-nums` (`font-variant-numeric: tabular-nums lining-nums`) and right-align numeric table columns (`tabular-nums text-right`).
 - **Native `Intl` formatters:** Format currencies, percentages, dates, and relative times with native `Intl` (`Intl.NumberFormat('tr-TR', ...)`, `Intl.DateTimeFormat('tr-TR', ...)`, `Intl.RelativeTimeFormat('tr-TR', { numeric: 'auto' })` -> `"2 gün önce"`), never hardcoded `toFixed()` + string concatenation or manual `${d.getDate()}/${d.getMonth()+1}`.
 
 ```ts
@@ -67,7 +67,7 @@ const fmtRel = new Intl.RelativeTimeFormat("tr-TR", { numeric: "auto" }); // (-2
 
 ## 5. Dark Mode & Reachable Theme Toggle
 
-- **Reachable theme control:** Whenever `.dark` / `[data-theme="dark"]` tokens or `dark:` classes exist, the UI **must** expose a user-reachable theme control (`System / Light / Dark` segmented control or toggle button in the top bar, user menu, or settings header, persisted via `next-themes` or `localStorage` + inline `<head>` script to prevent FOUC).
+- **Reachable theme control:** Whenever `.dark` / `[data-theme="dark"]` tokens or `dark:` classes exist, the UI should expose a user-reachable theme control (follow the system preference at minimum; `System / Light / Dark` segmented control or toggle button in the top bar, user menu, or settings header, persisted via `next-themes` or `localStorage` + inline `<head>` script to prevent FOUC).
 - Shipping dark-mode tokens with no way for the user to switch is flagged by `theme-toggle-missing`.
 
 ```html

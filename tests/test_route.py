@@ -327,7 +327,7 @@ class ComponentInliningAndRouteTests(unittest.TestCase):
         self.assertTrue(ur.is_component_file(sidebar_path, route_mode=False))
         self.assertFalse(ur.is_component_file(sidebar_path, route_mode=True))
 
-        iss = ut.audit(str(sidebar_path), 8, {}, None, 'trust')
+        iss = ut.audit(str(sidebar_path), 8, {}, None, 'trust', strict=True)
         hero = _rules(iss, 'no-hero-surface')
         self.assertEqual(len(hero), 1, iss)
         self.assertEqual(hero[0][0], 'INFO')
@@ -354,7 +354,7 @@ class ComponentInliningAndRouteTests(unittest.TestCase):
             '<section><button className="bg-indigo-600 text-white h-12">BlockA</button>'
             '<button className="bg-indigo-600 text-white h-12">BlockB</button></section>\n'
         )
-        c_iss = ut.audit('src/components/NavBar.tsx', 8, {}, None, 'trust', txt=comp_jsx)
+        c_iss = ut.audit('src/components/NavBar.tsx', 8, {}, None, 'trust', txt=comp_jsx, strict=True)
         for rule in ('no-hero-surface', 'miller-7', 'skeleton-empty'):
             r_list = _rules(c_iss, rule)
             self.assertTrue(r_list, f'expected {rule} in {c_iss}')
@@ -368,11 +368,11 @@ class ComponentInliningAndRouteTests(unittest.TestCase):
         page_path = ROOT / 'tests' / 'fixtures' / 'real_app' / 'app' / 'dashboard' / 'page.tsx'
         self.assertTrue(ur.is_page_file(page_path))
         self.assertFalse(ur.is_component_file(page_path))
-        iss_file = _rules(ut.audit(str(page_path), 8, {}, None, 'trust'), 'no-hero-surface')
+        iss_file = _rules(ut.audit(str(page_path), 8, {}, None, 'trust', strict=True), 'no-hero-surface')
         self.assertEqual([i[0] for i in iss_file], ['WARN'])
 
         sidebar_path = ROOT / 'tests' / 'fixtures' / 'real_app' / 'components' / 'Sidebar.tsx'
-        iss_route = _rules(ut.audit(str(sidebar_path), 8, {}, None, 'trust', route_mode=True), 'no-hero-surface')
+        iss_route = _rules(ut.audit(str(sidebar_path), 8, {}, None, 'trust', route_mode=True, strict=True), 'no-hero-surface')
         self.assertEqual([i[0] for i in iss_route], ['WARN'])
 
     def test_12_cli_route_and_routes_glob_with_summary_table(self):

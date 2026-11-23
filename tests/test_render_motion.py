@@ -85,6 +85,7 @@ class RenderMotionChromiumTests(unittest.TestCase):
             from playwright.sync_api import sync_playwright
             cls._pw = sync_playwright().start()
             cls._browser = rd.launch_browser(cls._pw)
+            rd.STRICT_CHECKS = True   # these fixtures assert the strict severities
         except BaseException as exc:
             if cls._pw is not None:
                 cls._pw.stop()
@@ -93,6 +94,7 @@ class RenderMotionChromiumTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        rd.STRICT_CHECKS = False
         if cls._browser is not None:
             cls._browser.close()
         if cls._pw is not None:

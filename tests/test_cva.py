@@ -110,7 +110,7 @@ class CvaResolutionTests(unittest.TestCase):
             + '  return <main><Button size="sm">Küçük</Button></main>;\n'
             + '}\n'
         )
-        sm_issues = ut.audit('SmallCtaPage.tsx', 8, {}, txt=sm_src)
+        sm_issues = ut.audit('SmallCtaPage.tsx', 8, {}, txt=sm_src, strict=True)
         sm_fitts = [i for i in sm_issues if i[1] == 'fitts-primary']
         self.assertEqual(len(sm_fitts), 1, f'Expected fitts-primary on size="sm", got: {sm_issues}')
         self.assertEqual(sm_fitts[0][0], 'WARN')
@@ -122,7 +122,7 @@ class CvaResolutionTests(unittest.TestCase):
             + '  return <main><Button size="lg">Kaydet</Button></main>;\n'
             + '}\n'
         )
-        lg_issues = ut.audit('LargeCtaPage.tsx', 8, {}, txt=lg_src)
+        lg_issues = ut.audit('LargeCtaPage.tsx', 8, {}, txt=lg_src, strict=True)
         lg_fitts = [i for i in lg_issues if i[1] == 'fitts-primary']
         self.assertEqual(lg_fitts, [], f'Unexpected fitts-primary on size="lg": {lg_fitts}')
 
@@ -132,7 +132,7 @@ class CvaResolutionTests(unittest.TestCase):
             + '  return <main><Button size="lg" className="h-11">Başla</Button></main>;\n'
             + '}\n'
         )
-        h11_issues = ut.audit('HeroCtaPage.tsx', 8, {}, txt=h11_src)
+        h11_issues = ut.audit('HeroCtaPage.tsx', 8, {}, txt=h11_src, strict=True)
         h11_fitts = [i for i in h11_issues if i[1] == 'fitts-primary']
         self.assertEqual(h11_fitts, [])
 

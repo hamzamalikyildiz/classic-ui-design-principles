@@ -16,7 +16,7 @@ FIXTURES = ROOT / 'tests' / 'fixtures' / 'real_app'
 
 def audit_fixture(rel_path, grid=8, mood=None):
     path = FIXTURES / rel_path
-    return ut.audit(str(path), grid, {}, None, mood)
+    return ut.audit(str(path), grid, {}, None, mood, strict=True)
 
 
 def rules(issues, rule):

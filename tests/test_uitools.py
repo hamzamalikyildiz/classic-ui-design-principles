@@ -18,12 +18,12 @@ SHADCN_CSS = """
 """
 
 
-def run(src, suffix='.tsx', css=None, grid=8, mood=None):
+def run(src, suffix='.tsx', css=None, grid=8, mood=None, strict=True):
     with tempfile.TemporaryDirectory() as d:
         f = pathlib.Path(d) / ('x' + suffix)
         f.write_text(src, encoding='utf-8')
         texts = [src] + ([css] if css else [])
-        return ut.audit(str(f), grid, ut.css_tokens(texts), ut.css_tokens(texts, r'\.dark'), mood)
+        return ut.audit(str(f), grid, ut.css_tokens(texts), ut.css_tokens(texts, r'\.dark'), mood, strict=strict)
 
 
 def rules(issues, rule):
@@ -297,7 +297,7 @@ class Expressive(unittest.TestCase):
     def sev(self, mood):
         with tempfile.TemporaryDirectory() as d:
             f = pathlib.Path(d) / 'p.html'; f.write_text(self.PAGE, encoding='utf-8')
-            return {r: s for s, r, _ in ut.audit(str(f), 8, {}, None, mood)}
+            return {r: s for s, r, _ in ut.audit(str(f), 8, {}, None, mood, strict=True)}
 
     def test_style_rules_relaxed(self):
         self.assertEqual(self.sev('bold').get('bold-headline-size'), 'INFO')
@@ -311,10 +311,38 @@ class Expressive(unittest.TestCase):
             f = pathlib.Path(d) / 'p.html'
             f.write_text('<div class="opacity-0">x</div><p class="text-gray-300 bg-white">low</p>'
                          '<button class="bg-blue-600 text-white h-8 px-4">Go</button>', encoding='utf-8')
-            r = {x[1]: x[0] for x in ut.audit(str(f), 8, {}, None, 'playful')}
+            r = {x[1]: x[0] for x in ut.audit(str(f), 8, {}, None, 'playful', strict=True)}
         self.assertEqual(r.get('reveal-needs-js'), 'WARN')
         self.assertEqual(r.get('fitts-primary'), 'WARN')
         self.assertIn(r.get('wcag-aa'), ('WARN', 'FAIL'))
+
+
+class SoftRules(unittest.TestCase):
+    """Style findings are INFO by default and WARN with strict=True; the accessibility floor never moves."""
+    SRC = ('<main><section class="p-8"><a class="h-9 bg-indigo-600 text-white px-4">Go</a>'
+           '<a class="h-9 bg-indigo-600 text-white px-4">Two</a></section><div class="opacity-0">x</div></main>')
+
+    def sev(self, strict, src=None):
+        with tempfile.TemporaryDirectory() as d:
+            f = pathlib.Path(d) / 'p.html'; f.write_text(src or self.SRC, encoding='utf-8')
+            return {r: s for s, r, _ in ut.audit(str(f), 8, {}, None, None, strict=strict)}
+
+    def test_default_is_info_strict_is_warn(self):
+        soft, hard = self.sev(False), self.sev(True)
+        for rule in ('single-primary-cta', 'fitts-primary'):
+            self.assertEqual(soft.get(rule), 'INFO', rule)
+            self.assertEqual(hard.get(rule), 'WARN', rule)
+
+    def test_floor_never_softens(self):
+        for strict in (False, True):
+            self.assertEqual(self.sev(strict).get('reveal-needs-js'), 'WARN')
+        low = '<main><p class="text-gray-300 bg-white">low</p></main>'
+        for strict in (False, True):
+            self.assertIn(self.sev(strict, low).get('wcag-aa'), ('WARN', 'FAIL'))
+
+    def test_tiny_primary_target_stays_warn(self):
+        tiny = '<main><a class="h-5 bg-indigo-600 text-white px-2">Go</a></main>'
+        self.assertEqual(self.sev(False, tiny).get('fitts-primary'), 'WARN')
 
 
 class Landmark(unittest.TestCase):

@@ -13,7 +13,7 @@ Turn vague adjectives ("modern", "clean", "fun") into measurable decisions. Rule
 |---|---|---|---|
 | **Component** | Single component or small tweak (button, modal, field, card) | Fast path: skip mood, `reference/visual-quality.md`, signature; apply `reference/rules.md` + `uitools.py audit` | Audited component + fix summary |
 | **Page** | Single screen, landing, article, or standalone dashboard | Mood file + `reference/visual-quality.md` + `reference/page-types.md` + relevant `reference/states.md` + 1–2 `reference/motion.md` moments | Screenshot + `--check` + mini state table + motion note |
-| **App** | Multi-screen (≥2 routes, auth, CRUD, dashboard + detail) | `reference/app-flow.md` first: P0/P1/P2 inventory -> foundation (`reference/shadcn-baseline.md` if shadcn) + realistic seed (`reference/sample-data.md`) -> screen loop (`reference/states.md`, `reference/motion.md`, `reference/typography-locale.md`) | Mandatory Coverage Report + 9-state matrix per P0 screen |
+| **App** | Multi-screen (≥2 routes, auth, CRUD, dashboard + detail) | `reference/app-flow.md` first: P0/P1/P2 inventory -> foundation (`reference/shadcn-baseline.md` if shadcn) + realistic seed (`reference/sample-data.md`) -> screen loop (`reference/states.md`, `reference/motion.md`, `reference/typography-locale.md`) | Coverage note + states per P0 screen |
 
 ## 1. Detect context
 
@@ -37,29 +37,38 @@ Turn vague adjectives ("modern", "clean", "fun") into measurable decisions. Rule
 
 Playful and Bold are **expressive**: the audit enforces only the accessibility floor and turns style rules into INFO, so spend effort on character (`moods/expressive.md`). Dark mode is a theme, not a mood; every mood respects `prefers-reduced-motion`.
 
-## 3. Make it memorable (Page & App modes)
+## 3. Floor, defaults and ideas
 
-1. **One signature element per primary screen**: a custom inline-SVG illustration (product, scene, or mascot—never geometric placeholders/emoji) or working interaction (mini demo, configurator, sortable table, pausable log). Dashboards favor interaction, landings illustration/live preview, articles strong type (diagrams/interactions only when helpful, never clip-art).
-2. **Palette from the subject**, not the default (audio: ember on near-black; kids learning: sun yellow + sky + coral; observability: cyan on ink). Supporting hue 60–150° away. Violet-to-fuchsia gradient only if the brief calls for it.
-3. **Icons are inline SVG**, one stroke style. Emoji as icons only in Playful.
-4. **Realistic copy & seeded data** (`reference/sample-data.md`): real names, numbers, units; no `"Lorem"`, no `"Feature one"`. Seed realistic data before running `render.py` — never judge screenshots against an empty database.
-5. **Visual polish** (`reference/visual-quality.md`, read before building): palette recipe from subject, display/serif voice, one hero entrance and one dealt moment, real product UI instead of boxes, one atmosphere treatment, varied section rhythm. `audit` flags stock blue/violet accents with no custom palette as `stock-look`.
-6. **No half-empty stubs or filler widgets:** fill every panel with real rows/copy; never invent extra panels/sidebars to fill space; keep content visible without JS (no static `opacity-0`).
+Rules come in three strengths. Only the floor is non-negotiable; spending effort on a default that does not fit the brief usually makes the page worse.
 
-## 4. Hard rules, states, motion & typography
+**Floor (always; `audit` keeps these at FAIL/WARN):**
+1. AA contrast (4.5:1 body, 3:1 large text/UI), including gradients, `oklch` tokens and both themes; fix a failing colored pair by shade within the hue, never grey.
+2. Visible keyboard focus, reachable controls, accessible names for buttons and links.
+3. `prefers-reduced-motion` honored; no animating layout properties (`width`, `height`, `top`, `left`, `margin`, `padding`).
+4. Content visible without JavaScript (no static `opacity-0`).
+5. Nothing clipped, overflowing or overlapping; no horizontal scroll at 375px.
+6. Body text ≥ 12px (readable table/caption/sidebar text ≥ 14px), primary touch targets ≥ 24px.
+7. `<main>` and basic landmarks; paragraphs capped around 65ch.
+8. Language correctness: `lang`, Turkish casing (`tr-TR`), locale number/date formats (`reference/typography-locale.md`).
+9. No placeholder copy (`"Lorem"`, `"Feature one"`).
 
-Details in `reference/rules.md`, `reference/states.md`, `reference/motion.md`, `reference/typography-locale.md`:
+**Defaults (start here; deviate when the brief or content calls for it, and say so in one line of the report; `audit` reports these as INFO):**
+- Color and depth: 60-30-10 by area, one hero surface per screen, depth over borders, nested radius = outer - padding, categorical chart palette, same-hue contrast fixes.
+- Layout: 8pt grid (4px fine-tuning), proximity inside groups < between groups, Z-pattern landings, F-pattern dashboards, a featured bento card when it helps.
+- Type: modular scale, body 16px, leading 1.5-1.6, ≤ 2 families (3 in expressive), `text-balance` headings, `tabular-nums` for number columns, `Intl` formatting.
+- UX: one solid primary CTA per block, primary CTAs ≈ 44px, Hick ≤ 7 options, Miller 5-7 nav items, hover/focus/active/disabled states, skeleton and empty states where data loads.
+- States (`reference/states.md`): cover the states the screen really has; most need loading, empty and error, async jobs over 3s need named stages and a cancel.
+- Motion (`reference/motion.md`): tokens `80-500ms`, `transform`/`opacity` only, `exit <= 0.7 * enter`.
+- Content: realistic seeded data (`reference/sample-data.md`), panels filled with real rows rather than stubs, no filler widgets invented to fill space.
+- Palette from the subject, not the default (ember on near-black for audio, sun yellow + sky for kids), supporting hue 60-150° away; inline-SVG icons in one stroke style.
 
-- **Color & depth:** 60-30-10 by area; one hero surface per screen (except pure typographic Editorial); AA contrast (4.5:1 body, 3:1 large/UI) including gradients and `oklch` tokens; fix failing colored pairs by shade within the hue, never grey. Depth over borders (except Technical/Editorial hairlines); no frame wrappers; nested radius = outer - padding.
-- **Layout:** 8pt grid (4px fine-tuning), proximity inside groups < between groups, Z-pattern for landings, F-pattern for dashboards/content, bento with one featured card when appropriate.
-- **Type & locale** (`reference/typography-locale.md`): modular scale, `xs` ≥ 12px for short kickers/tags only, ≥ 14px (`sm`) for readable table/caption/sidebar text, body 16px, leading 1.5–1.6, paragraphs ≤ 65ch, ≤ 2 families (3 in expressive). Use `text-balance` on headings, `text-pretty` on paragraphs, `opsz`, `tabular-nums`, `Intl` formatting, `lang="tr"` with `uppercase` (avoiding `İ/I` corruption), and a reachable dark-mode toggle if `.dark` tokens exist.
-- **UX & 9-State Matrix** (`reference/states.md`): single solid primary CTA per screen/card/form (≥ 44px; `audit` warns < 40px), Hick ≤ 7 options, Miller 5–7 nav items, hover/focus-visible/active/disabled, `aria-hidden` on decoration, `<main>`/`<header>`/`<nav>` landmarks. 9-state coverage: **Empty** (first-use vs filtered), **Loading** (`<1s` none / `1–3s` matching skeleton), **Long-loading (>3s)** (named stages, elapsed + honest estimate, productive fill, Cancel + Notify), **Error** (preserve user input + specific recovery), **Partial**, **Locked**, **Success** (micro-moment), **Offline**, **Stale**.
-- **Motion & Micro-Moments** (`reference/motion.md`): standard tokens (`80–500ms`), animate ONLY `transform`/`opacity` (never layout properties `width`/`height`/`top`/`left`), `exit <= 0.7 * enter`. Add 1–2 result micro-moments (score ring count-up, `1.2s` row highlight flash, Undo toast, sliding tab indicator) with zero-travel `prefers-reduced-motion: reduce` fallback.
-- **Anti-patterns:** rainbow buttons, multiple solid CTAs, `<14px` body/table text, faint grey walls, hollow outlined display text, all-card borders outside Technical/Editorial, bare `"Loading..."` on `>3s` jobs, wiping input on error.
+**Ideas (pick what fits, none required; `reference/visual-quality.md`):** a signature element (a drawn product or scene, a small working interaction, or simply strong typography; skip it if it would feel bolted on), one hero entrance and one dealt moment, real product UI instead of boxes, one atmosphere treatment, varied section rhythm, 1-2 result micro-moments (count-up, row flash, Undo toast, sliding tab indicator) with a reduced-motion fallback. `stock-look` in the audit flags an untouched default blue/violet accent.
+
+Anti-patterns: rainbow buttons, several solid CTAs side by side, faint grey text walls, hollow outlined display text, borders on every card, bare `"Loading..."` on long jobs, wiping input on error.
 
 The user's explicit request wins; satisfy colliding rules through presentation (grouping, "More" menus, ghost variants) and note it in the report.
 
-## 5. Tooling (`reference/tooling.md` lists every check)
+## 4. Tooling (`reference/tooling.md` lists every check)
 
 ```bash
 python scripts/uitools.py contrast pink-400 pink-100      # ratio, AA verdict, same-hue fix
@@ -67,24 +76,22 @@ python scripts/uitools.py scale --base 16 --ratio major-third
 python scripts/uitools.py radius 24 8                      # inner radius
 python scripts/uitools.py audit page.html --mood playful   # static rules; exit 1 on FAIL
 python scripts/uitools.py audit app/cv/page.tsx --css app/globals.css --mood trust
-python scripts/uitools.py audit app/cv/page.tsx --baseline .uitools-baseline.json
+python scripts/uitools.py audit page.html --strict         # keep style suggestions at WARN (CI)
 python scripts/render.py page.html --out shot.png --check  # screenshot + rendered checks
 python scripts/render.py --url http://localhost:3000/cv --storage-state auth.json --out cv.png --check
 python scripts/render.py --routes routes.json --out-dir shots/ --check
 ```
 
-Suppress intentional exceptions inline: `uitools-ignore: <rule> — <reason>`. `--check` runs headless Chrome for clipped/overflowing content, blank/half-empty panels, `opacity: 0` text, empty buttons, axe violations, JS errors, 375px mobile overflow/tiny text, dead buttons, and missing focus rings. Fix every WARN.
+Suppress intentional exceptions inline: `uitools-ignore: <rule> — <reason>`. `--check` runs headless Chrome for clipped/overflowing content, hidden text, empty buttons, axe violations, JS errors, 375px overflow/tiny text and missing focus rings. Fix FAIL and WARN (the floor); INFO lines are suggestions: decide, and mention the ones you skip.
 
-## 6. Build and verify
+## 5. Build and verify
 
-1. **Mode, mood, concept & plan statement** (App mode: run `reference/app-flow.md` screen inventory P0/P1/P2 first).
-2. **Tokens & foundation:** Palette from subject (`contrast` incl. `oklch`), type `scale`, motion/radius tokens in one place (apply `reference/shadcn-baseline.md` once for shadcn).
-3. **Seed & build:** Seed realistic data (`reference/sample-data.md`) before rendering. Build hero + signature element first, then supporting modules per mood focus rule.
-4. **States, motion & locale pass:** Wire the 9-state matrix (`reference/states.md`), 1–2 micro-moments (`reference/motion.md`), and typography/locale/theme toggle (`reference/typography-locale.md`).
-5. **Audit & render:** Run `uitools.py audit --mood <mood>` (fix FAIL/WARN without deleting signature art). If Playwright + Chrome exist, run `render.py --check`, inspect screenshots (eye landing, mood, empty/stretched areas, squint hierarchy), and fix every WARN (up to 3 rounds; if unavailable, note in report).
+1. **Mode, mood, concept & plan statement** (App mode: `reference/app-flow.md` screen inventory first).
+2. **Tokens & foundation:** palette (`contrast`, incl. `oklch`), type `scale`, radius/motion tokens in one place (`reference/shadcn-baseline.md` once for shadcn).
+3. **Seed & build:** seed realistic data before rendering; build the hero and the main data surface first, then supporting modules per mood focus.
+4. **States, motion & locale pass** for what the screens actually do.
+5. **Audit & render:** `uitools.py audit --mood <mood>`; if Playwright + Chrome exist, `render.py --check` and look at the screenshot (where the eye lands, empty or stretched areas, squint hierarchy). Fix the floor findings, up to 3 rounds; if rendering is unavailable, say so.
 
-## 7. Report
+## 6. Report
 
-- **Component mode:** modified file(s), applied rule values, `audit` result.
-- **Page mode:** type, mood, stack, concept & signature element; palette/scale/radius/spacing; `audit` & `--check` results; screenshot path + first-glance verdict; **mini state coverage table + motion note**.
-- **App mode:** **Mandatory Coverage Report** (`reference/app-flow.md`) — `Screen | Priority | Done [Redesigned / Styled to match / Untouched] | States covered [n/9] | Motion | Open gaps` — plus **9-state matrix per P0 screen** (`reference/states.md`), cross-screen consistency verdict, `audit`/`--check` summary, and screenshot paths.
+Keep it short: what was built (mode, mood, stack, concept), the audit and `--check` result, anything on the floor still open, defaults you deliberately skipped (one line each), and screenshot paths. App mode adds a coverage note: which screens were done, which states each has, and what is missing (`reference/app-flow.md`; a table is optional).

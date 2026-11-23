@@ -174,6 +174,18 @@ MOTION_JS = _load_check_js('motion.js')
 MOTION_FILMSTRIP_MS = [0, 80, 160, 320, 640, 1000]
 
 
+SOFT_CHECKS = {'theme-toggle-missing', 'long-wait-unexplained', 'empty-panel', 'empty-column', 'hollow-text', 'slow-feedback'}
+STRICT_CHECKS = False
+
+
+def soften_findings(found):
+    """Style and taste findings are INFO by default; --strict keeps them at WARN. The accessibility and broken-layout floor never moves."""
+    if STRICT_CHECKS:
+        return found
+    return [['INFO', f[1], f[2] + ' [style suggestion; --strict keeps WARN]'] if (f[0] == 'WARN' and f[1] in SOFT_CHECKS) else list(f)
+            for f in found]
+
+
 def find_axe():
     for c in [os.environ.get('AXE_JS', ''), str(CACHE / 'node_modules/axe-core/axe.min.js')]:
         if c and pathlib.Path(c).is_file():
@@ -301,6 +313,7 @@ class RenderOptions:
     motion_trigger: str | None = None
     format: str = 'text'
     fail_on: str = 'none'
+    strict: bool = False
 
 
 def _coerce_options(opts):
@@ -720,7 +733,7 @@ def _run_dom_checks(page, mobile_factory, target_uri, opts, console_errors, netw
             found += m.evaluate(MOBILE_JS)
         finally:
             m.close()
-    found = [list(f) for f in found if f[1] != 'dom-check']
+    found = soften_findings([list(f) for f in found if f[1] != 'dom-check'])
     if not found:
         found = [['INFO', 'dom-check', 'no defects found']]
     return found
@@ -918,7 +931,7 @@ def run_motion_checks(page, out_dir=None, trigger_selector=None, capture_filmstr
         if key not in seen:
             seen.add(key)
             deduped.append(entry)
-    return deduped
+    return soften_findings(deduped)
 
 
 def capture(browser_or_page, target_uri, opts=None):
@@ -1640,7 +1653,7 @@ def _finalize_viewport_checks(page, vp_width, console_errors, network_errors, pr
     if network_errors:
         found.append(['WARN', 'network-errors',
                       f"{len(network_errors)} network error(s): {'; '.join(network_errors[:3])}"])
-    found = [list(f) for f in found if f[1] != 'dom-check']
+    found = soften_findings([list(f) for f in found if f[1] != 'dom-check'])
     if not found:
         found = [['INFO', 'dom-check', 'no defects found']]
     return found
@@ -2172,6 +2185,8 @@ def build_parser():
                     help='Python file defining def login(page, base_url): run once before rendering the target')
     ap.add_argument('--wait-for', metavar='SELECTOR',
                     help='wait for this CSS selector to become visible after hydration/DOM stability before capturing or interacting')
+    ap.add_argument('--strict', action='store_true',
+                    help='keep style suggestions (empty panels/columns, hollow text, theme toggle, slow feedback) at WARN instead of INFO')
     ap.add_argument('--check', action='store_true',
                     help='also print defects found in the rendered page: layout (clipped text, blank/half-empty panels, hidden content), axe accessibility, console errors, 375px mobile, dead buttons, focus rings')
     ap.add_argument('--motion', action='store_true',
@@ -2229,6 +2244,7 @@ def parse_options(argv=None):
             motion_trigger=a.motion_trigger,
             format=a.format,
             fail_on=a.fail_on,
+            strict=a.strict,
         )
 
     if bool(a.html) == bool(a.url):
@@ -2260,6 +2276,7 @@ def parse_options(argv=None):
         motion_trigger=a.motion_trigger,
         format=a.format,
         fail_on=a.fail_on,
+        strict=a.strict,
     )
 
 
@@ -2301,7 +2318,9 @@ def render(opts):
 
 
 def main(argv=None):
+    global STRICT_CHECKS
     opts = parse_options(argv)
+    STRICT_CHECKS = bool(getattr(opts, 'strict', False))
     if opts.routes:
         summary = render_routes(opts)
         json_report = summary.get('json_report') or _build_json_report(summary['results'])

@@ -1,7 +1,7 @@
 # Editorial mood notes
 
 ## Layout (pick one clean structure — never leave a blank right half)
-- **Single-column essay or profile (default):** keep one centered reading axis. Either a centered reading column (`mx-auto max-w-prose`) inside a wider centered frame (`max-w-4xl`/`5xl`) where the display headline, optional wide figure, pull quotes and closing band are centered together, OR one unified centered column (`mx-auto max-w-2xl`). **Never** left-align a lone `max-w-prose` reading column inside a wide `max-w-4xl`/`5xl` frame with dead empty space beside it.
+- **Single-column essay or profile (default):** keep one centered reading axis. Either a centered reading column (`mx-auto max-w-prose`) inside a wider centered frame (`max-w-4xl`/`5xl`) where the display headline, optional wide figure, pull quotes and closing band are centered together, OR one unified centered column (`mx-auto max-w-2xl`). Avoid a lone left-aligned `max-w-prose` reading column inside a wide `max-w-4xl`/`5xl` frame with dead empty space beside it.
 - **Two-column layout (when a sidebar genuinely helps):** for recipes, itineraries, long references, or articles with real side material, place the reading column beside a purposeful rail (`lg:grid-cols-[minmax(0,65ch)_280px] gap-12`, or ingredients left and method right). Keep the rail strictly as tall as its content needs; never stack unrelated filler widgets to match article height.
 - Use at most two container widths: one wide frame + one reading column (or one unified centered column).
 

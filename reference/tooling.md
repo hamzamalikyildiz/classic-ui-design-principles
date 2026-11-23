@@ -1,5 +1,7 @@
 # Tooling details
 
+**Severity levels.** By default `audit` and `render.py --check` keep only the floor at FAIL/WARN (contrast, landmark, hidden-until-JS content, line length, Turkish casing; clipped or overflowing content, focus rings, reduced motion, layout-property animation, axe serious/critical). Style and taste findings (grid, CTA count, hero surface, Miller 7, card sameness, grey charts, editorial layout hints, empty panels/columns, hollow text, theme toggle, slow feedback) are reported as INFO with the note `[style suggestion; --strict keeps WARN]`. Primary CTAs under 24px stay WARN; 24-44px is INFO. Pass `--strict` to `uitools.py audit` and `render.py` to keep every finding at its old WARN level (useful in CI).
+
 `uitools.py` runs with Python 3 stdlib only (`uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`). `render.py` uses Playwright + headless Chromium and `scripts/checks/*.js` (`check.js`, `mobile.js`, `interact.js`, `motion.js`, `sweep.js`).
 
 ## `uitools.py` commands & flags
