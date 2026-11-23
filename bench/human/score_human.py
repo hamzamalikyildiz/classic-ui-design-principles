@@ -12,6 +12,7 @@ import json
 import math
 import pathlib
 import re
+import sys
 from typing import Any
 
 CRITERIA_NAMES = [
@@ -421,6 +422,10 @@ def main(argv: list[str] | None = None) -> int:
         llm_summary_path=pathlib.Path(args.llm_summary) if args.llm_summary else None,
         out_md=pathlib.Path(args.out_md) if args.out_md else None,
     )
+    try:  # Turkish report text must not crash on Windows consoles that default to cp1252/cp1254
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
     print(report)
     return 0
 
