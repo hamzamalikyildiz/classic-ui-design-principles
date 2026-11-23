@@ -32,9 +32,9 @@ plan -> all states (reference/states.md) -> motion moments (reference/motion.md)
 ```
 
 - **plan:** one-line plan statement per screen, reusing the app's mood; one signature element for the app's P0 hero, not one per screen.
-- **states:** implement the states the screen really has before moving on; most need default, loading, empty and error, and the rest (partial, success, offline, long-content) only where the data or flow produces them.
+- **states:** implement every state listed in the inventory row before moving on (default, loading, empty, error, partial, success, disabled, offline, long-content as applicable).
 - **motion moments:** only meaningful ones (feedback, state change, entrance of the hero); respect `prefers-reduced-motion`.
-- **audit / render:** fix FAIL and WARN (the floor), decide on INFO suggestions, then look at the screenshots of each route and state, not only the happy path.
+- **audit / render:** fix every WARN, then look at the screenshots of each route and state, not only the happy path.
 - Finish a priority wave fully before starting the next. If time runs out, P2 stays honestly unfinished (see section 5); never trade P0 depth for P2 breadth.
 
 ## 4. Cross-Screen Consistency Check
@@ -47,7 +47,7 @@ After the last wave, compare screens side by side:
 - **Theme:** if `.dark` tokens exist, a theme toggle is reachable from the global shell and every screen passes AA in both themes.
 - Fix drift at the primitive or token, not by patching the odd screen.
 
-## 5. Coverage note (end of App-mode work)
+## 5. Mandatory Coverage Report (end of App-mode work)
 
 End with this table, one row per inventory screen, in the same order:
 

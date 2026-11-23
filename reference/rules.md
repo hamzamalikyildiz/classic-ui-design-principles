@@ -7,7 +7,7 @@
 - **Keep the hue, fix the shade.** When a colored pair fails, darken the text within the same hue (`bg-pink-100 text-pink-800`, `bg-amber-100 text-amber-900`); never fix contrast by switching to grey. `contrast` suggests a same-hue fix.
 - Text on a gradient must pass against **both** end colors.
 - Semantic: error=red-600, success=green-600, warning=amber-500 (dark text on it), info=blue-600. If the accent collides with one, pick another hue. Never convey state by color alone.
-- **Charts default to a categorical palette**: accent + 3–4 hues that differ in hue and lightness (e.g. indigo-500, emerald-500, amber-500, rose-500, sky-500), plus labels or a legend. Never encode categories in shades of grey.
+- **Charts use a categorical palette**: accent + 3–4 hues that differ in hue and lightness (e.g. indigo-500, emerald-500, amber-500, rose-500, sky-500), plus labels or a legend. Never encode categories in shades of grey.
 - With dark mode, both themes must pass.
 
 **Depth & surfaces**
@@ -37,8 +37,8 @@
 - Jakob: logo top-left, profile/actions top-right, left sidebar in apps, search at top, links in footer, standard icons.
 - Miller: 5–7 items per nav, tab or card group; overflow into groups or a "More" menu.
 - Single primary CTA: one solid button per screen/card/form; the rest outline or ghost.
-- Skeleton & empty states: by default a dynamic/async list/card gets an `animate-pulse` skeleton matching real content size, an empty state (icon + short text + one action) and an error state (do not invent stub skeleton widgets on static showcase pages).
-- Every interactive element has a visible focus ring (floor); hover, active and disabled states are the default.
+- Skeleton & empty states: every dynamic/async list/card gets an `animate-pulse` skeleton matching real content size, an empty state (icon + short text + one action) and an error state (do not invent stub skeleton widgets on static showcase pages).
+- Every interactive element has hover, focus-visible (accent ring), active and disabled states.
 - Decorative emoji, illustrations and mascots get `aria-hidden="true"`; interactive ones get an `aria-label`.
 
 **Anti-patterns**

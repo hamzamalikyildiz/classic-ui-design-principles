@@ -36,7 +36,7 @@ Micro-moments turn static templates into a live product:
 - **Optimistic UI update + undo toast:** Update UI in-place and show a `4s` toast with an actionable `"Undo"` button, reverting cleanly on click or failure.
 - **Smooth settled insertion of new list items:** Insert new rows with a `180–240ms` height/opacity settle and reserved dimensions without layout jump.
 
-## 4. State coverage checklist (optional template)
+## 4. Mandatory State Coverage Table Template
 
 Include per prioritized screen in App/Page reports (`yes` / `-` / `n/a`):
 

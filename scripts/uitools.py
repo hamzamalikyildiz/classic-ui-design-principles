@@ -593,8 +593,7 @@ def character_checks(txt, nodes, mood, tokens=None):
             if is_solid_cta(tag, attrs, c_cls, dark, tokens):
                 h = height_px(c_cls)
                 if h is not None and h < 40:
-                    out.append(('WARN' if (_STRICT or h < 24) else 'INFO', 'fitts-primary',
-                                f"L{line_of(txt, s)} primary CTA is {h:g}px tall; use >=44px (h-11+), hero CTA h-12..h-14"))
+                    out.append(('WARN', 'fitts-primary', f"L{line_of(txt, s)} primary CTA is {h:g}px tall; use >=44px (h-11+), hero CTA h-12..h-14"))
                     break
 
     # frame wrappers: rounded padded box whose only child is another rounded surface
@@ -704,13 +703,6 @@ def character_checks(txt, nodes, mood, tokens=None):
 EXPRESSIVE = ('playful', 'bold')
 # style rules that expressive moods may break on purpose; the accessibility/readability floor
 # (wcag-aa, line-length, reveal-needs-js, ...) stays at full severity
-# Style and taste findings: INFO by default, kept at their old WARN level with --strict.
-# The floor (wcag-aa, landmark-main, reveal-needs-js, line-length, tr-uppercase) never moves.
-SOFT_RULES = {'grid', 'single-primary-cta', 'miller-7', 'no-hero-surface', 'card-sameness', 'bold-headline-size',
-              'no-drawn-mascot', 'grey-chart', 'edge-align', 'headline-measure', 'left-stacked-column', 'editorial-leading'}
-SOFT_NOTE = ' [style suggestion; --strict keeps WARN]'
-_STRICT = False
-
 RELAXED = {'grid', 'miller-7', 'single-primary-cta', 'grey-chart', 'max-2-fonts',
            'no-hero-surface', 'border-heavy', 'no-drawn-mascot', 'card-sameness', 'bold-headline-size', 'bold-font-default'}
 
@@ -984,13 +976,10 @@ def audit(
     txt=None,
     return_suppressed=False,
     *,
-    strict=False,
     route_mode=False,
     root_dir=None,
     tsconfig_path=None,
 ):
-    global _STRICT
-    _STRICT = bool(strict)
     if txt is None:
         raw_txt = pathlib.Path(path).read_text(encoding='utf-8', errors='ignore')
     elif isinstance(txt, VirtualMarkup):
@@ -1288,8 +1277,6 @@ def audit(
     if mood in EXPRESSIVE:
         issues = [(('INFO', r, m + ' [relaxed in expressive moods]') if sev != 'INFO' and r in RELAXED else (sev, r, m))
                   for sev, r, m in issues]
-    if not strict:
-        issues = [('INFO', r, m + SOFT_NOTE) if (sev == 'WARN' and r in SOFT_RULES) else (sev, r, m) for sev, r, m in issues]
     kept, suppressed, meta = apply_ignores(raw_txt, issues)
     final_issues = kept + meta
     if return_suppressed:
@@ -1374,7 +1361,6 @@ def cmd_audit(a):
                 a.mood,
                 txt=composed,
                 return_suppressed=True,
-                strict=getattr(a, 'strict', False),
                 route_mode=True,
                 root_dir=eff_root,
                 tsconfig_path=tsconfig_path,
@@ -1390,7 +1376,6 @@ def cmd_audit(a):
                 a.mood,
                 txt=p_txt,
                 return_suppressed=True,
-                strict=getattr(a, 'strict', False),
                 root_dir=root_dir,
                 tsconfig_path=tsconfig_path,
             )
@@ -1479,8 +1464,6 @@ def main(argv=None):
     d.add_argument('--css', nargs='*', help='CSS files with :root tokens, e.g. app/globals.css for shadcn')
     d.add_argument('--mood', choices=['playful', 'trust', 'bold', 'editorial', 'technical'],
                    help='enable mood checks: color presence and hero surface')
-    d.add_argument('--strict', action='store_true',
-                   help='keep style suggestions (grid, CTA count, hero surface, editorial layout...) at WARN instead of INFO')
     d.add_argument('--show-suppressed', action='store_true',
                    help='list suppressed issues with their ignore reasons')
     d.add_argument('--baseline', metavar='PATH',
