@@ -1,0 +1,5 @@
+cift1: A | 4 | A seçeneği güçlü display tipografisi, teknik monospace detayları ve alıntı bölümündeki başlık çerçevesiyle daha özenli ve karakterli bir tasarım sunuyor. | A 8/7/8/8 B 6/6/7/7
+cift2: B | 4 | B seçeneği gerçek bir hasta portalı gibi navigasyon, poliçe özeti, kontrol durumu ve çift sütunlu dolu yerleşimiyle çok daha işlevsel ve ikna edici duruyor. | A 8/8/8/6 B 8/8/9/9
+cift3: B | 4 | B seçeneği gerçekçi kontrol butonları, eşik çizgili çoklu seri grafiği ve yoğun ama temiz düğüm listesiyle gerçek bir altyapı paneli hissi veriyor. | A 7/7/8/7 B 8/9/9/9
+cift4: B | 3 | B seçeneği baştan sona tutarlı serif tipografisi, kart kutuları yerine ince çizgilerle ayrılan öneri sütunları ve sıcak renk vurgusuyla gerçek bir dergi estetiği yakalıyor. | A 8/8/8/9 B 9/9/9/8
+cift5: B | 5 | B seçeneği emoji ikonlar yerine temiz vektörel öğeler kullanması, daha özenli maskot çizimi ve iki kademeli fiyatlandırmasıyla çok daha profesyonel ve zengin. | A 7/6/8/7 B 9/9/9/9

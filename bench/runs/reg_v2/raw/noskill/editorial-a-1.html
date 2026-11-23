@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spruce and Varnish — The Quiet Craft of Violin Restoration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            paper: '#FAF7F2',
+            ink: '#1E1B18',
+            muted: '#6B635B',
+            amberwood: '#8C4A27',
+            rule: '#E4DDD3',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #FAF7F2;
+      color: #1E1B18;
+      -webkit-font-smoothing: antialiased;
+    }
+    .dropcap::first-letter {
+      float: left;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 4.2rem;
+      line-height: 0.82;
+      padding-right: 0.55rem;
+      padding-top: 0.25rem;
+      color: #8C4A27;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased selection:bg-amberwood/15 selection:text-ink">
+  <!-- Top Masthead -->
+  <header class="border-b border-rule">
+    <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between text-xs tracking-[0.18em] uppercase text-muted">
+      <span class="font-medium text-ink">The Atelier Quarterly</span>
+      <nav class="hidden sm:flex items-center gap-7">
+        <a href="#profile" class="hover:text-ink transition-colors">Profile</a>
+        <a href="#varnish" class="hover:text-ink transition-colors">The Varnish</a>
+        <a href="#related" class="hover:text-ink transition-colors">Related</a>
+      </nav>
+      <span>Issue No. 42</span>
+    </div>
+  </header>
+
+  <!-- Article Header -->
+  <main class="max-w-5xl mx-auto px-6 pt-14 pb-20">
+    <div class="max-w-2xl mx-auto text-center">
+      <p class="text-xs tracking-[0.2em] uppercase text-amberwood font-medium mb-5">
+        Craft &amp; Conservation
+      </p>
+      <h1 class="font-serif text-5xl sm:text-6xl font-normal tracking-tight text-ink leading-[1.05] mb-6">
+        Spruce and Varnish
+      </h1>
+      <p class="font-serif italic text-xl sm:text-2xl text-muted leading-relaxed mb-8">
+        Inside the north-facing Cremona workshop where Matteo Bellini spends months coaxing three-hundred-year-old instruments back into voice.
+      </p>
+      <div class="flex items-center justify-center gap-3 text-xs tracking-[0.14em] uppercase text-muted border-t border-b border-rule py-3.5">
+        <span>By Clara Vance</span>
+        <span aria-hidden="true">&middot;</span>
+        <span>12 Min Read</span>
+        <span aria-hidden="true">&middot;</span>
+        <span>Autumn 2026</span>
+      </div>
+    </div>
+
+    <!-- Bespoke Inline SVG Illustration: Violin Scroll & Soundhole -->
+    <figure class="max-w-3xl mx-auto my-12">
+      <div class="bg-[#F3EDE3] border border-rule rounded-sm p-8 sm:p-12 flex flex-col items-center">
+        <svg viewBox="0 0 640 220" class="w-full max-w-xl h-auto" role="img" aria-label="Minimalist architectural line drawing of a violin body, f-hole, and wood grain">
+          <!-- Subtle wood grain lines -->
+          <g stroke="#DFD5C7" stroke-width="1" fill="none">
+            <path d="M40 30 Q320 26 600 32" />
+            <path d="M40 55 Q320 50 600 58" />
+            <path d="M40 80 Q320 76 600 82" />
+            <path d="M40 140 Q320 144 600 138" />
+            <path d="M40 165 Q320 170 600 163" />
+            <path d="M40 190 Q320 194 600 188" />
+          </g>
+          <!-- Violin silhouette outline -->
+          <path d="M120 110 C120 55, 200 45, 240 75 C265 94, 285 94, 310 75 C355 40, 460 40, 500 85 C525 112, 525 108, 500 135 C460 180, 355 180, 310 145 C285 126, 265 126, 240 145 C200 175, 120 165, 120 110 Z"
+                fill="#FAF7F2" stroke="#8C4A27" stroke-width="1.6" />
+          <!-- Inner purfling -->
+          <path d="M128 110 C128 62, 198 53, 236 81 C263 101, 287 101, 314 81 C356 48, 454 48, 492 89 C514 112, 514 108, 492 131 C454 172, 356 172, 314 139 C287 119, 263 119, 236 139 C198 167, 128 158, 128 110 Z"
+                fill="none" stroke="#C5B8A8" stroke-width="0.9" stroke-dasharray="3 2" />
+          <!-- F-holes -->
+          <path d="M278 78 C272 82, 276 92, 285 92 C292 92, 294 84, 288 80 M285 92 C282 104, 276 116, 272 126 M268 128 C264 132, 268 140, 275 138"
+                fill="none" stroke="#1E1B18" stroke-width="1.6" stroke-linecap="round" />
+          <path d="M352 78 C358 82, 354 92, 345 92 C338 92, 336 84, 342 80 M345 92 C348 104, 354 116, 358 126 M362 128 C366 132, 362 140, 355 138"
+                fill="none" stroke="#1E1B18" stroke-width="1.6" stroke-linecap="round" />
+          <!-- Bridge -->
+          <line x1="305" y1="103" x2="325" y2="103" stroke="#8C4A27" stroke-width="2" />
+          <line x1="308" y1="103" x2="306" y2="115" stroke="#8C4A27" stroke-width="1.3" />
+          <line x1="322" y1="103" x2="324" y2="115" stroke="#8C4A27" stroke-width="1.3" />
+          <!-- Strings -->
+          <g stroke="#6B635B" stroke-width="0.6" opacity="0.7">
+            <line x1="80" y1="106" x2="460" y2="106" />
+            <line x1="80" y1="109" x2="460" y2="109" />
+            <line x1="80" y1="112" x2="460" y2="112" />
+            <line x1="80" y1="115" x2="460" y2="115" />
+          </g>
+        </svg>
+        <figcaption class="mt-5 text-xs text-muted tracking-wide text-center">
+          Fig. 1 — Alpine spruce belly geometry and f-hole placement, traced from a 1714 Cremonese pattern.
+        </figcaption>
+      </div>
+    </figure>
+
+    <!-- Long-Read Body -->
+    <article id="profile" class="max-w-2xl mx-auto space-y-6 text-[17px] leading-[1.82] text-ink/90">
+      <p class="dropcap">
+        At seven in the morning, before the delivery vans rattle over the cobblestones of Via Beltrami, Matteo Bellini opens the tall shutters of his workshop. North light—even, cool, and unforgiving—spills across a workbench scarred by forty years of chisels, hide-glue pots, and brass planes no larger than a walnut. On a linen pad sits a 1728 violin whose spruce top has parted along a centuries-old winter grain.
+      </p>
+      <p>
+        Restoration, Bellini insists, is not the art of making an old thing look new. It is the discipline of listening to what wood remembers. Every violin carries the climate of its birth: the tight, slow-growing rings of high-altitude Paneveggio spruce, the mineral trace of the river water used to cook the animal glue, and the subtle compression left by generations of chinrests and bow pressure.
+      </p>
+
+      <h2 id="varnish" class="font-serif text-3xl text-ink pt-6 pb-1 font-normal">
+        The Patience of Hide Glue
+      </h2>
+      <p>
+        Modern synthetics are banned from this room. To close a crack in a soundboard, Bellini warms pearl-grade hide glue in a copper bain-marie until it reaches sixty degrees Celsius—hot enough to flow into microscopic fibers, cool enough not to scorch the collagen. If a future restorer needs to open the instrument fifty years from now, a dampened palette knife will release the seam without tearing a single cell of spruce.
+      </p>
+
+      <!-- Pull Quote -->
+      <blockquote class="my-10 py-6 px-6 sm:px-8 border-l-2 border-amberwood bg-[#F3EDE3]/60">
+        <p class="font-serif italic text-2xl sm:text-[26px] leading-snug text-ink mb-3">
+          &ldquo;You never force wood to meet your hand. You humidify, you wait, and you let the arch remember where it belongs.&rdquo;
+        </p>
+        <cite class="not-italic text-xs tracking-[0.16em] uppercase text-muted">
+          — Matteo Bellini, Cremona
+        </cite>
+      </blockquote>
+
+      <p>
+        Once the structural seam is stable, attention turns to the varnish. Original eighteenth-century oil varnishes—amber resin, linseed oil, and madder lake—have a depth that refracts light like honey over dark stone. Retouching a worn corner requires layering spirit-based pigments with a squirrel-hair brush, building transparency one breath-thin coat at a time until the repair disappears into the patina.
+      </p>
+      <p>
+        When a soloist finally draws a bow across the restored strings, Bellini does not watch the player’s hands. He watches the windowpane, listening for the quiet bloom of overtones that tells him the spruce is breathing freely again.
+      </p>
+    </article>
+
+    <!-- Related Stories -->
+    <section id="related" class="max-w-4xl mx-auto mt-20 pt-12 border-t border-rule">
+      <div class="flex items-baseline justify-between mb-8">
+        <h2 class="font-serif text-2xl sm:text-3xl font-normal text-ink">Related Stories</h2>
+        <span class="text-xs tracking-[0.16em] uppercase text-muted">From the Archive</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="#related" class="group block p-6 bg-[#F3EDE3]/50 border border-rule hover:border-amberwood/50 transition-colors">
+          <p class="text-[11px] tracking-[0.18em] uppercase text-amberwood mb-2">Materials</p>
+          <h3 class="font-serif text-xl text-ink group-hover:text-amberwood transition-colors mb-2">
+            The Singing Forest of Paneveggio
+          </h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Why luthiers still hike the Dolomites in late autumn to tap standing spruce trunks for resonance.
+          </p>
+        </a>
+        <a href="#related" class="group block p-6 bg-[#F3EDE3]/50 border border-rule hover:border-amberwood/50 transition-colors">
+          <p class="text-[11px] tracking-[0.18em] uppercase text-amberwood mb-2">Acoustics</p>
+          <h3 class="font-serif text-xl text-ink group-hover:text-amberwood transition-colors mb-2">
+            Anatomy of a Soundpost
+          </h3>
+          <p class="text-sm text-muted leading-relaxed">
+            A six-millimeter dowel of unglued spruce that determines whether an instrument whispers or projects.
+          </p>
+        </a>
+        <a href="#related" class="group block p-6 bg-[#F3EDE3]/50 border border-rule hover:border-amberwood/50 transition-colors">
+          <p class="text-[11px] tracking-[0.18em] uppercase text-amberwood mb-2">Tools</p>
+          <h3 class="font-serif text-xl text-ink group-hover:text-amberwood transition-colors mb-2">
+            Thumb Planes &amp; Scrapers
+          </h3>
+          <p class="text-sm text-muted leading-relaxed">
+            Inside the brass-and-boxwood toolkit passed down through three generations of Cremonese makers.
+          </p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="max-w-2xl mx-auto mt-16 p-8 sm:p-10 bg-[#F3EDE3] border border-rule text-center">
+      <p class="text-xs tracking-[0.2em] uppercase text-amberwood font-medium mb-2">
+        Sunday Dispatch
+      </p>
+      <h2 class="font-serif text-2xl sm:text-3xl text-ink font-normal mb-3">
+        Slow essays on craft, delivered once a week.
+      </h2>
+      <p class="text-sm text-muted mb-6 max-w-md mx-auto">
+        No breaking news, no algorithms—just one reported portrait of an artisan’s workshop every Sunday morning.
+      </p>
+      <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <label for="email-input" class="sr-only">Email address</label>
+        <input
+          id="email-input"
+          type="email"
+          required
+          placeholder="you@example.com"
+          class="flex-1 px-4 py-2.5 bg-paper border border-rule text-sm text-ink placeholder:text-muted/70 focus:outline-none focus:border-amberwood"
+        />
+        <button
+          type="submit"
+          class="px-6 py-2.5 bg-ink text-paper text-xs tracking-[0.16em] uppercase font-medium hover:bg-amberwood transition-colors cursor-pointer"
+        >
+          Subscribe
+        </button>
+      </form>
+      <p id="newsletter-msg" class="text-xs text-amberwood mt-3 hidden">
+        Thank you. Your first Sunday dispatch will arrive this weekend.
+      </p>
+    </section>
+  </main>
+
+  <footer class="border-t border-rule py-8 text-center text-xs text-muted tracking-wide">
+    &copy; 2026 The Atelier Quarterly &middot; Printed &amp; Archived in Cremona
+  </footer>
+
+  <script>
+    document.getElementById('newsletter-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('newsletter-msg').classList.remove('hidden');
+      this.reset();
+    });
+  </script>
+</body>
+</html>

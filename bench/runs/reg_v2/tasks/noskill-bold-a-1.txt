@@ -1,0 +1,10 @@
+Build one web page.
+Brief: Launch page for "Gravel X1", an electric gravel bicycle: dramatic hero, three engineering highlights, rider quotes, geometry specs table, pre-order CTA.
+
+Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to bench\runs\reg_v2\raw\noskill\bold-a-1.html and reply with that path only.
+
+Do NOT use the Skill tool.
+Do NOT read anything under . or any skills folder.
+When the page is done run (set the environment variable PYTHONIOENCODING=utf-8 first; the command starts with the python.exe path in quotes):
+  "python" "scripts\render.py" <file> --out "bench\runs\reg_v2\shots_gen\noskill-bold-a-1.png"
+(no --check; use it only to render a screenshot). Open the PNG with the Read tool. Fix anything empty, clipped, overlapping, broken or ugly with the smallest edits. At most 2 fix rounds.

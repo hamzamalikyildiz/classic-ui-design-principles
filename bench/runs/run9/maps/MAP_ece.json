@@ -1,0 +1,200 @@
+{
+ "cift1": {
+  "orig": "cift10",
+  "skill": null,
+  "arm_a": "noskill",
+  "arm_b": "noskill_check",
+  "focal": "B",
+  "comparison": "noskill_check_vs_noskill",
+  "mood": "technical",
+  "brief": "cicd-board",
+  "rep": "1"
+ },
+ "cift2": {
+  "orig": "cift12",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill",
+  "focal": "A",
+  "comparison": "skill_vs_noskill",
+  "mood": "editorial",
+  "brief": "support-inbox",
+  "rep": "1"
+ },
+ "cift3": {
+  "orig": "cift4",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill",
+  "focal": "A",
+  "comparison": "skill_vs_noskill",
+  "mood": "trust",
+  "brief": "clinic-appt",
+  "rep": "1"
+ },
+ "cift4": {
+  "orig": "cift3",
+  "skill": null,
+  "arm_a": "noskill",
+  "arm_b": "noskill_check",
+  "focal": "B",
+  "comparison": "noskill_check_vs_noskill",
+  "mood": "trust",
+  "brief": "cv-opt",
+  "rep": "1"
+ },
+ "cift5": {
+  "orig": "cift11",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill_check",
+  "focal": "A",
+  "comparison": "skill_vs_noskill_check",
+  "mood": "playful",
+  "brief": "meal-planner",
+  "rep": "1"
+ },
+ "cift6": {
+  "orig": "cift2",
+  "skill": "B",
+  "arm_a": "noskill",
+  "arm_b": "skill",
+  "focal": "B",
+  "comparison": "skill_vs_noskill",
+  "mood": "playful",
+  "brief": "meal-planner",
+  "rep": "1"
+ },
+ "cift7": {
+  "orig": "cift5",
+  "skill": null,
+  "arm_a": "noskill_check",
+  "arm_b": "noskill",
+  "focal": "A",
+  "comparison": "noskill_check_vs_noskill",
+  "mood": "trust",
+  "brief": "invoice-quote",
+  "rep": "1"
+ },
+ "cift8": {
+  "orig": "cift1",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill_check",
+  "focal": "A",
+  "comparison": "skill_vs_noskill_check",
+  "mood": "trust",
+  "brief": "cv-opt",
+  "rep": "1"
+ },
+ "cift9": {
+  "orig": "cift8",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill",
+  "focal": "A",
+  "comparison": "skill_vs_noskill",
+  "mood": "trust",
+  "brief": "cv-opt",
+  "rep": "1"
+ },
+ "cift10": {
+  "orig": "cift17",
+  "skill": null,
+  "arm_a": "noskill",
+  "arm_b": "noskill_check",
+  "focal": "B",
+  "comparison": "noskill_check_vs_noskill",
+  "mood": "editorial",
+  "brief": "support-inbox",
+  "rep": "1"
+ },
+ "cift11": {
+  "orig": "cift6",
+  "skill": "B",
+  "arm_a": "noskill",
+  "arm_b": "skill",
+  "focal": "B",
+  "comparison": "skill_vs_noskill",
+  "mood": "trust",
+  "brief": "invoice-quote",
+  "rep": "1"
+ },
+ "cift12": {
+  "orig": "cift13",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill",
+  "focal": "A",
+  "comparison": "skill_vs_noskill",
+  "mood": "technical",
+  "brief": "cicd-board",
+  "rep": "1"
+ },
+ "cift13": {
+  "orig": "cift14",
+  "skill": null,
+  "arm_a": "noskill",
+  "arm_b": "noskill_check",
+  "focal": "B",
+  "comparison": "noskill_check_vs_noskill",
+  "mood": "playful",
+  "brief": "meal-planner",
+  "rep": "1"
+ },
+ "cift14": {
+  "orig": "cift18",
+  "skill": "B",
+  "arm_a": "noskill_check",
+  "arm_b": "skill",
+  "focal": "B",
+  "comparison": "skill_vs_noskill_check",
+  "mood": "trust",
+  "brief": "clinic-appt",
+  "rep": "1"
+ },
+ "cift15": {
+  "orig": "cift15",
+  "skill": "B",
+  "arm_a": "noskill_check",
+  "arm_b": "skill",
+  "focal": "B",
+  "comparison": "skill_vs_noskill_check",
+  "mood": "technical",
+  "brief": "cicd-board",
+  "rep": "1"
+ },
+ "cift16": {
+  "orig": "cift9",
+  "skill": null,
+  "arm_a": "noskill",
+  "arm_b": "noskill_check",
+  "focal": "B",
+  "comparison": "noskill_check_vs_noskill",
+  "mood": "trust",
+  "brief": "clinic-appt",
+  "rep": "1"
+ },
+ "cift17": {
+  "orig": "cift7",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill_check",
+  "focal": "A",
+  "comparison": "skill_vs_noskill_check",
+  "mood": "editorial",
+  "brief": "support-inbox",
+  "rep": "1"
+ },
+ "cift18": {
+  "orig": "cift16",
+  "skill": "A",
+  "arm_a": "skill",
+  "arm_b": "noskill_check",
+  "focal": "A",
+  "comparison": "skill_vs_noskill_check",
+  "mood": "trust",
+  "brief": "invoice-quote",
+  "rep": "1"
+ }
+}

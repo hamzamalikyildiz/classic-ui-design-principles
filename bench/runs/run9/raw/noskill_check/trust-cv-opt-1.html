@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CVPulse — AI Resume & ATS Optimization</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#4f46e5',
+              600: '#4338ca',
+              700: '#3730a3',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulseScore {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.12); color: #059669; }
+      100% { transform: scale(1); }
+    }
+    .score-pop {
+      animation: pulseScore 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col">
+  <div id="app" class="flex-1 flex flex-col"></div>
+
+  <script>
+    (function () {
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked'];
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+
+      let appState = {
+        route: '#/login',
+        renderState: 'default',
+        score: 69,
+        scoreUpdated: false,
+        suggestions: [
+          { id: 1, section: 'Experience — Senior Product Engineer', text: 'Quantify API latency reduction: "Reduced p95 latency by 38% across 12M daily requests" instead of "Improved API speed".', impact: '+4 ATS pts', status: 'pending' },
+          { id: 2, section: 'Skills — Cloud & Infra', text: 'Add exact keyword match "Kubernetes" and "Terraform" from target Staff Engineer JD.', impact: '+3 ATS pts', status: 'accepted' },
+          { id: 3, section: 'Summary', text: 'Lead with 8+ years of distributed systems leadership to match seniority filter.', impact: '+2 ATS pts', status: 'pending' }
+        ],
+        resumes: [
+          { id: 1, title: 'Staff_Backend_Engineer_2026.pdf', role: 'Staff Backend Engineer @ Stripe', score: 69, target: 85, status: 'Needs Review', updated: '2h ago' },
+          { id: 2, title: 'Principal_Platform_CV.pdf', role: 'Principal Engineer @ Vercel', score: 84, target: 85, status: 'ATS Ready', updated: 'Yesterday' },
+          { id: 3, title: 'Engineering_Manager_Draft.pdf', role: 'EM Core Infra @ Linear', score: 61, target: 80, status: 'Draft', updated: '3d ago' },
+          { id: 4, title: 'Founding_Engineer_Resume.pdf', role: 'Founding Engineer @ Series A', score: 78, target: 80, status: 'In Progress', updated: '5d ago' }
+        ],
+        analysis: {
+          running: false,
+          progress: 0,
+          elapsed: 0,
+          stage: 'Idle',
+          timerId: null
+        },
+        settings: {
+          targetAts: 85,
+          exportFormat: 'PDF (ATS-Safe)',
+          anonymizePii: true,
+          autoKeywords: true
+        }
+      };
+
+      function getEffectiveState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('state');
+        if (q && VALID_STATES.includes(q)) return q;
+        return 'default';
+      }
+
+      function getEffectiveRoute() {
+        const h = window.location.hash;
+        if (ROUTES.includes(h)) return h;
+        return '#/login';
+      }
+
+      function navigate(route) {
+        window.location.hash = route;
+      }
+
+      function setRenderState(nextState) {
+        window.__RENDER_STATE__ = nextState;
+        const url = new URL(window.location.href);
+        url.searchParams.set('state', nextState);
+        window.history.replaceState({}, '', url.toString());
+        render();
+      }
+
+      function startLongAnalysis() {
+        if (appState.analysis.running) return;
+        appState.analysis.running = true;
+        appState.analysis.progress = 8;
+        appState.analysis.elapsed = 0.4;
+        appState.analysis.stage = 'Parsing PDF structure & section hierarchy...';
+        render();
+
+        appState.analysis.timerId = setInterval(() => {
+          appState.analysis.elapsed = +(appState.analysis.elapsed + 0.5).toFixed(1);
+          appState.analysis.progress = Math.min(96, Math.round((appState.analysis.elapsed / 30) * 100));
+          if (appState.analysis.elapsed < 6) {
+            appState.analysis.stage = 'Parsing PDF structure & section hierarchy...';
+          } else if (appState.analysis.elapsed < 15) {
+            appState.analysis.stage = 'Extracting semantic skills & JD keyword gaps...';
+          } else if (appState.analysis.elapsed < 24) {
+            appState.analysis.stage = 'Running 30s deep ATS scoring & impact rewrite...';
+          } else {
+            appState.analysis.stage = 'Finalizing benchmark report & score delta...';
+          }
+          if (appState.analysis.elapsed >= 30) {
+            clearInterval(appState.analysis.timerId);
+            appState.analysis.running = false;
+            appState.analysis.progress = 100;
+            appState.analysis.stage = 'Completed 30s deep analysis';
+          }
+          render();
+        }, 500);
+      }
+
+      function cancelLongAnalysis() {
+        if (appState.analysis.timerId) {
+          clearInterval(appState.analysis.timerId);
+          appState.analysis.timerId = null;
+        }
+        appState.analysis.running = false;
+        appState.analysis.progress = 0;
+        appState.analysis.elapsed = 0;
+        appState.analysis.stage = 'Cancelled by user';
+        render();
+      }
+
+      function triggerScoreMicroMoment() {
+        appState.score = appState.score === 69 ? 73 : 69;
+        appState.scoreUpdated = true;
+        render();
+        setTimeout(() => {
+          appState.scoreUpdated = false;
+        }, 700);
+      }
+
+      function renderHeader(route, state) {
+        if (route === '#/login') return '';
+        const navItems = [
+          { href: '#/list', label: 'Resumes' },
+          { href: '#/detail/1', label: 'Optimizer' },
+          { href: '#/settings', label: 'Export & Settings' }
+        ];
+        return `
+          <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-6">
+                <a href="#/list" class="flex items-center gap-2 font-semibold text-slate-900 tracking-tight">
+                  <svg class="w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>CVPulse</span>
+                </a>
+                <nav class="hidden sm:flex items-center gap-1">
+                  ${navItems.map(item => `
+                    <a href="${item.href}" class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${route === item.href ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">${item.label}</a>
+                  `).join('')}
+                </nav>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Pro Workspace
+                </span>
+                <a href="#/login" class="text-xs font-medium text-slate-500 hover:text-slate-800">Sign out</a>
+              </div>
+            </div>
+          </header>
+        `;
+      }
+
+      function renderStateBanner(state) {
+        if (state === 'default') return '';
+        const banners = {
+          'empty': { bg: 'bg-slate-100 border-slate-300 text-slate-700', title: 'Empty State', desc: 'No resumes or suggestions match the current filter.' },
+          'loading': { bg: 'bg-indigo-50 border-indigo-200 text-indigo-800', title: 'Loading', desc: 'Fetching latest ATS benchmarks...' },
+          'long-loading': { bg: 'bg-amber-50 border-amber-200 text-amber-900', title: 'Deep AI Analysis Running (>3s)', desc: '30s semantic CV scan in progress. You can cancel anytime.' },
+          'error': { bg: 'bg-rose-50 border-rose-200 text-rose-800', title: 'ATS Parser Error', desc: 'Unable to reach scoring engine (HTTP 503). Retry or check connection.' },
+          'partial': { bg: 'bg-amber-50 border-amber-200 text-amber-800', title: 'Partial Data', desc: 'Keyword density loaded; recruiter benchmark percentile unavailable.' },
+          'locked': { bg: 'bg-slate-800 border-slate-700 text-slate-100', title: 'Read-Only / Locked', desc: 'Workspace quota reached. Upgrade or free a slot to edit.' }
+        };
+        const b = banners[state];
+        return `
+          <div class="border-b ${b.bg} px-4 py-2 text-xs">
+            <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+              <div><span class="font-semibold">${b.title}:</span> ${b.desc}</div>
+              <button onclick="window.__cvpulseSetState('default')" class="underline font-medium shrink-0">Reset state</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderLogin(state) {
+        const isLocked = state === 'locked';
+        const isError = state === 'error';
+        return `
+          <main class="flex-1 flex items-center justify-center p-4 bg-slate-50">
+            <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+              <div class="flex items-center gap-2.5 mb-6">
+                <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">CP</div>
+                <div>
+                  <h1 class="text-lg font-bold text-slate-900 leading-tight">CVPulse</h1>
+                  <p class="text-xs text-slate-500">ATS & AI Resume Optimization</p>
+                </div>
+              </div>
+
+              ${isError ? `<div class="mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">Authentication service temporarily unavailable. Try demo sign-in.</div>` : ''}
+              ${isLocked ? `<div class="mb-4 p-3 rounded-lg bg-slate-100 border border-slate-300 text-xs text-slate-700">Account locked after multiple attempts.</div>` : ''}
+
+              <form onsubmit="event.preventDefault(); window.location.hash='#/list';" class="space-y-4">
+                <div>
+                  <label for="cv-email" class="block text-xs font-medium text-slate-700 mb-1">Work Email</label>
+                  <input id="cv-email" type="email" value="alex.mercer@example.com" ${isLocked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-100" />
+                </div>
+                <div>
+                  <label for="cv-pass" class="block text-xs font-medium text-slate-700 mb-1">Password</label>
+                  <input id="cv-pass" type="password" value="••••••••••••" ${isLocked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-100" />
+                </div>
+                <button type="submit" ${isLocked ? 'disabled' : ''} class="w-full py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors disabled:opacity-50">
+                  Sign in to Workspace
+                </button>
+              </form>
+
+              <div class="mt-4 pt-4 border-t border-slate-100">
+                <button onclick="window.location.hash='#/list'" class="w-full py-2 px-4 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium transition-colors">
+                  Demo Sign-In (Staff Engineer)
+                </button>
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderList(state) {
+        if (state === 'loading' || state === 'long-loading') {
+          return `
+            <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 space-y-4">
+              <div class="h-8 w-48 skeleton rounded"></div>
+              <div class="grid gap-3">
+                ${[1, 2, 3].map(() => `<div class="h-20 skeleton rounded-xl"></div>`).join('')}
+              </div>
+            </main>
+          `;
+        }
+        if (state === 'empty') {
+          return `
+            <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-16 text-center">
+              <div class="max-w-sm mx-auto bg-white border border-slate-200 rounded-2xl p-8">
+                <h2 class="text-base font-semibold text-slate-900">No resumes uploaded yet</h2>
+                <p class="text-sm text-slate-500 mt-1">Upload a PDF or DOCX resume to start ATS scoring.</p>
+                <a href="#/detail/1" class="mt-4 inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium">Open Sample Optimizer</a>
+              </div>
+            </main>
+          `;
+        }
+
+        const badgeColor = (s) => {
+          if (s === 'ATS Ready') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          if (s === 'Needs Review') return 'bg-amber-50 text-amber-700 border-amber-200';
+          if (s === 'In Progress') return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+          return 'bg-slate-100 text-slate-700 border-slate-200';
+        };
+
+        return `
+          <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h1 class="text-xl font-bold text-slate-900">Resume Pipeline</h1>
+                <p class="text-sm text-slate-500">Track ATS match scores and AI rewrite progress across target roles.</p>
+              </div>
+              <a href="#/detail/1" class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold">
+                Optimize #1 Resume
+              </a>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div class="divide-y divide-slate-200">
+                ${appState.resumes.map(r => `
+                  <div class="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors">
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-2.5 flex-wrap">
+                        <a href="#/detail/1" class="text-sm font-semibold text-slate-900 hover:text-indigo-600 truncate">${r.title}</a>
+                        <span class="px-2 py-0.5 text-xs font-medium rounded-full border ${badgeColor(r.status)}">${r.status}</span>
+                      </div>
+                      <p class="text-xs text-slate-500 mt-1">${r.role} • Updated ${r.updated}</p>
+                    </div>
+                    <div class="flex items-center gap-5 shrink-0">
+                      <div class="text-right">
+                        <div class="text-xs text-slate-500">ATS Score</div>
+                        <div class="font-mono text-base font-bold ${r.score >= 80 ? 'text-emerald-600' : 'text-slate-900'}">${r.score}<span class="text-xs font-normal text-slate-600">/${r.target}</span></div>
+                      </div>
+                      <a href="#/detail/1" class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-medium text-slate-700 hover:bg-slate-100">Inspect</a>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderDetail(state) {
+        const isLocked = state === 'locked';
+        const isLongLoading = state === 'long-loading' || appState.analysis.running;
+        const progress = appState.analysis.running ? appState.analysis.progress : (state === 'long-loading' ? 42 : 0);
+        const elapsed = appState.analysis.running ? appState.analysis.elapsed : (state === 'long-loading' ? 12.6 : 0);
+        const stage = appState.analysis.running ? appState.analysis.stage : (state === 'long-loading' ? 'Running 30s deep ATS scoring & impact rewrite...' : appState.analysis.stage);
+
+        return `
+          <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div>
+                <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
+                  <a href="#/list" class="hover:text-indigo-600">Resumes</a>
+                  <span>/</span>
+                  <span>Staff_Backend_Engineer_2026.pdf</span>
+                </div>
+                <h1 class="text-lg font-bold text-slate-900">Staff Backend Engineer @ Stripe</h1>
+              </div>
+
+              <div class="flex items-center gap-4 flex-wrap">
+                <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-50 border border-slate-200">
+                  <div>
+                    <div class="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">ATS Score</div>
+                    <div class="flex items-baseline gap-1.5">
+                      <span id="ats-score-val" class="font-mono text-2xl font-bold text-slate-900 ${appState.scoreUpdated ? 'score-pop' : ''}">${appState.score}</span>
+                      <span class="text-xs text-slate-600 font-mono">69 &rarr; 73</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button data-motion-trigger onclick="window.__cvpulseTriggerScore()" ${isLocked ? 'disabled' : ''} class="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors disabled:opacity-50">
+                  Apply Top AI Fix (69 &rarr; 73)
+                </button>
+              </div>
+            </div>
+
+            <!-- Long-running >3s AI CV Analysis Panel -->
+            <section class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 class="text-sm font-semibold text-slate-900">Deep 30s AI CV Analysis</h2>
+                  <p class="text-xs text-slate-500">Full semantic benchmark against 500+ hired Staff Engineer profiles.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  ${isLongLoading ? `
+                    <button onclick="window.__cvpulseCancelAnalysis()" class="px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 hover:bg-rose-50 text-xs font-semibold">
+                      Cancel Scan
+                    </button>
+                  ` : `
+                    <button onclick="window.__cvpulseStartAnalysis()" ${isLocked ? 'disabled' : ''} class="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold disabled:opacity-50">
+                      Run 30s Deep Analysis
+                    </button>
+                  `}
+                </div>
+              </div>
+
+              ${(isLongLoading || appState.analysis.progress > 0) ? `
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-medium text-slate-700">${stage}</span>
+                    <span class="font-mono text-slate-500">${elapsed}s / 30.0s (${progress}%)</span>
+                  </div>
+                  <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-indigo-600 transition-all duration-300" style="width: ${progress}%"></div>
+                  </div>
+                </div>
+              ` : ''}
+            </section>
+
+            <!-- AI Suggestions -->
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-slate-900">AI Optimization Suggestions</h2>
+                <span class="text-xs text-slate-500">${appState.suggestions.length} recommendations</span>
+              </div>
+
+              ${state === 'empty' ? `
+                <div class="p-8 text-center text-sm text-slate-500">No pending suggestions for this resume.</div>
+              ` : `
+                <div class="divide-y divide-slate-200">
+                  ${appState.suggestions.map(s => `
+                    <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-xs font-semibold text-indigo-600">${s.section}</span>
+                          <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11px] font-mono font-medium">${s.impact}</span>
+                        </div>
+                        <p class="text-sm text-slate-700">${s.text}</p>
+                      </div>
+                      <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="window.__cvpulseSetSuggestion(${s.id}, 'accepted')" ${isLocked ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold border ${s.status === 'accepted' ? 'bg-emerald-600 text-white border-emerald-600' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}">
+                          ${s.status === 'accepted' ? 'Accepted' : 'Accept'}
+                        </button>
+                        <button onclick="window.__cvpulseSetSuggestion(${s.id}, 'rejected')" ${isLocked ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold border ${s.status === 'rejected' ? 'bg-rose-600 text-white border-rose-600' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}">
+                          ${s.status === 'rejected' ? 'Rejected' : 'Reject'}
+                        </button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </section>
+          </main>
+        `;
+      }
+
+      function renderSettings(state) {
+        const isLocked = state === 'locked';
+        return `
+          <main class="max-w-3xl mx-auto w-full px-4 sm:px-6 py-8">
+            <h1 class="text-xl font-bold text-slate-900 mb-1">Export & Workspace Settings</h1>
+            <p class="text-sm text-slate-500 mb-6">Configure ATS export defaults and privacy controls.</p>
+
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-200">
+              <div class="p-5 flex items-center justify-between gap-4">
+                <div>
+                  <div class="text-sm font-semibold text-slate-900">Default Export Format</div>
+                  <div class="text-xs text-slate-500">Single-column parser-safe layout for Workday & Greenhouse.</div>
+                </div>
+                <select aria-label="Default Export Format" ${isLocked ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-slate-300 text-sm bg-white">
+                  <option>PDF (ATS-Safe)</option>
+                  <option>DOCX (Editable)</option>
+                  <option>JSON Resume</option>
+                </select>
+              </div>
+              <div class="p-5 flex items-center justify-between gap-4">
+                <div>
+                  <div class="text-sm font-semibold text-slate-900">Target ATS Threshold</div>
+                  <div class="text-xs text-slate-500">Minimum score required before marking resume as Ready.</div>
+                </div>
+                <input aria-label="Target ATS Threshold" type="number" value="${appState.settings.targetAts}" ${isLocked ? 'disabled' : ''} class="w-20 px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-mono text-right" />
+              </div>
+              <div class="p-5 flex items-center justify-between gap-4">
+                <div>
+                  <div class="text-sm font-semibold text-slate-900">Anonymize PII in AI Prompts</div>
+                  <div class="text-xs text-slate-500">Strip phone, address, and email before LLM rewrite.</div>
+                </div>
+                <input aria-label="Anonymize PII in AI Prompts" type="checkbox" checked ${isLocked ? 'disabled' : ''} class="w-4 h-4 accent-indigo-600" />
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function render() {
+        const route = getEffectiveRoute();
+        const state = getEffectiveState();
+        appState.route = route;
+        appState.renderState = state;
+
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else if (route === '#/settings') body = renderSettings(state);
+
+        document.getElementById('app').innerHTML = `
+          ${renderHeader(route, state)}
+          ${renderStateBanner(state)}
+          ${body}
+        `;
+      }
+
+      window.__cvpulseSetState = setRenderState;
+      window.__cvpulseTriggerScore = triggerScoreMicroMoment;
+      window.__cvpulseStartAnalysis = startLongAnalysis;
+      window.__cvpulseCancelAnalysis = cancelLongAnalysis;
+      window.__cvpulseSetSuggestion = function (id, status) {
+        appState.suggestions = appState.suggestions.map(s => s.id === id ? { ...s, status } : s);
+        render();
+      };
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      render();
+    })();
+  </script>
+</body>
+</html>

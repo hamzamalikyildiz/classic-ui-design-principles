@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gravel X1 — Electric Gravel Bicycle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0B0D0E',
+            surface: '#14171A',
+            elevated: '#1C2024',
+            lime: '#D9F93D',
+            sand: '#E7E5E4',
+            dust: '#A8A29E'
+          },
+          fontFamily: {
+            display: ['"Archivo Black"', 'sans-serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-stagger-1 { animation: fadeUp 450ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .hero-stagger-2 { animation: fadeUp 450ms 60ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .hero-stagger-3 { animation: fadeUp 500ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-stagger-1, .hero-stagger-2, .hero-stagger-3 { animation: none; }
+    }
+  </style>
+</head>
+<body class="bg-ink text-sand font-sans antialiased selection:bg-lime selection:text-ink">
+  <header class="border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="font-display text-xl tracking-tight text-white">GRAVEL<span class="text-lime">X1</span></a>
+      <nav aria-label="Primary" class="hidden md:flex items-center gap-8 text-sm font-medium text-dust">
+        <a href="#engineering" class="hover:text-white focus-visible:outline-2 focus-visible:outline-lime rounded">Engineering</a>
+        <a href="#riders" class="hover:text-white focus-visible:outline-2 focus-visible:outline-lime rounded">Riders</a>
+        <a href="#geometry" class="hover:text-white focus-visible:outline-2 focus-visible:outline-lime rounded">Geometry</a>
+      </nav>
+      <a href="#preorder" class="inline-flex items-center justify-center min-h-[44px] px-5 rounded-xl bg-lime text-ink font-semibold text-sm hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime transition">
+        Pre-order
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="relative overflow-hidden py-16 lg:py-24">
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true" style="background: radial-gradient(circle at 75% 40%, rgba(217, 249, 61, 0.14), transparent 55%);"></div>
+      <div class="max-w-6xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-6 space-y-6">
+          <p class="hero-stagger-1 font-mono text-xs uppercase tracking-[0.2em] text-lime">Series 01 · 360Wh Carbon E-Gravel</p>
+          <h1 class="hero-stagger-1 font-display text-5xl sm:text-7xl lg:text-[84px] leading-[0.95] tracking-tight text-white text-balance">
+            CLIMB THE<br />UNPAVED.
+          </h1>
+          <p class="hero-stagger-2 text-lg text-dust max-w-[46ch] leading-relaxed text-pretty">
+            13.4 kg full-carbon chassis with a silent 60 Nm mid-drive. Built for 140 km fire-road epics without looking or riding like an e-bike.
+          </p>
+          <div class="hero-stagger-2 flex flex-wrap items-center gap-5 pt-2">
+            <a href="#preorder" class="inline-flex items-center justify-center min-h-[48px] px-7 rounded-xl bg-lime text-ink font-bold text-base hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime transition">
+              Reserve X1 — $4,290
+            </a>
+            <a href="#geometry" class="inline-flex items-center min-h-[44px] px-4 text-sm font-semibold text-white hover:text-lime focus-visible:outline-2 focus-visible:outline-lime rounded">
+              View Geometry →
+            </a>
+          </div>
+          <div class="hero-stagger-3 grid grid-cols-3 gap-6 pt-6 border-t border-white/10 font-mono">
+            <div>
+              <div class="text-2xl font-semibold text-white tabular-nums">13.4 kg</div>
+              <div class="text-xs text-dust uppercase tracking-wider mt-1">Total Weight</div>
+            </div>
+            <div>
+              <div class="text-2xl font-semibold text-white tabular-nums">140 km</div>
+              <div class="text-xs text-dust uppercase tracking-wider mt-1">Max Range</div>
+            </div>
+            <div>
+              <div class="text-2xl font-semibold text-lime tabular-nums">60 Nm</div>
+              <div class="text-xs text-dust uppercase tracking-wider mt-1">Torque</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signature Inline SVG: Gravel X1 Side Profile -->
+        <div class="lg:col-span-6 hero-stagger-3">
+          <div class="bg-surface rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl">
+            <svg viewBox="0 0 640 380" class="w-full h-auto" role="img" aria-label="Gravel X1 electric gravel bicycle side profile illustration">
+              <defs>
+                <linearGradient id="frameGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#2A2F35" />
+                  <stop offset="100%" stop-color="#14171A" />
+                </linearGradient>
+              </defs>
+              <!-- Ground line -->
+              <line x1="40" y1="322" x2="600" y2="322" stroke="#2D3238" stroke-width="2" />
+              <!-- Rear Wheel -->
+              <circle cx="155" cy="240" r="80" fill="none" stroke="#3F454D" stroke-width="14" />
+              <circle cx="155" cy="240" r="70" fill="none" stroke="#71717A" stroke-width="2" />
+              <circle cx="155" cy="240" r="10" fill="#D9F93D" />
+              <!-- Front Wheel -->
+              <circle cx="485" cy="240" r="80" fill="none" stroke="#3F454D" stroke-width="14" />
+              <circle cx="485" cy="240" r="70" fill="none" stroke="#71717A" stroke-width="2" />
+              <circle cx="485" cy="240" r="10" fill="#D9F93D" />
+              <!-- Frame: Chainstay & Seatstay -->
+              <path d="M155 240 L285 250 L245 130 Z" fill="none" stroke="#E7E5E4" stroke-width="7" stroke-linejoin="round" />
+              <!-- Downtube (integrated battery) -->
+              <path d="M285 250 L422 128" stroke="#D9F93D" stroke-width="18" stroke-linecap="round" />
+              <!-- Top tube -->
+              <path d="M245 130 L425 112" stroke="#E7E5E4" stroke-width="10" stroke-linecap="round" />
+              <!-- Seat tube & post -->
+              <path d="M285 250 L232 86" stroke="#E7E5E4" stroke-width="9" stroke-linecap="round" />
+              <!-- Saddle -->
+              <path d="M204 82 L258 84" stroke="#D9F93D" stroke-width="8" stroke-linecap="round" />
+              <!-- Fork -->
+              <path d="M425 112 L485 240" stroke="#E7E5E4" stroke-width="10" stroke-linecap="round" />
+              <!-- Drop Handlebar -->
+              <path d="M425 112 L442 94 L474 94 C490 94 492 124 472 132" fill="none" stroke="#A8A29E" stroke-width="7" stroke-linecap="round" />
+              <!-- Mid-drive motor housing -->
+              <circle cx="285" cy="250" r="22" fill="#1C2024" stroke="#D9F93D" stroke-width="4" />
+            </svg>
+            <div class="mt-4 flex items-center justify-between text-xs font-mono text-dust">
+              <span>FRAME: T1000 CARBON</span>
+              <span class="text-lime">INTERNAL 360WH CELL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Three Engineering Highlights -->
+    <section id="engineering" class="bg-surface py-20 lg:py-24 border-y border-white/10">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="max-w-2xl mb-14">
+          <p class="font-mono text-xs uppercase tracking-[0.2em] text-lime mb-3">Engineering</p>
+          <h2 class="font-display text-3xl sm:text-5xl text-white tracking-tight text-balance">
+            THREE SYSTEMS. ZERO DRAG.
+          </h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <article class="bg-elevated rounded-2xl p-7 border border-white/10 hover:-translate-y-1 transition duration-200">
+            <div class="font-mono text-xs text-lime mb-4">01 / DRIVE</div>
+            <h3 class="font-display text-xl text-white mb-3">Zero-Drag Clutch</h3>
+            <p class="text-sm text-dust leading-relaxed">
+              Above 25 km/h the planetary gearset decouples completely. Pedal on flats with zero magnetic resistance, just like an analog race bike.
+            </p>
+          </article>
+
+          <article class="bg-elevated rounded-2xl p-7 border border-white/10 hover:-translate-y-1 transition duration-200">
+            <div class="font-mono text-xs text-lime mb-4">02 / CHASSIS</div>
+            <h3 class="font-display text-xl text-white mb-3">50mm Clearance</h3>
+            <p class="text-sm text-dust leading-relaxed">
+              Dropped drive-side chainstay swallows 700x50c knobby tires with 6 mm of mud room while keeping a snappy 420 mm rear center.
+            </p>
+          </article>
+
+          <article class="bg-elevated rounded-2xl p-7 border border-white/10 hover:-translate-y-1 transition duration-200">
+            <div class="font-mono text-xs text-lime mb-4">03 / POWER</div>
+            <h3 class="font-display text-xl text-white mb-3">2.5-Hour Fast Charge</h3>
+            <p class="text-sm text-dust leading-relaxed">
+              360 Wh downtube pack charges to 80% over a café stop. Add the 180 Wh bottle-cage extender for 210 km alpine days.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rider Quotes -->
+    <section id="riders" class="py-20 lg:py-24">
+      <div class="max-w-6xl mx-auto px-6">
+        <p class="font-mono text-xs uppercase tracking-[0.2em] text-lime mb-3">Field Notes</p>
+        <h2 class="font-display text-3xl sm:text-4xl text-white tracking-tight mb-12">TESTED ON WASHBOARD &amp; SHALE.</h2>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <blockquote class="bg-surface rounded-2xl p-8 border border-white/10">
+            <p class="text-lg text-white leading-relaxed mb-6">
+              “On a 14% loose-gravel pitch in Marin, the torque sensor feels like having a tailwind rather than a throttle. My knees thanked me at kilometer 110.”
+            </p>
+            <footer class="text-sm font-mono text-dust">
+              <strong class="text-white font-semibold">Elena Rostova</strong> — Ultra-endurance finisher, 2025
+            </footer>
+          </blockquote>
+
+          <blockquote class="bg-surface rounded-2xl p-8 border border-white/10">
+            <p class="text-lg text-white leading-relaxed mb-6">
+              “Picked it up over a locked gate without thinking twice. At 13.4 kilos, it handles singletrack switchbacks like my carbon cross bike.”
+            </p>
+            <footer class="text-sm font-mono text-dust">
+              <strong class="text-white font-semibold">Marcus Vance</strong> — Former Conti gravel pro
+            </footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- Geometry Specs Table -->
+    <section id="geometry" class="bg-surface py-20 lg:py-24 border-t border-white/10">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-[0.2em] text-lime mb-2">Specifications</p>
+            <h2 class="font-display text-3xl sm:text-4xl text-white tracking-tight">FRAME GEOMETRY</h2>
+          </div>
+          <p class="font-mono text-sm text-dust">All measurements in mm / degrees</p>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-white/10 bg-ink">
+          <table class="w-full text-left border-collapse font-mono text-sm tabular-nums">
+            <thead>
+              <tr class="border-b border-white/10 text-dust">
+                <th class="py-4 px-5 font-semibold">Dimension</th>
+                <th class="py-4 px-5 font-semibold">S (52)</th>
+                <th class="py-4 px-5 font-semibold">M (54)</th>
+                <th class="py-4 px-5 font-semibold">L (56)</th>
+                <th class="py-4 px-5 font-semibold">XL (58)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/10 text-white">
+              <tr>
+                <td class="py-3.5 px-5 text-dust">Stack</td>
+                <td class="py-3.5 px-5">558</td>
+                <td class="py-3.5 px-5">576</td>
+                <td class="py-3.5 px-5">595</td>
+                <td class="py-3.5 px-5">614</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 text-dust">Reach</td>
+                <td class="py-3.5 px-5">378</td>
+                <td class="py-3.5 px-5">388</td>
+                <td class="py-3.5 px-5">397</td>
+                <td class="py-3.5 px-5">406</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 text-dust">Head Tube Angle</td>
+                <td class="py-3.5 px-5">70.5°</td>
+                <td class="py-3.5 px-5">71.0°</td>
+                <td class="py-3.5 px-5">71.5°</td>
+                <td class="py-3.5 px-5">71.5°</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 text-dust">Chainstay</td>
+                <td class="py-3.5 px-5">420</td>
+                <td class="py-3.5 px-5">420</td>
+                <td class="py-3.5 px-5">420</td>
+                <td class="py-3.5 px-5">420</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 text-dust">BB Drop</td>
+                <td class="py-3.5 px-5">72</td>
+                <td class="py-3.5 px-5">72</td>
+                <td class="py-3.5 px-5">70</td>
+                <td class="py-3.5 px-5">70</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pre-order CTA -->
+    <section id="preorder" class="py-20 lg:py-24">
+      <div class="max-w-4xl mx-auto px-6">
+        <div class="bg-lime text-ink rounded-3xl p-8 sm:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div class="space-y-2">
+            <p class="font-mono text-xs uppercase tracking-[0.2em] font-semibold">Batch 01 · Ships October</p>
+            <h2 class="font-display text-3xl sm:text-4xl tracking-tight">LOCK YOUR BUILD SLOT.</h2>
+            <p class="text-base font-medium text-ink/80 max-w-md">
+              $250 refundable deposit. Choose Raw Carbon or Moss Matte at final spec confirmation.
+            </p>
+          </div>
+          <a href="#preorder" class="shrink-0 inline-flex items-center justify-center min-h-[52px] px-8 rounded-xl bg-ink text-lime font-bold text-base hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink transition">
+            Pre-order Gravel X1
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 py-8 text-center text-sm text-dust font-mono">
+    GRAVEL X1 CYCLES · PORTLAND, OR · © 2026
+  </footer>
+</body>
+</html>

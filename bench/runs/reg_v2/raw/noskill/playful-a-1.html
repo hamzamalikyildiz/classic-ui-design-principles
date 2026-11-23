@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprout Club — Kids Weekend Backyard Gardening Club</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Nunito', sans-serif; background-color: #FFFDF5; color: #1F3A2B; }
+    h1, h2, h3, .font-display { font-family: 'Fredoka', sans-serif; }
+  </style>
+</head>
+<body class="antialiased selection:bg-amber-200 selection:text-emerald-950">
+
+  <!-- Top Nav -->
+  <header class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5">
+      <span class="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-sm">
+        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22v-9" />
+          <path d="M12 13c-4.5 0-7-3-7-7 4.5 0 7 3 7 7z" fill="currentColor" fill-opacity="0.25" />
+          <path d="M12 10c4.5 0 7-3 7-7-4.5 0-7 3-7 7z" fill="currentColor" fill-opacity="0.25" />
+        </svg>
+      </span>
+      <span class="font-display text-2xl font-bold tracking-tight text-emerald-900">Sprout Club</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-7 font-bold text-sm text-emerald-800">
+      <a href="#projects" class="hover:text-emerald-600 transition">Projects</a>
+      <a href="#kit" class="hover:text-emerald-600 transition">Seed Kit</a>
+      <a href="#pricing" class="hover:text-emerald-600 transition">Pricing</a>
+      <a href="#parents" class="hover:text-emerald-600 transition">For Parents</a>
+    </nav>
+    <a href="#join" class="bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold text-sm px-5 py-2.5 rounded-full shadow-sm transition">
+      Join Weekend Club
+    </a>
+  </header>
+
+  <!-- Hero with Mascot -->
+  <section class="max-w-6xl mx-auto px-6 pt-8 pb-16 md:py-16 grid md:grid-cols-12 gap-10 items-center">
+    <div class="md:col-span-7 space-y-6">
+      <span class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 font-extrabold text-xs uppercase tracking-wider px-4 py-1.5 rounded-full">
+        Ages 5–11 • Every Saturday Morning
+      </span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-emerald-950">
+        Muddy hands, big giggles, and real backyard veggies.
+      </h1>
+      <p class="text-lg text-emerald-800/90 max-w-xl leading-relaxed">
+        Sprout Club turns Saturday mornings into a hands-on backyard adventure. Kids plant, water, and harvest their own mini-gardens with friendly local mentors.
+      </p>
+      <div class="flex flex-wrap items-center gap-4 pt-2">
+        <a href="#join" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-7 py-3.5 rounded-full shadow-md transition">
+          Claim a Free Trial Saturday
+        </a>
+        <a href="#kit" class="bg-white border-2 border-emerald-200 hover:border-emerald-400 text-emerald-900 font-extrabold px-6 py-3.5 rounded-full transition">
+          Peek Inside the Seed Kit
+        </a>
+      </div>
+    </div>
+
+    <!-- Mascot Illustration (Inline SVG) -->
+    <div class="md:col-span-5 flex justify-center">
+      <div class="relative w-72 h-72 sm:w-80 sm:h-80 rounded-[2.5rem] bg-gradient-to-br from-amber-100 via-emerald-50 to-sky-100 border-4 border-white shadow-xl flex items-center justify-center">
+        <svg viewBox="0 0 240 240" class="w-60 h-60" aria-label="Pip the Sprout Mascot">
+          <!-- Sun -->
+          <circle cx="192" cy="46" r="20" fill="#FBBF24" />
+          <!-- Soil mound -->
+          <ellipse cx="120" cy="204" rx="82" ry="18" fill="#8B5A2B" />
+          <ellipse cx="120" cy="199" rx="70" ry="11" fill="#A16B3A" />
+          <!-- Sprout Stem & Leaves -->
+          <path d="M120 96 C120 68, 120 56, 120 48" stroke="#16A34A" stroke-width="8" stroke-linecap="round" />
+          <path d="M120 62 C92 58, 78 36, 94 26 C110 18, 122 40, 120 62 Z" fill="#22C55E" />
+          <path d="M120 54 C148 50, 162 28, 146 18 C130 10, 118 32, 120 54 Z" fill="#4ADE80" />
+          <!-- Cute Pot Body -->
+          <path d="M74 114 L166 114 L152 194 L88 194 Z" fill="#FB923C" />
+          <rect x="66" y="96" width="108" height="22" rx="10" fill="#F97316" />
+          <!-- Happy Face -->
+          <circle cx="102" cy="146" r="6" fill="#1F3A2B" />
+          <circle cx="138" cy="146" r="6" fill="#1F3A2B" />
+          <circle cx="100" cy="144" r="2" fill="#FFFFFF" />
+          <circle cx="136" cy="144" r="2" fill="#FFFFFF" />
+          <path d="M108 162 Q120 174 132 162" stroke="#1F3A2B" stroke-width="4.5" stroke-linecap="round" fill="none" />
+          <circle cx="88" cy="156" r="6" fill="#FDA4AF" opacity="0.7" />
+          <circle cx="152" cy="156" r="6" fill="#FDA4AF" opacity="0.7" />
+        </svg>
+        <span class="absolute -bottom-3 bg-white text-emerald-900 font-display font-bold text-sm px-4 py-1.5 rounded-full shadow-md border border-emerald-100">
+          Hi! I’m Pip the Sprout
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seasonal Projects -->
+  <section id="projects" class="bg-emerald-50/70 py-16 border-y border-emerald-100">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="text-3xl sm:text-4xl font-bold text-emerald-950">What We Grow Every Season</h2>
+        <p class="mt-3 text-emerald-800">Four rotating backyard projects designed for curious kids and short attention spans.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-emerald-100">
+          <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center font-display font-bold text-xl mb-4">1</div>
+          <h3 class="text-xl font-bold text-emerald-950">Spring: Radish Rockets</h3>
+          <p class="mt-2 text-sm text-emerald-800/90">Fast-sprouting 25-day radishes that pop up before kids lose patience.</p>
+        </div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-emerald-100">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-display font-bold text-xl mb-4">2</div>
+          <h3 class="text-xl font-bold text-emerald-950">Summer: Sunflowers</h3>
+          <p class="mt-2 text-sm text-emerald-800/90">Giant 8-foot sunflowers measured every Saturday with chalk height charts.</p>
+        </div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-emerald-100">
+          <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center font-display font-bold text-xl mb-4">3</div>
+          <h3 class="text-xl font-bold text-emerald-950">Autumn: Mini Pumpkins</h3>
+          <p class="mt-2 text-sm text-emerald-800/90">Jack-Be-Little pumpkins perfect for painting and harvesting in October.</p>
+        </div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-emerald-100">
+          <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center font-display font-bold text-xl mb-4">4</div>
+          <h3 class="text-xl font-bold text-emerald-950">Winter: Windowsill Herbs</h3>
+          <p class="mt-2 text-sm text-emerald-800/90">Cozy indoor basil, mint, and chives for pizza nights when it’s chilly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seed Kit Contents -->
+  <section id="kit" class="max-w-6xl mx-auto px-6 py-16">
+    <div class="bg-amber-50 rounded-[2.5rem] p-8 md:p-12 border-2 border-amber-200/70 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <span class="text-xs font-extrabold uppercase tracking-wider text-amber-700">Included With Membership</span>
+        <h2 class="text-3xl sm:text-4xl font-bold text-emerald-950 mt-2">The Backyard Explorer Seed Kit</h2>
+        <p class="mt-3 text-emerald-800">Every new member gets a canvas tote packed with kid-sized, real gardening gear—no flimsy plastic toys.</p>
+        <ul class="mt-6 space-y-3 text-emerald-900 font-semibold">
+          <li class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+            4 organic, heirloom seed packets (easy-grip coated seeds)
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+            Stainless-steel kid trowel &amp; washable cotton gloves
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+            6 bamboo plant markers + waterproof crayon
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+            Illustrated “Bug &amp; Soil Detective” field notebook
+          </li>
+        </ul>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white rounded-3xl p-5 text-center shadow-sm">
+          <div class="text-3xl font-display font-bold text-emerald-600">4x</div>
+          <div class="text-sm font-bold text-emerald-900 mt-1">Heirloom Seeds</div>
+        </div>
+        <div class="bg-white rounded-3xl p-5 text-center shadow-sm">
+          <div class="text-3xl font-display font-bold text-amber-500">100%</div>
+          <div class="text-sm font-bold text-emerald-900 mt-1">Organic Soil &amp; Gear</div>
+        </div>
+        <div class="bg-white rounded-3xl p-5 text-center shadow-sm">
+          <div class="text-3xl font-display font-bold text-sky-500">90m</div>
+          <div class="text-sm font-bold text-emerald-900 mt-1">Saturday Sessions</div>
+        </div>
+        <div class="bg-white rounded-3xl p-5 text-center shadow-sm">
+          <div class="text-3xl font-display font-bold text-rose-500">8:1</div>
+          <div class="text-sm font-bold text-emerald-900 mt-1">Kid-to-Mentor Ratio</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="max-w-5xl mx-auto px-6 py-12">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl sm:text-4xl font-bold text-emerald-950">Simple Weekend Pricing</h2>
+      <p class="mt-2 text-emerald-800">Pause or cancel anytime. Siblings get 20% off.</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="bg-white rounded-3xl p-8 border-2 border-emerald-100 shadow-sm flex flex-col justify-between">
+        <div>
+          <h3 class="text-2xl font-bold text-emerald-950">Drop-In Saturday</h3>
+          <p class="text-emerald-700 text-sm mt-1">Great for trying out a single weekend</p>
+          <div class="mt-5 flex items-baseline gap-1">
+            <span class="text-4xl font-display font-bold text-emerald-950">$24</span>
+            <span class="text-emerald-700 font-semibold">/ session</span>
+          </div>
+          <ul class="mt-6 space-y-2.5 text-sm text-emerald-800 font-semibold">
+            <li>• 90-minute guided backyard session</li>
+            <li>• Loaner tools &amp; gloves provided</li>
+            <li>• Take-home seedling cup</li>
+          </ul>
+        </div>
+        <a href="#join" class="mt-8 block text-center bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-extrabold py-3 rounded-full transition">
+          Book a Saturday
+        </a>
+      </div>
+
+      <div class="bg-emerald-900 text-white rounded-3xl p-8 shadow-xl relative flex flex-col justify-between">
+        <span class="absolute -top-3.5 right-6 bg-amber-400 text-emerald-950 text-xs font-extrabold uppercase px-3.5 py-1 rounded-full">
+          Most Popular
+        </span>
+        <div>
+          <h3 class="text-2xl font-bold">Monthly Club Pass</h3>
+          <p class="text-emerald-200 text-sm mt-1">All 4 Saturdays + full Seed Kit</p>
+          <div class="mt-5 flex items-baseline gap-1">
+            <span class="text-4xl font-display font-bold">$68</span>
+            <span class="text-emerald-200 font-semibold">/ month</span>
+          </div>
+          <ul class="mt-6 space-y-2.5 text-sm text-emerald-100 font-semibold">
+            <li>• Every Saturday morning (9:30–11:00 AM)</li>
+            <li>• Full Backyard Explorer Seed Kit included</li>
+            <li>• Seasonal harvest party for families</li>
+          </ul>
+        </div>
+        <a href="#join" class="mt-8 block text-center bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold py-3 rounded-full transition">
+          Start Monthly Pass
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parents Section -->
+  <section id="parents" class="max-w-6xl mx-auto px-6 py-14">
+    <div class="bg-white rounded-3xl p-8 md:p-10 border border-emerald-100 shadow-sm grid md:grid-cols-3 gap-8">
+      <div>
+        <h3 class="font-display text-xl font-bold text-emerald-950">Safe &amp; Vetted Mentors</h3>
+        <p class="mt-2 text-sm text-emerald-800">Every club leader is background-checked, first-aid certified, and trained in outdoor kids’ education.</p>
+      </div>
+      <div>
+        <h3 class="font-display text-xl font-bold text-emerald-950">Zero Screen Time</h3>
+        <p class="mt-2 text-sm text-emerald-800">Ninety minutes of fresh air, teamwork, and real-world curiosity while you enjoy a quiet Saturday coffee.</p>
+      </div>
+      <div>
+        <h3 class="font-display text-xl font-bold text-emerald-950">Rain or Shine Plan</h3>
+        <p class="mt-2 text-sm text-emerald-800">If it pours, we move under the covered porch for seed-bomb making, worm-bin science, and botanical sketching.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Band -->
+  <section id="join" class="max-w-6xl mx-auto px-6 pb-16">
+    <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-[2.5rem] p-10 md:p-14 text-center text-white shadow-lg">
+      <h2 class="text-3xl sm:text-4xl font-bold">Ready to get those sneakers muddy?</h2>
+      <p class="mt-3 text-emerald-50 max-w-xl mx-auto">
+        Reserve your child’s spot for this Saturday’s Sprout Club session. First-time visitors get a free trial morning.
+      </p>
+      <form class="mt-7 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Spot Reserved!';">
+        <input type="email" required placeholder="Parent’s email address" class="flex-1 px-5 py-3.5 rounded-full text-emerald-950 font-semibold focus:outline-none focus:ring-4 focus:ring-amber-300" />
+        <button type="submit" class="bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold px-7 py-3.5 rounded-full transition cursor-pointer">
+          Save a Spot
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="text-center text-xs text-emerald-700 pb-8">
+    © 2026 Sprout Club • Backyard Gardening for Curious Kids
+  </footer>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BillCraft — Invoicing, Quotes & E-Invoice Signing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            forest: {
+              900: '#14452f',
+              800: '#1b5a3d',
+              100: '#e6f0eb',
+              50: '#f2f7f4',
+            },
+            ledger: '#f7f6f2',
+            brass: '#9a6b16',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --dur-instant: 80ms;
+      --dur-fast: 150ms;
+      --dur-base: 220ms;
+      --dur-deliberate: 500ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+      --ease-enter: cubic-bezier(0, 0, .2, 1);
+    }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #f7f6f2;
+      color: #16241d;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-display { font-family: 'Newsreader', Georgia, serif; }
+    .metric { font-variant-numeric: tabular-nums; }
+    .btn-tactile { transition: transform var(--dur-instant) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard); }
+    .btn-tactile:active { transform: scale(0.98); }
+    .row-ok { position: relative; }
+    .row-ok::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(20, 69, 47, 0.14);
+      animation: flash 1.2s var(--ease-enter) forwards;
+      pointer-events: none;
+    }
+    @keyframes flash { from { opacity: 1; } to { opacity: 0; } }
+    .toast-el {
+      transform: translateY(12px);
+      opacity: 0;
+      transition: transform var(--dur-base) var(--ease-enter), opacity var(--dur-base) var(--ease-enter);
+    }
+    .toast-el.open { transform: translateY(0); opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 120ms !important;
+        transition-property: opacity, color, background-color, border-color !important;
+        transform: none !important;
+      }
+      .row-ok::after { animation: none !important; opacity: 0 !important; }
+      .row-ok { border-left: 3px solid #14452f !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <main id="app" class="flex-1 flex flex-col"></main>
+
+  <div id="toast" role="status" aria-live="polite" class="toast-el fixed bottom-5 right-5 z-50 hidden items-center gap-3 rounded-xl bg-forest-900 px-4 py-3 text-sm text-white shadow-lg">
+    <span id="toast-msg"></span>
+    <button id="toast-undo" type="button" class="hidden rounded-lg bg-white/15 px-2.5 py-1 text-sm font-medium text-white hover:bg-white/25">Undo</button>
+  </div>
+
+  <script>
+    (function () {
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked', 'offline', 'stale'];
+
+      const INVOICES = [
+        { id: 'INV-2041', client: 'Northstar Logistics GmbH', issued: 'Nov 14, 2026', due: 'Nov 28, 2026', total: 4850.00, status: 'Due in 7d' },
+        { id: 'INV-2040', client: 'Kestrel Architecture Studio', issued: 'Nov 10, 2026', due: 'Nov 24, 2026', total: 12400.00, status: 'Paid' },
+        { id: 'QTE-0892', client: 'Marlow & Finch Legal', issued: 'Nov 08, 2026', due: 'Nov 22, 2026', total: 3150.00, status: 'Quote Sent' },
+        { id: 'INV-2039', client: 'Vanguard Cold Chain', issued: 'Oct 28, 2026', due: 'Nov 11, 2026', total: 6720.00, status: 'Overdue' },
+        { id: 'INV-2038', client: 'Boreal Energy Partners', issued: 'Oct 20, 2026', due: 'Nov 03, 2026', total: 9300.00, status: 'Paid' },
+        { id: 'INV-2037', client: 'Harborview Medical Group', issued: 'Oct 15, 2026', due: 'Oct 29, 2026', total: 2890.00, status: 'Paid' }
+      ];
+
+      let appState = {
+        route: '#/login',
+        renderState: 'default',
+        lineItems: [
+          { id: 'l1', desc: 'Q4 Supply Chain Audit & Route Modeling', qty: 1, rate: 3200.00 },
+          { id: 'l2', desc: 'EDI Customs Integration (EU/TR)', qty: 1, rate: 1650.00 }
+        ],
+        addedExtra: false,
+        longOp: { running: false, elapsed: 4, stage: 1 },
+        longOpTimer: null,
+        toastTimer: null
+      };
+
+      function getRequestedState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const q = new URLSearchParams(window.location.search).get('state');
+        return (q && VALID_STATES.includes(q)) ? q : 'default';
+      }
+
+      function normalizeRoute(h) {
+        return ROUTES.includes(h) ? h : '#/login';
+      }
+
+      function fmtMoney(n) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+      }
+
+      function showToast(msg, onUndo) {
+        const el = document.getElementById('toast');
+        const msgEl = document.getElementById('toast-msg');
+        const undoBtn = document.getElementById('toast-undo');
+        msgEl.textContent = msg;
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+        requestAnimationFrame(() => el.classList.add('open'));
+        if (onUndo) {
+          undoBtn.classList.remove('hidden');
+          undoBtn.onclick = () => { onUndo(); hideToast(); };
+        } else {
+          undoBtn.classList.add('hidden');
+        }
+        clearTimeout(appState.toastTimer);
+        appState.toastTimer = setTimeout(hideToast, 4200);
+      }
+
+      function hideToast() {
+        const el = document.getElementById('toast');
+        el.classList.remove('open');
+        setTimeout(() => { el.classList.add('hidden'); el.classList.remove('flex'); }, 160);
+      }
+
+      function navigate(hash) {
+        if (window.location.hash !== hash) window.location.hash = hash;
+        else { appState.route = normalizeRoute(hash); render(); }
+      }
+
+      function setRenderState(nextState) {
+        appState.renderState = nextState;
+        const url = new URL(window.location.href);
+        url.searchParams.set('state', nextState);
+        window.history.replaceState({}, '', url);
+        render();
+      }
+
+      function badge(status) {
+        const map = {
+          'Paid': 'bg-emerald-50 text-emerald-800 border-emerald-200',
+          'Due in 7d': 'bg-amber-50 text-amber-800 border-amber-200',
+          'Overdue': 'bg-red-50 text-red-800 border-red-200',
+          'Quote Sent': 'bg-stone-100 text-stone-700 border-stone-300'
+        };
+        return `<span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-medium shrink-0 ${map[status] || map['Quote Sent']}">${status}</span>`;
+      }
+
+      function renderShell(contentHtml) {
+        const st = appState.renderState;
+        const nav = [
+          { hash: '#/list', label: 'Invoices & Quotes' },
+          { hash: '#/detail/1', label: 'INV-2041 Detail' },
+          { hash: '#/settings', label: 'Tax & Company' }
+        ];
+        const banner = st === 'offline'
+          ? `<div role="status" aria-live="polite" class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-sm text-amber-900 flex items-center justify-between">
+              <span>Offline — showing cached ledger from 2m ago.</span>
+              <button type="button" onclick="window.__setState('default')" class="font-semibold underline">Retry</button>
+            </div>`
+          : st === 'stale'
+          ? `<div role="status" aria-live="polite" class="bg-forest-100 border-b border-forest-200 px-4 py-2 text-sm text-forest-900 flex items-center justify-between">
+              <span>Updated 4m ago · Syncing e-invoice gateway</span>
+              <button type="button" onclick="window.__setState('default')" class="font-medium underline">Refresh</button>
+            </div>`
+          : '';
+
+        return `
+          <header class="bg-white border-b border-stone-200 sticky top-0 z-30">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-6">
+                <a href="#/list" class="flex items-center gap-2.5 font-display text-xl font-semibold text-forest-900 rounded-lg">
+                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                    <rect width="28" height="28" rx="8" fill="#14452f"/>
+                    <path d="M9 9H19M9 14H16M9 19H14" stroke="#f7f6f2" stroke-width="2.2" stroke-linecap="round"/>
+                  </svg>
+                  <span>BillCraft</span>
+                </a>
+                <nav aria-label="Primary" class="hidden sm:flex items-center gap-1">
+                  ${nav.map(n => `<a href="${n.hash}" class="px-3 py-2 rounded-lg text-sm font-medium ${appState.route === n.hash ? 'bg-forest-100 text-forest-900' : 'text-stone-600 hover:text-forest-900 hover:bg-stone-100'}">${n.label}</a>`).join('')}
+                </nav>
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="sr-only" for="state-select">Preview state</label>
+                <select id="state-select" onchange="window.__setState(this.value)" class="h-10 rounded-lg border border-stone-300 bg-white px-2.5 text-sm text-stone-900">
+                  ${VALID_STATES.map(s => `<option value="${s}" ${s === st ? 'selected' : ''}>State: ${s}</option>`).join('')}
+                </select>
+                <a href="#/login" class="text-sm font-medium text-stone-600 hover:text-forest-900 px-2.5 py-2">Sign out</a>
+              </div>
+            </div>
+          </header>
+          ${banner}
+          <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+            ${contentHtml}
+          </main>
+        `;
+      }
+
+      function renderLogin() {
+        const st = appState.renderState;
+        return `
+          <main class="flex-1 flex items-center justify-center px-4 py-12 bg-ledger">
+            <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-stone-200 p-8">
+              <div class="flex items-center gap-2.5 mb-6">
+                <svg width="32" height="32" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                  <rect width="28" height="28" rx="8" fill="#14452f"/>
+                  <path d="M9 9H19M9 14H16M9 19H14" stroke="#f7f6f2" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+                <span class="font-display text-2xl font-semibold text-forest-900">BillCraft</span>
+              </div>
+              <h1 class="font-display text-2xl font-semibold text-stone-900 mb-2">Finance & Billing Console</h1>
+              <p class="text-sm text-stone-600 mb-6">Issue compliant invoices, convert quotes, and sign e-invoices.</p>
+              ${st === 'error' ? `<div role="alert" class="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">Invalid credentials. Your email is preserved.</div>` : ''}
+              ${st === 'locked' ? `<div role="alert" class="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">Account locked. Contact your finance administrator.</div>` : ''}
+              <form onsubmit="event.preventDefault(); window.__nav('#/list');" class="space-y-4">
+                <div>
+                  <label for="bc-email" class="block text-sm font-medium text-stone-900 mb-1.5">Finance Email</label>
+                  <input id="bc-email" type="email" value="billing@northstar-ops.com" required class="w-full h-11 rounded-lg border border-stone-300 px-3.5 text-sm" />
+                </div>
+                <div>
+                  <label for="bc-pass" class="block text-sm font-medium text-stone-900 mb-1.5">Password</label>
+                  <input id="bc-pass" type="password" value="••••••••••••" required class="w-full h-11 rounded-lg border border-stone-300 px-3.5 text-sm" />
+                </div>
+                <button type="submit" class="btn-tactile w-full h-11 rounded-lg bg-forest-900 text-white text-sm font-semibold hover:bg-forest-800">
+                  Sign in to Ledger
+                </button>
+              </form>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderList() {
+        const st = appState.renderState;
+        if (st === 'loading') {
+          return renderShell(`
+            <div aria-busy="true" class="space-y-6">
+              <div class="h-8 w-48 bg-stone-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+              <div class="bg-white rounded-2xl border border-stone-200 p-6 space-y-4">
+                ${[1,2,3,4].map(() => `<div class="h-12 bg-stone-100 rounded-lg animate-pulse" aria-hidden="true"></div>`).join('')}
+              </div>
+            </div>
+          `);
+        }
+        if (st === 'empty') {
+          return renderShell(`
+            <div class="bg-white rounded-2xl border border-stone-200 p-12 text-center max-w-xl mx-auto">
+              <h1 class="font-display text-2xl font-semibold text-stone-900 mb-2">No invoices or quotes yet</h1>
+              <p class="text-sm text-stone-600 mb-6">Create your first client invoice to start tracking receivables and e-invoice signatures.</p>
+              <button type="button" onclick="window.__setState('default')" class="btn-tactile h-11 px-6 rounded-lg bg-forest-900 text-white text-sm font-semibold">Create Invoice</button>
+            </div>
+          `);
+        }
+        if (st === 'error') {
+          return renderShell(`
+            <div role="alert" class="bg-white rounded-2xl border border-red-200 p-8 max-w-xl mx-auto">
+              <h1 class="font-display text-xl font-semibold text-red-900 mb-2">Ledger sync failed</h1>
+              <p class="text-sm text-red-800 mb-5">Could not reach the e-invoice gateway. Local drafts remain intact.</p>
+              <button type="button" onclick="window.__setState('default')" class="btn-tactile h-11 px-5 rounded-lg bg-forest-900 text-white text-sm font-semibold">Retry</button>
+            </div>
+          `);
+        }
+        if (st === 'locked') {
+          return renderShell(`
+            <div class="bg-white rounded-2xl border border-amber-200 p-8 max-w-xl mx-auto">
+              <h1 class="font-display text-2xl font-semibold text-stone-900 mb-2">Read-only ledger access</h1>
+              <p class="text-sm text-stone-600 mb-6">Only Finance Admins can issue or sign new e-invoices.</p>
+              <a href="#/settings" class="btn-tactile inline-flex items-center h-11 px-5 rounded-lg bg-forest-900 text-white text-sm font-semibold">Request Access</a>
+            </div>
+          `);
+        }
+
+        return renderShell(`
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+            <div>
+              <h1 class="font-display text-3xl font-semibold text-stone-900">Invoices & Quotes</h1>
+              <p class="text-sm text-stone-600 mt-1">Active receivables, due dates, and e-invoice signing status.</p>
+            </div>
+            <a href="#/detail/1" class="btn-tactile inline-flex items-center justify-center h-11 px-5 rounded-lg bg-forest-900 text-white text-sm font-semibold hover:bg-forest-800 shrink-0">
+              Open INV-2041
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-forest-900 text-white rounded-2xl p-6 shadow-sm">
+              <p class="text-sm text-emerald-100">Outstanding Receivables</p>
+              <p class="font-display text-3xl font-semibold metric mt-1">${st === 'partial' ? '—' : '$11,570.00'}</p>
+              <p class="text-sm text-emerald-100 mt-2">2 open invoices · 1 overdue</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
+              <p class="text-sm text-stone-600">Collected (30d)</p>
+              <p class="font-display text-3xl font-semibold text-stone-900 metric mt-1">$24,590.00</p>
+              <p class="text-sm text-stone-600 mt-2">100% e-invoice compliant</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
+              <p class="text-sm text-stone-600">Open Quotes</p>
+              <p class="font-display text-3xl font-semibold text-stone-900 metric mt-1">$3,150.00</p>
+              <p class="text-sm text-stone-600 mt-2">Awaiting client approval</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-stone-200 bg-stone-50 text-sm font-semibold text-stone-700">
+                    <th class="py-3.5 px-6">Document</th>
+                    <th class="py-3.5 px-4">Client</th>
+                    <th class="py-3.5 px-4">Due Date</th>
+                    <th class="py-3.5 px-4">Total</th>
+                    <th class="py-3.5 px-4">Status</th>
+                    <th class="py-3.5 px-6 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-200 text-sm">
+                  ${INVOICES.map(inv => `
+                    <tr class="hover:bg-stone-50/80">
+                      <td class="py-4 px-6 font-mono font-medium text-forest-900">${inv.id}</td>
+                      <td class="py-4 px-4 font-medium text-stone-900">${inv.client}</td>
+                      <td class="py-4 px-4 text-stone-600 metric">${inv.due}</td>
+                      <td class="py-4 px-4 font-semibold text-stone-900 metric">${st === 'partial' && inv.id === 'INV-2041' ? '<span aria-label="Total pending">—</span>' : fmtMoney(inv.total)}</td>
+                      <td class="py-4 px-4">${badge(inv.status)}</td>
+                      <td class="py-4 px-6 text-right"><a href="#/detail/1" class="font-semibold text-forest-900 underline">Open</a></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `);
+      }
+
+      function renderDetail() {
+        const st = appState.renderState;
+        if (st === 'loading') {
+          return renderShell(`<div aria-busy="true" class="h-64 bg-white rounded-2xl border border-stone-200 p-6 animate-pulse"></div>`);
+        }
+
+        if (st === 'long-loading' || appState.longOp.running) {
+          const stages = [
+            { label: 'Rendering PDF/A-3b compliant invoice', done: appState.longOp.stage > 0 },
+            { label: 'Applying XAdES-BES digital signature', done: appState.longOp.stage > 1 },
+            { label: 'Transmitting to e-Invoice clearinghouse', done: appState.longOp.stage > 2 }
+          ];
+          return renderShell(`
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-stone-200 p-8" role="status" aria-live="polite">
+              <div class="flex items-center justify-between mb-4">
+                <span class="inline-flex items-center rounded-full bg-forest-100 px-3 py-1 text-sm font-medium text-forest-900">PDF & E-Invoice Signing</span>
+                <span class="text-sm font-mono text-stone-600 metric">Elapsed ${appState.longOp.elapsed}s · Usually 8–15s</span>
+              </div>
+              <h1 class="font-display text-2xl font-semibold text-stone-900 mb-2">Signing INV-2041 for Northstar Logistics</h1>
+              <p class="text-sm text-stone-600 mb-6">Generating archival PDF and cryptographic tax signature.</p>
+              <div class="space-y-3 mb-6">
+                ${stages.map((s, idx) => `
+                  <div class="flex items-center gap-3 p-3.5 rounded-xl border ${s.done ? 'border-emerald-200 bg-emerald-50/50' : idx === appState.longOp.stage ? 'border-forest-900 bg-forest-50' : 'border-stone-200 opacity-60'}">
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ${s.done ? 'bg-emerald-700 text-white' : idx === appState.longOp.stage ? 'bg-forest-900 text-white' : 'bg-stone-200 text-stone-600'}">${s.done ? '✓' : idx + 1}</span>
+                    <span class="text-sm font-medium text-stone-900">${s.label}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="button" onclick="window.__cancelLongOp()" class="btn-tactile h-11 px-5 rounded-lg border border-stone-300 bg-white text-sm font-semibold text-stone-900">Cancel</button>
+                <button type="button" onclick="window.__notifyLongOp()" class="btn-tactile h-11 px-5 rounded-lg bg-forest-900 text-white text-sm font-semibold">Notify when ready</button>
+              </div>
+            </div>
+          `);
+        }
+
+        const subtotal = appState.lineItems.reduce((sum, i) => sum + i.qty * i.rate, 0);
+        const tax = subtotal * 0.19;
+        const total = subtotal + tax;
+
+        return renderShell(`
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <a href="#/list" class="text-sm font-medium text-stone-600 hover:text-forest-900">← Back to Invoices</a>
+              <h1 class="font-display text-2xl sm:text-3xl font-semibold text-stone-900 mt-1">INV-2041 · Northstar Logistics GmbH</h1>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="window.__startLongOp()" class="btn-tactile h-11 px-4 rounded-lg border border-stone-300 bg-white text-sm font-semibold text-stone-900 hover:bg-stone-50">
+                Sign & Export PDF
+              </button>
+              <button type="button" data-motion-trigger="true" onclick="window.__addLineItem()" class="btn-tactile h-11 px-5 rounded-lg bg-forest-900 text-white text-sm font-semibold hover:bg-forest-800">
+                + Add Compliance Fee ($450)
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
+              <h2 class="text-base font-semibold text-stone-900 mb-4">Line Items</h2>
+              <div class="divide-y divide-stone-200">
+                ${appState.lineItems.map((item, idx) => `
+                  <div class="py-3.5 flex items-center justify-between gap-4 ${appState.addedExtra && idx === appState.lineItems.length - 1 ? 'row-ok' : ''}">
+                    <div>
+                      <p class="text-sm font-medium text-stone-900">${item.desc}</p>
+                      <p class="text-sm text-stone-500 metric">Qty ${item.qty} × ${fmtMoney(item.rate)}</p>
+                    </div>
+                    <div class="text-sm font-semibold text-stone-900 metric">${fmtMoney(item.qty * item.rate)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="bg-forest-900 text-white rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <p class="text-sm text-emerald-100 font-medium">Invoice Summary</p>
+                <div class="mt-4 space-y-2.5 text-sm">
+                  <div class="flex justify-between text-emerald-100"><span>Subtotal</span><span class="metric">${fmtMoney(subtotal)}</span></div>
+                  <div class="flex justify-between text-emerald-100"><span>VAT (19%)</span><span class="metric">${fmtMoney(tax)}</span></div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-white/20 flex justify-between items-baseline">
+                  <span class="text-sm font-medium">Total Due</span>
+                  <span id="invoice-total" aria-live="polite" class="font-display text-3xl font-semibold metric">${fmtMoney(total)}</span>
+                </div>
+              </div>
+              <p class="text-sm text-emerald-100 mt-6">Due Nov 28, 2026 · Net 14</p>
+            </div>
+          </div>
+        `);
+      }
+
+      function renderSettings() {
+        return renderShell(`
+          <div class="max-w-2xl">
+            <h1 class="font-display text-3xl font-semibold text-stone-900 mb-2">Tax & Company Settings</h1>
+            <p class="text-sm text-stone-600 mb-6">Configure legal entity details, VAT rates, and e-invoice certificates.</p>
+            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 space-y-5">
+              <div>
+                <label for="co-name" class="block text-sm font-medium text-stone-900 mb-1.5">Legal Entity Name</label>
+                <input id="co-name" type="text" value="Northstar Ops Consulting LLC" class="w-full h-11 rounded-lg border border-stone-300 px-3.5 text-sm" />
+              </div>
+              <div>
+                <label for="vat-rate" class="block text-sm font-medium text-stone-900 mb-1.5">Default VAT / Tax Rate (%)</label>
+                <input id="vat-rate" type="number" value="19" class="w-full h-11 rounded-lg border border-stone-300 px-3.5 text-sm metric" />
+              </div>
+              <button type="button" onclick="window.__saveSettings()" class="btn-tactile h-11 px-6 rounded-lg bg-forest-900 text-white text-sm font-semibold hover:bg-forest-800">
+                Save Tax Settings
+              </button>
+            </div>
+          </div>
+        `);
+      }
+
+      function render() {
+        const root = document.getElementById('app');
+        if (appState.route === '#/login') root.innerHTML = renderLogin();
+        else if (appState.route === '#/list') root.innerHTML = renderList();
+        else if (appState.route === '#/detail/1') root.innerHTML = renderDetail();
+        else if (appState.route === '#/settings') root.innerHTML = renderSettings();
+        else root.innerHTML = renderLogin();
+      }
+
+      window.__nav = navigate;
+      window.__setState = setRenderState;
+      window.__addLineItem = function () {
+        if (!appState.addedExtra) {
+          appState.addedExtra = true;
+          appState.lineItems.push({ id: 'l3', desc: 'EU/TR Customs Compliance Filing Fee', qty: 1, rate: 450.00 });
+          render();
+          showToast('Line item added — Total recalculated', () => {
+            appState.addedExtra = false;
+            appState.lineItems.pop();
+            render();
+          });
+        } else {
+          showToast('Compliance fee already included');
+        }
+      };
+      window.__startLongOp = function () {
+        appState.longOp = { running: true, elapsed: 1, stage: 0 };
+        render();
+        clearInterval(appState.longOpTimer);
+        appState.longOpTimer = setInterval(() => {
+          appState.longOp.elapsed += 1;
+          if (appState.longOp.elapsed === 3) appState.longOp.stage = 1;
+          if (appState.longOp.elapsed === 6) appState.longOp.stage = 2;
+          if (appState.longOp.elapsed >= 9) {
+            clearInterval(appState.longOpTimer);
+            appState.longOp.running = false;
+            render();
+            showToast('PDF signed & transmitted');
+          } else render();
+        }, 1000);
+      };
+      window.__cancelLongOp = function () {
+        clearInterval(appState.longOpTimer);
+        appState.longOp.running = false;
+        if (appState.renderState === 'long-loading') setRenderState('default');
+        else render();
+        showToast('Signing cancelled');
+      };
+      window.__notifyLongOp = function () {
+        clearInterval(appState.longOpTimer);
+        appState.longOp.running = false;
+        if (appState.renderState === 'long-loading') setRenderState('default');
+        else render();
+        showToast('We will notify you when PDF signing completes');
+      };
+      window.__saveSettings = function () { showToast('Tax settings saved'); };
+
+      window.addEventListener('hashchange', () => {
+        appState.route = normalizeRoute(window.location.hash);
+        appState.renderState = getRequestedState();
+        render();
+      });
+
+      appState.route = normalizeRoute(window.location.hash);
+      appState.renderState = getRequestedState();
+      render();
+    })();
+  </script>
+</body>
+</html>

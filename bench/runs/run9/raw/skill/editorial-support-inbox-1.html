@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeskQuill — Customer Support Inbox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            sans: ['"Source Sans 3"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --dur-fast: 150ms;
+      --dur-base: 220ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+    }
+    body {
+      background-color: #faf8f5;
+      color: #1c1917;
+      font-family: "Source Sans 3", system-ui, sans-serif;
+    }
+    h1, h2, h3 { text-wrap: balance; font-family: "Newsreader", Georgia, serif; font-optical-sizing: auto; }
+    p, dd, li { text-wrap: pretty; }
+    .tabular-nums { font-variant-numeric: tabular-nums lining-nums; }
+    .fade-swap { transition: opacity var(--dur-base) var(--ease-standard); }
+    .resolved-flash {
+      animation: dq-flash 1.2s var(--ease-standard) forwards;
+    }
+    @keyframes dq-flash {
+      0% { background-color: rgba(16, 185, 129, 0.14); }
+      100% { background-color: transparent; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 120ms !important;
+        transform: none !important;
+      }
+      .resolved-flash { animation: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#faf8f5] text-stone-900">
+  <main id="app" class="min-h-screen flex flex-col"></main>
+  <div id="toast-region" role="status" aria-live="polite" class="fixed bottom-5 right-5 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+  <script>
+    (function () {
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked', 'offline', 'stale'];
+
+      const TICKETS = [
+        { id: '1', key: 'DQ-1042', subject: 'Duplicate invoice charge on annual workspace renewal', customer: 'Çağla İnanç', priority: 'Urgent', sla: '18m left', updated: '14 min ago' },
+        { id: '2', key: 'DQ-1041', subject: 'SAML metadata XML upload returns 422 on Okta tenant', customer: 'Şahin Öztürk', priority: 'High', sla: '1h 12m', updated: 'Yesterday' },
+        { id: '3', key: 'DQ-1040', subject: 'Exporting audit log CSV omits Turkish İ/ı characters', customer: 'Elif Karakoç', priority: 'Normal', sla: '3h 40m', updated: '18 Oct' },
+        { id: '4', key: 'DQ-1039', subject: 'Request to transfer billing ownership to finance alias', customer: 'Mertcan Yılmaz', priority: 'Low', sla: null, updated: '12 Jan 2024' }
+      ];
+
+      let uiState = {
+        renderState: 'default',
+        ticketStatus: 'Open',
+        resolvedFlash: false,
+        replyText: 'Hi Çağla, I have voided the duplicate renewal invoice (#INV-8841) and issued a full refund to your card.',
+        longOp: { active: false, stage: 0, elapsed: 0, timerId: null },
+        settingsSaved: false
+      };
+
+      function getEffectiveState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const q = new URLSearchParams(window.location.search).get('state');
+        if (q && VALID_STATES.includes(q)) return q;
+        return uiState.renderState;
+      }
+
+      function getEffectiveRoute() {
+        const h = window.location.hash;
+        return ROUTES.includes(h) ? h : '#/login';
+      }
+
+      function showToast(msg, undoLabel, onUndo) {
+        const region = document.getElementById('toast-region');
+        const el = document.createElement('div');
+        el.className = 'pointer-events-auto flex items-center gap-3 rounded border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 shadow-sm';
+        el.innerHTML = `<span>${msg}</span>`;
+        if (undoLabel && onUndo) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'text-xs font-semibold text-rose-800 underline hover:text-rose-950';
+          b.textContent = undoLabel;
+          b.onclick = () => { onUndo(); el.remove(); };
+          el.appendChild(b);
+        }
+        region.appendChild(el);
+        setTimeout(() => { if (el.parentNode) el.remove(); }, 4500);
+      }
+
+      function renderShell(route, state, content) {
+        if (route === '#/login') {
+          return `<main class="flex-1 flex items-center justify-center p-6">${content}</main>`;
+        }
+        const nav = [
+          { href: '#/list', label: 'Queue' },
+          { href: '#/detail/1', label: 'Ticket DQ-1042' },
+          { href: '#/settings', label: 'Routing & Signature' }
+        ];
+        const banner = state === 'offline'
+          ? `<div role="status" class="border-b border-rose-300 bg-rose-50 px-6 py-2 text-sm text-rose-900 text-center">Offline — drafts are saved locally until connection returns.</div>`
+          : state === 'stale'
+          ? `<div role="status" class="border-b border-amber-300 bg-amber-50 px-6 py-2 text-sm text-amber-900 text-center">Queue last synced 4 minutes ago.</div>`
+          : '';
+        return `
+          <header class="border-b border-stone-200 bg-[#faf8f5]/95 sticky top-0 z-30">
+            <div class="mx-auto max-w-4xl px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-6 min-w-0">
+                <a href="#/list" class="font-serif text-xl font-semibold text-stone-900 tracking-tight shrink-0">DeskQuill</a>
+                <nav aria-label="Primary" class="flex items-center gap-1 overflow-x-auto">
+                  ${nav.map(n => {
+                    const active = route === n.href;
+                    return `<a href="${n.href}" ${active ? 'aria-current="page"' : ''} class="px-3 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${active ? 'text-rose-800 bg-rose-50' : 'text-stone-700 hover:text-stone-900'}">${n.label}</a>`;
+                  }).join('')}
+                </nav>
+              </div>
+              <a href="#/login" class="shrink-0 text-sm text-stone-700 hover:text-stone-900 underline">Sign out</a>
+            </div>
+          </header>
+          ${banner}
+          <main class="flex-1 mx-auto w-full max-w-4xl px-4 sm:px-6 py-8">${content}</main>
+        `;
+      }
+
+      function renderLogin(state) {
+        if (state === 'locked') {
+          return `
+            <section class="w-full max-w-md border border-stone-300 bg-white p-8 space-y-4">
+              <p class="text-xs font-semibold uppercase tracking-wider text-rose-800">Access Restricted</p>
+              <h1 class="text-3xl font-semibold text-stone-900">Agent session expired</h1>
+              <p class="text-base text-stone-700 leading-relaxed">Please re-authenticate to view customer correspondence and billing records.</p>
+              <a href="#/list" class="inline-flex w-full min-h-[44px] items-center justify-center rounded bg-rose-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-900">Re-authenticate</a>
+            </section>
+          `;
+        }
+        return `
+          <section class="w-full max-w-md border border-stone-300 bg-white p-8 space-y-6">
+            <div class="space-y-1">
+              <p class="text-xs font-semibold uppercase tracking-wider text-rose-800">DeskQuill</p>
+              <h1 class="text-3xl font-semibold text-stone-900">Agent sign in</h1>
+              <p class="text-base text-stone-700">Enter your support desk credentials to open the queue.</p>
+            </div>
+            ${state === 'error' ? `<div role="alert" class="border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">Credentials could not be verified. Check your agent email and try again.</div>` : ''}
+            <form onsubmit="event.preventDefault(); window.location.hash='#/list';" class="space-y-4">
+              <div>
+                <label for="dq-email" class="block text-sm font-medium text-stone-800 mb-1.5">Agent Email</label>
+                <input id="dq-email" type="email" value="elif@deskquill.io" class="w-full min-h-[44px] rounded border border-stone-300 bg-[#faf8f5] px-3.5 py-2 text-base text-stone-900 focus:border-rose-800 focus:outline-none" />
+              </div>
+              <button type="submit" class="w-full min-h-[44px] rounded bg-rose-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-900">Open inbox</button>
+            </form>
+          </section>
+        `;
+      }
+
+      function renderList(state) {
+        if (state === 'loading') {
+          return `
+            <div class="divide-y divide-stone-200 border-y border-stone-200" aria-busy="true">
+              ${[1, 2, 3, 4].map(() => `
+                <div class="py-5 space-y-2" aria-hidden="true">
+                  <div class="h-5 w-3/4 bg-stone-200 animate-pulse rounded"></div>
+                  <div class="h-4 w-1/3 bg-stone-200 animate-pulse rounded"></div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+        if (state === 'empty') {
+          return `
+            <section class="border-y border-stone-200 py-12 text-center space-y-3">
+              <h1 class="text-3xl font-semibold text-stone-900">Inbox zero</h1>
+              <p class="text-base text-stone-700 max-w-md mx-auto">All assigned customer threads have been resolved. New replies will appear here automatically.</p>
+              <a href="#/detail/1" class="inline-flex min-h-[44px] items-center justify-center rounded bg-rose-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-900">View archived sample</a>
+            </section>
+          `;
+        }
+        if (state === 'error') {
+          return `
+            <section role="alert" class="border border-rose-300 bg-rose-50 p-6 space-y-3">
+              <h1 class="text-2xl font-semibold text-rose-950">Unable to load ticket queue</h1>
+              <p class="text-base text-rose-900">The correspondence store did not respond in time.</p>
+              <button type="button" onclick="window.__dqRefresh()" class="min-h-[44px] rounded bg-rose-800 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-900">Retry</button>
+            </section>
+          `;
+        }
+        if (state === 'locked') {
+          return `
+            <section class="border border-amber-300 bg-white p-6 space-y-3">
+              <h1 class="text-2xl font-semibold text-stone-900">Queue locked for maintenance</h1>
+              <p class="text-base text-stone-700">Your role currently has read-only access to this inbox.</p>
+              <a href="#/login" class="inline-flex min-h-[44px] items-center rounded bg-rose-800 px-4 py-2 text-sm font-semibold text-white">Re-authenticate</a>
+            </section>
+          `;
+        }
+
+        const rows = state === 'partial' ? TICKETS : TICKETS;
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-stone-200 pb-4">
+              <div>
+                <h1 class="text-3xl font-semibold text-stone-900">Support Queue</h1>
+                <p class="text-base text-stone-700">4 active threads ordered by SLA urgency.</p>
+              </div>
+              <a href="#/detail/1" class="inline-flex min-h-[44px] items-center rounded bg-rose-800 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-900">Open DQ-1042</a>
+            </div>
+            <ul class="divide-y divide-stone-200 border-b border-stone-200">
+              ${rows.map(t => `
+                <li>
+                  <a href="#/detail/1" class="block py-4 hover:bg-stone-100/70 transition-colors px-2 -mx-2 rounded">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="text-xs font-semibold uppercase tracking-wider text-rose-800 tabular-nums">${t.key} · ${t.priority}</span>
+                      <span class="text-xs font-medium text-stone-600 tabular-nums" ${t.sla === null ? 'aria-label="SLA pending"' : ''}>SLA: ${t.sla ?? '—'} · ${t.updated}</span>
+                    </div>
+                    <h2 class="text-xl font-semibold text-stone-900 mt-1">${t.subject}</h2>
+                    <p class="text-sm text-stone-700 mt-0.5">Customer: ${t.customer}</p>
+                  </a>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      function renderDetail(state) {
+        const effectiveLong = state === 'long-loading' || uiState.longOp.active;
+        const stages = ['Reading 6 messages', 'Correlating billing logs', 'Drafting root-cause summary'];
+        const activeStage = state === 'long-loading' ? 1 : uiState.longOp.stage;
+        const elapsed = state === 'long-loading' ? 4 : uiState.longOp.elapsed;
+
+        return `
+          <div class="space-y-6">
+            <div class="border-b border-stone-200 pb-4 flex flex-wrap items-start justify-between gap-4">
+              <div class="space-y-1">
+                <a href="#/list" class="text-sm font-medium text-rose-800 hover:underline">&larr; Back to Queue</a>
+                <h1 class="text-3xl font-semibold text-stone-900">Duplicate invoice charge on annual workspace renewal</h1>
+                <p class="text-sm text-stone-700">DQ-1042 · Çağla İnanç · Status: <strong class="font-semibold ${uiState.ticketStatus === 'Resolved' ? 'text-emerald-800' : 'text-rose-800'}">${uiState.ticketStatus}</strong></p>
+              </div>
+              <button type="button" onclick="window.__dqStartLongOp()" class="min-h-[44px] rounded border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-100">
+                Run AI Root-Cause Summary (&gt;3s)
+              </button>
+            </div>
+
+            ${effectiveLong ? `
+              <section role="status" aria-live="polite" class="border border-stone-300 bg-white p-5 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 class="text-lg font-semibold text-stone-900">Generating AI Summary &amp; Root-Cause Analysis</h2>
+                    <p class="text-sm tabular-nums text-stone-700">Elapsed ${elapsed}s · Usually 5–8s</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.__dqNotifyLongOp()" class="min-h-[40px] rounded border border-stone-300 px-3 py-1.5 text-sm font-medium text-stone-800 hover:bg-stone-100">Notify when ready</button>
+                    <button type="button" onclick="window.__dqCancelLongOp()" class="min-h-[40px] rounded border border-rose-300 bg-rose-50 px-3 py-1.5 text-sm font-semibold text-rose-900 hover:bg-rose-100">Cancel</button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  ${stages.map((st, idx) => `
+                    <div class="border p-3 ${idx < activeStage ? 'border-emerald-400 bg-emerald-50/60' : idx === activeStage ? 'border-rose-700 bg-rose-50/60' : 'border-stone-200 opacity-60'}">
+                      <div class="text-xs font-semibold uppercase tracking-wider ${idx < activeStage ? 'text-emerald-800' : idx === activeStage ? 'text-rose-800' : 'text-stone-600'}">
+                        ${idx < activeStage ? 'Complete' : idx === activeStage ? 'Analyzing' : 'Pending'}
+                      </div>
+                      <div class="text-sm font-medium text-stone-900 mt-1">${st}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </section>
+            ` : ''}
+
+            <article class="border border-stone-200 bg-white p-6 space-y-3 ${uiState.resolvedFlash ? 'resolved-flash' : ''}">
+              <div class="flex items-center justify-between text-xs uppercase tracking-wider text-stone-600">
+                <span>Çağla İnanç · Customer</span>
+                <span class="tabular-nums">14 min ago</span>
+              </div>
+              <p class="text-base text-stone-800 leading-relaxed max-w-prose">
+                Our finance team noticed two identical charges of $1,440 on our corporate card this morning for the annual DeskQuill renewal. Could you void the duplicate and confirm?
+              </p>
+            </article>
+
+            <form onsubmit="event.preventDefault();" class="border border-stone-300 bg-white p-6 space-y-4">
+              <label for="dq-reply" class="block text-sm font-semibold text-stone-900">Reply to Çağla İnanç</label>
+              <textarea id="dq-reply" rows="3" class="w-full rounded border border-stone-300 bg-[#faf8f5] p-3 text-base text-stone-900 focus:border-rose-800 focus:outline-none">${uiState.replyText}</textarea>
+              <div class="flex items-center justify-end gap-3">
+                <button type="button" data-motion-trigger onclick="window.__dqResolveTicket()" class="min-h-[44px] rounded bg-rose-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-900">
+                  Send &amp; Resolve Ticket
+                </button>
+              </div>
+            </form>
+          </div>
+        `;
+      }
+
+      function renderSettings(state) {
+        return `
+          <div class="max-w-xl space-y-6">
+            <div class="border-b border-stone-200 pb-4">
+              <h1 class="text-3xl font-semibold text-stone-900">Routing Rules &amp; Signature</h1>
+              <p class="text-base text-stone-700">Manage auto-assignment and your correspondence sign-off.</p>
+            </div>
+            ${state === 'locked' ? `<div role="alert" class="border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">Admin permission required to edit global routing rules.</div>` : ''}
+            <form onsubmit="event.preventDefault(); window.__dqSaveSettings();" class="border border-stone-300 bg-white p-6 space-y-5">
+              <div>
+                <label for="dq-route" class="block text-sm font-semibold text-stone-900 mb-1.5">Default Escalation Queue</label>
+                <input id="dq-route" type="text" value="Billing &amp; Enterprise SLA" class="w-full min-h-[44px] rounded border border-stone-300 bg-[#faf8f5] px-3.5 py-2 text-base text-stone-900" />
+              </div>
+              <div>
+                <label for="dq-sig" class="block text-sm font-semibold text-stone-900 mb-1.5">Agent Signature</label>
+                <input id="dq-sig" type="text" value="Warm regards, Elif Karakoç — DeskQuill Support" class="w-full min-h-[44px] rounded border border-stone-300 bg-[#faf8f5] px-3.5 py-2 text-base text-stone-900" />
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="submit" ${state === 'locked' ? 'disabled' : ''} class="min-h-[44px] rounded bg-rose-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-900 disabled:opacity-50">Save settings</button>
+                ${uiState.settingsSaved ? `<span class="text-sm font-medium text-emerald-800">Saved.</span>` : ''}
+              </div>
+            </form>
+          </div>
+        `;
+      }
+
+      function render() {
+        const route = getEffectiveRoute();
+        const state = getEffectiveState();
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else if (route === '#/settings') body = renderSettings(state);
+        document.getElementById('app').innerHTML = renderShell(route, state, body);
+      }
+
+      window.__dqRefresh = function () {
+        uiState.renderState = 'default';
+        render();
+        showToast('Queue refreshed.');
+      };
+
+      window.__dqResolveTicket = function () {
+        const prev = uiState.ticketStatus;
+        uiState.ticketStatus = 'Resolved';
+        uiState.resolvedFlash = true;
+        render();
+        showToast('Reply sent and ticket DQ-1042 resolved.', 'Undo', () => {
+          uiState.ticketStatus = prev;
+          uiState.resolvedFlash = false;
+          render();
+        });
+        setTimeout(() => { uiState.resolvedFlash = false; }, 1250);
+      };
+
+      window.__dqStartLongOp = function () {
+        if (uiState.longOp.timerId) clearInterval(uiState.longOp.timerId);
+        uiState.longOp = { active: true, stage: 0, elapsed: 0, timerId: null };
+        render();
+        uiState.longOp.timerId = setInterval(() => {
+          uiState.longOp.elapsed += 1;
+          if (uiState.longOp.elapsed === 2) uiState.longOp.stage = 1;
+          if (uiState.longOp.elapsed === 4) uiState.longOp.stage = 2;
+          if (uiState.longOp.elapsed >= 5) {
+            clearInterval(uiState.longOp.timerId);
+            uiState.longOp.active = false;
+            render();
+            showToast('AI root-cause summary ready: duplicate webhook retry.');
+            return;
+          }
+          render();
+        }, 1000);
+      };
+
+      window.__dqCancelLongOp = function () {
+        if (uiState.longOp.timerId) clearInterval(uiState.longOp.timerId);
+        uiState.longOp.active = false;
+        render();
+        showToast('Analysis cancelled.');
+      };
+
+      window.__dqNotifyLongOp = function () {
+        showToast('Running in background — you will be notified when ready.');
+      };
+
+      window.__dqSaveSettings = function () {
+        uiState.settingsSaved = true;
+        render();
+        showToast('Routing & signature saved.');
+      };
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      render();
+    })();
+  </script>
+</body>
+</html>

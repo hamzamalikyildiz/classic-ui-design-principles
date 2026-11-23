@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spruce and Varnish — The Craft of Master Violin Restoration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#FAF7F2',
+            vellum: '#F2ECE1',
+            ink: '#1C1917',
+            stone: '#57534E',
+            varnish: '#9A3412',
+            hairline: '#E2D9C8'
+          },
+          fontFamily: {
+            display: ['"Instrument Serif"', 'Georgia', 'serif'],
+            serif: ['Newsreader', 'Georgia', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .drop-cap::first-letter {
+      float: left;
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 4.25rem;
+      line-height: 0.82;
+      padding-right: 0.65rem;
+      padding-top: 0.25rem;
+      color: #9A3412;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .quiet-enter { animation: fadeIn 220ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) {
+      .quiet-enter { animation: none; }
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-serif antialiased selection:bg-varnish selection:text-paper">
+  <header class="border-b border-hairline">
+    <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="font-display text-2xl tracking-tight text-ink">TheBench</a>
+      <nav aria-label="Sections" class="flex items-center gap-6 text-sm text-stone">
+        <a href="#story" class="hover:text-varnish focus-visible:outline-2 focus-visible:outline-varnish rounded">Profile</a>
+        <a href="#related" class="hover:text-varnish focus-visible:outline-2 focus-visible:outline-varnish rounded">Related</a>
+        <a href="#newsletter" class="hover:text-varnish focus-visible:outline-2 focus-visible:outline-varnish rounded">Letters</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="story" class="quiet-enter py-16">
+    <!-- Article Header -->
+    <article>
+      <header class="max-w-4xl mx-auto px-6 text-center space-y-6 pb-12 border-b border-hairline">
+        <p class="text-xs uppercase tracking-[0.22em] text-varnish font-semibold">Craft &amp; Acoustic Heritage</p>
+        <h1 class="font-display text-6xl sm:text-7xl lg:text-[88px] leading-[0.98] tracking-tight text-ink text-balance">
+          Spruce and Varnish
+        </h1>
+        <p class="text-xl sm:text-2xl text-stone max-w-2xl mx-auto leading-relaxed italic text-pretty">
+          Inside the Cremona-trained workshop of Matteo Bellini, where 18th-century instruments are stabilized with hide glue, bone dust, and patience.
+        </p>
+        <div class="pt-2 text-sm text-stone">
+          <span>By <strong class="text-ink font-medium">Clara Lindqvist</strong></span>
+          <span class="mx-2" aria-hidden="true">·</span>
+          <time datetime="2026-10-14">October 14, 2026</time>
+          <span class="mx-2" aria-hidden="true">·</span>
+          <span>11 min read</span>
+        </div>
+      </header>
+
+      <!-- Body Section 1 -->
+      <div class="max-w-prose mx-auto px-6 pt-12 space-y-6 text-lg leading-[1.78] text-ink">
+        <p class="drop-cap text-pretty">
+          At seven in the morning, before the tram rattles past Via Beltrami, Matteo Bellini boils a small copper pot of rabbit-skin glue. The scent is faintly sweet and unmistakably organic—an adhesive that has held European string instruments together for four centuries because it can be undone with a damp cloth and warm steam.
+        </p>
+        <p class="text-pretty">
+          On his bench rests a 1742 Venetian violin whose bass bar has begun to fatigue under three hundred years of string tension. A modern epoxy would silence the top plate forever. Bellini’s work is the opposite of permanence: every repair must be reversible by a restorer who has not yet been born.
+        </p>
+
+        <h2 class="font-display text-3xl text-ink pt-6 pb-1 text-balance">Listening to the Wood</h2>
+        <p class="text-pretty">
+          Before touching a chisel, Bellini taps the spruce belly with the knuckle of his middle finger, holding the instrument at its nodal line. He is listening for the tap tone—a clear, woody F-sharp that tells him whether a hairline crack along the f-hole is merely cosmetic or structurally loose.
+        </p>
+        <p class="text-pretty">
+          “A violin is a lung,” he says, setting the instrument on a padded leather cradle. “If you stiffen the rib or over-patch the spruce, it still looks like a Stradivarius in a glass case, but it stops breathing under the bow.”
+        </p>
+      </div>
+
+      <!-- Pull Quote -->
+      <figure class="max-w-3xl mx-auto px-6 my-14 py-10 border-y border-hairline text-center">
+        <blockquote class="font-display italic text-3xl sm:text-4xl leading-[1.35] text-varnish text-balance">
+          “Every repair must be reversible by a restorer who has not yet been born.”
+        </blockquote>
+        <figcaption class="mt-4 text-sm text-stone">
+          Matteo Bellini, at his bench in Cremona
+        </figcaption>
+      </figure>
+
+      <!-- Body Section 2 -->
+      <div class="max-w-prose mx-auto px-6 space-y-6 text-lg leading-[1.78] text-ink">
+        <h2 class="font-display text-3xl text-ink pt-2 pb-1 text-balance">The Alchemy of Retouching</h2>
+        <p class="text-pretty">
+          The hardest hour of restoration is not structural; it is chromatic. When a missing sliver of maple is grafted into a worn scroll, the fresh wood gleams pale against centuries of amber oil varnish. Bellini grinds madder lake, alizarin, and walnut husk by hand, building translucent glazes in twelve-hour intervals until the patch disappears under northern skylight.
+        </p>
+        <p class="text-pretty">
+          By five o’clock, the Venetian violin is strung again with gut-core A and D strings. Bellini draws a single slow open fifth. The room fills with a dry, resonant warmth—older than any living person in it, and ready for another century.
+        </p>
+      </div>
+    </article>
+
+    <!-- Related Stories (Typographic) -->
+    <section id="related" class="max-w-4xl mx-auto px-6 mt-20 pt-12 border-t border-hairline">
+      <p class="text-xs uppercase tracking-[0.2em] text-varnish font-semibold mb-8">Further Reading</p>
+      <div class="grid md:grid-cols-3 gap-8">
+        <article class="space-y-2 border-t border-hairline pt-4">
+          <p class="text-xs uppercase tracking-wider text-stone">Materials</p>
+          <h3 class="font-display text-2xl text-ink leading-snug">
+            <a href="#" class="hover:text-varnish focus-visible:outline-2 focus-visible:outline-varnish rounded">Alpine Tonewood at 1,800 Meters</a>
+          </h3>
+          <p class="text-sm text-stone leading-relaxed">Why winter-felled Val di Fiemme spruce still outperforms kiln-dried timber.</p>
+        </article>
+
+        <article class="space-y-2 border-t border-hairline pt-4">
+          <p class="text-xs uppercase tracking-wider text-stone">Archive</p>
+          <h3 class="font-display text-2xl text-ink leading-snug">
+            <a href="#" class="hover:text-varnish focus-visible:outline-2 focus-visible:outline-varnish rounded">The Bowmaker’s Pernambuco</a>
+          </h3>
+          <p class="text-sm text-stone leading-relaxed">Inside the race to preserve a vanishing Brazilian hardwood for concert soloists.</p>
+        </article>
+
+        <article class="space-y-2 border-t border-hairline pt-4">
+          <p class="text-xs uppercase tracking-wider text-stone">Acoustics</p>
+          <h3 class="font-display text-2xl text-ink leading-snug">
+            <a href="#" class="hover:text-varnish focus-visible:outline-2 focus-visible:outline-varnish rounded">Measuring Soundpost Tension</a>
+          </h3>
+          <p class="text-sm text-stone leading-relaxed">How a two-millimeter shift alters projection in a two-thousand-seat hall.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section id="newsletter" class="max-w-2xl mx-auto px-6 mt-20">
+      <div class="bg-vellum border border-hairline rounded-lg p-8 sm:p-10 text-center space-y-4">
+        <p class="text-xs uppercase tracking-[0.2em] text-varnish font-semibold">Sunday Dispatch</p>
+        <h2 class="font-display text-3xl text-ink">Notes from the Workshop</h2>
+        <p class="text-base text-stone max-w-md mx-auto leading-relaxed">
+          One long-form profile of a living craftsperson, delivered every Sunday morning.
+        </p>
+        <form class="mt-6 flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="event.preventDefault(); document.getElementById('nl-status').classList.remove('hidden');">
+          <label for="nl-email" class="sr-only">Email address</label>
+          <input id="nl-email" type="email" required placeholder="you@example.com" class="flex-1 min-h-[44px] px-4 rounded bg-paper border border-hairline text-ink placeholder:text-stone/70 focus-visible:outline-2 focus-visible:outline-varnish" />
+          <button type="submit" class="min-h-[44px] px-6 rounded bg-varnish text-paper font-medium text-sm hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-varnish transition">
+            Subscribe
+          </button>
+        </form>
+        <p id="nl-status" class="hidden text-sm text-varnish font-medium pt-1">
+          Thank you. Your first dispatch arrives this Sunday.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-hairline py-8 text-center text-sm text-stone">
+    TheBench Journal · Independent Craft Journalism · © 2026
+  </footer>
+</body>
+</html>

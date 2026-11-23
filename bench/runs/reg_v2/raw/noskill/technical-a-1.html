@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ForgeGrid — CI/CD Telemetry Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80">
+    <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded bg-cyan-500/15 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+          </svg>
+        </div>
+        <span class="font-semibold tracking-tight text-sm text-white">ForgeGrid</span>
+        <span class="text-xs font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded">us-east-prod</span>
+      </div>
+      <div class="flex items-center gap-4 text-xs">
+        <span class="flex items-center gap-1.5 text-emerald-400 font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          42/48 runners online
+        </span>
+        <span class="text-slate-400 font-mono">v2.14.3</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+    <!-- Top Row: Queue Latency by Pool + Runner Utilization Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Queue Latency by Pool -->
+      <section class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-white">Queue Latency by Pool</h2>
+          <span class="text-xs font-mono text-slate-400">p95 wait</span>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="font-mono text-slate-300">linux-x64-large</span>
+              <span class="font-mono text-emerald-400">1.4s</span>
+            </div>
+            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-emerald-500 rounded-full" style="width: 22%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="font-mono text-slate-300">linux-arm64-med</span>
+              <span class="font-mono text-cyan-400">3.8s</span>
+            </div>
+            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-cyan-500 rounded-full" style="width: 45%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="font-mono text-slate-300">macos-m2-xcode</span>
+              <span class="font-mono text-amber-400">14.2s</span>
+            </div>
+            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-amber-500 rounded-full" style="width: 78%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="font-mono text-slate-300">gpu-a10g-eval</span>
+              <span class="font-mono text-rose-400">28.6s</span>
+            </div>
+            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full bg-rose-500 rounded-full" style="width: 92%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Runner Utilization Chart -->
+      <section class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-sm font-semibold text-white">Runner Utilization (Last 12h)</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Fleet CPU &amp; slot saturation across all pools</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xl font-bold font-mono text-cyan-400">76.4%</span>
+            <p class="text-[11px] text-slate-400">avg utilization</p>
+          </div>
+        </div>
+        <div class="mt-2">
+          <svg viewBox="0 0 600 140" class="w-full h-36 overflow-visible">
+            <defs>
+              <linearGradient id="utilGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.35" />
+                <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.0" />
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="35" x2="600" y2="35" stroke="#1e293b" stroke-dasharray="4 4" />
+            <line x1="0" y1="70" x2="600" y2="70" stroke="#1e293b" stroke-dasharray="4 4" />
+            <line x1="0" y1="105" x2="600" y2="105" stroke="#1e293b" stroke-dasharray="4 4" />
+            <path d="M0,95 L50,82 L100,88 L150,60 L200,52 L250,65 L300,40 L350,32 L400,48 L450,28 L500,36 L550,25 L600,34 L600,140 L0,140 Z" fill="url(#utilGrad)" />
+            <polyline fill="none" stroke="#22d3ee" stroke-width="2.5" points="0,95 50,82 100,88 150,60 200,52 250,65 300,40 350,32 400,48 450,28 500,36 550,25 600,34" />
+          </svg>
+          <div class="flex justify-between text-[11px] font-mono text-slate-500 mt-1">
+            <span>00:00</span>
+            <span>03:00</span>
+            <span>06:00</span>
+            <span>09:00</span>
+            <span>12:00</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Middle Row: Recent Failed Jobs Table -->
+    <section class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-white">Recent Failed Jobs</h2>
+        <span class="text-xs font-mono text-rose-400">4 failures in last 2h</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-[11px] font-mono uppercase text-slate-400">
+              <th class="pb-2.5">Job ID</th>
+              <th class="pb-2.5">Pipeline / Branch</th>
+              <th class="pb-2.5">Pool</th>
+              <th class="pb-2.5">Exit Code</th>
+              <th class="pb-2.5">Duration</th>
+              <th class="pb-2.5 text-right">Failed At</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/80 text-xs font-mono">
+            <tr>
+              <td class="py-3 text-cyan-400">#fg-89412</td>
+              <td class="py-3 text-slate-200">core-api / main</td>
+              <td class="py-3 text-slate-400">linux-x64-large</td>
+              <td class="py-3"><span class="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">ERR_OOM (137)</span></td>
+              <td class="py-3 text-slate-300">04m 18s</td>
+              <td class="py-3 text-right text-slate-400">15:34:12 UTC</td>
+            </tr>
+            <tr>
+              <td class="py-3 text-cyan-400">#fg-89405</td>
+              <td class="py-3 text-slate-200">ios-client / feat/auth</td>
+              <td class="py-3 text-slate-400">macos-m2-xcode</td>
+              <td class="py-3"><span class="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">TEST_FAIL (1)</span></td>
+              <td class="py-3 text-slate-300">09m 52s</td>
+              <td class="py-3 text-right text-slate-400">15:11:04 UTC</td>
+            </tr>
+            <tr>
+              <td class="py-3 text-cyan-400">#fg-89391</td>
+              <td class="py-3 text-slate-200">ml-eval / release-2.4</td>
+              <td class="py-3 text-slate-400">gpu-a10g-eval</td>
+              <td class="py-3"><span class="text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">TIMEOUT (124)</span></td>
+              <td class="py-3 text-slate-300">30m 00s</td>
+              <td class="py-3 text-right text-slate-400">14:48:39 UTC</td>
+            </tr>
+            <tr>
+              <td class="py-3 text-cyan-400">#fg-89378</td>
+              <td class="py-3 text-slate-200">web-edge / fix/csp</td>
+              <td class="py-3 text-slate-400">linux-arm64-med</td>
+              <td class="py-3"><span class="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">LINT_ERR (2)</span></td>
+              <td class="py-3 text-slate-300">01m 09s</td>
+              <td class="py-3 text-right text-slate-400">14:19:55 UTC</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Bottom Row: Active Worker Nodes + YAML Config Snippet -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Active Worker Nodes -->
+      <section class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-sm font-semibold text-white">Active Worker Nodes</h2>
+          <span class="text-xs font-mono text-slate-400">4 shown</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3.5">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-200 font-semibold">wrk-us-e1a-01</span>
+              <span class="text-emerald-400">● busy</span>
+            </div>
+            <p class="text-slate-400 mt-1.5">CPU 84% · RAM 19.2/32 GB</p>
+            <p class="text-slate-500 mt-0.5">pool: linux-x64-large</p>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3.5">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-200 font-semibold">wrk-us-e1b-07</span>
+              <span class="text-emerald-400">● busy</span>
+            </div>
+            <p class="text-slate-400 mt-1.5">CPU 61% · RAM 11.4/16 GB</p>
+            <p class="text-slate-500 mt-0.5">pool: linux-arm64-med</p>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3.5">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-200 font-semibold">mac-m2-03</span>
+              <span class="text-amber-400">● queued</span>
+            </div>
+            <p class="text-slate-400 mt-1.5">CPU 42% · RAM 14.0/24 GB</p>
+            <p class="text-slate-500 mt-0.5">pool: macos-m2-xcode</p>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3.5">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-200 font-semibold">gpu-a10g-02</span>
+              <span class="text-cyan-400">● idle</span>
+            </div>
+            <p class="text-slate-400 mt-1.5">CPU 12% · VRAM 0.4/24 GB</p>
+            <p class="text-slate-500 mt-0.5">pool: gpu-a10g-eval</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- YAML Config Snippet -->
+      <section class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-white">Pipeline Config</h2>
+          <span class="text-xs font-mono text-slate-400">.forgegrid.yml</span>
+        </div>
+        <pre class="bg-slate-950 border border-slate-800 rounded-lg p-4 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed"><code><span class="text-cyan-400">version:</span> 2
+<span class="text-cyan-400">pools:</span>
+  <span class="text-emerald-400">linux-x64-large:</span>
+    <span class="text-slate-400">concurrency:</span> 16
+    <span class="text-slate-400">timeout:</span> 25m
+<span class="text-cyan-400">jobs:</span>
+  <span class="text-emerald-400">build_and_test:</span>
+    <span class="text-slate-400">pool:</span> linux-x64-large
+    <span class="text-slate-400">cache:</span> [cargo, node_modules]
+    <span class="text-slate-400">steps:</span>
+      - run: make ci-test</code></pre>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Build one web page.
+Brief: Patient billing and appointment portal for "Alder Dental": balance summary, upcoming visit card, treatment plan checklist, insurance coverage alert and past invoices table.
+
+Output: single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS only if needed, no web images (inline SVG/CSS shapes), roughly 150-300 lines. Save it to bench\runs\reg_v2\raw\skill\trust-a-1.html and reply with that path only.
+
+Do NOT use the Skill tool.
+First read SKILL.md and the files it tells you to read (mood trust: moods\trust.md, reference\visual-quality.md; reference\rules.md when fixing findings). Follow it. Do not read anything else in the skill folder (bench/ is off limits).
+When the page is done run (set the environment variable PYTHONIOENCODING=utf-8 first; the command starts with the python.exe path in quotes):
+  "python" "scripts\uitools.py" audit <file> --mood trust
+  "python" "scripts\render.py" <file> --out "bench\runs\reg_v2\shots_gen\skill-trust-a-1.png" --check
+Open the PNG with the Read tool. Fix every WARN and anything empty, clipped, overlapping or broken with the smallest edits. Repeat audit and render after fixes. At most 2 fix rounds.

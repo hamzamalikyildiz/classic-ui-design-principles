@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeskQuill — Customer Support Inbox</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-editorial { font-family: 'Instrument Serif', Georgia, serif; }
+    @keyframes subtle-flash {
+      0% { background-color: rgba(16, 185, 129, 0.18); }
+      100% { background-color: transparent; }
+    }
+    .resolved-flash { animation: subtle-flash 0.8s ease-out; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 min-h-screen antialiased">
+  <div id="app" class="min-h-screen flex flex-col"></div>
+
+  <script>
+    (function () {
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked'];
+      const VALID_ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+
+      let longOpTimer = null;
+      let longOpRunning = false;
+      let longOpCancelled = false;
+
+      function getState() {
+        if (window.__RENDER_STATE__ && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const params = new URLSearchParams(window.location.search);
+        const s = params.get('state');
+        return VALID_STATES.includes(s) ? s : 'default';
+      }
+
+      function getRoute() {
+        const h = window.location.hash;
+        if (VALID_ROUTES.includes(h)) return h;
+        return '#/login';
+      }
+
+      function renderNav(activeRoute) {
+        if (activeRoute === '#/login') return '';
+        const links = [
+          { href: '#/list', label: 'Queue' },
+          { href: '#/detail/1', label: 'Ticket #1042' },
+          { href: '#/settings', label: 'Routing & Signature' },
+        ];
+        return `
+          <header class="bg-white border-b border-stone-200 sticky top-0 z-30">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-6">
+                <a href="#/list" class="flex items-center gap-2 text-stone-900">
+                  <svg class="w-5 h-5 text-stone-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20 4L12 12M20 4l-5 16-3-7-7-3 15-6z" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="font-editorial text-2xl tracking-tight">DeskQuill</span>
+                </a>
+                <nav class="flex items-center gap-1">
+                  ${links.map(l => `
+                    <a href="${l.href}" class="px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${activeRoute === l.href ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'}">
+                      ${l.label}
+                    </a>
+                  `).join('')}
+                </nav>
+              </div>
+              <a href="#/login" class="text-xs text-stone-500 hover:text-stone-900">Sign out</a>
+            </div>
+          </header>
+        `;
+      }
+
+      function renderStateBanner(state) {
+        if (state === 'default') return '';
+        return `
+          <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-4">
+            <div class="px-3.5 py-2 rounded-md border border-stone-300 bg-stone-100 text-xs text-stone-700">
+              View state: <span class="font-semibold">${state}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderLogin(state) {
+        const isLocked = state === 'locked';
+        const isLoading = state === 'loading' || state === 'long-loading';
+        const isError = state === 'error';
+        return `
+          <div class="flex-1 flex items-center justify-center p-6">
+            <div class="w-full max-w-sm bg-white border border-stone-200 rounded-xl p-8 shadow-sm">
+              <h1 class="font-editorial text-3xl text-stone-900">DeskQuill</h1>
+              <p class="text-xs text-stone-500 mt-1 mb-6">Editorial customer correspondence &amp; triage</p>
+
+              ${isError ? `<div class="mb-4 p-3 rounded border border-rose-200 bg-rose-50 text-xs text-rose-700">Unable to verify agent session.</div>` : ''}
+              ${isLocked ? `<div class="mb-4 p-3 rounded border border-amber-200 bg-amber-50 text-xs text-amber-800">Seat locked by workspace administrator.</div>` : ''}
+
+              <form onsubmit="event.preventDefault(); window.location.hash='#/list';" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-medium text-stone-700 mb-1">Agent Email</label>
+                  <input type="email" value="elena@deskquill.io" ${isLocked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-md border border-stone-300 text-sm focus:outline-none focus:border-stone-900" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-stone-700 mb-1">Passkey</label>
+                  <input type="password" value="••••••••" ${isLocked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-md border border-stone-300 text-sm focus:outline-none focus:border-stone-900" />
+                </div>
+                <button type="submit" ${isLocked || isLoading ? 'disabled' : ''} class="w-full py-2.5 rounded-md bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white text-xs font-medium transition-colors">
+                  ${isLoading ? 'Signing in...' : 'Enter Inbox'}
+                </button>
+              </form>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderList(state) {
+        if (state === 'loading' || state === 'long-loading') {
+          return `
+            <main class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 space-y-3">
+              ${[1, 2, 3].map(() => `<div class="h-20 bg-white border border-stone-200 rounded-lg animate-pulse"></div>`).join('')}
+            </main>
+          `;
+        }
+        if (state === 'empty') {
+          return `
+            <main class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-16 text-center">
+              <h2 class="font-editorial text-2xl text-stone-800">Inbox Zero</h2>
+              <p class="text-xs text-stone-500 mt-1">All customer inquiries have been resolved.</p>
+            </main>
+          `;
+        }
+        const tickets = [
+          { id: 1, num: '#1042', subject: 'Invoice PDF export missing VAT line item', customer: 'Claire Vance · Northstar', priority: 'Urgent', sla: '14m left' },
+          { id: 2, num: '#1041', subject: 'SSO SAML metadata rotation question', customer: 'Marcus Chen · Lattice', priority: 'High', sla: '1h 20m' },
+          { id: 3, num: '#1039', subject: 'Requesting seat upgrade for 12 editors', customer: 'Sofia Rossi · Studio', priority: 'Normal', sla: '4h 10m' }
+        ];
+        const visible = state === 'partial' ? tickets.slice(0, 1) : tickets;
+        return `
+          <main class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6">
+            <div class="flex items-end justify-between mb-5">
+              <div>
+                <h1 class="font-editorial text-3xl text-stone-900">Support Queue</h1>
+                <p class="text-xs text-stone-500">Prioritized by SLA breach window</p>
+              </div>
+              <a href="#/detail/1" class="text-xs font-medium text-stone-900 underline underline-offset-4">Open #1042 →</a>
+            </div>
+            <div class="bg-white border border-stone-200 rounded-lg divide-y divide-stone-200">
+              ${visible.map(t => `
+                <a href="#/detail/1" class="flex flex-wrap items-center justify-between gap-4 px-5 py-4 hover:bg-stone-50 transition-colors">
+                  <div>
+                    <div class="flex items-center gap-2.5">
+                      <span class="text-xs font-mono text-stone-400">${t.num}</span>
+                      <span class="text-sm font-medium text-stone-900">${t.subject}</span>
+                    </div>
+                    <p class="text-xs text-stone-500 mt-0.5">${t.customer}</p>
+                  </div>
+                  <div class="flex items-center gap-3 text-xs">
+                    <span class="px-2 py-0.5 rounded bg-stone-100 text-stone-700 font-medium">${t.priority}</span>
+                    <span class="text-stone-500 font-mono">SLA: ${t.sla}</span>
+                  </div>
+                </a>
+              `).join('')}
+            </div>
+          </main>
+        `;
+      }
+
+      function renderDetail(state) {
+        const isLocked = state === 'locked';
+        return `
+          <main class="max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 space-y-5">
+            <div class="bg-white border border-stone-200 rounded-lg p-6 space-y-4">
+              <div class="flex flex-wrap items-start justify-between gap-4 border-b border-stone-100 pb-4">
+                <div>
+                  <span class="text-xs font-mono text-stone-400">Ticket #1042 · Urgent · SLA 14m</span>
+                  <h1 class="font-editorial text-3xl text-stone-900 mt-1">Invoice PDF export missing VAT line item</h1>
+                  <p class="text-xs text-stone-500 mt-1">From Claire Vance (claire@northstar.eu)</p>
+                </div>
+                <button id="aiBtn" ${isLocked ? 'disabled' : ''} class="px-3.5 py-2 rounded-md border border-stone-300 hover:border-stone-900 disabled:opacity-50 text-xs font-medium text-stone-800 transition-colors">
+                  Run AI Summary &amp; Root-Cause
+                </button>
+              </div>
+
+              <div class="text-sm text-stone-700 leading-relaxed space-y-2">
+                <p>Hello team,</p>
+                <p>When we download our October invoice as PDF, the subtotal and total are correct, but the 21% EU VAT breakdown line is omitted from the rendered table.</p>
+              </div>
+
+              <div id="aiPanel" class="hidden p-4 rounded-md bg-stone-50 border border-stone-200 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span id="aiTitle" class="text-xs font-semibold text-stone-800">Analyzing ticket thread &amp; billing logs...</span>
+                  <button id="cancelAiBtn" class="text-xs text-rose-600 hover:underline">Cancel</button>
+                </div>
+                <div class="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
+                  <div id="aiBar" class="h-full bg-stone-900 transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p id="aiResult" class="text-xs text-stone-600">Scanning PDF template renderer...</p>
+              </div>
+
+              <div class="pt-2 space-y-3">
+                <textarea rows="3" ${isLocked ? 'disabled' : ''} class="w-full p-3 rounded-md border border-stone-300 text-sm focus:outline-none focus:border-stone-900" placeholder="Write a clear, helpful reply...">Hi Claire — we've identified the VAT template flag and re-generated your October PDF.</textarea>
+                <div class="flex items-center justify-between">
+                  <span id="resolveToast" class="hidden text-xs font-medium text-emerald-700">✓ Reply sent &amp; ticket #1042 marked resolved.</span>
+                  <button id="resolveBtn" data-motion-trigger ${isLocked ? 'disabled' : ''} class="ml-auto px-4 py-2 rounded-md bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white text-xs font-medium transition-colors">
+                    Send &amp; Resolve
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderSettings(state) {
+        const isLocked = state === 'locked';
+        return `
+          <main class="max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 space-y-5">
+            <h1 class="font-editorial text-3xl text-stone-900">Routing Rules &amp; Signature</h1>
+            <div class="bg-white border border-stone-200 rounded-lg p-6 space-y-4">
+              <div>
+                <label class="block text-xs font-medium text-stone-700 mb-1">Auto-Assign Urgent Billing Tickets To</label>
+                <input type="text" value="Tier-2 Finance Desk" ${isLocked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-md border border-stone-300 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-stone-700 mb-1">Agent Signature</label>
+                <textarea rows="2" ${isLocked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-md border border-stone-300 text-sm">Warm regards,
+Elena · DeskQuill Support</textarea>
+              </div>
+              <button ${isLocked ? 'disabled' : ''} class="px-4 py-2 rounded-md bg-stone-900 hover:bg-stone-800 disabled:opacity-50 text-white text-xs font-medium">Save Settings</button>
+            </div>
+          </main>
+        `;
+      }
+
+      function bindDetailHandlers() {
+        const resolveBtn = document.getElementById('resolveBtn');
+        const resolveToast = document.getElementById('resolveToast');
+        if (resolveBtn && resolveToast) {
+          resolveBtn.addEventListener('click', () => {
+            resolveToast.classList.remove('hidden');
+            resolveToast.classList.add('resolved-flash');
+          });
+        }
+
+        const aiBtn = document.getElementById('aiBtn');
+        const aiPanel = document.getElementById('aiPanel');
+        const aiBar = document.getElementById('aiBar');
+        const aiTitle = document.getElementById('aiTitle');
+        const aiResult = document.getElementById('aiResult');
+        const cancelBtn = document.getElementById('cancelAiBtn');
+
+        if (aiBtn && aiPanel) {
+          aiBtn.addEventListener('click', () => {
+            if (longOpRunning) return;
+            longOpRunning = true;
+            longOpCancelled = false;
+            aiPanel.classList.remove('hidden');
+            const steps = [
+              { pct: 30, text: 'Scanning PDF template renderer...' },
+              { pct: 65, text: 'Correlating EU VAT tax_id_exempt flag...' },
+              { pct: 100, text: 'Root cause: vat_line_visible=false on EU_REVERSE_CHARGE invoices. Suggested fix: enable line item.' }
+            ];
+            let i = 0;
+            const run = () => {
+              if (longOpCancelled) return;
+              if (i < steps.length) {
+                aiBar.style.width = steps[i].pct + '%';
+                aiResult.textContent = steps[i].text;
+                i++;
+                if (i < steps.length) longOpTimer = setTimeout(run, 1100);
+                else {
+                  longOpRunning = false;
+                  aiTitle.textContent = '✓ AI Summary & Root-Cause Complete';
+                }
+              }
+            };
+            longOpTimer = setTimeout(run, 900);
+          });
+        }
+
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            longOpCancelled = true;
+            longOpRunning = false;
+            clearTimeout(longOpTimer);
+            if (aiResult) aiResult.textContent = 'Analysis cancelled.';
+          });
+        }
+      }
+
+      function render() {
+        const route = getRoute();
+        const state = getState();
+        const app = document.getElementById('app');
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else if (route === '#/settings') body = renderSettings(state);
+
+        app.innerHTML = renderNav(route) + renderStateBanner(state) + body;
+        if (route === '#/detail/1') bindDetailHandlers();
+      }
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      if (document.readyState !== 'loading') render();
+    })();
+  </script>
+</body>
+</html>

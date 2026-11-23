@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZestWeek — Weekly Meal Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Baloo 2"', 'system-ui', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --dur-instant: 80ms;
+      --dur-fast: 150ms;
+      --dur-base: 240ms;
+      --ease-spring: cubic-bezier(.22, 1.28, .36, 1);
+    }
+    body {
+      background-color: #fffbeb;
+      color: #1c1917;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+    h1, h2, h3 { text-wrap: balance; font-family: "Baloo 2", system-ui, sans-serif; }
+    p, dd, li { text-wrap: pretty; }
+    .tabular-nums { font-variant-numeric: tabular-nums lining-nums; }
+    .btn-bouncy { transition: transform var(--dur-instant) var(--ease-spring); }
+    .btn-bouncy:active { transform: scale(0.96); }
+    .pop-flash {
+      animation: zw-pop 420ms var(--ease-spring);
+    }
+    @keyframes zw-pop {
+      0% { transform: scale(0.96); background-color: #ffedd5; }
+      50% { transform: scale(1.03); background-color: #fed7aa; }
+      100% { transform: scale(1); background-color: transparent; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 120ms !important;
+        transform: none !important;
+      }
+      .pop-flash { animation: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-amber-50 text-stone-900">
+  <main id="app" class="min-h-screen flex flex-col"></main>
+  <div id="toast-region" role="status" aria-live="polite" class="fixed bottom-5 right-5 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+  <script>
+    (function () {
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked', 'offline', 'stale'];
+
+      const MEALS = [
+        { id: '1', day: 'Monday', title: 'Crispy Halloumi & Roasted Citrus Bowl', prepMin: 25, servings: 2, tag: 'Vegetarian', chef: 'Çağla İnanç' },
+        { id: '2', day: 'Tuesday', title: 'Lemon Herb Roast Chicken with Baby Potatoes', prepMin: 40, servings: 4, tag: 'High Protein', chef: 'Şahin Öztürk' },
+        { id: '3', day: 'Wednesday', title: 'Creamy Red Lentil & Smoked Paprika Soup', prepMin: 30, servings: 4, tag: 'Plant-Based', chef: 'Elif Karakoç' },
+        { id: '4', day: 'Thursday', title: 'Miso Glazed Salmon & Sesame Greens', prepMin: null, servings: 2, tag: 'Quick 20m', chef: 'Mertcan Yılmaz' }
+      ];
+
+      const INGREDIENTS = [
+        { name: 'Halloumi cheese, sliced', baseQty: 220, unit: 'g' },
+        { name: 'Blood orange, segmented', baseQty: 2, unit: 'pcs' },
+        { name: 'Cooked farro or bulgur', baseQty: 180, unit: 'g' },
+        { name: 'Extra-virgin olive oil', baseQty: 2, unit: 'tbsp' },
+        { name: 'Fresh mint leaves', baseQty: 15, unit: 'g' }
+      ];
+
+      let uiState = {
+        renderState: 'default',
+        servings: 2,
+        popActive: false,
+        longOp: { active: false, stage: 0, elapsed: 0, timerId: null },
+        settingsSaved: false
+      };
+
+      const fmtNum = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 });
+
+      function getEffectiveState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const q = new URLSearchParams(window.location.search).get('state');
+        if (q && VALID_STATES.includes(q)) return q;
+        return uiState.renderState;
+      }
+
+      function getEffectiveRoute() {
+        const h = window.location.hash;
+        return ROUTES.includes(h) ? h : '#/login';
+      }
+
+      function showToast(msg, undoLabel, onUndo) {
+        const region = document.getElementById('toast-region');
+        const el = document.createElement('div');
+        el.className = 'pointer-events-auto flex items-center gap-3 rounded-2xl border-2 border-stone-900 bg-white px-4 py-3 text-sm font-medium text-stone-900 shadow-lg';
+        el.innerHTML = `<span>${msg}</span>`;
+        if (undoLabel && onUndo) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'rounded-xl bg-orange-100 px-2.5 py-1 text-xs font-bold text-orange-800 hover:bg-orange-200';
+          b.textContent = undoLabel;
+          b.onclick = () => { onUndo(); el.remove(); };
+          el.appendChild(b);
+        }
+        region.appendChild(el);
+        setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+      }
+
+      function mascotSvg() {
+        return `
+          <svg width="56" height="56" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <circle cx="32" cy="34" r="24" fill="#FB923C" stroke="#1C1917" stroke-width="3"/>
+            <path d="M32 10C35 5 42 5 44 10C39 13 35 13 32 10Z" fill="#22C55E" stroke="#1C1917" stroke-width="2.5"/>
+            <circle cx="24" cy="31" r="3" fill="#1C1917"/>
+            <circle cx="40" cy="31" r="3" fill="#1C1917"/>
+            <path d="M25 40C28 44 36 44 39 40" stroke="#1C1917" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        `;
+      }
+
+      function renderShell(route, state, content) {
+        if (route === '#/login') {
+          return `<main class="flex-1 flex items-center justify-center p-6">${content}</main>`;
+        }
+        const nav = [
+          { href: '#/list', label: 'This Week' },
+          { href: '#/detail/1', label: 'Recipe Detail' },
+          { href: '#/settings', label: 'Pantry & Diet' }
+        ];
+        const banner = state === 'offline'
+          ? `<div role="status" class="bg-rose-100 border-b-2 border-rose-300 px-6 py-2.5 text-sm font-medium text-rose-900 text-center">Offline — editing your cached weekly menu.</div>`
+          : state === 'stale'
+          ? `<div role="status" class="bg-amber-100 border-b-2 border-amber-300 px-6 py-2.5 text-sm font-medium text-amber-900 text-center">Syncing pantry prices… updated 5m ago.</div>`
+          : '';
+        return `
+          <header class="bg-white/90 backdrop-blur border-b-2 border-stone-200 sticky top-0 z-30">
+            <div class="mx-auto max-w-5xl px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-5 min-w-0">
+                <a href="#/list" class="flex items-center gap-2 font-display text-2xl font-bold text-orange-700 shrink-0">
+                  <span>ZestWeek</span>
+                </a>
+                <nav aria-label="Primary" class="flex items-center gap-1.5 overflow-x-auto">
+                  ${nav.map(n => {
+                    const active = route === n.href;
+                    return `<a href="${n.href}" ${active ? 'aria-current="page"' : ''} class="px-3.5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${active ? 'bg-orange-600 text-white' : 'text-stone-700 hover:bg-orange-100'}">${n.label}</a>`;
+                  }).join('')}
+                </nav>
+              </div>
+              <a href="#/login" class="shrink-0 rounded-full border-2 border-stone-300 px-3.5 py-1.5 text-sm font-semibold text-stone-800 hover:bg-stone-100">Sign out</a>
+            </div>
+          </header>
+          ${banner}
+          <main class="flex-1 mx-auto w-full max-w-5xl px-4 sm:px-6 py-8">${content}</main>
+        `;
+      }
+
+      function renderLogin(state) {
+        if (state === 'locked') {
+          return `
+            <section class="w-full max-w-md rounded-3xl border-2 border-stone-900 bg-white p-8 shadow-md space-y-4 text-center">
+              <div class="flex justify-center">${mascotSvg()}</div>
+              <h1 class="text-3xl font-bold text-stone-900">Family plan paused</h1>
+              <p class="text-base text-stone-700">Your household trial ended. Renew to unlock shared grocery lists and weekly meal sync.</p>
+              <a href="#/list" class="btn-bouncy inline-flex w-full min-h-[44px] items-center justify-center rounded-full bg-orange-600 px-6 py-3 text-base font-bold text-white hover:bg-orange-700">Resume ZestWeek</a>
+            </section>
+          `;
+        }
+        return `
+          <section class="w-full max-w-md rounded-3xl border-2 border-stone-900 bg-white p-8 shadow-md space-y-6">
+            <div class="flex items-center gap-4">
+              ${mascotSvg()}
+              <div>
+                <h1 class="text-3xl font-bold text-stone-900">Welcome to ZestWeek</h1>
+                <p class="text-sm text-stone-700">Plan joyful weeknight dinners in 5 minutes.</p>
+              </div>
+            </div>
+            ${state === 'error' ? `<div role="alert" class="rounded-2xl border-2 border-rose-400 bg-rose-50 p-3.5 text-sm font-medium text-rose-900">Hmm, that email didn't match a kitchen account. Try again!</div>` : ''}
+            <form onsubmit="event.preventDefault(); window.location.hash='#/list';" class="space-y-4">
+              <div>
+                <label for="zw-email" class="block text-sm font-semibold text-stone-800 mb-1.5">Kitchen Email</label>
+                <input id="zw-email" type="email" value="cagla@zestweek.app" class="w-full min-h-[44px] rounded-2xl border-2 border-stone-300 bg-amber-50/40 px-4 py-2.5 text-base text-stone-900 focus:border-orange-600 focus:outline-none" />
+              </div>
+              <button type="submit" class="btn-bouncy w-full min-h-[44px] rounded-full bg-orange-600 px-6 py-3 text-base font-bold text-white hover:bg-orange-700">Open my meal plan</button>
+            </form>
+          </section>
+        `;
+      }
+
+      function renderList(state) {
+        if (state === 'loading') {
+          return `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" aria-busy="true">
+              ${[1, 2, 3, 4].map(() => `<div class="h-40 rounded-3xl bg-amber-200/60 animate-pulse" aria-hidden="true"></div>`).join('')}
+            </div>
+          `;
+        }
+        if (state === 'empty') {
+          return `
+            <section class="rounded-3xl border-2 border-stone-900 bg-white p-10 text-center space-y-4">
+              <div class="flex justify-center">${mascotSvg()}</div>
+              <h1 class="text-3xl font-bold text-stone-900">Your week is a blank plate!</h1>
+              <p class="text-base text-stone-700 max-w-md mx-auto">Add your first recipe to start building a stress-free grocery list.</p>
+              <a href="#/detail/1" class="btn-bouncy inline-flex min-h-[44px] items-center justify-center rounded-full bg-orange-600 px-6 py-3 text-base font-bold text-white hover:bg-orange-700">Pick Monday's dinner</a>
+            </section>
+          `;
+        }
+        if (state === 'error') {
+          return `
+            <section role="alert" class="rounded-3xl border-2 border-rose-500 bg-rose-50 p-6 space-y-3">
+              <h1 class="text-2xl font-bold text-rose-950">Couldn't load this week's recipes</h1>
+              <p class="text-base text-rose-900">Our recipe pantry had a hiccup. Your saved notes are safe.</p>
+              <button type="button" onclick="window.__zwRefresh()" class="btn-bouncy min-h-[44px] rounded-full bg-rose-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-rose-800">Try again</button>
+            </section>
+          `;
+        }
+        if (state === 'locked') {
+          return `
+            <section class="rounded-3xl border-2 border-amber-500 bg-white p-6 space-y-3">
+              <h1 class="text-2xl font-bold text-stone-900">Shared household locked</h1>
+              <p class="text-base text-stone-700">Ask the household owner to re-enable editing for this week's menu.</p>
+              <a href="#/login" class="btn-bouncy inline-flex min-h-[44px] items-center rounded-full bg-orange-600 px-5 py-2.5 text-sm font-bold text-white">Switch account</a>
+            </section>
+          `;
+        }
+
+        const list = state === 'partial' ? MEALS : MEALS;
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 class="text-3xl font-bold text-stone-900">This Week's Menu</h1>
+                <p class="text-base text-stone-700">4 dinners planned · Tap any card to adjust servings or shop.</p>
+              </div>
+              <a href="#/detail/1" class="btn-bouncy inline-flex min-h-[44px] items-center rounded-full bg-orange-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-orange-700">Open Monday's Bowl</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              ${list.map((m, idx) => `
+                <a href="#/detail/1" class="group rounded-3xl border-2 border-stone-900 bg-white p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-4 ${idx === 0 ? 'sm:col-span-2 bg-orange-50' : ''}">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="rounded-full bg-amber-200 px-3 py-1 text-xs font-bold uppercase tracking-wider text-stone-900">${m.day}</span>
+                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900">${m.tag}</span>
+                  </div>
+                  <div>
+                    <h2 class="text-2xl font-bold text-stone-900 group-hover:text-orange-700 transition-colors">${m.title}</h2>
+                    <p class="text-sm text-stone-700 mt-1">Chef: ${m.chef}</p>
+                  </div>
+                  <div class="flex items-center justify-between text-sm font-semibold text-stone-800 pt-2 border-t border-stone-200">
+                    <span class="tabular-nums" ${m.prepMin === null ? 'aria-label="Prep time pending"' : ''}>Prep: ${m.prepMin !== null ? `${m.prepMin} min` : '—'}</span>
+                    <span class="tabular-nums">${m.servings} servings</span>
+                  </div>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderDetail(state) {
+        const effectiveLong = state === 'long-loading' || uiState.longOp.active;
+        const stages = ['Scanning 4 recipes', 'Merging pantry items', 'Grouping by aisle', 'Estimating totals'];
+        const activeStage = state === 'long-loading' ? 2 : uiState.longOp.stage;
+        const elapsed = state === 'long-loading' ? 5 : uiState.longOp.elapsed;
+        const mult = uiState.servings / 2;
+
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <a href="#/list" class="text-sm font-semibold text-orange-700 hover:underline">&larr; Back to This Week</a>
+                <h1 class="text-3xl font-bold text-stone-900 mt-1">Crispy Halloumi &amp; Roasted Citrus Bowl</h1>
+                <p class="text-base text-stone-700">25 min prep · Vegetarian · Bright &amp; salty weeknight favorite</p>
+              </div>
+              <button type="button" onclick="window.__zwStartLongOp()" class="btn-bouncy min-h-[44px] rounded-full bg-orange-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-orange-700">
+                Generate Grocery List (&gt;3s)
+              </button>
+            </div>
+
+            ${effectiveLong ? `
+              <section role="status" aria-live="polite" class="rounded-3xl border-2 border-stone-900 bg-white p-6 space-y-4 shadow-md">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 class="text-xl font-bold text-stone-900">Building your smart grocery list…</h2>
+                    <p class="text-sm font-semibold tabular-nums text-orange-700">Elapsed ${elapsed}s · Usually 6–10s</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.__zwNotifyLongOp()" class="btn-bouncy min-h-[40px] rounded-full border-2 border-stone-300 px-4 py-1.5 text-sm font-semibold text-stone-800 hover:bg-stone-100">Notify when ready</button>
+                    <button type="button" onclick="window.__zwCancelLongOp()" class="btn-bouncy min-h-[40px] rounded-full bg-rose-100 px-4 py-1.5 text-sm font-bold text-rose-900 hover:bg-rose-200">Cancel</button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  ${stages.map((st, idx) => `
+                    <div class="rounded-2xl border-2 p-3 ${idx < activeStage ? 'border-emerald-600 bg-emerald-50' : idx === activeStage ? 'border-orange-600 bg-orange-50' : 'border-stone-200 bg-stone-50 opacity-60'}">
+                      <div class="text-xs font-bold uppercase tracking-wider ${idx < activeStage ? 'text-emerald-800' : idx === activeStage ? 'text-orange-800' : 'text-stone-600'}">
+                        ${idx < activeStage ? 'Done' : idx === activeStage ? 'Working' : 'Next'}
+                      </div>
+                      <div class="text-sm font-bold text-stone-900 mt-1">${st}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </section>
+            ` : ''}
+
+            <section class="rounded-3xl border-2 border-stone-900 bg-white p-6 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-stone-200">
+                <h2 class="text-2xl font-bold text-stone-900">Ingredients</h2>
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-semibold text-stone-700">Servings:</span>
+                  <button type="button" onclick="window.__zwStepServings(-1)" class="btn-bouncy h-11 w-11 rounded-full border-2 border-stone-900 bg-amber-100 font-bold text-lg text-stone-900 hover:bg-amber-200" aria-label="Decrease servings">−</button>
+                  <span class="tabular-nums font-display text-2xl font-bold text-stone-900 w-8 text-center">${uiState.servings}</span>
+                  <button type="button" data-motion-trigger onclick="window.__zwStepServings(1)" class="btn-bouncy h-11 w-11 rounded-full border-2 border-stone-900 bg-orange-600 font-bold text-lg text-white hover:bg-orange-700" aria-label="Increase servings">+</button>
+                </div>
+              </div>
+              <ul class="divide-y divide-stone-200">
+                ${INGREDIENTS.map(ing => `
+                  <li class="py-3 flex items-center justify-between text-base ${uiState.popActive ? 'pop-flash rounded-xl px-2' : ''}">
+                    <span class="font-medium text-stone-900">${ing.name}</span>
+                    <span class="font-bold tabular-nums text-orange-800">${fmtNum.format(ing.baseQty * mult)} ${ing.unit}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderSettings(state) {
+        return `
+          <div class="max-w-xl space-y-6">
+            <div>
+              <h1 class="text-3xl font-bold text-stone-900">Dietary Preferences &amp; Pantry</h1>
+              <p class="text-base text-stone-700">Customize default servings and excluded ingredients.</p>
+            </div>
+            ${state === 'locked' ? `<div role="alert" class="rounded-2xl border-2 border-amber-500 bg-amber-50 p-4 text-sm font-semibold text-amber-950">Only the household admin can edit shared pantry rules.</div>` : ''}
+            <form onsubmit="event.preventDefault(); window.__zwSaveSettings();" class="rounded-3xl border-2 border-stone-900 bg-white p-6 space-y-5">
+              <div>
+                <label for="zw-diet" class="block text-sm font-bold text-stone-800 mb-1.5">Primary Diet Style</label>
+                <select id="zw-diet" class="w-full min-h-[44px] rounded-2xl border-2 border-stone-300 bg-white px-4 py-2 text-base text-stone-900">
+                  <option>Balanced Mediterranean</option>
+                  <option>Vegetarian</option>
+                  <option>High Protein</option>
+                </select>
+              </div>
+              <div>
+                <label for="zw-pantry" class="block text-sm font-bold text-stone-800 mb-1.5">Always-Stocked Pantry Staples</label>
+                <input id="zw-pantry" type="text" value="Olive oil, sea salt, garlic, red lentils" class="w-full min-h-[44px] rounded-2xl border-2 border-stone-300 px-4 py-2 text-base text-stone-900" />
+              </div>
+              <div class="flex items-center gap-3">
+                <button type="submit" ${state === 'locked' ? 'disabled' : ''} class="btn-bouncy min-h-[44px] rounded-full bg-orange-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-orange-700 disabled:opacity-50">Save preferences</button>
+                ${uiState.settingsSaved ? `<span class="text-sm font-bold text-emerald-800">Saved!</span>` : ''}
+              </div>
+            </form>
+          </div>
+        `;
+      }
+
+      function render() {
+        const route = getEffectiveRoute();
+        const state = getEffectiveState();
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else if (route === '#/settings') body = renderSettings(state);
+        document.getElementById('app').innerHTML = renderShell(route, state, body);
+      }
+
+      window.__zwRefresh = function () {
+        uiState.renderState = 'default';
+        render();
+        showToast('Menu refreshed!');
+      };
+
+      window.__zwStepServings = function (delta) {
+        const prev = uiState.servings;
+        const next = Math.max(1, Math.min(12, prev + delta));
+        if (next === prev) return;
+        uiState.servings = next;
+        uiState.popActive = true;
+        render();
+        showToast(`Scaled recipe to ${next} servings.`, 'Undo', () => {
+          uiState.servings = prev;
+          uiState.popActive = false;
+          render();
+        });
+        setTimeout(() => { uiState.popActive = false; }, 500);
+      };
+
+      window.__zwStartLongOp = function () {
+        if (uiState.longOp.timerId) clearInterval(uiState.longOp.timerId);
+        uiState.longOp = { active: true, stage: 0, elapsed: 0, timerId: null };
+        render();
+        uiState.longOp.timerId = setInterval(() => {
+          uiState.longOp.elapsed += 1;
+          if (uiState.longOp.elapsed === 1) uiState.longOp.stage = 1;
+          if (uiState.longOp.elapsed === 3) uiState.longOp.stage = 2;
+          if (uiState.longOp.elapsed === 4) uiState.longOp.stage = 3;
+          if (uiState.longOp.elapsed >= 5) {
+            clearInterval(uiState.longOp.timerId);
+            uiState.longOp.active = false;
+            render();
+            showToast('Grocery list ready — 14 items grouped by aisle!');
+            return;
+          }
+          render();
+        }, 1000);
+      };
+
+      window.__zwCancelLongOp = function () {
+        if (uiState.longOp.timerId) clearInterval(uiState.longOp.timerId);
+        uiState.longOp.active = false;
+        render();
+        showToast('Grocery list generation cancelled.');
+      };
+
+      window.__zwNotifyLongOp = function () {
+        showToast('We will ping you as soon as your aisle list is ready!');
+      };
+
+      window.__zwSaveSettings = function () {
+        uiState.settingsSaved = true;
+        render();
+        showToast('Pantry preferences saved!');
+      };
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      render();
+    })();
+  </script>
+</body>
+</html>

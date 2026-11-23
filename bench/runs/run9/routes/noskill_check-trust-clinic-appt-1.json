@@ -1,0 +1,68 @@
+{
+  "base_url": "file:///C:/Users/hamza/.gemini/antigravity/brain/d88d3c20-5d71-41f9-9a7b-34c144537148/scratch/ui-skill-test/repo/bench/runs/run9/raw/noskill_check/trust-clinic-appt-1.html",
+  "viewports": [
+    "desktop",
+    "mobile"
+  ],
+  "long_loading_frames_ms": [
+    500,
+    4000,
+    12000
+  ],
+  "routes": [
+    {
+      "name": "login",
+      "path": "#/login",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "locked"
+      ]
+    },
+    {
+      "name": "list",
+      "path": "#/list",
+      "states": [
+        "default",
+        "empty",
+        "loading",
+        "error",
+        "partial"
+      ]
+    },
+    {
+      "name": "detail",
+      "path": "#/detail/1",
+      "states": [
+        "default",
+        "loading",
+        "long-loading",
+        "error",
+        "partial"
+      ],
+      "motion_trigger": "[data-motion-trigger]",
+      "state_overrides": {
+        "default": {
+          "actions": [
+            {
+              "click": "[data-motion-trigger]"
+            },
+            {
+              "wait": 400
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "settings",
+      "path": "#/settings",
+      "states": [
+        "default",
+        "loading",
+        "error"
+      ]
+    }
+  ]
+}

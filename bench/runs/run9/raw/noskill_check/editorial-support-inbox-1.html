@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeskQuill — Editorial Support Inbox</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #FAF9F6; color: #1C1917; }
+    .serif { font-family: 'Instrument Serif', Georgia, serif; }
+    @keyframes ink-flash {
+      0% { background-color: #FEF3C7; }
+      100% { background-color: transparent; }
+    }
+    .ink-highlight { animation: ink-flash 0.8s ease-out; }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+  <div id="app" class="min-h-screen flex flex-col"></div>
+
+  <script>
+    (function () {
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+      const STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked'];
+
+      let resolved = false;
+      let aiTimer = null;
+      let aiOp = { running: false, step: 0, progress: 0, done: false, cancelled: false };
+
+      const TICKETS = [
+        { id: 1, subject: 'SSO SAML assertion fails after certificate rotation', customer: 'Elena Rostova · Acme Corp', priority: 'Urgent', sla: '14m left', updated: '2m ago' },
+        { id: 2, subject: 'Exported CSV missing UTF-8 BOM on Windows Excel', customer: 'David Kim · Northstar', priority: 'High', sla: '1h 20m left', updated: '18m ago' },
+        { id: 3, subject: 'Seat count discrepancy on annual invoice #8841', customer: 'Claire Dubois · Atelier', priority: 'Normal', sla: '4h 10m left', updated: '45m ago' }
+      ];
+
+      function getState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const s = new URLSearchParams(window.location.search).get('state');
+        return STATES.includes(s) ? s : 'default';
+      }
+
+      function getRoute() {
+        const h = window.location.hash;
+        return ROUTES.includes(h) ? h : '#/login';
+      }
+
+      function setStateParam(state) {
+        window.__RENDER_STATE__ = state;
+        const url = new URL(window.location.href);
+        url.searchParams.set('state', state);
+        window.history.replaceState({}, '', url.toString());
+        render();
+      }
+
+      function renderOverlay(state, route) {
+        if (state === 'loading') {
+          return `
+            <div class="space-y-4">
+              <div class="h-8 w-52 bg-stone-200 rounded animate-pulse"></div>
+              <div class="h-24 bg-stone-200/80 rounded-lg animate-pulse"></div>
+              <div class="h-24 bg-stone-200/80 rounded-lg animate-pulse"></div>
+            </div>
+          `;
+        }
+        if (state === 'long-loading') {
+          return `
+            <div class="bg-white border border-stone-300 rounded-lg p-8 max-w-md mx-auto my-8 text-center">
+              <div class="w-8 h-8 rounded-full border-2 border-stone-800 border-t-transparent animate-spin mx-auto mb-4"></div>
+              <h2 class="serif text-2xl text-stone-900">Synchronizing DeskQuill Archive…</h2>
+              <p class="text-sm text-stone-600 mt-1">Indexing correspondence for <span class="font-mono text-xs">${route}</span>.</p>
+            </div>
+          `;
+        }
+        if (state === 'error') {
+          return `
+            <div class="bg-rose-50 border border-rose-300 rounded-lg p-6 max-w-lg mx-auto my-8">
+              <h2 class="text-base font-semibold text-rose-900">Mailbox Connection Interrupted</h2>
+              <p class="text-sm text-rose-700 mt-1">Unable to reach IMAP/Webhook relay. Please retry.</p>
+              <button onclick="window.location.reload()" class="mt-4 px-4 py-1.5 rounded bg-rose-800 text-white text-xs font-medium">Retry</button>
+            </div>
+          `;
+        }
+        if (state === 'locked') {
+          return `
+            <div class="bg-white border border-amber-400 rounded-lg p-8 max-w-md mx-auto my-8 text-center">
+              <h2 class="serif text-2xl text-stone-900">Queue Locked for Audit</h2>
+              <p class="text-sm text-stone-600 mt-1">Supervisor credentials required to view customer PII.</p>
+              <a href="#/login" class="inline-block mt-4 px-4 py-2 rounded bg-stone-900 text-white text-xs font-medium">Sign in as Supervisor</a>
+            </div>
+          `;
+        }
+        if (state === 'empty') {
+          return `
+            <div class="bg-white border border-dashed border-stone-300 rounded-lg p-10 text-center max-w-md mx-auto my-8">
+              <h2 class="serif text-2xl text-stone-900">Inbox Zero</h2>
+              <p class="text-sm text-stone-600 mt-1">All customer conversations have been answered.</p>
+              <a href="#/detail/1" class="inline-block mt-4 px-4 py-2 rounded bg-stone-900 text-white text-xs font-medium">Review Ticket #1</a>
+            </div>
+          `;
+        }
+        return null;
+      }
+
+      function renderShell(route, state, content) {
+        if (route === '#/login') {
+          return `
+            <header class="border-b border-stone-200 px-6 py-4 flex items-center justify-between bg-white">
+              <span class="serif text-2xl text-stone-900">DeskQuill</span>
+              <select id="state-switcher" aria-label="Render State" class="border border-stone-300 rounded px-2.5 py-1 text-xs bg-stone-50">
+                ${STATES.map(s => `<option value="${s}" ${s === state ? 'selected' : ''}>state=${s}</option>`).join('')}
+              </select>
+            </header>
+            <main class="flex-1 flex items-center justify-center p-6">${content}</main>
+          `;
+        }
+
+        const nav = [
+          { href: '#/list', label: 'Queue' },
+          { href: '#/detail/1', label: 'Ticket #1' },
+          { href: '#/settings', label: 'Rules &amp; Signature' }
+        ];
+
+        return `
+          <header class="border-b border-stone-200 bg-white sticky top-0 z-20">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3 sm:gap-6">
+                <a href="#/list" class="serif text-2xl text-stone-900">DeskQuill</a>
+                <nav class="flex items-center gap-1">
+                  ${nav.map(n => `<a href="${n.href}" class="px-3 py-1.5 rounded text-sm font-medium ${route === n.href ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'}">${n.label}</a>`).join('')}
+                </nav>
+              </div>
+              <div class="flex items-center gap-3">
+                <select id="state-switcher" aria-label="Render State" class="border border-stone-300 rounded px-2.5 py-1 text-xs bg-stone-50">
+                  ${STATES.map(s => `<option value="${s}" ${s === state ? 'selected' : ''}>state=${s}</option>`).join('')}
+                </select>
+                <a href="#/login" class="text-xs text-stone-500 hover:text-stone-900">Sign out</a>
+              </div>
+            </div>
+          </header>
+          <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-7">${content}</main>
+        `;
+      }
+
+      function renderLogin(state) {
+        const overlay = renderOverlay(state, '#/login');
+        if (overlay) return overlay;
+        return `
+          <div class="w-full max-w-md bg-white border border-stone-300 rounded-lg p-8 shadow-sm">
+            <h1 class="serif text-3xl text-stone-900">Agent Sign In</h1>
+            <p class="text-sm text-stone-600 mt-1">Access your assigned customer support queue.</p>
+            <form id="login-form" class="mt-6 space-y-4">
+              <div>
+                <label for="agent-email" class="block text-xs font-medium text-stone-700 mb-1">Work Email</label>
+                <input id="agent-email" type="email" value="claire@deskquill.io" class="w-full border border-stone-300 rounded px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label for="agent-password" class="block text-xs font-medium text-stone-700 mb-1">Password</label>
+                <input id="agent-password" type="password" value="••••••••••" class="w-full border border-stone-300 rounded px-3 py-2 text-sm" />
+              </div>
+              <button type="submit" class="w-full py-2.5 rounded bg-stone-900 hover:bg-stone-800 text-white text-sm font-medium">Enter Inbox</button>
+            </form>
+          </div>
+        `;
+      }
+
+      function renderList(state) {
+        const overlay = renderOverlay(state, '#/list');
+        if (overlay) return overlay;
+        const list = state === 'partial' ? TICKETS.slice(0, 2) : TICKETS;
+        return `
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h1 class="serif text-3xl text-stone-900">Support Queue</h1>
+                <p class="text-sm text-stone-600">Prioritized by SLA breach window.</p>
+              </div>
+              <a href="#/detail/1" class="px-4 py-2 rounded bg-stone-900 text-white text-xs font-medium">Open #1</a>
+            </div>
+            ${state === 'partial' ? '<div class="px-4 py-2 rounded bg-amber-50 border border-amber-300 text-xs text-amber-900">Partial queue: showing 2 of 3 tickets while billing mailbox syncs.</div>' : ''}
+            <div class="bg-white border border-stone-300 rounded-lg divide-y divide-stone-200">
+              ${list.map(t => `
+                <a href="#/detail/1" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-5 py-4 hover:bg-stone-50 transition">
+                  <div>
+                    <div class="font-medium text-stone-900">${t.subject}</div>
+                    <div class="text-xs text-stone-500 mt-1">${t.customer} · updated ${t.updated}</div>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs">
+                    <span class="px-2 py-0.5 rounded bg-stone-100 border border-stone-300 font-medium">${t.priority}</span>
+                    <span class="px-2 py-0.5 rounded bg-amber-50 border border-amber-300 text-amber-900">${t.sla}</span>
+                  </div>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderDetail(state) {
+        const overlay = renderOverlay(state, '#/detail/1');
+        if (overlay) return overlay;
+        const stages = ['Reading thread history', 'Correlating SAML error logs', 'Drafting root-cause summary'];
+
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 class="serif text-3xl text-stone-900">Ticket #1: SSO SAML assertion fails</h1>
+                <p class="text-xs text-stone-500 mt-1">Elena Rostova · Acme Corp · Urgent SLA (14m left)</p>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <button id="resolve-btn" data-motion-trigger class="px-4 py-2 rounded bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium">
+                  ${resolved ? 'Resolved ✓' : 'Send &amp; Resolve'}
+                </button>
+                <button id="ai-btn" ${aiOp.running ? 'disabled' : ''} class="px-4 py-2 rounded border border-stone-300 bg-white hover:bg-stone-50 text-xs font-medium disabled:opacity-50">
+                  ${aiOp.running ? 'Analyzing…' : 'AI Summary &amp; Root Cause (>3s)'}
+                </button>
+              </div>
+            </div>
+
+            ${aiOp.running || aiOp.done || aiOp.cancelled ? `
+              <div class="bg-white border border-stone-300 rounded-lg p-5 space-y-3">
+                <div class="flex items-center justify-between text-sm font-medium">
+                  <span>${aiOp.cancelled ? 'AI Analysis Cancelled' : aiOp.done ? 'Root Cause: IdP X.509 thumbprint mismatch after 02:00 UTC rotation.' : `Step ${aiOp.step + 1}/3: ${stages[aiOp.step]}`}</span>
+                  ${aiOp.running ? `<button id="ai-cancel" class="px-2.5 py-1 rounded bg-rose-100 text-rose-800 text-xs">Cancel</button>` : ''}
+                </div>
+                <div class="w-full bg-stone-200 rounded-full h-2 overflow-hidden">
+                  <div class="bg-stone-900 h-2 rounded-full transition-all duration-300" style="width: ${aiOp.progress}%"></div>
+                </div>
+              </div>
+            ` : ''}
+
+            <div class="bg-white border border-stone-300 rounded-lg p-5 space-y-4 ${resolved ? 'ink-highlight' : ''}">
+              <div class="text-sm text-stone-700 leading-relaxed border-b border-stone-200 pb-4">
+                <p class="font-medium text-stone-900 mb-1">Elena Rostova wrote:</p>
+                <p>After rotating our Okta signing certificate this morning, all engineers receive <code class="bg-stone-100 px-1 rounded text-xs">invalid_saml_signature</code>.</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-stone-700 mb-1.5">Reply Composer</label>
+                <textarea rows="4" class="w-full border border-stone-300 rounded p-3 text-sm" placeholder="Write your response...">Hi Elena, we refreshed your workspace IdP metadata cache. Please ask one engineer to retry SSO login.</textarea>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderSettings(state) {
+        const overlay = renderOverlay(state, '#/settings');
+        if (overlay) return overlay;
+        return `
+          <div class="max-w-2xl space-y-6">
+            <div>
+              <h1 class="serif text-3xl text-stone-900">Routing Rules &amp; Signature</h1>
+              <p class="text-sm text-stone-600">Manage auto-assignment and agent email signatures.</p>
+            </div>
+            <div class="bg-white border border-stone-300 rounded-lg p-6 space-y-4">
+              <div>
+                <label for="routing-rule" class="block text-xs font-medium text-stone-700 mb-1">Default Routing Rule</label>
+                <input id="routing-rule" type="text" value="Urgent SLA -> Tier-2 Identity Escalation" class="w-full border border-stone-300 rounded px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label for="agent-sig" class="block text-xs font-medium text-stone-700 mb-1">Agent Signature</label>
+                <textarea id="agent-sig" rows="3" class="w-full border border-stone-300 rounded p-3 text-sm">Warm regards,\nClaire · DeskQuill Support</textarea>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" class="px-4 py-2 rounded bg-stone-900 text-white text-xs font-medium">Save Rules</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function startAiOp() {
+        if (aiTimer) clearInterval(aiTimer);
+        aiOp = { running: true, step: 0, progress: 15, done: false, cancelled: false };
+        render();
+        aiTimer = setInterval(() => {
+          if (!aiOp.running) return;
+          aiOp.progress = Math.min(100, aiOp.progress + 18);
+          if (aiOp.progress >= 40 && aiOp.step === 0) aiOp.step = 1;
+          if (aiOp.progress >= 75 && aiOp.step === 1) aiOp.step = 2;
+          if (aiOp.progress >= 100) {
+            aiOp.running = false;
+            aiOp.done = true;
+            clearInterval(aiTimer);
+          }
+          render();
+        }, 700);
+      }
+
+      function render() {
+        const route = getRoute();
+        const state = getState();
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else body = renderSettings(state);
+
+        document.getElementById('app').innerHTML = renderShell(route, state, body);
+
+        const switcher = document.getElementById('state-switcher');
+        if (switcher) switcher.addEventListener('change', e => setStateParam(e.target.value));
+
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) loginForm.addEventListener('submit', e => { e.preventDefault(); window.location.hash = '#/list'; });
+
+        const resolveBtn = document.getElementById('resolve-btn');
+        if (resolveBtn) {
+          resolveBtn.addEventListener('click', () => {
+            resolved = !resolved;
+            render();
+          });
+        }
+
+        const aiBtn = document.getElementById('ai-btn');
+        if (aiBtn) aiBtn.addEventListener('click', startAiOp);
+
+        const cancelBtn = document.getElementById('ai-cancel');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            if (aiTimer) clearInterval(aiTimer);
+            aiOp = { running: false, step: 0, progress: 0, done: false, cancelled: true };
+            render();
+          });
+        }
+      }
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      if (document.readyState !== 'loading') render();
+    })();
+  </script>
+</body>
+</html>

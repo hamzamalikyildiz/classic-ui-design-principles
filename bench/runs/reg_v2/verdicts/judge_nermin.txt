@@ -1,0 +1,5 @@
+cift1: B | 3 | B'nin sade şeması, net gövde yazısı ve çerçeveli alıntı kutusu yazıyı gözü yormadan okumayı kolaylaştırıyor. | A 8/8/8/7 B 8/9/9/8
+cift2: B | 3 | B'nin koyu yeşil bakiye kartı, büyük başlıkları ve alt alta sade yerleşimi göz yormadan hemen anlaşılıyor. | A 8/8/8/9 B 8/8/9/7
+cift3: B | 4 | B'nin açık renkli ferah arka planı, numaralı mevsim kartları ve düzenli fiyatlandırma bölümü gözü yormadan her bilgiyi net sunuyor. | A 8/8/8/7 B 9/9/9/9
+cift4: B | 5 | B'deki büyük rakamlar, yüksek siyah-beyaz kontrastı ve iri yazı tipi koyu temada bile her veriyi kolayca okumamı sağlıyor. | A 7/7/7/8 B 8/9/9/8
+cift5: B | 4 | B'deki normal harfli başlıklar, tablodaki parlak beyaz satır adları ve çerçeveli düğmeler koyu zeminde okumayı belirgin biçimde kolaylaştırıyor. | A 8/8/7/8 B 8/9/9/8

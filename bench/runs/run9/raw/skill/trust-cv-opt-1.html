@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CVPulse — Precision Resume & ATS Optimization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            ink: {
+              950: '#0a1929',
+              900: '#0f2942',
+              800: '#163a5c',
+              700: '#1f4e78',
+              100: '#e8eef5',
+              50: '#f4f7fa',
+            },
+            paper: '#f6f7f9',
+            emeraldTrust: '#0d7a5f',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --dur-instant: 80ms;
+      --dur-fast: 150ms;
+      --dur-base: 220ms;
+      --dur-slow: 320ms;
+      --dur-deliberate: 500ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+      --ease-enter: cubic-bezier(0, 0, .2, 1);
+      --ease-exit: cubic-bezier(.4, 0, 1, 1);
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: #f6f7f9;
+      color: #0f2942;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-display { font-family: 'Fraunces', Georgia, serif; }
+    .metric { font-variant-numeric: tabular-nums; }
+    .btn-tactile {
+      transition: transform var(--dur-instant) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard);
+    }
+    .btn-tactile:active { transform: scale(0.98); }
+    .card-hover {
+      transition: transform var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard);
+    }
+    .card-hover:hover { transform: translateY(-1px); box-shadow: 0 6px 16px -4px rgba(15, 41, 66, 0.08); }
+    .ring-fg {
+      transition: stroke-dashoffset var(--dur-deliberate) var(--ease-enter);
+    }
+    .row-ok { position: relative; }
+    .row-ok::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: rgba(13, 122, 95, 0.14);
+      animation: flash 1.2s var(--ease-enter) forwards;
+      pointer-events: none;
+    }
+    @keyframes flash { from { opacity: 1; } to { opacity: 0; } }
+    .toast-el {
+      transform: translateY(12px);
+      opacity: 0;
+      transition: transform var(--dur-base) var(--ease-enter), opacity var(--dur-base) var(--ease-enter);
+    }
+    .toast-el.open { transform: translateY(0); opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 120ms !important;
+        transition-property: opacity, color, background-color, border-color !important;
+        transform: none !important;
+      }
+      .row-ok::after { animation: none !important; opacity: 0 !important; }
+      .row-ok { border-left: 3px solid #0d7a5f !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <main id="app" class="flex-1 flex flex-col"></main>
+
+  <!-- Live Toast -->
+  <div id="toast" role="status" aria-live="polite" class="toast-el fixed bottom-5 right-5 z-50 hidden items-center gap-3 rounded-xl bg-ink-900 px-4 py-3 text-sm text-white shadow-lg">
+    <span id="toast-msg"></span>
+    <button id="toast-undo" type="button" class="hidden rounded-lg bg-white/15 px-2.5 py-1 text-sm font-medium text-white hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">Undo</button>
+  </div>
+
+  <script>
+    (function () {
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked', 'offline', 'stale'];
+
+      const RESUMES = [
+        { id: 1, title: 'Senior Product Manager — Stripe', candidate: 'Elena Rostova', updated: '2h ago', score: 69, targetScore: 73, status: 'Needs Review', atsMatch: '84%', keywords: '14/18' },
+        { id: 2, title: 'Staff Frontend Engineer — Linear', candidate: 'Elena Rostova', updated: '1d ago', score: 88, targetScore: 91, status: 'Optimized', atsMatch: '94%', keywords: '19/20' },
+        { id: 3, title: 'Product Lead, Payments — Adyen', candidate: 'Elena Rostova', updated: '3d ago', score: 74, targetScore: 79, status: 'In Progress', atsMatch: '81%', keywords: '12/16' },
+        { id: 4, title: 'Principal UX Architect — Figma', candidate: 'Elena Rostova', updated: '5d ago', score: 62, targetScore: 70, status: 'Draft', atsMatch: '72%', keywords: '10/17' },
+        { id: 5, title: 'Director of Product — Wise', candidate: 'Elena Rostova', updated: '1w ago', score: 91, targetScore: 93, status: 'Optimized', atsMatch: '96%', keywords: '21/22' },
+        { id: 6, title: 'Technical Program Manager — Datadog', candidate: 'Elena Rostova', updated: '2w ago', score: 77, targetScore: 82, status: 'Needs Review', atsMatch: '85%', keywords: '15/18' }
+      ];
+
+      const SUGGESTIONS = [
+        { id: 's1', section: 'Experience · Stripe', impact: '+4 pts', text: 'Quantify checkout conversion lift: "Led 3-squad Checkout revamp, lifting mobile conversion +6.4% ($18M ARR)."', status: 'pending' },
+        { id: 's2', section: 'Skills · Core', impact: '+2 pts', text: 'Add exact ATS phrase "PCI-DSS Level 1" alongside existing "Payment Compliance" entry.', status: 'accepted' },
+        { id: 's3', section: 'Summary', impact: '+1 pt', text: 'Trim opening sentence from 38 words to 21 words for 6-second recruiter scan.', status: 'pending' }
+      ];
+
+      let appState = {
+        route: '#/login',
+        renderState: 'default',
+        score: 69,
+        appliedBoost: false,
+        suggestions: JSON.parse(JSON.stringify(SUGGESTIONS)),
+        longOp: { running: false, elapsed: 18, stage: 2, cancelled: false, bgNotified: false },
+        longOpTimer: null,
+        lastAcceptedId: null,
+        email: 'elena.rostova@cvpulse.io',
+        toastTimer: null
+      };
+
+      function getRequestedState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('state');
+        if (q && VALID_STATES.includes(q)) return q;
+        return 'default';
+      }
+
+      function normalizeRoute(hash) {
+        if (!hash || !ROUTES.includes(hash)) return '#/login';
+        return hash;
+      }
+
+      function showToast(msg, onUndo) {
+        const el = document.getElementById('toast');
+        const msgEl = document.getElementById('toast-msg');
+        const undoBtn = document.getElementById('toast-undo');
+        msgEl.textContent = msg;
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+        requestAnimationFrame(() => el.classList.add('open'));
+        if (onUndo) {
+          undoBtn.classList.remove('hidden');
+          undoBtn.onclick = () => {
+            onUndo();
+            hideToast();
+          };
+        } else {
+          undoBtn.classList.add('hidden');
+        }
+        clearTimeout(appState.toastTimer);
+        appState.toastTimer = setTimeout(hideToast, 4200);
+      }
+
+      function hideToast() {
+        const el = document.getElementById('toast');
+        el.classList.remove('open');
+        setTimeout(() => {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }, 160);
+      }
+
+      function navigate(hash) {
+        if (window.location.hash !== hash) {
+          window.location.hash = hash;
+        } else {
+          appState.route = normalizeRoute(hash);
+          render();
+        }
+      }
+
+      function setRenderState(nextState) {
+        appState.renderState = nextState;
+        const url = new URL(window.location.href);
+        url.searchParams.set('state', nextState);
+        window.history.replaceState({}, '', url);
+        render();
+      }
+
+      function statusBadge(status) {
+        const map = {
+          'Optimized': 'bg-emerald-50 text-emerald-800 border-emerald-200',
+          'Needs Review': 'bg-amber-50 text-amber-800 border-amber-200',
+          'In Progress': 'bg-sky-50 text-sky-800 border-sky-200',
+          'Draft': 'bg-slate-100 text-slate-700 border-slate-200'
+        };
+        const cls = map[status] || map['Draft'];
+        return `<span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-medium shrink-0 ${cls}">${status}</span>`;
+      }
+
+      function renderShell(contentHtml) {
+        const st = appState.renderState;
+        const navItems = [
+          { hash: '#/list', label: 'Resumes' },
+          { hash: '#/detail/1', label: 'ATS Studio' },
+          { hash: '#/settings', label: 'Export & Settings' }
+        ];
+
+        const bannerHtml = st === 'offline'
+          ? `<div role="status" aria-live="polite" class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-sm text-amber-900 flex items-center justify-between">
+              <span>Offline — reading cached resume data from 2m ago. Local edits are queued.</span>
+              <button type="button" onclick="window.__setState('default')" class="font-semibold underline hover:no-underline">Retry</button>
+            </div>`
+          : st === 'stale'
+          ? `<div role="status" aria-live="polite" class="bg-ink-100 border-b border-ink-200 px-4 py-2 text-sm text-ink-900 flex items-center justify-between">
+              <span>Updated 4m ago · Background revalidation active</span>
+              <button type="button" onclick="window.__setState('default')" class="font-medium underline hover:no-underline">Refresh now</button>
+            </div>`
+          : '';
+
+        return `
+          <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-6">
+                <a href="#/list" class="flex items-center gap-2.5 font-display text-xl font-semibold text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink-900 rounded-lg">
+                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                    <rect width="28" height="28" rx="8" fill="#0f2942"/>
+                    <path d="M8 14.5L12 18.5L20 9.5" stroke="#34d399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>CVPulse</span>
+                </a>
+                <nav aria-label="Primary" class="hidden sm:flex items-center gap-1">
+                  ${navItems.map(item => {
+                    const active = appState.route === item.hash;
+                    return `<a href="${item.hash}" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors ${active ? 'bg-ink-100 text-ink-900' : 'text-slate-600 hover:text-ink-900 hover:bg-slate-100'}">${item.label}</a>`;
+                  }).join('')}
+                </nav>
+              </div>
+              <div class="flex items-center gap-3">
+                <label class="sr-only" for="state-select">Preview state</label>
+                <select id="state-select" onchange="window.__setState(this.value)" class="h-10 rounded-lg border border-slate-300 bg-white px-2.5 text-sm text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink-900">
+                  ${VALID_STATES.map(s => `<option value="${s}" ${s === st ? 'selected' : ''}>State: ${s}</option>`).join('')}
+                </select>
+                <a href="#/login" class="text-sm font-medium text-slate-600 hover:text-ink-900 px-2.5 py-2 rounded-lg">Sign out</a>
+              </div>
+            </div>
+          </header>
+          ${bannerHtml}
+          <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+            ${contentHtml}
+          </main>
+        `;
+      }
+
+      function renderLogin() {
+        const st = appState.renderState;
+        const isError = st === 'error';
+        const isLocked = st === 'locked';
+        return `
+          <main class="flex-1 flex items-center justify-center px-4 py-12 bg-paper">
+            <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-200/80 p-8">
+              <div class="flex items-center gap-2.5 mb-6">
+                <svg width="32" height="32" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                  <rect width="28" height="28" rx="8" fill="#0f2942"/>
+                  <path d="M8 14.5L12 18.5L20 9.5" stroke="#34d399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="font-display text-2xl font-semibold text-ink-900">CVPulse</span>
+              </div>
+              <h1 class="font-display text-2xl font-semibold text-ink-900 mb-2">Sign in to your workspace</h1>
+              <p class="text-sm text-slate-600 mb-6">Verify ATS alignment, track score history, and export recruiter-ready resumes.</p>
+
+              ${isError ? `
+                <div role="alert" class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+                  <p class="font-semibold">Could not verify credentials</p>
+                  <p class="mt-1 text-red-800">Your email is preserved below. Check your password or use Demo Sign-In.</p>
+                </div>
+              ` : ''}
+
+              ${isLocked ? `
+                <div role="alert" class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                  <p class="font-semibold">Session locked after inactivity</p>
+                  <p class="mt-1">Re-authenticate to unlock your saved resumes and ATS reports.</p>
+                </div>
+              ` : ''}
+
+              <form onsubmit="event.preventDefault(); window.__nav('#/list');" class="space-y-4">
+                <div>
+                  <label for="login-email" class="block text-sm font-medium text-ink-900 mb-1.5">Work email</label>
+                  <input id="login-email" type="email" value="${appState.email}" required class="w-full h-11 rounded-lg border ${isError ? 'border-red-400' : 'border-slate-300'} px-3.5 text-sm text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink-900" />
+                </div>
+                <div>
+                  <label for="login-pass" class="block text-sm font-medium text-ink-900 mb-1.5">Password</label>
+                  <input id="login-pass" type="password" value="••••••••••••" required class="w-full h-11 rounded-lg border border-slate-300 px-3.5 text-sm text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink-900" />
+                </div>
+                <button type="submit" class="btn-tactile w-full h-11 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900">
+                  Sign in
+                </button>
+              </form>
+
+              <div class="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between">
+                <button type="button" onclick="window.__nav('#/list')" class="text-sm font-medium text-ink-700 hover:text-ink-900 underline">
+                  Demo sign-in (Elena Rostova)
+                </button>
+                <span class="text-sm text-slate-500">SSO ready</span>
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderList() {
+        const st = appState.renderState;
+        if (st === 'loading') {
+          return renderShell(`
+            <div aria-busy="true" class="space-y-6">
+              <div class="h-8 w-56 rounded-lg bg-slate-200 animate-pulse" aria-hidden="true"></div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="h-28 rounded-xl bg-slate-200 animate-pulse" aria-hidden="true"></div>
+                <div class="h-28 rounded-xl bg-slate-200 animate-pulse" aria-hidden="true"></div>
+                <div class="h-28 rounded-xl bg-slate-200 animate-pulse" aria-hidden="true"></div>
+              </div>
+              <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
+                ${[1,2,3,4].map(() => `<div class="h-12 rounded-lg bg-slate-100 animate-pulse" aria-hidden="true"></div>`).join('')}
+              </div>
+            </div>
+          `);
+        }
+
+        if (st === 'empty') {
+          return renderShell(`
+            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-xl mx-auto">
+              <svg class="mx-auto mb-5" width="72" height="72" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+                <rect x="14" y="10" width="44" height="52" rx="8" fill="#e8eef5" stroke="#0f2942" stroke-width="2"/>
+                <path d="M24 26H48M24 34H44M24 42H36" stroke="#1f4e78" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <h1 class="font-display text-2xl font-semibold text-ink-900 mb-2">Upload a CV to score role fit</h1>
+              <p class="text-sm text-slate-600 mb-6">Drop a PDF or DOCX resume to benchmark ATS keyword coverage and receive line-by-line impact rewrites.</p>
+              <button type="button" onclick="window.__setState('default')" class="btn-tactile h-11 px-6 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800">
+                Upload CV
+              </button>
+            </div>
+          `);
+        }
+
+        if (st === 'error') {
+          return renderShell(`
+            <div role="alert" class="bg-white rounded-2xl border border-red-200 p-8 max-w-xl mx-auto">
+              <h1 class="font-display text-xl font-semibold text-red-900 mb-2">Could not load resume workspace</h1>
+              <p class="text-sm text-red-800 mb-5">The ATS scoring service timed out while fetching your latest revisions. Your local drafts are safe.</p>
+              <button type="button" onclick="window.__setState('default')" class="btn-tactile h-11 px-5 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800">
+                Retry
+              </button>
+            </div>
+          `);
+        }
+
+        if (st === 'locked') {
+          return renderShell(`
+            <div class="bg-white rounded-2xl border border-amber-200 p-8 max-w-xl mx-auto">
+              <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-900 mb-3">Pro Workspace</span>
+              <h1 class="font-display text-2xl font-semibold text-ink-900 mb-2">Team ATS benchmarking is locked</h1>
+              <p class="text-sm text-slate-600 mb-6">Your current plan includes 1 active resume. Upgrade to Pro to unlock unlimited role-tailored versions.</p>
+              <a href="#/settings" class="btn-tactile inline-flex items-center h-11 px-5 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800">
+                Upgrade plan
+              </a>
+            </div>
+          `);
+        }
+
+        return renderShell(`
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+            <div>
+              <h1 class="font-display text-3xl font-semibold text-ink-900">Resume Portfolio</h1>
+              <p class="text-sm text-slate-600 mt-1">Active target roles and verified ATS readiness scores.</p>
+            </div>
+            <a href="#/detail/1" class="btn-tactile inline-flex items-center justify-center h-11 px-5 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800 shrink-0">
+              Open Top Priority CV
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-ink-900 text-white rounded-2xl p-6 shadow-sm">
+              <p class="text-sm text-slate-200">Average ATS Score</p>
+              <p class="font-display text-3xl font-semibold metric mt-1">${st === 'partial' ? '—' : '76.8'} <span class="text-sm font-sans text-emerald-300 font-medium">+4.2 pts</span></p>
+              <p class="text-sm text-slate-200 mt-2">Across 6 tailored applications</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+              <p class="text-sm text-slate-600">Keywords Matched</p>
+              <p class="font-display text-3xl font-semibold text-ink-900 metric mt-1">91 / 111</p>
+              <p class="text-sm text-slate-600 mt-2">82% exact phrasing coverage</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+              <p class="text-sm text-slate-600">Pending AI Suggestions</p>
+              <p class="font-display text-3xl font-semibold text-ink-900 metric mt-1">2</p>
+              <p class="text-sm text-slate-600 mt-2">Highest lift on Stripe PM role</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h2 class="text-base font-semibold text-ink-900">Tailored Resumes</h2>
+              <span class="text-sm text-slate-500 metric">6 documents</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50/70 text-sm font-semibold text-slate-700">
+                    <th class="py-3.5 px-6">Target Role</th>
+                    <th class="py-3.5 px-4">ATS Score</th>
+                    <th class="py-3.5 px-4">Keywords</th>
+                    <th class="py-3.5 px-4">Status</th>
+                    <th class="py-3.5 px-6 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                  ${RESUMES.map(r => `
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-4 px-6">
+                        <div class="font-semibold text-ink-900">${r.title}</div>
+                        <div class="text-slate-500 mt-0.5">Updated ${r.updated}</div>
+                      </td>
+                      <td class="py-4 px-4 metric font-semibold text-ink-900">
+                        ${st === 'partial' && r.id === 1 ? '<span aria-label="Metric pending">—</span>' : `${r.score} / 100`}
+                      </td>
+                      <td class="py-4 px-4 metric text-slate-700">${r.keywords}</td>
+                      <td class="py-4 px-4">${statusBadge(r.status)}</td>
+                      <td class="py-4 px-6 text-right">
+                        <a href="#/detail/1" class="inline-flex items-center font-semibold text-ink-700 hover:text-ink-900 underline">Review</a>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `);
+      }
+
+      function renderDetail() {
+        const st = appState.renderState;
+        if (st === 'loading') {
+          return renderShell(`
+            <div aria-busy="true" class="space-y-6">
+              <div class="h-10 w-72 bg-slate-200 rounded-lg animate-pulse" aria-hidden="true"></div>
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="h-64 bg-white rounded-2xl border border-slate-200 p-6 animate-pulse" aria-hidden="true"></div>
+                <div class="lg:col-span-2 h-64 bg-white rounded-2xl border border-slate-200 p-6 animate-pulse" aria-hidden="true"></div>
+              </div>
+            </div>
+          `);
+        }
+
+        if (st === 'long-loading' || appState.longOp.running) {
+          const stages = [
+            { label: 'Parsing PDF structure & section hierarchy', done: appState.longOp.stage > 0 },
+            { label: 'Matching 18 Stripe PM ATS competencies', done: appState.longOp.stage > 1 },
+            { label: 'Drafting quantified impact rewrites', done: appState.longOp.stage > 2 }
+          ];
+          return renderShell(`
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-8" role="status" aria-live="polite">
+              <div class="flex items-center justify-between mb-4">
+                <span class="inline-flex items-center rounded-full bg-ink-100 px-3 py-1 text-sm font-medium text-ink-900">Deep AI CV Analysis</span>
+                <span class="text-sm font-mono text-slate-600 metric">Elapsed ${appState.longOp.elapsed}s · Usually 30–45s</span>
+              </div>
+              <h1 class="font-display text-2xl font-semibold text-ink-900 mb-2">Analyzing Senior Product Manager — Stripe</h1>
+              <p class="text-sm text-slate-600 mb-6">Extracting role-specific impact metrics and checking ATS parser compatibility.</p>
+
+              <div class="space-y-3 mb-6">
+                ${stages.map((s, idx) => {
+                  const active = idx === appState.longOp.stage;
+                  return `
+                    <div class="flex items-center gap-3 p-3.5 rounded-xl border ${s.done ? 'border-emerald-200 bg-emerald-50/50' : active ? 'border-ink-900 bg-ink-50' : 'border-slate-200 opacity-60'}">
+                      <span class="w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold ${s.done ? 'bg-emerald-600 text-white' : active ? 'bg-ink-900 text-white' : 'bg-slate-200 text-slate-600'}">
+                        ${s.done ? '✓' : idx + 1}
+                      </span>
+                      <span class="text-sm font-medium text-ink-900">${s.label}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3">
+                <button type="button" onclick="window.__cancelLongOp()" class="btn-tactile h-11 px-5 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-ink-900 hover:bg-slate-50">
+                  Cancel
+                </button>
+                <button type="button" onclick="window.__notifyLongOp()" class="btn-tactile h-11 px-5 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800">
+                  Notify when ready
+                </button>
+              </div>
+            </div>
+          `);
+        }
+
+        const radius = 44;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (appState.score / 100) * circumference;
+
+        return renderShell(`
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <a href="#/list" class="text-sm font-medium text-slate-600 hover:text-ink-900">← Back to Resumes</a>
+              <h1 class="font-display text-2xl sm:text-3xl font-semibold text-ink-900 mt-1">Senior Product Manager — Stripe</h1>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="button" onclick="window.__startLongOp()" class="btn-tactile h-11 px-4 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-ink-900 hover:bg-slate-50">
+                Run 30s Deep Audit
+              </button>
+              <button type="button" data-motion-trigger="true" onclick="window.__triggerScoreMicroMoment()" class="btn-tactile h-11 px-5 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800">
+                Apply Top Suggestion (69 → 73)
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-ink-900 text-white rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <p class="text-sm text-slate-200 font-medium">Verified ATS Score</p>
+                <div class="flex items-center gap-5 my-5">
+                  <svg width="108" height="108" viewBox="0 0 108 108" class="shrink-0" aria-hidden="true">
+                    <circle cx="54" cy="54" r="${radius}" stroke="rgba(255,255,255,0.18)" stroke-width="8" fill="none"/>
+                    <circle cx="54" cy="54" r="${radius}" stroke="#34d399" stroke-width="8" fill="none"
+                      stroke-linecap="round"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}"
+                      transform="rotate(-90 54 54)"
+                      class="ring-fg"/>
+                  </svg>
+                  <div>
+                    <div id="score-display" aria-live="polite" class="font-display text-4xl font-semibold metric">${appState.score}</div>
+                    <div class="text-sm text-emerald-300 font-medium mt-1">Target: 73+</div>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-4 border-t border-white/15 text-sm text-slate-200 flex justify-between">
+                <span>Score History</span>
+                <span class="font-mono metric">64 → 69 → ${appState.score}</span>
+              </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-semibold text-ink-900">AI Impact Suggestions</h2>
+                <span class="text-sm text-slate-500">Accepting updates your ATS score</span>
+              </div>
+              <div class="space-y-3">
+                ${appState.suggestions.map(s => {
+                  const isAccepted = s.status === 'accepted';
+                  const isRejected = s.status === 'rejected';
+                  const flashCls = appState.lastAcceptedId === s.id ? 'row-ok' : '';
+                  return `
+                    <div class="p-4 rounded-xl border ${isAccepted ? 'border-emerald-200 bg-emerald-50/40' : isRejected ? 'border-slate-200 bg-slate-50 opacity-60' : 'border-slate-200 bg-white'} ${flashCls}">
+                      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <span class="text-sm font-semibold text-ink-900">${s.section}</span>
+                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-sm font-medium text-emerald-800 metric">${s.impact}</span>
+                      </div>
+                      <p class="text-sm text-slate-700 mb-3">${s.text}</p>
+                      <div class="flex items-center gap-2">
+                        <button type="button" onclick="window.__acceptSuggestion('${s.id}')" class="h-9 px-3.5 rounded-lg text-sm font-semibold ${isAccepted ? 'bg-emerald-700 text-white' : 'bg-ink-100 text-ink-900 hover:bg-ink-200'}">
+                          ${isAccepted ? 'Accepted' : 'Accept'}
+                        </button>
+                        <button type="button" onclick="window.__rejectSuggestion('${s.id}')" class="h-9 px-3.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">
+                          ${isRejected ? 'Rejected' : 'Dismiss'}
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      function renderSettings() {
+        return renderShell(`
+          <div class="max-w-2xl">
+            <h1 class="font-display text-3xl font-semibold text-ink-900 mb-2">Export & Workspace Settings</h1>
+            <p class="text-sm text-slate-600 mb-6">Configure ATS-safe PDF formatting and notification preferences.</p>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-5">
+              <div>
+                <label for="export-format" class="block text-sm font-medium text-ink-900 mb-1.5">Default Export Format</label>
+                <select id="export-format" class="w-full h-11 rounded-lg border border-slate-300 px-3.5 text-sm text-ink-900">
+                  <option>ATS-Clean PDF (Single Column, Selectable Text)</option>
+                  <option>DOCX (Recruiter Editable)</option>
+                </select>
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-200">
+                <div>
+                  <p class="text-sm font-semibold text-ink-900">Email when >3s Deep Audit finishes</p>
+                  <p class="text-sm text-slate-600">Send summary to ${appState.email}</p>
+                </div>
+                <input type="checkbox" checked aria-label="Email when Deep Audit finishes" class="w-5 h-5 accent-ink-900" />
+              </div>
+              <div class="pt-4">
+                <button type="button" onclick="window.__saveSettings()" class="btn-tactile h-11 px-6 rounded-lg bg-ink-900 text-white text-sm font-semibold hover:bg-ink-800">
+                  Save Preferences
+                </button>
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      function render() {
+        const root = document.getElementById('app');
+        if (appState.route === '#/login') {
+          root.innerHTML = renderLogin();
+        } else if (appState.route === '#/list') {
+          root.innerHTML = renderList();
+        } else if (appState.route === '#/detail/1') {
+          root.innerHTML = renderDetail();
+        } else if (appState.route === '#/settings') {
+          root.innerHTML = renderSettings();
+        } else {
+          root.innerHTML = renderLogin();
+        }
+      }
+
+      window.__nav = navigate;
+      window.__setState = setRenderState;
+      window.__triggerScoreMicroMoment = function () {
+        if (!appState.appliedBoost) {
+          appState.appliedBoost = true;
+          appState.score = 73;
+          appState.suggestions[0].status = 'accepted';
+          appState.lastAcceptedId = 's1';
+          render();
+          showToast('ATS score updated: 69 → 73', () => {
+            appState.appliedBoost = false;
+            appState.score = 69;
+            appState.suggestions[0].status = 'pending';
+            appState.lastAcceptedId = null;
+            render();
+          });
+        } else {
+          appState.lastAcceptedId = 's1';
+          render();
+          showToast('Suggestion already applied (Score: 73)');
+        }
+      };
+      window.__acceptSuggestion = function (id) {
+        const item = appState.suggestions.find(x => x.id === id);
+        if (item) {
+          item.status = 'accepted';
+          appState.lastAcceptedId = id;
+          if (id === 's1' && !appState.appliedBoost) {
+            appState.appliedBoost = true;
+            appState.score = 73;
+          }
+          render();
+          showToast('Suggestion accepted');
+        }
+      };
+      window.__rejectSuggestion = function (id) {
+        const item = appState.suggestions.find(x => x.id === id);
+        if (item) {
+          item.status = 'rejected';
+          render();
+          showToast('Suggestion dismissed');
+        }
+      };
+      window.__startLongOp = function () {
+        appState.longOp = { running: true, elapsed: 1, stage: 0, cancelled: false, bgNotified: false };
+        render();
+        clearInterval(appState.longOpTimer);
+        appState.longOpTimer = setInterval(() => {
+          appState.longOp.elapsed += 1;
+          if (appState.longOp.elapsed === 3) appState.longOp.stage = 1;
+          if (appState.longOp.elapsed === 6) appState.longOp.stage = 2;
+          if (appState.longOp.elapsed >= 9) {
+            clearInterval(appState.longOpTimer);
+            appState.longOp.running = false;
+            appState.score = 73;
+            render();
+            showToast('Deep AI Audit complete — Score 73');
+          } else {
+            render();
+          }
+        }, 1000);
+      };
+      window.__cancelLongOp = function () {
+        clearInterval(appState.longOpTimer);
+        appState.longOp.running = false;
+        if (appState.renderState === 'long-loading') setRenderState('default');
+        else render();
+        showToast('Deep Audit cancelled');
+      };
+      window.__notifyLongOp = function () {
+        clearInterval(appState.longOpTimer);
+        appState.longOp.running = false;
+        if (appState.renderState === 'long-loading') setRenderState('default');
+        else render();
+        showToast('We will notify you when the audit finishes');
+      };
+      window.__saveSettings = function () {
+        showToast('Export preferences saved');
+      };
+
+      window.addEventListener('hashchange', () => {
+        appState.route = normalizeRoute(window.location.hash);
+        appState.renderState = getRequestedState();
+        render();
+      });
+
+      appState.route = normalizeRoute(window.location.hash);
+      appState.renderState = getRequestedState();
+      render();
+    })();
+  </script>
+</body>
+</html>

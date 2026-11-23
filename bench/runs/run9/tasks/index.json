@@ -1,0 +1,110 @@
+[
+ {
+  "arm": "skill",
+  "page": "trust-cv-opt-1",
+  "task": "bench\\runs\\run9\\tasks\\skill-trust-cv-opt-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "skill",
+  "page": "trust-invoice-quote-1",
+  "task": "bench\\runs\\run9\\tasks\\skill-trust-invoice-quote-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "skill",
+  "page": "trust-clinic-appt-1",
+  "task": "bench\\runs\\run9\\tasks\\skill-trust-clinic-appt-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "skill",
+  "page": "technical-cicd-board-1",
+  "task": "bench\\runs\\run9\\tasks\\skill-technical-cicd-board-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "skill",
+  "page": "playful-meal-planner-1",
+  "task": "bench\\runs\\run9\\tasks\\skill-playful-meal-planner-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "skill",
+  "page": "editorial-support-inbox-1",
+  "task": "bench\\runs\\run9\\tasks\\skill-editorial-support-inbox-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill",
+  "page": "trust-cv-opt-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill-trust-cv-opt-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill",
+  "page": "trust-invoice-quote-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill-trust-invoice-quote-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill",
+  "page": "trust-clinic-appt-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill-trust-clinic-appt-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill",
+  "page": "technical-cicd-board-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill-technical-cicd-board-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill",
+  "page": "playful-meal-planner-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill-playful-meal-planner-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill",
+  "page": "editorial-support-inbox-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill-editorial-support-inbox-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill_check",
+  "page": "trust-cv-opt-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill_check-trust-cv-opt-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill_check",
+  "page": "trust-invoice-quote-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill_check-trust-invoice-quote-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill_check",
+  "page": "trust-clinic-appt-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill_check-trust-clinic-appt-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill_check",
+  "page": "technical-cicd-board-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill_check-technical-cicd-board-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill_check",
+  "page": "playful-meal-planner-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill_check-playful-meal-planner-1.txt",
+  "mode": "app"
+ },
+ {
+  "arm": "noskill_check",
+  "page": "editorial-support-inbox-1",
+  "task": "bench\\runs\\run9\\tasks\\noskill_check-editorial-support-inbox-1.txt",
+  "mode": "app"
+ }
+]

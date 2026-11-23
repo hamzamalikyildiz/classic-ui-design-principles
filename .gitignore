@@ -9,3 +9,10 @@ dist/
 *.tsbuildinfo
 auth.json
 shots/
+bench/runs/*/anon/
+bench/runs/*/shots/
+bench/runs/*/shots_gen/
+bench/runs/*/pairs/
+bench/runs/*/judge/
+bench/runs/*/judge_*/
+bench/runs/*/human_kit/

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BillCraft — Invoicing & Quoting</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    @keyframes totalFlash {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.08); color: #059669; }
+      100% { transform: scale(1); }
+    }
+    .total-flash {
+      animation: totalFlash 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen">
+  <div id="app"></div>
+
+  <script>
+    (function () {
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked'];
+
+      const state = {
+        route: '#/login',
+        renderState: 'default',
+        invoices: [
+          { id: 1, number: 'INV-2026-041', client: 'Northstar Logistics Ltd.', due: 'Due in 5 days', amount: 4250.00, status: 'Pending' },
+          { id: 2, number: 'QUO-2026-118', client: 'Kestrel Robotics Inc.', due: 'Valid until Dec 12', amount: 8900.00, status: 'Quote Sent' },
+          { id: 3, number: 'INV-2026-039', client: 'Harborview Medical', due: 'Paid Nov 14', amount: 3120.00, status: 'Paid' },
+          { id: 4, number: 'INV-2026-034', client: 'Vanguard Retail Group', due: 'Overdue 4 days', amount: 1840.00, status: 'Overdue' }
+        ],
+        lineItems: [
+          { id: 'li1', desc: 'Architecture & API Discovery Workshop', qty: 1, rate: 1800.00 },
+          { id: 'li2', desc: 'Frontend Dashboard Implementation (Sprint 1)', qty: 20, rate: 122.50 }
+        ],
+        taxRate: 0.10,
+        pdfOp: {
+          running: false,
+          progress: 0,
+          stageIndex: 0,
+          elapsed: 0,
+          completed: false,
+          cancelled: false,
+          timerId: null
+        }
+      };
+
+      const PDF_STAGES = [
+        'Validating tax ID & invoice line items…',
+        'Rendering vector PDF/A-3b document…',
+        'Applying qualified e-invoice digital signature…',
+        'Registering timestamp with tax clearinghouse…'
+      ];
+
+      function getRenderState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const q = new URLSearchParams(window.location.search).get('state');
+        if (q && VALID_STATES.includes(q)) return q;
+        return 'default';
+      }
+
+      function normalizeRoute(hash) {
+        const clean = (hash || '').split('?')[0];
+        if (['#/login', '#/list', '#/detail/1', '#/settings'].includes(clean)) return clean;
+        return '#/login';
+      }
+
+      function navigate(route) {
+        if (window.location.hash !== route) window.location.hash = route;
+        else {
+          state.route = normalizeRoute(route);
+          render();
+        }
+      }
+
+      function formatMoney(n) {
+        return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function statusBadge(status) {
+        switch (status) {
+          case 'Paid': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          case 'Pending': return 'bg-amber-50 text-amber-700 border-amber-200';
+          case 'Overdue': return 'bg-rose-50 text-rose-700 border-rose-200';
+          default: return 'bg-sky-50 text-sky-700 border-sky-200';
+        }
+      }
+
+      function renderShell(activeRoute, contentHtml) {
+        const nav = [
+          { route: '#/list', label: 'Invoices & Quotes' },
+          { route: '#/detail/1', label: 'Invoice #1' },
+          { route: '#/settings', label: 'Tax & Company' }
+        ];
+        return `
+          <div class="min-h-screen flex flex-col">
+            <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
+              <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-6">
+                  <a href="#/list" class="flex items-center gap-2 font-semibold text-slate-900">
+                    <span class="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+                        <path d="M8 7h8M8 11h8M8 15h5"/>
+                      </svg>
+                    </span>
+                    <span>BillCraft</span>
+                  </a>
+                  <nav class="hidden sm:flex items-center gap-1">
+                    ${nav.map(n => `
+                      <a href="${n.route}" class="px-3 py-1.5 rounded-md text-sm font-medium ${activeRoute === n.route ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:text-slate-900'}">${n.label}</a>
+                    `).join('')}
+                  </nav>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    State: ${state.renderState}
+                  </span>
+                  <a href="#/login" class="text-xs font-medium text-slate-500 hover:text-slate-800 px-2.5 py-1.5 rounded-md border border-slate-200">Sign out</a>
+                </div>
+              </div>
+            </header>
+            <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6">
+              ${contentHtml}
+            </main>
+          </div>
+        `;
+      }
+
+      function renderStateBanner() {
+        const rs = state.renderState;
+        if (rs === 'loading') {
+          return `
+            <div class="space-y-4">
+              <div class="h-8 w-52 rounded-lg skeleton"></div>
+              <div class="h-64 rounded-xl skeleton"></div>
+            </div>
+          `;
+        }
+        if (rs === 'long-loading') {
+          return `
+            <div class="bg-white border border-slate-200 rounded-xl p-8 text-center max-w-lg mx-auto my-8 shadow-sm">
+              <div class="w-10 h-10 mx-auto mb-4 rounded-full border-2 border-slate-900 border-t-transparent animate-spin"></div>
+              <h2 class="text-base font-semibold text-slate-900">Synchronizing E-Invoice Ledger</h2>
+              <p class="text-sm text-slate-500 mt-1">Verifying tax clearance certificates and pending client payments…</p>
+              <div class="mt-4 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div class="bg-slate-900 h-2 rounded-full w-3/5 animate-pulse"></div>
+              </div>
+            </div>
+          `;
+        }
+        if (rs === 'error') {
+          return `
+            <div class="bg-rose-50 border border-rose-200 rounded-xl p-6 max-w-xl mx-auto my-6">
+              <h3 class="text-sm font-semibold text-rose-900">Billing Gateway Error (502)</h3>
+              <p class="text-sm text-rose-700 mt-1">Could not reach the e-invoice signing authority. Draft invoices remain saved locally.</p>
+              <button onclick="window.location.search=''" class="mt-3 px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-medium">Retry</button>
+            </div>
+          `;
+        }
+        if (rs === 'locked') {
+          return `
+            <div class="bg-white border border-slate-200 rounded-xl p-8 max-w-lg mx-auto my-8 text-center shadow-sm">
+              <h2 class="text-base font-semibold text-slate-900">Account Billing Locked</h2>
+              <p class="text-sm text-slate-500 mt-1">Your trial e-invoice quota is exhausted. Upgrade your company plan to issue signed invoices.</p>
+              <button onclick="window.location.hash='#/settings'" class="mt-4 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium">Go to Settings</button>
+            </div>
+          `;
+        }
+        return null;
+      }
+
+      function renderLogin() {
+        const special = renderStateBanner();
+        if (special) return renderShell('#/login', special);
+        return `
+          <div class="min-h-screen flex items-center justify-center px-4 py-12 bg-slate-50">
+            <div class="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-sm p-7">
+              <div class="flex items-center gap-2.5 mb-6">
+                <span class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm">B</span>
+                <div>
+                  <h1 class="text-lg font-semibold text-slate-900">BillCraft</h1>
+                  <p class="text-xs text-slate-500">Invoicing, Quoting & E-Sign</p>
+                </div>
+              </div>
+              <form id="login-form" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-medium text-slate-700 mb-1">Finance Email</label>
+                  <input type="email" value="billing@studio-north.io" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300" required />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-slate-700 mb-1">Password</label>
+                  <input type="password" value="••••••••••••" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300" required />
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800">Sign In</button>
+              </form>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderList() {
+        const special = renderStateBanner();
+        if (special) return renderShell('#/list', special);
+
+        if (state.renderState === 'empty') {
+          return renderShell('#/list', `
+            <div class="bg-white border border-dashed border-slate-300 rounded-xl p-12 text-center max-w-lg mx-auto my-8">
+              <h2 class="text-base font-semibold text-slate-900">No invoices or quotes yet</h2>
+              <p class="text-sm text-slate-500 mt-1">Create your first client invoice or estimate to start tracking payments.</p>
+              <a href="#/detail/1" class="inline-block mt-4 px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium">New Invoice</a>
+            </div>
+          `);
+        }
+
+        const list = state.renderState === 'partial' ? state.invoices.slice(0, 2) : state.invoices;
+        return renderShell('#/list', `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 class="text-xl font-semibold text-slate-900">Invoices & Quotes</h1>
+              <p class="text-sm text-slate-500">Manage client billing, due dates, and e-invoice signatures.</p>
+            </div>
+            <a href="#/detail/1" class="px-4 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800">Open INV-2026-041</a>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <div class="divide-y divide-slate-200">
+              ${list.map(inv => `
+                <div class="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50">
+                  <div>
+                    <div class="flex items-center gap-2.5">
+                      <a href="#/detail/1" class="text-sm font-semibold text-slate-900 hover:underline font-mono">${inv.number}</a>
+                      <span class="px-2 py-0.5 text-xs font-medium rounded-full border ${statusBadge(inv.status)}">${inv.status}</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">${inv.client} • ${inv.due}</p>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <div class="text-base font-mono font-semibold text-slate-900">${formatMoney(inv.amount)}</div>
+                    <a href="#/detail/1" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-100">View</a>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `);
+      }
+
+      function renderDetail() {
+        const special = renderStateBanner();
+        if (special) return renderShell('#/detail/1', special);
+
+        if (state.renderState === 'empty') {
+          return renderShell('#/detail/1', `
+            <div class="bg-white border border-dashed border-slate-300 rounded-xl p-10 text-center max-w-lg mx-auto my-8">
+              <h2 class="text-base font-semibold text-slate-900">No line items on this invoice</h2>
+              <p class="text-sm text-slate-500 mt-1">Add a billable service or product line item to calculate totals.</p>
+            </div>
+          `);
+        }
+
+        const items = state.renderState === 'partial' ? state.lineItems.slice(0, 1) : state.lineItems;
+        const subtotal = items.reduce((sum, i) => sum + i.qty * i.rate, 0);
+        const tax = subtotal * state.taxRate;
+        const total = subtotal + tax;
+        const op = state.pdfOp;
+
+        return renderShell('#/detail/1', `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <div class="text-xs text-slate-500 mb-1"><a href="#/list" class="hover:underline">Invoices</a> / INV-2026-041</div>
+              <h1 class="text-xl font-semibold text-slate-900">Northstar Logistics Ltd.</h1>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button data-motion-trigger id="add-line-btn" type="button" class="px-3.5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700">
+                + Add Line Item & Recalculate
+              </button>
+              <button id="sign-pdf-btn" type="button" ${op.running ? 'disabled' : ''} class="px-3.5 py-2 rounded-lg bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:opacity-50">
+                ${op.running ? 'Generating PDF…' : 'Generate & E-Sign PDF'}
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
+                  <tr>
+                    <th class="px-5 py-3 font-medium">Description</th>
+                    <th class="px-4 py-3 font-medium text-right">Qty</th>
+                    <th class="px-4 py-3 font-medium text-right">Rate</th>
+                    <th class="px-5 py-3 font-medium text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  ${items.map(i => `
+                    <tr>
+                      <td class="px-5 py-3.5 text-slate-800">${i.desc}</td>
+                      <td class="px-4 py-3.5 text-right font-mono text-slate-600">${i.qty}</td>
+                      <td class="px-4 py-3.5 text-right font-mono text-slate-600">${formatMoney(i.rate)}</td>
+                      <td class="px-5 py-3.5 text-right font-mono font-medium text-slate-900">${formatMoney(i.qty * i.rate)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              <div class="p-5 bg-slate-50 border-t border-slate-200 flex flex-col items-end space-y-1.5 text-sm">
+                <div class="flex justify-between w-56 text-slate-600"><span>Subtotal</span><span class="font-mono">${formatMoney(subtotal)}</span></div>
+                <div class="flex justify-between w-56 text-slate-600"><span>Tax (10%)</span><span class="font-mono">${formatMoney(tax)}</span></div>
+                <div class="flex justify-between w-56 text-base font-semibold text-slate-900 pt-1.5 border-t border-slate-200">
+                  <span>Total</span>
+                  <span id="invoice-total-val" class="font-mono">${formatMoney(total)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm h-fit">
+              <div class="flex items-center justify-between mb-2">
+                <h2 class="text-sm font-semibold text-slate-900">PDF & E-Invoice Signing</h2>
+                <span class="text-xs font-mono text-slate-500">${op.elapsed.toFixed(1)}s</span>
+              </div>
+              <p class="text-xs text-slate-500 mb-3">
+                ${op.running ? PDF_STAGES[op.stageIndex] : op.completed ? 'Signed PDF/A-3b ready for download.' : op.cancelled ? 'Signing cancelled.' : 'Generates a compliant PDF and applies a qualified e-signature.'}
+              </p>
+              <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden mb-3">
+                <div class="bg-slate-900 h-2 transition-all duration-300" style="width: ${op.progress}%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-mono text-slate-500">${op.progress}%</span>
+                ${op.running ? `<button id="cancel-pdf-btn" type="button" class="text-rose-600 font-medium hover:underline">Cancel</button>` : ''}
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      function renderSettings() {
+        const special = renderStateBanner();
+        if (special) return renderShell('#/settings', special);
+        return renderShell('#/settings', `
+          <div class="max-w-2xl">
+            <h1 class="text-xl font-semibold text-slate-900 mb-1">Tax & Company Settings</h1>
+            <p class="text-sm text-slate-500 mb-6">Configure legal entity details, default VAT/tax rates, and e-invoice keys.</p>
+            <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-sm">
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Legal Entity Name</label>
+                <input type="text" value="Studio North LLC" class="w-full px-3 py-2 text-sm rounded-lg border border-slate-300" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Default Tax Rate (%)</label>
+                <input type="number" value="10" class="w-32 px-3 py-2 text-sm rounded-lg border border-slate-300 font-mono" />
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      function startPdfOp() {
+        if (state.pdfOp.running) return;
+        clearInterval(state.pdfOp.timerId);
+        state.pdfOp = { running: true, progress: 8, stageIndex: 0, elapsed: 0, completed: false, cancelled: false, timerId: null };
+        render();
+        state.pdfOp.timerId = setInterval(() => {
+          state.pdfOp.elapsed += 0.5;
+          state.pdfOp.progress = Math.min(100, state.pdfOp.progress + 14);
+          state.pdfOp.stageIndex = Math.min(PDF_STAGES.length - 1, Math.floor((state.pdfOp.progress / 100) * PDF_STAGES.length));
+          if (state.pdfOp.progress >= 100 && state.pdfOp.elapsed >= 3.5) {
+            clearInterval(state.pdfOp.timerId);
+            state.pdfOp.running = false;
+            state.pdfOp.completed = true;
+          }
+          render();
+        }, 500);
+      }
+
+      function bindEvents() {
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) loginForm.addEventListener('submit', (e) => { e.preventDefault(); navigate('#/list'); });
+
+        const addBtn = document.getElementById('add-line-btn');
+        if (addBtn) {
+          addBtn.addEventListener('click', () => {
+            state.lineItems.push({
+              id: 'li-' + Date.now(),
+              desc: 'QA & Accessibility Audit Add-on',
+              qty: 1,
+              rate: 450.00
+            });
+            render();
+            const el = document.getElementById('invoice-total-val');
+            if (el) el.classList.add('total-flash');
+          });
+        }
+
+        const signBtn = document.getElementById('sign-pdf-btn');
+        if (signBtn) signBtn.addEventListener('click', startPdfOp);
+
+        const cancelBtn = document.getElementById('cancel-pdf-btn');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            clearInterval(state.pdfOp.timerId);
+            state.pdfOp.running = false;
+            state.pdfOp.cancelled = true;
+            render();
+          });
+        }
+      }
+
+      function render() {
+        state.renderState = getRenderState();
+        state.route = normalizeRoute(window.location.hash);
+        const app = document.getElementById('app');
+        if (state.route === '#/login') app.innerHTML = renderLogin();
+        else if (state.route === '#/list') app.innerHTML = renderList();
+        else if (state.route === '#/detail/1') app.innerHTML = renderDetail();
+        else if (state.route === '#/settings') app.innerHTML = renderSettings();
+        bindEvents();
+      }
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      render();
+    })();
+  </script>
+</body>
+</html>

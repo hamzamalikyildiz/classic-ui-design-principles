@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PipeForge — CI/CD Pipeline Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            forge: {
+              bg: '#0B0F17',
+              surface: '#111827',
+              panel: '#161F30',
+              border: '#233046',
+              accent: '#38BDF8',
+              success: '#22C55E',
+              warn: '#F59E0B',
+              danger: '#EF4444',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0B0F17; color: #E2E8F0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.55); }
+      70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+    .motion-pop { animation: pulse-ring 0.6s ease-out; }
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #161F30 25%, #1E293B 50%, #161F30 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-sky-500/30 selection:text-sky-200">
+  <div id="app" class="min-h-screen flex flex-col"></div>
+
+  <script>
+    (function () {
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+      const STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked'];
+
+      let longOpTimer = null;
+      let longOpState = { running: false, step: 0, progress: 0, completed: false, cancelled: false };
+      let triggerBurst = false;
+
+      const PIPELINES = [
+        {
+          id: 1,
+          name: 'api-gateway / build-and-deploy',
+          branch: 'main',
+          commit: 'a8f31c9',
+          author: 'm.chen',
+          duration: '3m 42s',
+          status: 'passed',
+          time: '4 mins ago',
+          runner: 'ubuntu-22.04-xl-04'
+        },
+        {
+          id: 2,
+          name: 'web-console / e2e-playwright',
+          branch: 'feat/sso-pkce',
+          commit: '7d20e4b',
+          author: 's.patel',
+          duration: '6m 18s',
+          status: 'running',
+          time: '12 mins ago',
+          runner: 'ubuntu-22.04-lg-02'
+        },
+        {
+          id: 3,
+          name: 'billing-worker / docker-publish',
+          branch: 'fix/retry-backoff',
+          commit: 'c419b02',
+          author: 'j.okafor',
+          duration: '1m 55s',
+          status: 'failed',
+          time: '29 mins ago',
+          runner: 'alpine-arm64-01'
+        },
+        {
+          id: 4,
+          name: 'infra-terraform / plan-prod',
+          branch: 'chore/eks-1.30',
+          commit: '91e55a1',
+          author: 'a.kowalski',
+          duration: '2m 11s',
+          status: 'passed',
+          time: '1 hr ago',
+          runner: 'ubuntu-22.04-md-07'
+        }
+      ];
+
+      const LOG_LINES = [
+        '[14:21:03] > Fetching repository @ a8f31c9 (main)',
+        '[14:21:05] > Restoring cache key: node-modules-linux-x64-v9',
+        '[14:21:09] > Running `pnpm test --filter @pipeforge/api`',
+        '[14:21:24]   PASS  src/routes/webhooks.spec.ts (14 tests, 412ms)',
+        '[14:21:28]   PASS  src/auth/oidc.spec.ts (9 tests, 289ms)',
+        '[14:21:31] > Building container image ghcr.io/pipeforge/api:a8f31c9',
+        '[14:22:04] > Pushing SBOM & signed provenance attestation...',
+        '[14:22:11] [OK] Pipeline completed in 3m 42s (exit code 0)'
+      ];
+
+      function getState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const params = new URLSearchParams(window.location.search);
+        const s = params.get('state');
+        return STATES.includes(s) ? s : 'default';
+      }
+
+      function getRoute() {
+        const h = window.location.hash;
+        if (ROUTES.includes(h)) return h;
+        return '#/login';
+      }
+
+      function setStateParam(state) {
+        window.__RENDER_STATE__ = state;
+        const url = new URL(window.location.href);
+        url.searchParams.set('state', state);
+        window.history.replaceState({}, '', url.toString());
+        render();
+      }
+
+      function statusBadge(status) {
+        if (status === 'passed') {
+          return '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Passed</span>';
+        }
+        if (status === 'running') {
+          return '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-500/15 text-sky-300 border border-sky-500/30"><span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>Running</span>';
+        }
+        return '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/15 text-rose-300 border border-rose-500/30"><span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>Failed</span>';
+      }
+
+      function renderShell(route, state, contentHtml) {
+        if (route === '#/login') {
+          return `
+            <div class="min-h-screen flex flex-col justify-between bg-[#0B0F17]">
+              <header class="border-b border-[#233046] px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <svg class="w-7 h-7 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h10M4 17h7m9-5 3 3-3 3"/>
+                  </svg>
+                  <span class="font-semibold tracking-tight text-white text-lg">PipeForge</span>
+                  <span class="text-[11px] mono uppercase px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">v2.8</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                  <span>State:</span>
+                  <label for="state-switcher" class="sr-only">Render State</label>
+                  <select id="state-switcher" aria-label="Render State" class="bg-[#161F30] border border-[#233046] rounded px-2 py-1 text-slate-200 mono text-xs">
+                    ${STATES.map(s => `<option value="${s}" ${s === state ? 'selected' : ''}>${s}</option>`).join('')}
+                  </select>
+                </div>
+              </header>
+              <main class="flex-1 flex items-center justify-center p-6">
+                ${contentHtml}
+              </main>
+              <footer class="border-t border-[#233046] px-6 py-3 text-xs text-slate-400 flex justify-between">
+                <span>PipeForge Enterprise Runner Grid</span>
+                <span class="mono">us-east-1 · healthy</span>
+              </footer>
+            </div>
+          `;
+        }
+
+        const navItems = [
+          { href: '#/list', label: 'Pipelines' },
+          { href: '#/detail/1', label: 'Job #1' },
+          { href: '#/settings', label: 'Settings' },
+        ];
+
+        return `
+          <header class="border-b border-[#233046] bg-[#111827]/95 backdrop-blur sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3 sm:gap-6">
+                <a href="#/list" class="flex items-center gap-2.5">
+                  <svg class="w-6 h-6 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h10M4 17h7m9-5 3 3-3 3"/>
+                  </svg>
+                  <span class="font-semibold text-white tracking-tight">PipeForge</span>
+                </a>
+                <nav class="flex items-center gap-1">
+                  ${navItems.map(item => {
+                    const active = route === item.href;
+                    return `<a href="${item.href}" class="px-3 py-1.5 rounded-md text-sm font-medium transition ${active ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'}">${item.label}</a>`;
+                  }).join('')}
+                </nav>
+              </div>
+              <div class="flex items-center gap-3">
+                <select id="state-switcher" aria-label="Render State" class="bg-[#161F30] border border-[#233046] rounded-md px-2.5 py-1 text-xs mono text-slate-200">
+                  ${STATES.map(s => `<option value="${s}" ${s === state ? 'selected' : ''}>state=${s}</option>`).join('')}
+                </select>
+                <a href="#/login" class="text-xs text-slate-400 hover:text-white px-2.5 py-1.5 rounded border border-[#233046]">Sign out</a>
+              </div>
+            </div>
+          </header>
+          <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+            ${contentHtml}
+          </main>
+        `;
+      }
+
+      function renderStateOverlay(state, route) {
+        if (state === 'loading') {
+          return `
+            <div class="space-y-4">
+              <div class="h-8 w-56 rounded skeleton"></div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="h-24 rounded-lg skeleton"></div>
+                <div class="h-24 rounded-lg skeleton"></div>
+                <div class="h-24 rounded-lg skeleton"></div>
+              </div>
+              <div class="h-64 rounded-lg skeleton"></div>
+            </div>
+          `;
+        }
+        if (state === 'long-loading') {
+          return `
+            <div class="bg-[#111827] border border-[#233046] rounded-xl p-8 text-center max-w-lg mx-auto my-8">
+              <div class="w-10 h-10 rounded-full border-2 border-sky-400 border-t-transparent animate-spin mx-auto mb-4"></div>
+              <h2 class="text-lg font-semibold text-white">Syncing Runner Telemetry…</h2>
+              <p class="text-sm text-slate-400 mt-1">Waiting for distributed build cache &amp; artifact index from <span class="mono text-sky-300">us-east-1</span>.</p>
+              <div class="mt-5 w-full bg-[#161F30] rounded-full h-2 overflow-hidden">
+                <div class="bg-sky-400 h-2 rounded-full w-2/3 animate-pulse"></div>
+              </div>
+              <p class="text-xs mono text-slate-500 mt-3">Estimated wait: 4s</p>
+            </div>
+          `;
+        }
+        if (state === 'error') {
+          return `
+            <div class="bg-rose-950/30 border border-rose-500/40 rounded-xl p-6 max-w-xl mx-auto my-8">
+              <div class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-rose-400 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+                </svg>
+                <div>
+                  <h2 class="text-base font-semibold text-rose-200">503 — Runner Control Plane Unreachable</h2>
+                  <p class="text-sm text-rose-300/80 mt-1">Could not fetch pipeline state for <span class="mono">${route}</span>. Check your API token or retry.</p>
+                  <button onclick="window.location.reload()" class="mt-4 px-3.5 py-1.5 rounded-md bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-xs font-medium text-rose-200">Retry Connection</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        if (state === 'locked') {
+          return `
+            <div class="bg-[#111827] border border-amber-500/40 rounded-xl p-8 max-w-lg mx-auto my-8 text-center">
+              <svg class="w-10 h-10 text-amber-400 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <h2 class="text-lg font-semibold text-white">Workspace Locked by Org Policy</h2>
+              <p class="text-sm text-slate-400 mt-1.5">Hardware MFA or SSO re-authentication is required to access production pipelines.</p>
+              <a href="#/login" class="inline-block mt-5 px-4 py-2 rounded-lg bg-amber-500 text-slate-950 font-semibold text-sm hover:bg-amber-400">Authenticate with SSO</a>
+            </div>
+          `;
+        }
+        if (state === 'empty') {
+          return `
+            <div class="bg-[#111827] border border-dashed border-[#233046] rounded-xl p-10 text-center max-w-lg mx-auto my-8">
+              <p class="text-sm font-medium text-slate-200">No pipeline runs recorded yet</p>
+              <p class="text-xs text-slate-400 mt-1">Push a commit or trigger a manual workflow dispatch to see builds here.</p>
+              <a href="#/detail/1" class="inline-block mt-4 px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-semibold text-xs hover:bg-sky-400">Open Sample Job #1</a>
+            </div>
+          `;
+        }
+        return null;
+      }
+
+      function renderLogin(state) {
+        if (state === 'loading' || state === 'long-loading' || state === 'error' || state === 'locked') {
+          return renderStateOverlay(state, '#/login');
+        }
+        return `
+          <div class="w-full max-w-md bg-[#111827] border border-[#233046] rounded-2xl p-7 shadow-2xl">
+            <h1 class="text-xl font-semibold text-white">Sign in to PipeForge</h1>
+            <p class="text-sm text-slate-400 mt-1">Connect with an organization personal access token or SSO.</p>
+            <form id="login-form" class="mt-6 space-y-4">
+              <div>
+                <label for="pat-input" class="block text-xs font-medium text-slate-300 mb-1.5">Personal Access Token</label>
+                <input id="pat-input" type="password" value="pf_live_98a7c31e44b0" class="w-full bg-[#0B0F17] border border-[#233046] rounded-lg px-3.5 py-2.5 text-sm mono text-slate-200 focus:outline-none focus:border-sky-400" />
+              </div>
+              <button type="submit" class="w-full py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-sm transition">Continue with Token</button>
+            </form>
+            <div class="my-5 flex items-center gap-3 text-xs text-slate-400">
+              <div class="h-px flex-1 bg-[#233046]"></div><span>OR</span><div class="h-px flex-1 bg-[#233046]"></div>
+            </div>
+            <a href="#/list" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#161F30] hover:bg-[#1E293B] border border-[#233046] text-sm font-medium text-slate-200 transition">
+              <span>Sign in with Okta SSO</span>
+            </a>
+          </div>
+        `;
+      }
+
+      function renderList(state) {
+        const overlay = renderStateOverlay(state, '#/list');
+        if (overlay) return overlay;
+
+        const rows = state === 'partial' ? PIPELINES.slice(0, 2) : PIPELINES;
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 class="text-2xl font-semibold text-white tracking-tight">Pipeline Runs</h1>
+                <p class="text-sm text-slate-400 mt-0.5">Recent workflow executions across connected repositories.</p>
+              </div>
+              <a href="#/detail/1" class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-sm transition">Inspect Job #1</a>
+            </div>
+            ${state === 'partial' ? '<div class="px-4 py-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">Partial sync: showing 2 of 4 runners while eu-west-1 reconnects.</div>' : ''}
+            <div class="bg-[#111827] border border-[#233046] rounded-xl overflow-hidden">
+              <div class="divide-y divide-[#233046]">
+                ${rows.map(p => `
+                  <a href="#/detail/1" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 hover:bg-[#161F30]/70 transition">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-3">
+                        <span class="font-medium text-white">${p.name}</span>
+                        ${statusBadge(p.status)}
+                      </div>
+                      <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400 mono">
+                        <span>branch: <strong class="text-slate-200">${p.branch}</strong></span>
+                        <span>commit: <strong class="text-sky-300">${p.commit}</strong></span>
+                        <span>by ${p.author}</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs mono text-slate-400">
+                      <span>${p.duration}</span>
+                      <span class="text-slate-500">${p.time}</span>
+                    </div>
+                  </a>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderDetail(state) {
+        const overlay = renderStateOverlay(state, '#/detail/1');
+        if (overlay) return overlay;
+
+        const steps = ['Checkout & Cache Restore', 'Unit & Integration Suite', 'Docker Build & SBOM Sign'];
+        const logs = state === 'partial' ? LOG_LINES.slice(0, 4) : LOG_LINES;
+
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-3">
+                  <h1 class="text-2xl font-semibold text-white tracking-tight">Job #1 · api-gateway</h1>
+                  ${statusBadge(longOpState.completed ? 'passed' : 'passed')}
+                </div>
+                <p class="text-xs mono text-slate-400 mt-1">branch: main · commit: a8f31c9 · runner: ubuntu-22.04-xl-04</p>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <button id="rerun-trigger" data-motion-trigger class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-sm transition ${triggerBurst ? 'motion-pop' : ''}">
+                  Re-run Job
+                </button>
+                <button id="long-op-btn" ${longOpState.running ? 'disabled' : ''} class="px-4 py-2 rounded-lg bg-[#161F30] hover:bg-[#1E293B] border border-[#233046] text-sm font-medium text-slate-200 disabled:opacity-50">
+                  ${longOpState.running ? 'Building Artifacts…' : 'Full Re-run &amp; Artifact Build (>3s)'}
+                </button>
+              </div>
+            </div>
+
+            ${longOpState.running || longOpState.completed || longOpState.cancelled ? `
+              <div class="bg-[#111827] border border-sky-500/30 rounded-xl p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-medium text-white">
+                    ${longOpState.cancelled ? 'Pipeline Re-run Cancelled' : longOpState.completed ? 'Artifact Build Complete (v2.8.1-a8f31c9)' : `Stage ${longOpState.step + 1}/3: ${steps[longOpState.step]}`}
+                  </div>
+                  ${longOpState.running ? `<button id="cancel-op-btn" class="px-3 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs text-rose-200">Cancel</button>` : ''}
+                </div>
+                <div class="w-full bg-[#161F30] rounded-full h-2 overflow-hidden">
+                  <div class="bg-sky-400 h-2 rounded-full transition-all duration-300" style="width: ${longOpState.progress}%"></div>
+                </div>
+                <div class="text-xs mono text-slate-400">${longOpState.progress}% complete</div>
+              </div>
+            ` : ''}
+
+            <div class="bg-[#090D14] border border-[#233046] rounded-xl overflow-hidden">
+              <div class="px-4 py-2.5 bg-[#111827] border-b border-[#233046] flex items-center justify-between text-xs mono text-slate-400">
+                <span>Live Terminal Log Tail</span>
+                <span>exit 0 · 3m 42s</span>
+              </div>
+              <pre tabindex="0" class="p-4 text-xs mono text-slate-300 leading-6 overflow-x-auto">${logs.join('\n')}</pre>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderSettings(state) {
+        const overlay = renderStateOverlay(state, '#/settings');
+        if (overlay) return overlay;
+
+        return `
+          <div class="max-w-3xl space-y-6">
+            <div>
+              <h1 class="text-2xl font-semibold text-white tracking-tight">Runner Pool &amp; Webhooks</h1>
+              <p class="text-sm text-slate-400 mt-0.5">Configure autoscaling runner capacity and signed webhook endpoints.</p>
+            </div>
+            <div class="bg-[#111827] border border-[#233046] rounded-xl p-6 space-y-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h2 class="text-sm font-semibold text-white">ubuntu-22.04-xl Pool</h2>
+                  <p class="text-xs text-slate-400">8 vCPU · 32 GB RAM · Ephemeral NVMe</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">6 / 12 active</span>
+              </div>
+              <div class="border-t border-[#233046] pt-5 space-y-3">
+                <label for="webhook-url" class="block text-xs font-medium text-slate-300">Webhook Delivery URL</label>
+                <input id="webhook-url" type="url" value="https://hooks.pipeforge.dev/v1/deployments" class="w-full bg-[#0B0F17] border border-[#233046] rounded-lg px-3.5 py-2 text-sm mono text-slate-200" />
+                <div class="flex items-center justify-between pt-2">
+                  <span class="text-xs text-slate-400">HMAC-SHA256 signature verification enabled</span>
+                  <button type="button" class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs">Save Settings</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function startLongOp() {
+        if (longOpTimer) clearInterval(longOpTimer);
+        longOpState = { running: true, step: 0, progress: 12, completed: false, cancelled: false };
+        render();
+        longOpTimer = setInterval(() => {
+          if (!longOpState.running) return;
+          longOpState.progress = Math.min(100, longOpState.progress + 18);
+          if (longOpState.progress >= 35 && longOpState.step === 0) longOpState.step = 1;
+          if (longOpState.progress >= 70 && longOpState.step === 1) longOpState.step = 2;
+          if (longOpState.progress >= 100) {
+            longOpState.running = false;
+            longOpState.completed = true;
+            clearInterval(longOpTimer);
+          }
+          render();
+        }, 700);
+      }
+
+      function render() {
+        const route = getRoute();
+        const state = getState();
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else body = renderSettings(state);
+
+        document.getElementById('app').innerHTML = renderShell(route, state, body);
+
+        const switcher = document.getElementById('state-switcher');
+        if (switcher) {
+          switcher.addEventListener('change', (e) => setStateParam(e.target.value));
+        }
+
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+          loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            window.location.hash = '#/list';
+          });
+        }
+
+        const rerunBtn = document.getElementById('rerun-trigger');
+        if (rerunBtn) {
+          rerunBtn.addEventListener('click', () => {
+            triggerBurst = true;
+            render();
+            setTimeout(() => { triggerBurst = false; }, 650);
+          });
+        }
+
+        const longOpBtn = document.getElementById('long-op-btn');
+        if (longOpBtn) {
+          longOpBtn.addEventListener('click', startLongOp);
+        }
+
+        const cancelBtn = document.getElementById('cancel-op-btn');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            if (longOpTimer) clearInterval(longOpTimer);
+            longOpState = { running: false, step: 0, progress: 0, completed: false, cancelled: true };
+            render();
+          });
+        }
+      }
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      if (document.readyState !== 'loading') render();
+    })();
+  </script>
+</body>
+</html>

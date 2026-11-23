@@ -1,0 +1,24 @@
+Build one multi-screen web application as a single HTML file.
+Brief: Single-file HTML multi-screen weekly meal planner "ZestWeek" (4 hash routes: #/login -> #/list -> #/detail/1 -> #/settings): friendly login screen; weekly meal plan list with day cards and prep times; recipe detail (#/detail/1) with serving-size stepper that updates ingredient quantities on [data-motion-trigger], and a >3s automated grocery list generation long-running operation with progress feedback; dietary preferences & pantry settings screen. Must support ?state=default|empty|loading|long-loading|error|partial|locked and window.__RENDER_STATE__ across routes.
+
+Technical contract (required for automated multi-route rendering):
+- Single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS.
+- Hash router supporting exactly these 4 routes on load and on hashchange: #/login, #/list, #/detail/1, #/settings.
+- State switcher supporting both `?state=default|empty|loading|long-loading|error|partial|locked` in the URL query string and `window.__RENDER_STATE__` (if defined) across routes.
+- On #/detail/1, include an interactive element with attribute `data-motion-trigger` that triggers the primary result micro-moment, and implement the >3s long-running operation with staged progress feedback and a cancel control.
+- No external web images (use inline SVG / CSS shapes).
+Save it to bench\runs\run9\raw\skill\playful-meal-planner-1.html and reply with that path only.
+
+Do NOT use the Skill tool.
+First read SKILL.md (App mode) and these reference files before coding:
+  - reference\app-flow.md
+  - reference\states.md
+  - reference\motion.md
+  - reference\typography-locale.md
+  - reference\sample-data.md
+  - mood playful: moods\expressive.md, reference\visual-quality.md (and reference\rules.md when fixing findings)
+Follow them carefully. Do not read anything else in the skill folder (bench/ is off limits).
+When the app is done run (set the environment variable PYTHONIOENCODING=utf-8 first; the command starts with the python.exe path in quotes):
+  "python" "scripts\uitools.py" audit "bench\runs\run9\raw\skill\playful-meal-planner-1.html" --mood playful
+  "python" "scripts\render.py" --routes "bench\runs\run9\routes\skill-playful-meal-planner-1.json" --motion --check --out-dir "bench\runs\run9\shots_gen\skill-playful-meal-planner-1"
+Open "bench\runs\run9\shots_gen\skill-playful-meal-planner-1/contact-sheet.png" and any filmstrip PNGs (e.g. "bench\runs\run9\shots_gen\skill-playful-meal-planner-1/detail/filmstrip.png") with the Read tool. Fix every WARN/FAIL and anything empty, clipped, overlapping, broken, or missing in states/motion with the smallest edits. Repeat audit and render after fixes. At most 2 fix rounds.

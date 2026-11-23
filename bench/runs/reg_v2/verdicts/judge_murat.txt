@@ -1,0 +1,5 @@
+cift1: B | 4 | B'nin tüm bölümlerde tutarlı büyük tipografisi, yüzey geçişleri, başlıklandırılmış kullanıcı yorumları ve ölçülü ikincil aksiyonu A'ya göre çok daha olgun bir ürün tasarımı hissi veriyor. | A 7/7/7/7 B 8/8/9/8
+cift2: B | 4 | B daha temiz bir görsel sistem, daha özenli illüstrasyon, tutarlı kart yapısı ve fiyatlandırma ile içerik akışında çok daha olgun bir hiyerarşi sunuyor. | A 7/7/7/7 B 8/8/9/9
+cift3: A | 3 | B'nin teknik diyagramı hoş olsa da A'nın baştan sona tutarlı serif tipografisi, okuma ritmi ve kutusuz editoryal düzeni uzun form bir dergi yazısı için çok daha rafine hissettiriyor. | A 8/9/9/8 B 8/8/8/8
+cift4: B | 4 | B'nin üstteki taranabilir KPI şeridi, Y ekseni ile eşik çizgisi içeren grafiği ve nötr koyu paleti gerçek bir gözlemlenebilirlik aracı hissi verirken A daha jenerik bir şablon gibi kalıyor. | A 7/7/8/7 B 8/9/9/8
+cift5: A | 4 | A'nın eksiksiz üst gezinme çubuğu, dengeli iki sütunlu yerleşimi ve hasta için kritik detayları (otomatik ödeme, tahmini katkı payı, form durumu) temiz bir hiyerarşiyle sunması gerçek bir ürün portalı hissi veriyor. | A 8/9/9/9 B 8/8/8/7

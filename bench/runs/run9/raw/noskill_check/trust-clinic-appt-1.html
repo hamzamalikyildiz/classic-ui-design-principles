@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareDesk — Clinic Appointment Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes statusPulse {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+    .status-pop {
+      animation: statusPulse 0.5s ease-out;
+    }
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col">
+  <div id="app" class="flex-1 flex flex-col"></div>
+
+  <script>
+    (function () {
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked'];
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+
+      let appState = {
+        visitStatus: 'Checked In',
+        statusPop: false,
+        clinicalNote: 'Patient reports mild seasonal allergies; vitals stable (BP 118/76).',
+        appointments: [
+          { id: 1, time: '09:30', patient: 'Maya Lin', reason: 'Annual Cardiology Follow-up', provider: 'Dr. Patel', status: 'Checked In' },
+          { id: 2, time: '10:00', patient: 'Marcus Vance', reason: 'Lab Review & Prescription', provider: 'Dr. Patel', status: 'Waiting' },
+          { id: 3, time: '10:45', patient: 'Elena Rostova', reason: 'MRI Pre-Auth Consultation', provider: 'Dr. Kim', status: 'Scheduled' },
+          { id: 4, time: '11:15', patient: 'David Okafor', reason: 'Post-Op Wound Check', provider: 'Dr. Kim', status: 'Completed' }
+        ],
+        preAuth: {
+          running: false,
+          progress: 0,
+          elapsed: 0,
+          stage: 'Not started',
+          timerId: null
+        }
+      };
+
+      function getEffectiveState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const q = new URLSearchParams(window.location.search).get('state');
+        if (q && VALID_STATES.includes(q)) return q;
+        return 'default';
+      }
+
+      function getEffectiveRoute() {
+        const h = window.location.hash;
+        return ROUTES.includes(h) ? h : '#/login';
+      }
+
+      function toggleVisitStatus() {
+        appState.visitStatus = appState.visitStatus === 'Checked In' ? 'In Exam Room' : 'Checked In';
+        appState.statusPop = true;
+        render();
+        setTimeout(() => { appState.statusPop = false; }, 600);
+      }
+
+      function startPreAuth() {
+        if (appState.preAuth.running) return;
+        appState.preAuth.running = true;
+        appState.preAuth.progress = 12;
+        appState.preAuth.elapsed = 0.5;
+        appState.preAuth.stage = 'Verifying member eligibility & CPT codes...';
+        render();
+
+        appState.preAuth.timerId = setInterval(() => {
+          appState.preAuth.elapsed = +(appState.preAuth.elapsed + 0.5).toFixed(1);
+          appState.preAuth.progress = Math.min(100, Math.round((appState.preAuth.elapsed / 4.0) * 100));
+          if (appState.preAuth.elapsed < 1.5) {
+            appState.preAuth.stage = 'Verifying member eligibility & CPT codes...';
+          } else if (appState.preAuth.elapsed < 3.0) {
+            appState.preAuth.stage = 'Submitting clinical justification to payer...';
+          } else if (appState.preAuth.elapsed < 4.0) {
+            appState.preAuth.stage = 'Awaiting payer authorization token...';
+          } else {
+            clearInterval(appState.preAuth.timerId);
+            appState.preAuth.running = false;
+            appState.preAuth.progress = 100;
+            appState.preAuth.stage = 'Approved (Auth #PA-99421)';
+          }
+          render();
+        }, 500);
+      }
+
+      function cancelPreAuth() {
+        if (appState.preAuth.timerId) clearInterval(appState.preAuth.timerId);
+        appState.preAuth.running = false;
+        appState.preAuth.progress = 0;
+        appState.preAuth.elapsed = 0;
+        appState.preAuth.stage = 'Cancelled';
+        render();
+      }
+
+      function renderHeader(route) {
+        if (route === '#/login') return '';
+        const nav = [
+          { href: '#/list', label: 'Daily Schedule' },
+          { href: '#/detail/1', label: 'Patient Visit #1' },
+          { href: '#/settings', label: 'Clinic Settings' }
+        ];
+        return `
+          <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+              <div class="flex items-center gap-6">
+                <a href="#/list" class="flex items-center gap-2 font-bold text-slate-900">
+                  <svg class="w-5 h-5 text-sky-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>CareDesk</span>
+                </a>
+                <nav class="hidden sm:flex items-center gap-1">
+                  ${nav.map(n => `
+                    <a href="${n.href}" class="px-3 py-1.5 rounded-md text-sm font-medium ${route === n.href ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100'}">${n.label}</a>
+                  `).join('')}
+                </nav>
+              </div>
+              <a href="#/login" class="text-xs font-medium text-slate-500 hover:text-slate-800">Sign out</a>
+            </div>
+          </header>
+        `;
+      }
+
+      function renderStateBanner(state) {
+        if (state === 'default') return '';
+        const map = {
+          'empty': 'bg-slate-100 text-slate-700 border-slate-300',
+          'loading': 'bg-sky-50 text-sky-800 border-sky-200',
+          'long-loading': 'bg-amber-50 text-amber-900 border-amber-200',
+          'error': 'bg-rose-50 text-rose-800 border-rose-200',
+          'partial': 'bg-amber-50 text-amber-800 border-amber-200',
+          'locked': 'bg-slate-800 text-slate-100 border-slate-700'
+        };
+        return `<div class="border-b px-4 py-2 text-xs font-medium ${map[state]}"><div class="max-w-6xl mx-auto">State: ${state}</div></div>`;
+      }
+
+      function renderLogin(state) {
+        const locked = state === 'locked';
+        return `
+          <main class="flex-1 flex items-center justify-center p-4">
+            <div class="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+              <h1 class="text-xl font-bold text-slate-900">CareDesk</h1>
+              <p class="text-xs text-slate-500 mt-1 mb-6">Outpatient Clinic Appointment Console</p>
+              ${state === 'error' ? `<div class="mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">EHR sync failed. Try again.</div>` : ''}
+              <form onsubmit="event.preventDefault(); window.location.hash='#/list';" class="space-y-4">
+                <div>
+                  <label for="care-email" class="block text-xs font-medium text-slate-700 mb-1">Staff ID / Email</label>
+                  <input id="care-email" type="email" value="nurse.patel@caredesk.org" ${locked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                </div>
+                <div>
+                  <label for="care-pass" class="block text-xs font-medium text-slate-700 mb-1">PIN / Password</label>
+                  <input id="care-pass" type="password" value="••••••••" ${locked ? 'disabled' : ''} class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                </div>
+                <button type="submit" ${locked ? 'disabled' : ''} class="w-full py-2.5 rounded-lg bg-sky-700 hover:bg-sky-700 text-white text-sm font-semibold disabled:opacity-50">
+                  Sign in to Console
+                </button>
+              </form>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderList(state) {
+        if (state === 'loading') {
+          return `<main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 space-y-3">${[1,2,3].map(()=>`<div class="h-16 skeleton rounded-xl"></div>`).join('')}</main>`;
+        }
+        if (state === 'empty') {
+          return `<main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-16 text-center"><p class="text-sm text-slate-500">No appointments scheduled for today.</p></main>`;
+        }
+        const badge = (s) => {
+          if (s === 'Checked In') return 'bg-sky-50 text-sky-700';
+          if (s === 'Waiting') return 'bg-amber-50 text-amber-700';
+          if (s === 'Completed') return 'bg-emerald-50 text-emerald-700';
+          return 'bg-slate-100 text-slate-700';
+        };
+        return `
+          <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h1 class="text-xl font-bold text-slate-900">Today's Schedule</h1>
+                <p class="text-sm text-slate-500">4 patients • Cardiology & Primary Care</p>
+              </div>
+              <a href="#/detail/1" class="px-4 py-2 rounded-lg bg-sky-700 text-white text-sm font-semibold">Open Visit #1</a>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-200 shadow-sm">
+              ${appState.appointments.map(a => `
+                <div class="p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div class="flex items-center gap-4">
+                    <span class="font-mono text-sm font-semibold text-slate-700 w-12">${a.time}</span>
+                    <div>
+                      <a href="#/detail/1" class="text-sm font-semibold text-slate-900 hover:text-sky-600">${a.patient}</a>
+                      <p class="text-xs text-slate-500">${a.reason} • ${a.provider}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${badge(a.status)}">${a.status}</span>
+                    <a href="#/detail/1" class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-medium text-slate-700 hover:bg-slate-50">Chart</a>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </main>
+        `;
+      }
+
+      function renderDetail(state) {
+        const locked = state === 'locked';
+        const isRunning = appState.preAuth.running || state === 'long-loading';
+        const prog = appState.preAuth.running ? appState.preAuth.progress : (state === 'long-loading' ? 55 : 0);
+        const stage = appState.preAuth.running ? appState.preAuth.stage : (state === 'long-loading' ? 'Submitting clinical justification to payer...' : appState.preAuth.stage);
+
+        return `
+          <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 space-y-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div class="text-xs text-slate-500">09:30 AM • Dr. Patel</div>
+                <h1 class="text-lg font-bold text-slate-900">Maya Lin — Annual Cardiology Follow-up</h1>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200 ${appState.statusPop ? 'status-pop' : ''}">${appState.visitStatus}</span>
+                <button data-motion-trigger onclick="window.__careToggleStatus()" ${locked ? 'disabled' : ''} class="px-4 py-2 rounded-lg bg-sky-700 hover:bg-sky-700 text-white text-sm font-semibold disabled:opacity-50">
+                  Update Visit Status
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <label for="care-note" class="block text-sm font-semibold text-slate-900 mb-2">Clinical Note</label>
+              <textarea id="care-note" rows="3" ${locked ? 'disabled' : ''} class="w-full p-3 rounded-lg border border-slate-300 text-sm">${appState.clinicalNote}</textarea>
+            </div>
+
+            <section class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 class="text-sm font-semibold text-slate-900">Insurance Pre-Authorization (>3s)</h2>
+                  <p class="text-xs text-slate-500">Live payer eligibility check & CPT authorization.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  ${isRunning ? `
+                    <button onclick="window.__careCancelPreAuth()" class="px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 text-xs font-semibold">Cancel</button>
+                  ` : `
+                    <button onclick="window.__careStartPreAuth()" ${locked ? 'disabled' : ''} class="px-4 py-2 rounded-lg bg-slate-900 text-white text-xs font-semibold disabled:opacity-50">Request Pre-Auth</button>
+                  `}
+                </div>
+              </div>
+              ${(isRunning || appState.preAuth.progress > 0) ? `
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                  <div class="flex justify-between text-xs mb-1.5">
+                    <span class="font-medium text-slate-700">${stage}</span>
+                    <span class="font-mono text-slate-500">${prog}%</span>
+                  </div>
+                  <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-sky-700 transition-all duration-300" style="width: ${prog}%"></div>
+                  </div>
+                </div>
+              ` : ''}
+            </section>
+          </main>
+        `;
+      }
+
+      function renderSettings(state) {
+        const locked = state === 'locked';
+        return `
+          <main class="max-w-3xl mx-auto w-full px-4 sm:px-6 py-8">
+            <h1 class="text-xl font-bold text-slate-900 mb-6">Clinic Hours & Notifications</h1>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-200">
+              <div class="p-5 flex items-center justify-between">
+                <div>
+                  <div class="text-sm font-semibold text-slate-900">Operating Hours</div>
+                  <div class="text-xs text-slate-500">Monday – Friday</div>
+                </div>
+                <span class="font-mono text-sm text-slate-700">08:00 – 18:00</span>
+              </div>
+              <div class="p-5 flex items-center justify-between">
+                <div>
+                  <div class="text-sm font-semibold text-slate-900">SMS Appointment Reminders</div>
+                  <div class="text-xs text-slate-500">Send 24h prior to scheduled visit.</div>
+                </div>
+                <input aria-label="SMS Appointment Reminders" type="checkbox" checked ${locked ? 'disabled' : ''} class="w-4 h-4 accent-sky-600" />
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function render() {
+        const route = getEffectiveRoute();
+        const state = getEffectiveState();
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else if (route === '#/settings') body = renderSettings(state);
+
+        document.getElementById('app').innerHTML = `
+          ${renderHeader(route)}
+          ${renderStateBanner(state)}
+          ${body}
+        `;
+      }
+
+      window.__careToggleStatus = toggleVisitStatus;
+      window.__careStartPreAuth = startPreAuth;
+      window.__careCancelPreAuth = cancelPreAuth;
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      render();
+    })();
+  </script>
+</body>
+</html>

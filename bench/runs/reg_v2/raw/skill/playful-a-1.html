@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprout Club — Kids Weekend Backyard Gardening</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FFFDF5',
+            soil: '#2B2118',
+            bark: '#5C4B3B',
+            sun: '#FFD43B',
+            leaf: '#1E6B2E',
+            mint: '#EBFBEE',
+            sky: '#E7F5FF',
+            coral: '#B84609'
+          },
+          fontFamily: {
+            display: ['"Baloo 2"', 'cursive', 'sans-serif'],
+            sans: ['Nunito', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .playful-enter { animation: popIn 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    @media (prefers-reduced-motion: reduce) {
+      .playful-enter { animation: none; }
+    }
+  </style>
+</head>
+<body class="bg-cream text-soil font-sans antialiased selection:bg-sun selection:text-soil">
+  <header class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a href="#" class="font-display text-2xl font-extrabold text-leaf tracking-tight">Sprout Club</a>
+    <nav aria-label="Primary" class="hidden md:flex items-center gap-8 text-base font-bold text-bark">
+      <a href="#projects" class="hover:text-leaf focus-visible:outline-2 focus-visible:outline-leaf rounded">Projects</a>
+      <a href="#kit" class="hover:text-leaf focus-visible:outline-2 focus-visible:outline-leaf rounded">Seed Kit</a>
+      <a href="#pricing" class="hover:text-leaf focus-visible:outline-2 focus-visible:outline-leaf rounded">Pricing</a>
+      <a href="#parents" class="hover:text-leaf focus-visible:outline-2 focus-visible:outline-leaf rounded">For Parents</a>
+    </nav>
+    <a href="#join" class="inline-flex items-center justify-center min-h-[44px] px-6 rounded-full bg-leaf text-white font-bold text-sm hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf transition shadow-md">
+      Join Weekend Club
+    </a>
+  </header>
+
+  <main>
+    <!-- Hero with Mascot -->
+    <section class="max-w-6xl mx-auto px-6 py-12 lg:py-16">
+      <div class="bg-sun rounded-[32px] p-8 sm:p-12 lg:p-14 grid lg:grid-cols-12 gap-10 items-center shadow-lg">
+        <div class="lg:col-span-7 space-y-5 playful-enter">
+          <span class="inline-block bg-white text-leaf font-extrabold text-xs uppercase tracking-wider px-4 py-1.5 rounded-full shadow-sm">
+            Ages 5–11 · Saturdays 10 AM
+          </span>
+          <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] text-soil text-balance">
+            Dig in, get muddy, grow lunch!
+          </h1>
+          <p class="text-lg sm:text-xl text-soil/90 font-semibold max-w-[44ch] leading-relaxed text-pretty">
+            A weekend backyard gardening club where kids plant real heirloom veggies, track bugs, and harvest snacks they grew themselves.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <a href="#join" class="inline-flex items-center justify-center min-h-[48px] px-7 rounded-full bg-leaf text-white font-extrabold text-base hover:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soil transition shadow-md">
+              Claim Your First Seed Box
+            </a>
+            <a href="#projects" class="inline-flex items-center justify-center min-h-[44px] px-5 rounded-full bg-white text-soil font-bold text-base hover:bg-cream focus-visible:outline-2 focus-visible:outline-soil transition">
+              See Projects
+            </a>
+          </div>
+        </div>
+
+        <!-- Drawn Mascot SVG: Pip the Sprout -->
+        <div class="lg:col-span-5 flex justify-center playful-enter">
+          <div class="bg-cream rounded-[28px] p-6 shadow-md rotate-2 max-w-xs w-full text-center">
+            <svg viewBox="0 0 260 260" class="w-full h-auto" role="img" aria-label="Pip the smiling sprout mascot wearing a straw hat and holding a watering can">
+              <!-- Terracotta Pot -->
+              <path d="M72 175 L188 175 L174 238 L86 238 Z" fill="#E8590C" stroke="#2B2118" stroke-width="5" stroke-linejoin="round" />
+              <rect x="64" y="158" width="132" height="20" rx="8" fill="#F76707" stroke="#2B2118" stroke-width="5" />
+              <!-- Stem -->
+              <path d="M130 158 C130 130 130 110 130 92" stroke="#2B8A3E" stroke-width="12" stroke-linecap="round" />
+              <!-- Left & Right Leaves -->
+              <path d="M130 125 C95 120 82 92 104 82 C122 74 130 105 130 125 Z" fill="#40C057" stroke="#2B2118" stroke-width="4" stroke-linejoin="round" />
+              <path d="M130 115 C165 110 178 82 156 72 C138 64 130 95 130 115 Z" fill="#40C057" stroke="#2B2118" stroke-width="4" stroke-linejoin="round" />
+              <!-- Smiling Sprout Head -->
+              <circle cx="130" cy="80" r="32" fill="#69DB7C" stroke="#2B2118" stroke-width="5" />
+              <!-- Eyes & Smile -->
+              <circle cx="119" cy="76" r="4" fill="#2B2118" />
+              <circle cx="141" cy="76" r="4" fill="#2B2118" />
+              <path d="M118 89 Q130 99 142 89" fill="none" stroke="#2B2118" stroke-width="4" stroke-linecap="round" />
+              <!-- Straw Hat -->
+              <ellipse cx="130" cy="52" rx="46" ry="10" fill="#FFD43B" stroke="#2B2118" stroke-width="4" />
+              <path d="M102 50 C104 28 156 28 158 50 Z" fill="#FCC419" stroke="#2B2118" stroke-width="4" />
+            </svg>
+            <p class="font-display font-bold text-lg text-soil mt-2">Meet Pip, your garden guide!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seasonal Projects -->
+    <section id="projects" class="max-w-6xl mx-auto px-6 py-16">
+      <div class="mb-10">
+        <p class="font-extrabold text-xs uppercase tracking-widest text-coral mb-2">4 Seasons of Dirt</p>
+        <h2 class="font-display text-4xl font-extrabold text-soil">Seasonal Projects</h2>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <article class="bg-mint rounded-3xl p-6 shadow-sm">
+          <span class="inline-block font-extrabold text-xs uppercase tracking-wider text-leaf mb-2">Spring</span>
+          <h3 class="font-display text-2xl font-bold text-soil mb-2">Pizza Herb Bed</h3>
+          <p class="text-base text-bark leading-relaxed">Plant basil, oregano, and cherry tomatoes in a sunny corner pot.</p>
+        </article>
+        <article class="bg-sky rounded-3xl p-6 shadow-sm">
+          <span class="inline-block font-extrabold text-xs uppercase tracking-wider text-leaf mb-2">Summer</span>
+          <h3 class="font-display text-2xl font-bold text-soil mb-2">Sunflower Fort</h3>
+          <p class="text-base text-bark leading-relaxed">Grow 8-foot mammoth sunflowers in a circle to build a shady hideout.</p>
+        </article>
+        <article class="bg-sun/35 rounded-3xl p-6 shadow-sm">
+          <span class="inline-block font-extrabold text-xs uppercase tracking-wider text-coral mb-2">Autumn</span>
+          <h3 class="font-display text-2xl font-bold text-soil mb-2">Radish Race</h3>
+          <p class="text-base text-bark leading-relaxed">Fast 25-day crunch radishes with weekly ruler check-ins.</p>
+        </article>
+        <article class="bg-white rounded-3xl p-6 shadow-sm border-2 border-sun">
+          <span class="inline-block font-extrabold text-xs uppercase tracking-wider text-leaf mb-2">Winter</span>
+          <h3 class="font-display text-2xl font-bold text-soil mb-2">Windowsill Micros</h3>
+          <p class="text-base text-bark leading-relaxed">Indoor pea shoots and sprouted garlic on a kitchen tray.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Seed Kit Contents + Pricing -->
+    <section id="kit" class="bg-mint py-16">
+      <div class="max-w-6xl mx-auto px-6 grid lg:grid-cols-12 gap-10 items-start">
+        <div class="lg:col-span-7 bg-white rounded-3xl p-8 shadow-md">
+          <p class="font-extrabold text-xs uppercase tracking-widest text-leaf mb-2">Delivered Monthly</p>
+          <h2 class="font-display text-3xl font-extrabold text-soil mb-6">What’s Inside the Seed Kit</h2>
+          <ul class="grid sm:grid-cols-2 gap-4 text-base font-semibold text-bark">
+            <li class="bg-cream rounded-2xl p-4">🌱 4 organic heirloom seed packets</li>
+            <li class="bg-cream rounded-2xl p-4">🪴 6 biodegradable coir starter pots</li>
+            <li class="bg-cream rounded-2xl p-4">🔍 Kid-sized brass magnifying glass</li>
+            <li class="bg-cream rounded-2xl p-4">📓 Illustrated field journal &amp; stickers</li>
+          </ul>
+        </div>
+
+        <div id="pricing" class="lg:col-span-5 bg-soil text-cream rounded-3xl p-8 shadow-lg">
+          <p class="font-extrabold text-xs uppercase tracking-widest text-sun mb-2">Simple Membership</p>
+          <div class="flex items-baseline gap-2 mb-4">
+            <span class="font-display text-5xl font-extrabold text-white tabular-nums">$24</span>
+            <span class="text-base text-cream/80 font-semibold">/ month per kid</span>
+          </div>
+          <p class="text-base text-cream/90 leading-relaxed mb-6">
+            Includes monthly seed kit delivery, Saturday 30-minute live club call, and sibling discount (50% off).
+          </p>
+          <a href="#join" class="w-full inline-flex items-center justify-center min-h-[48px] px-6 rounded-full bg-sun text-soil font-extrabold text-base hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun transition">
+            Start 14-Day Free Trial
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parents Section -->
+    <section id="parents" class="max-w-6xl mx-auto px-6 py-16">
+      <div class="bg-sky rounded-3xl p-8 sm:p-10 grid md:grid-cols-3 gap-8">
+        <div>
+          <h2 class="font-display text-3xl font-extrabold text-soil mb-2">Built for Busy Parents</h2>
+          <p class="text-base text-bark font-semibold">No green thumb required.</p>
+        </div>
+        <div>
+          <h3 class="font-display text-xl font-bold text-soil mb-1">15-Minute Setup</h3>
+          <p class="text-base text-bark leading-relaxed">Everything arrives pre-measured. Just add water and a sunny patch of patio or yard.</p>
+        </div>
+        <div>
+          <h3 class="font-display text-xl font-bold text-soil mb-1">Screen-Light</h3>
+          <p class="text-base text-bark leading-relaxed">Saturday club is 30 minutes of show-and-tell, then kids head outside to their garden.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Band -->
+    <section id="join" class="max-w-6xl mx-auto px-6 pb-20">
+      <div class="bg-leaf text-white rounded-[32px] p-8 sm:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-lg">
+        <div>
+          <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-2">Ready to plant this Saturday?</h2>
+          <p class="text-base text-white font-semibold">First seed box ships within 48 hours. Cancel anytime.</p>
+        </div>
+        <a href="#join" class="shrink-0 inline-flex items-center justify-center min-h-[48px] px-8 rounded-full bg-sun text-soil font-extrabold text-base hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition">
+          Join Sprout Club
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-soil/10 py-8 text-center text-sm font-bold text-bark">
+    Sprout Club · Grown with kids in Portland &amp; Austin · © 2026
+  </footer>
+</body>
+</html>

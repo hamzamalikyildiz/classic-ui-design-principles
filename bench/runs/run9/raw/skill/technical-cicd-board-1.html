@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PipeForge — CI/CD Pipeline Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --dur-instant: 80ms;
+      --dur-fast: 150ms;
+      --dur-base: 220ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+      --ease-enter: cubic-bezier(0, 0, .2, 1);
+      --ease-exit: cubic-bezier(.4, 0, 1, 1);
+    }
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+    }
+    h1, h2, h3 { text-wrap: balance; }
+    p, dd, li { text-wrap: pretty; }
+    .tabular-nums { font-variant-numeric: tabular-nums lining-nums; }
+    .btn-press { transition: transform var(--dur-instant) var(--ease-standard); }
+    .btn-press:active { transform: scale(0.98); }
+    .row-flash { position: relative; }
+    .row-flash::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(6, 182, 212, 0.16);
+      animation: pf-flash 1.2s var(--ease-enter) forwards;
+      pointer-events: none;
+    }
+    @keyframes pf-flash {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    .log-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #3f3f46 #18181b;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 120ms !important;
+        transform: none !important;
+      }
+      .row-flash::after { animation: none !important; opacity: 0 !important; }
+      .row-flash { border-left: 2px solid #06b6d4; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-100 selection:bg-cyan-500/30 selection:text-cyan-100">
+  <main id="app" class="min-h-screen flex flex-col"></main>
+
+  <div id="toast-region" role="status" aria-live="polite" class="fixed bottom-5 right-5 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+  <script>
+    (function () {
+      const ROUTES = ['#/login', '#/list', '#/detail/1', '#/settings'];
+      const VALID_STATES = ['default', 'empty', 'loading', 'long-loading', 'error', 'partial', 'locked', 'offline', 'stale'];
+
+      const SEED_RUNS = [
+        {
+          id: '1',
+          number: '#4821',
+          pipeline: 'core-api / build-and-deploy',
+          branch: 'main',
+          commit: 'a94f2c1',
+          commitMsg: 'feat(auth): enforce short-lived OIDC runner tokens',
+          author: 'Çağla İnanç',
+          durationSec: 142,
+          status: 'failed',
+          startedAt: '2026-11-21T19:45:00Z',
+          runner: 'eu-central-04'
+        },
+        {
+          id: '2',
+          number: '#4820',
+          pipeline: 'edge-gateway / canary-rollout',
+          branch: 'release/v2.14',
+          commit: '7c1e8b0',
+          commitMsg: 'chore(tls): rotate mTLS leaf certificates for ingress',
+          author: 'Şahin Öztürk',
+          durationSec: 98,
+          status: 'passed',
+          startedAt: '2026-11-21T18:10:00Z',
+          runner: 'eu-central-02'
+        },
+        {
+          id: '3',
+          number: '#4819',
+          pipeline: 'billing-worker / integration-suite',
+          branch: 'fix/idempotency-key-header',
+          commit: '3d09a44',
+          commitMsg: 'fix(stripe): preserve idempotency key across 502 retries',
+          author: 'Elif Karakoç',
+          durationSec: null,
+          status: 'running',
+          startedAt: '2026-11-21T17:55:00Z',
+          runner: 'us-east-01'
+        },
+        {
+          id: '4',
+          number: '#4818',
+          pipeline: 'web-console / bundle-and-audit',
+          branch: 'main',
+          commit: 'e52b119',
+          commitMsg: 'perf(ui): tree-shake icon sprite and inline critical CSS',
+          author: 'Mertcan Yılmaz',
+          durationSec: 64,
+          status: 'passed',
+          startedAt: '2026-11-21T15:20:00Z',
+          runner: 'eu-central-01'
+        },
+        {
+          id: '5',
+          number: '#4817',
+          pipeline: 'telemetry-ingest / schema-check',
+          branch: 'feat/otel-span-links-v2-with-extended-resource-attributes',
+          commit: '118c7d2',
+          commitMsg: 'feat(otel): add span link validation for batching collector',
+          author: 'Deniz Arslan',
+          durationSec: 0,
+          status: 'queued',
+          startedAt: '2026-11-21T14:02:00Z',
+          runner: null
+        }
+      ];
+
+      const LOG_LINES = [
+        { ts: '19:45:01.104', lvl: 'INFO', msg: 'Runner eu-central-04 acquired lease (8 vCPU, 16 GiB RAM)' },
+        { ts: '19:45:02.418', lvl: 'INFO', msg: 'Checking out core-api@a94f2c1 (depth=1)' },
+        { ts: '19:45:06.912', lvl: 'INFO', msg: 'Restored cargo + node cache key linux-x64-v9 (412 MB in 4.1s)' },
+        { ts: '19:45:19.005', lvl: 'INFO', msg: 'Running unit & contract suite (148 tests)...' },
+        { ts: '19:45:44.331', lvl: 'WARN', msg: 'oidc_token_exchange_test: clock skew 420ms exceeded 250ms budget' },
+        { ts: '19:46:12.789', lvl: 'ERR ', msg: 'FAIL internal/auth/oidc_test.go:114 — expected 200 OK, got 401 Unauthorized' },
+        { ts: '19:46:12.792', lvl: 'ERR ', msg: 'Exit code 1 during stage "Run Test Suite" (correlation_id=pf_9928a1)' }
+      ];
+
+      let uiState = {
+        route: '#/login',
+        renderState: 'default',
+        flashRow: false,
+        rerunCount: 0,
+        jobStatus: 'failed',
+        longOp: {
+          active: false,
+          stage: 0,
+          elapsed: 0,
+          timerId: null,
+          backgrounded: false
+        },
+        settingsSaved: false
+      };
+
+      const fmtNum = new Intl.NumberFormat('en-US');
+      const fmtTime = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+      function getEffectiveState() {
+        if (typeof window.__RENDER_STATE__ === 'string' && VALID_STATES.includes(window.__RENDER_STATE__)) {
+          return window.__RENDER_STATE__;
+        }
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('state');
+        if (q && VALID_STATES.includes(q)) return q;
+        return uiState.renderState;
+      }
+
+      function getEffectiveRoute() {
+        const h = window.location.hash;
+        if (ROUTES.includes(h)) return h;
+        return '#/login';
+      }
+
+      function formatDuration(sec) {
+        if (sec === null || sec === undefined) return '—';
+        if (sec === 0) return '0s';
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return m > 0 ? `${m}m ${String(s).padStart(2, '0')}s` : `${s}s`;
+      }
+
+      function statusBadge(status) {
+        const map = {
+          passed: { dot: 'bg-emerald-400', text: 'text-emerald-300', bg: 'bg-emerald-500/10 border-emerald-500/30', label: 'Passed' },
+          failed: { dot: 'bg-rose-400', text: 'text-rose-300', bg: 'bg-rose-500/10 border-rose-500/30', label: 'Failed' },
+          running: { dot: 'bg-cyan-400', text: 'text-cyan-300', bg: 'bg-cyan-500/10 border-cyan-500/30', label: 'Running' },
+          queued: { dot: 'bg-amber-400', text: 'text-amber-300', bg: 'bg-amber-500/10 border-amber-500/30', label: 'Queued' }
+        };
+        const s = map[status] || map.queued;
+        return `<span class="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-mono font-medium ${s.bg} ${s.text}">
+          <span class="h-1.5 w-1.5 rounded-full ${s.dot}" aria-hidden="true"></span>${s.label}
+        </span>`;
+      }
+
+      function showToast(message, undoLabel, onUndo) {
+        const region = document.getElementById('toast-region');
+        const el = document.createElement('div');
+        el.className = 'pointer-events-auto flex items-center gap-3 rounded-md border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-zinc-100 shadow-lg';
+        el.innerHTML = `<span>${message}</span>`;
+        if (undoLabel && onUndo) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'rounded px-2 py-1 text-xs font-mono font-semibold text-cyan-400 hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400';
+          btn.textContent = undoLabel;
+          btn.onclick = () => {
+            onUndo();
+            el.remove();
+          };
+          el.appendChild(btn);
+        }
+        region.appendChild(el);
+        setTimeout(() => { if (el.parentNode) el.remove(); }, 4500);
+      }
+
+      function renderShell(route, state, contentHtml) {
+        if (route === '#/login') {
+          return `<main class="flex-1 flex items-center justify-center p-6">${contentHtml}</main>`;
+        }
+        const navItems = [
+          { href: '#/list', label: 'Pipelines' },
+          { href: '#/detail/1', label: 'Job #4821' },
+          { href: '#/settings', label: 'Runners & Webhooks' }
+        ];
+        const staleBanner = state === 'stale'
+          ? `<div role="status" class="border-b border-amber-500/30 bg-amber-500/10 px-6 py-2 text-sm text-amber-200 flex items-center justify-between">
+              <span>Stale telemetry — last synced 4m ago.</span>
+              <button type="button" onclick="window.__pfRefresh()" class="font-mono text-xs text-amber-300 underline hover:text-amber-100">Refresh now</button>
+            </div>`
+          : '';
+        const offlineBanner = state === 'offline'
+          ? `<div role="status" class="border-b border-rose-500/30 bg-rose-500/10 px-6 py-2 text-sm text-rose-200 flex items-center justify-between">
+              <span>Offline — showing cached pipeline state from 2m ago.</span>
+              <button type="button" onclick="window.__pfRefresh()" class="font-mono text-xs text-rose-300 underline hover:text-rose-100">Retry connection</button>
+            </div>`
+          : '';
+
+        return `
+          <header class="border-b border-zinc-800 bg-zinc-950/95 sticky top-0 z-30">
+            <div class="mx-auto max-w-6xl px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-6 min-w-0">
+                <a href="#/list" class="flex items-center gap-2 font-semibold text-zinc-100 tracking-tight shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400 rounded">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="text-cyan-400">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 6.5H15.5C16.6046 6.5 17.5 7.39543 17.5 8.5V14" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <span>PipeForge</span>
+                </a>
+                <nav aria-label="Primary" class="flex items-center gap-1 overflow-x-auto">
+                  ${navItems.map(item => {
+                    const active = route === item.href;
+                    return `<a href="${item.href}" ${active ? 'aria-current="page"' : ''} class="px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400 ${active ? 'bg-zinc-800 text-cyan-300' : 'text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900'}">${item.label}</a>`;
+                  }).join('')}
+                </nav>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-zinc-300 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-md">
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true"></span>
+                  4/4 runners online
+                </span>
+                <a href="#/login" class="text-sm text-zinc-300 hover:text-zinc-100 px-2.5 py-1.5 rounded-md border border-zinc-800 bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400">Sign out</a>
+              </div>
+            </div>
+          </header>
+          ${staleBanner}
+          ${offlineBanner}
+          <main class="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 py-6">${contentHtml}</main>
+        `;
+      }
+
+      function renderLogin(state) {
+        if (state === 'locked') {
+          return `
+            <section class="w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-900 p-6 space-y-4">
+              <div class="flex items-center gap-2 text-amber-300 font-mono text-xs uppercase tracking-wider">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Session Locked
+              </div>
+              <h1 class="text-2xl font-semibold text-zinc-100">SSO token expired</h1>
+              <p class="text-sm text-zinc-300">Your organization policy requires re-authentication every 12 hours before accessing runner pools.</p>
+              <a href="#/list" class="btn-press inline-flex w-full min-h-[44px] items-center justify-center rounded-md bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-cyan-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">Re-authenticate with SSO</a>
+            </section>
+          `;
+        }
+        return `
+          <section class="w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-900 p-6 sm:p-8 space-y-6">
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-cyan-400">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/>
+                  <path d="M10 6.5H15.5C16.6046 6.5 17.5 7.39543 17.5 8.5V14" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span class="font-mono text-xs uppercase tracking-wider text-zinc-300">PipeForge Ops</span>
+              </div>
+              <h1 class="text-2xl font-semibold tracking-tight text-zinc-100">Sign in to pipeline console</h1>
+              <p class="text-sm text-zinc-300">Authenticate with a personal access token or organization SSO.</p>
+            </div>
+            ${state === 'error' ? `<div role="alert" class="rounded-md border border-rose-500/40 bg-rose-500/10 p-3 text-sm text-rose-200">HTTP 401: Invalid personal access token. Verify scope <code class="font-mono">repo:status</code> and retry.</div>` : ''}
+            <form onsubmit="event.preventDefault(); window.location.hash='#/list';" class="space-y-4">
+              <div>
+                <label for="pf-token" class="block text-sm font-medium text-zinc-200 mb-1.5">Personal Access Token</label>
+                <input id="pf-token" type="password" value="pf_live_98a2c4f019d" class="w-full min-h-[44px] rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-mono text-zinc-100 focus:border-cyan-400 focus:outline-none" />
+              </div>
+              <button type="submit" class="btn-press w-full min-h-[44px] rounded-md bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-cyan-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">Sign in to PipeForge</button>
+            </form>
+            <div class="pt-2 border-t border-zinc-800 flex items-center justify-between gap-2">
+              <a href="#/list" class="btn-press flex-1 min-h-[40px] inline-flex items-center justify-center rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-700">GitHub SSO</a>
+              <a href="#/list" class="btn-press flex-1 min-h-[40px] inline-flex items-center justify-center rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-700">Okta OIDC</a>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderList(state) {
+        if (state === 'loading') {
+          return `
+            <div class="space-y-4" aria-busy="true">
+              <div class="h-8 w-56 rounded bg-zinc-800 animate-pulse" aria-hidden="true"></div>
+              <div class="rounded-lg border border-zinc-800 bg-zinc-900 divide-y divide-zinc-800">
+                ${[1, 2, 3, 4, 5].map(() => `
+                  <div class="p-4 flex items-center justify-between gap-4" aria-hidden="true">
+                    <div class="space-y-2 flex-1">
+                      <div class="h-4 w-64 rounded bg-zinc-800 animate-pulse"></div>
+                      <div class="h-3 w-40 rounded bg-zinc-800 animate-pulse"></div>
+                    </div>
+                    <div class="h-6 w-20 rounded bg-zinc-800 animate-pulse"></div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+        if (state === 'empty') {
+          return `
+            <section class="rounded-lg border border-zinc-800 bg-zinc-900 p-10 text-center space-y-4">
+              <h1 class="text-xl font-semibold text-zinc-100">No pipeline runs yet</h1>
+              <p class="text-sm text-zinc-300 max-w-md mx-auto">Push a commit or trigger a manual dispatch to see live build and deployment telemetry here.</p>
+              <a href="#/detail/1" class="btn-press inline-flex min-h-[44px] items-center justify-center rounded-md bg-cyan-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-cyan-400">Trigger sample run</a>
+            </section>
+          `;
+        }
+        if (state === 'error') {
+          return `
+            <section role="alert" class="rounded-lg border border-rose-500/40 bg-rose-500/10 p-6 space-y-3">
+              <h1 class="text-lg font-semibold text-rose-200">Failed to fetch pipeline runs (HTTP 503)</h1>
+              <p class="text-sm text-rose-100">Upstream runner coordinator timed out after 5,000ms. Correlation ID: <code class="font-mono">pf_err_503_eu4</code>.</p>
+              <button type="button" onclick="window.__pfRefresh()" class="btn-press min-h-[44px] rounded-md bg-rose-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-rose-400">Retry fetch</button>
+            </section>
+          `;
+        }
+        if (state === 'locked') {
+          return `
+            <section class="rounded-lg border border-amber-500/40 bg-zinc-900 p-6 space-y-3">
+              <h1 class="text-lg font-semibold text-amber-200">Read-only workspace</h1>
+              <p class="text-sm text-zinc-300">Your current token lacks <code class="font-mono">pipelines:write</code>. Upgrade role or re-authenticate to dispatch builds.</p>
+              <a href="#/login" class="btn-press inline-flex min-h-[44px] items-center rounded-md bg-cyan-500 px-4 py-2 text-sm font-semibold text-zinc-950">Re-authenticate</a>
+            </section>
+          `;
+        }
+
+        const rows = state === 'partial'
+          ? SEED_RUNS.map((r, i) => i === 1 ? { ...r, durationSec: null, runner: null } : r)
+          : SEED_RUNS;
+
+        return `
+          <div class="space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 class="text-2xl font-semibold tracking-tight text-zinc-100">Pipeline Runs</h1>
+                <p class="text-sm text-zinc-300">Recent executions across production and staging runners.</p>
+              </div>
+              <a href="#/detail/1" class="btn-press inline-flex min-h-[44px] items-center rounded-md bg-cyan-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-cyan-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">Inspect Job #4821</a>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-900">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-zinc-800 text-xs font-mono uppercase tracking-wider text-zinc-300 bg-zinc-950/60">
+                    <th scope="col" class="px-4 py-3">Run</th>
+                    <th scope="col" class="px-4 py-3">Branch &amp; Commit</th>
+                    <th scope="col" class="px-4 py-3">Author</th>
+                    <th scope="col" class="px-4 py-3">Status</th>
+                    <th scope="col" class="px-4 py-3 text-right">Duration</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-800 text-sm">
+                  ${rows.map(r => `
+                    <tr class="hover:bg-zinc-800/60 transition-colors cursor-pointer" onclick="window.location.hash='#/detail/1'">
+                      <td class="px-4 py-3.5 whitespace-nowrap">
+                        <a href="#/detail/1" class="font-mono font-semibold text-cyan-300 hover:underline">${r.number}</a>
+                        <div class="text-xs text-zinc-300 mt-0.5">${r.pipeline}</div>
+                      </td>
+                      <td class="px-4 py-3.5 max-w-xs">
+                        <div class="font-mono text-xs text-zinc-200 truncate" title="${r.branch}">${r.branch} · ${r.commit}</div>
+                        <div class="text-sm text-zinc-300 truncate">${r.commitMsg}</div>
+                      </td>
+                      <td class="px-4 py-3.5 whitespace-nowrap text-zinc-200">${r.author}</td>
+                      <td class="px-4 py-3.5 whitespace-nowrap">${statusBadge(r.status)}</td>
+                      <td class="px-4 py-3.5 whitespace-nowrap text-right font-mono tabular-nums text-zinc-200" ${r.durationSec === null ? 'aria-label="Duration pending"' : ''}>
+                        ${formatDuration(r.durationSec)}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderDetail(state) {
+        const effectiveLong = state === 'long-loading' || uiState.longOp.active;
+        const stages = ['Checkout', 'Install & Cache', 'Run Test Suite', 'Package Artifacts'];
+        const activeStage = state === 'long-loading' ? 2 : uiState.longOp.stage;
+        const elapsed = state === 'long-loading' ? 7 : uiState.longOp.elapsed;
+
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2 text-xs font-mono text-zinc-300">
+                  <a href="#/list" class="hover:text-cyan-300 underline">Pipelines</a>
+                  <span aria-hidden="true">/</span>
+                  <span>core-api</span>
+                  <span aria-hidden="true">/</span>
+                  <span>#4821</span>
+                </div>
+                <h1 class="text-2xl font-semibold tracking-tight text-zinc-100">Job #4821 — build-and-deploy</h1>
+                <p class="text-sm text-zinc-300">Branch <code class="font-mono text-zinc-200">main</code> · Commit <code class="font-mono text-zinc-200">a94f2c1</code> · Runner <code class="font-mono text-zinc-200">eu-central-04</code></p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" data-motion-trigger onclick="window.__pfTriggerMicroMoment()" class="btn-press min-h-[44px] rounded-md bg-cyan-500 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-cyan-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
+                  Re-run failed job
+                </button>
+                <button type="button" onclick="window.__pfStartLongOp()" class="btn-press min-h-[44px] rounded-md border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-100 hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
+                  Full rebuild &amp; artifacts (&gt;3s)
+                </button>
+              </div>
+            </div>
+
+            ${effectiveLong ? `
+              <section role="status" aria-live="polite" class="rounded-lg border border-cyan-500/40 bg-zinc-900 p-5 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 class="text-base font-semibold text-zinc-100">Pipeline Re-run &amp; Artifact Build in Progress</h2>
+                    <p class="text-sm font-mono tabular-nums text-cyan-300">Elapsed ${elapsed}s · Usually 12–18s</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.__pfNotifyLongOp()" class="btn-press min-h-[40px] rounded-md border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-700">Notify when ready</button>
+                    <button type="button" onclick="window.__pfCancelLongOp()" class="btn-press min-h-[40px] rounded-md border border-rose-500/40 bg-rose-500/10 px-3 py-1.5 text-sm font-medium text-rose-200 hover:bg-rose-500/20">Cancel</button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  ${stages.map((st, idx) => {
+                    const done = idx < activeStage;
+                    const current = idx === activeStage;
+                    return `
+                      <div class="rounded-md border p-3 ${done ? 'border-emerald-500/40 bg-emerald-500/10' : current ? 'border-cyan-500/50 bg-cyan-500/10' : 'border-zinc-800 bg-zinc-950/60 opacity-60'}">
+                        <div class="text-xs font-mono uppercase tracking-wider ${done ? 'text-emerald-300' : current ? 'text-cyan-300' : 'text-zinc-400'}">
+                          ${done ? 'Done' : current ? 'Running' : 'Queued'}
+                        </div>
+                        <div class="text-sm font-medium text-zinc-100 mt-1">${st}</div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </section>
+            ` : ''}
+
+            <section class="rounded-lg border border-zinc-800 bg-zinc-900 p-4 flex flex-wrap items-center justify-between gap-4 ${uiState.flashRow ? 'row-flash' : ''}">
+              <div class="flex items-center gap-4">
+                ${statusBadge(uiState.jobStatus)}
+                <span class="text-sm font-mono tabular-nums text-zinc-200">Re-runs: ${fmtNum.format(uiState.rerunCount)}</span>
+              </div>
+              <span class="text-sm font-mono tabular-nums text-zinc-300">Duration: 2m 22s · Exit code 1</span>
+            </section>
+
+            <section class="rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden">
+              <div class="border-b border-zinc-800 bg-zinc-900 px-4 py-2.5 flex items-center justify-between">
+                <h2 class="text-sm font-mono font-semibold text-zinc-200">Live Terminal Log Tail</h2>
+                <span class="text-xs font-mono text-zinc-400">7 lines</span>
+              </div>
+              <div class="log-scroll overflow-x-auto p-4 font-mono text-sm leading-relaxed space-y-1.5">
+                ${LOG_LINES.map(line => `
+                  <div class="flex gap-3 whitespace-nowrap">
+                    <span class="text-zinc-400 tabular-nums shrink-0">${line.ts}</span>
+                    <span class="shrink-0 font-semibold ${line.lvl.trim() === 'ERR' ? 'text-rose-400' : line.lvl.trim() === 'WARN' ? 'text-amber-300' : 'text-cyan-400'}">${line.lvl}</span>
+                    <span class="text-zinc-200">${line.msg}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </section>
+          </div>
+        `;
+      }
+
+      function renderSettings(state) {
+        return `
+          <div class="max-w-2xl space-y-6">
+            <div>
+              <h1 class="text-2xl font-semibold tracking-tight text-zinc-100">Runner Pool &amp; Webhooks</h1>
+              <p class="text-sm text-zinc-300">Configure concurrency limits and outbound deployment notifications.</p>
+            </div>
+            ${state === 'locked' ? `<div role="alert" class="rounded-md border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">Admin role required to modify webhook secrets.</div>` : ''}
+            <form onsubmit="event.preventDefault(); window.__pfSaveSettings();" class="rounded-lg border border-zinc-800 bg-zinc-900 p-6 space-y-5">
+              <div>
+                <label for="pf-runners" class="block text-sm font-medium text-zinc-200 mb-1.5">Max Concurrent Runners</label>
+                <input id="pf-runners" type="number" min="1" max="64" value="8" class="w-32 min-h-[44px] rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-mono tabular-nums text-zinc-100" />
+              </div>
+              <div>
+                <label for="pf-webhook" class="block text-sm font-medium text-zinc-200 mb-1.5">Deployment Webhook URL</label>
+                <input id="pf-webhook" type="url" value="https://hooks.pipeforge.internal/v1/deploy" class="w-full min-h-[44px] rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-mono text-zinc-100" />
+              </div>
+              <div class="pt-2 flex items-center gap-3">
+                <button type="submit" ${state === 'locked' ? 'disabled' : ''} class="btn-press min-h-[44px] rounded-md bg-cyan-500 px-5 py-2 text-sm font-semibold text-zinc-950 hover:bg-cyan-400 disabled:opacity-50">Save configuration</button>
+                ${uiState.settingsSaved ? `<span class="text-sm text-emerald-300">Configuration saved.</span>` : ''}
+              </div>
+            </form>
+          </div>
+        `;
+      }
+
+      function render() {
+        const route = getEffectiveRoute();
+        const state = getEffectiveState();
+        uiState.route = route;
+        let body = '';
+        if (route === '#/login') body = renderLogin(state);
+        else if (route === '#/list') body = renderList(state);
+        else if (route === '#/detail/1') body = renderDetail(state);
+        else if (route === '#/settings') body = renderSettings(state);
+        document.getElementById('app').innerHTML = renderShell(route, state, body);
+      }
+
+      window.__pfRefresh = function () {
+        uiState.renderState = 'default';
+        render();
+        showToast('Telemetry refreshed.');
+      };
+
+      window.__pfTriggerMicroMoment = function () {
+        const prevStatus = uiState.jobStatus;
+        uiState.rerunCount += 1;
+        uiState.jobStatus = 'running';
+        uiState.flashRow = true;
+        render();
+        showToast('Job #4821 queued for re-run.', 'Undo', () => {
+          uiState.rerunCount = Math.max(0, uiState.rerunCount - 1);
+          uiState.jobStatus = prevStatus;
+          uiState.flashRow = false;
+          render();
+        });
+        setTimeout(() => { uiState.flashRow = false; }, 1250);
+      };
+
+      window.__pfStartLongOp = function () {
+        if (uiState.longOp.timerId) clearInterval(uiState.longOp.timerId);
+        uiState.longOp = { active: true, stage: 0, elapsed: 0, timerId: null, backgrounded: false };
+        render();
+        uiState.longOp.timerId = setInterval(() => {
+          uiState.longOp.elapsed += 1;
+          if (uiState.longOp.elapsed === 1) uiState.longOp.stage = 1;
+          if (uiState.longOp.elapsed === 3) uiState.longOp.stage = 2;
+          if (uiState.longOp.elapsed === 5) uiState.longOp.stage = 3;
+          if (uiState.longOp.elapsed >= 6) {
+            clearInterval(uiState.longOp.timerId);
+            uiState.longOp.active = false;
+            uiState.jobStatus = 'passed';
+            uiState.flashRow = true;
+            render();
+            showToast('Pipeline rebuild & artifact package succeeded.');
+            return;
+          }
+          render();
+        }, 1000);
+      };
+
+      window.__pfCancelLongOp = function () {
+        if (uiState.longOp.timerId) clearInterval(uiState.longOp.timerId);
+        uiState.longOp.active = false;
+        render();
+        showToast('Pipeline rebuild cancelled.');
+      };
+
+      window.__pfNotifyLongOp = function () {
+        uiState.longOp.backgrounded = true;
+        showToast('Running in background — we will notify you when artifacts are ready.');
+      };
+
+      window.__pfSaveSettings = function () {
+        uiState.settingsSaved = true;
+        render();
+        showToast('Runner & webhook settings updated.');
+      };
+
+      window.addEventListener('hashchange', render);
+      window.addEventListener('DOMContentLoaded', render);
+      render();
+    })();
+  </script>
+</body>
+</html>

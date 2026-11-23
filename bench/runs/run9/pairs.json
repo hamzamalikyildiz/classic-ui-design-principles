@@ -1,0 +1,293 @@
+{
+  "mode": "app",
+  "pairs": [
+    {
+      "id": "cift1",
+      "mood": "trust",
+      "brief": "cv-opt",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift1/A/index.html",
+        "contact_sheet": "pairs/cift1/A/contact-sheet.png",
+        "filmstrip": "pairs/cift1/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift1/B/index.html",
+        "contact_sheet": "pairs/cift1/B/contact-sheet.png",
+        "filmstrip": "pairs/cift1/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift2",
+      "mood": "playful",
+      "brief": "meal-planner",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift2/A/index.html",
+        "contact_sheet": "pairs/cift2/A/contact-sheet.png",
+        "filmstrip": "pairs/cift2/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift2/B/index.html",
+        "contact_sheet": "pairs/cift2/B/contact-sheet.png",
+        "filmstrip": "pairs/cift2/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift3",
+      "mood": "trust",
+      "brief": "cv-opt",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift3/A/index.html",
+        "contact_sheet": "pairs/cift3/A/contact-sheet.png",
+        "filmstrip": "pairs/cift3/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift3/B/index.html",
+        "contact_sheet": "pairs/cift3/B/contact-sheet.png",
+        "filmstrip": "pairs/cift3/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift4",
+      "mood": "trust",
+      "brief": "clinic-appt",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift4/A/index.html",
+        "contact_sheet": "pairs/cift4/A/contact-sheet.png",
+        "filmstrip": "pairs/cift4/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift4/B/index.html",
+        "contact_sheet": "pairs/cift4/B/contact-sheet.png",
+        "filmstrip": "pairs/cift4/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift5",
+      "mood": "trust",
+      "brief": "invoice-quote",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift5/A/index.html",
+        "contact_sheet": "pairs/cift5/A/contact-sheet.png",
+        "filmstrip": "pairs/cift5/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift5/B/index.html",
+        "contact_sheet": "pairs/cift5/B/contact-sheet.png",
+        "filmstrip": "pairs/cift5/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift6",
+      "mood": "trust",
+      "brief": "invoice-quote",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift6/A/index.html",
+        "contact_sheet": "pairs/cift6/A/contact-sheet.png",
+        "filmstrip": "pairs/cift6/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift6/B/index.html",
+        "contact_sheet": "pairs/cift6/B/contact-sheet.png",
+        "filmstrip": "pairs/cift6/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift7",
+      "mood": "editorial",
+      "brief": "support-inbox",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift7/A/index.html",
+        "contact_sheet": "pairs/cift7/A/contact-sheet.png",
+        "filmstrip": "pairs/cift7/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift7/B/index.html",
+        "contact_sheet": "pairs/cift7/B/contact-sheet.png",
+        "filmstrip": "pairs/cift7/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift8",
+      "mood": "trust",
+      "brief": "cv-opt",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift8/A/index.html",
+        "contact_sheet": "pairs/cift8/A/contact-sheet.png",
+        "filmstrip": "pairs/cift8/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift8/B/index.html",
+        "contact_sheet": "pairs/cift8/B/contact-sheet.png",
+        "filmstrip": "pairs/cift8/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift9",
+      "mood": "trust",
+      "brief": "clinic-appt",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift9/A/index.html",
+        "contact_sheet": "pairs/cift9/A/contact-sheet.png",
+        "filmstrip": "pairs/cift9/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift9/B/index.html",
+        "contact_sheet": "pairs/cift9/B/contact-sheet.png",
+        "filmstrip": "pairs/cift9/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift10",
+      "mood": "technical",
+      "brief": "cicd-board",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift10/A/index.html",
+        "contact_sheet": "pairs/cift10/A/contact-sheet.png",
+        "filmstrip": "pairs/cift10/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift10/B/index.html",
+        "contact_sheet": "pairs/cift10/B/contact-sheet.png",
+        "filmstrip": "pairs/cift10/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift11",
+      "mood": "playful",
+      "brief": "meal-planner",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift11/A/index.html",
+        "contact_sheet": "pairs/cift11/A/contact-sheet.png",
+        "filmstrip": "pairs/cift11/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift11/B/index.html",
+        "contact_sheet": "pairs/cift11/B/contact-sheet.png",
+        "filmstrip": "pairs/cift11/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift12",
+      "mood": "editorial",
+      "brief": "support-inbox",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift12/A/index.html",
+        "contact_sheet": "pairs/cift12/A/contact-sheet.png",
+        "filmstrip": "pairs/cift12/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift12/B/index.html",
+        "contact_sheet": "pairs/cift12/B/contact-sheet.png",
+        "filmstrip": "pairs/cift12/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift13",
+      "mood": "technical",
+      "brief": "cicd-board",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift13/A/index.html",
+        "contact_sheet": "pairs/cift13/A/contact-sheet.png",
+        "filmstrip": "pairs/cift13/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift13/B/index.html",
+        "contact_sheet": "pairs/cift13/B/contact-sheet.png",
+        "filmstrip": "pairs/cift13/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift14",
+      "mood": "playful",
+      "brief": "meal-planner",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift14/A/index.html",
+        "contact_sheet": "pairs/cift14/A/contact-sheet.png",
+        "filmstrip": "pairs/cift14/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift14/B/index.html",
+        "contact_sheet": "pairs/cift14/B/contact-sheet.png",
+        "filmstrip": "pairs/cift14/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift15",
+      "mood": "technical",
+      "brief": "cicd-board",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift15/A/index.html",
+        "contact_sheet": "pairs/cift15/A/contact-sheet.png",
+        "filmstrip": "pairs/cift15/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift15/B/index.html",
+        "contact_sheet": "pairs/cift15/B/contact-sheet.png",
+        "filmstrip": "pairs/cift15/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift16",
+      "mood": "trust",
+      "brief": "invoice-quote",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift16/A/index.html",
+        "contact_sheet": "pairs/cift16/A/contact-sheet.png",
+        "filmstrip": "pairs/cift16/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift16/B/index.html",
+        "contact_sheet": "pairs/cift16/B/contact-sheet.png",
+        "filmstrip": "pairs/cift16/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift17",
+      "mood": "editorial",
+      "brief": "support-inbox",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift17/A/index.html",
+        "contact_sheet": "pairs/cift17/A/contact-sheet.png",
+        "filmstrip": "pairs/cift17/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift17/B/index.html",
+        "contact_sheet": "pairs/cift17/B/contact-sheet.png",
+        "filmstrip": "pairs/cift17/B/filmstrip.png"
+      }
+    },
+    {
+      "id": "cift18",
+      "mood": "trust",
+      "brief": "clinic-appt",
+      "rep": "1",
+      "A": {
+        "html": "pairs/cift18/A/index.html",
+        "contact_sheet": "pairs/cift18/A/contact-sheet.png",
+        "filmstrip": "pairs/cift18/A/filmstrip.png"
+      },
+      "B": {
+        "html": "pairs/cift18/B/index.html",
+        "contact_sheet": "pairs/cift18/B/contact-sheet.png",
+        "filmstrip": "pairs/cift18/B/filmstrip.png"
+      }
+    }
+  ]
+}
