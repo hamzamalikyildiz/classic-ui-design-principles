@@ -62,3 +62,13 @@ End with this table, one row per inventory screen, in the same order:
 - **Done** takes exactly one value: `Redesigned` (full loop run), `Styled to match` (tokens and primitives applied, loop not run), `Untouched`.
 - **States covered** is `n/total` from the inventory row; **Open gaps** names what is missing, never blank when states < total.
 - Report `Untouched` and `Styled to match` honestly. The user then knows what still needs work, and nothing surprises them in the next review. Never mark `Redesigned` for a screen whose states or audit are incomplete.
+
+## 6. Brownfield Refactor (Polishing an Existing App Without Regressions)
+
+When refactoring or polishing a live codebase rather than starting greenfield, keep existing contracts intact while upgrading visual quality and state coverage systematically:
+
+1. **Freeze existing debt first:** Run `python <skill_dir>/scripts/uitools.py audit --routes-glob "app/**/page.tsx" --css app/globals.css --write-baseline` (adjusting globs for `pages/**`, `.vue`, or `.svelte`) to capture legacy findings in `.uitools-baseline.json` so pre-existing debt does not drown new regressions.
+2. **Map tokens & primitives in-place:** Upgrade semantic tokens in `globals.css` (`:root` / `.dark` / `@theme`) and shared `components/ui/*` primitives (`reference/shadcn-baseline.md`) while keeping existing component prop contracts, data-fetching hooks, `data-testid` selectors, form field `name`s, and route URLs untouched.
+3. **Upgrade the shared layout shell once:** Polish `app/layout.tsx` (or root `App.vue` / `+layout.svelte`), `Sidebar`, and `Navbar` first—adding `<main>`/`<header>`/`<nav>` landmarks, root `lang`, active-route indicators, and a reachable `ThemeToggle`—before touching child screens.
+4. **Run the P0 → P1 → P2 screen loop safely:** Work wave by wave (Section 3), adding missing 9-state coverage (`reference/states.md`) and 1–2 `transform`/`opacity`-led micro-moments (`reference/motion.md`) without deleting working business logic, validation, or event handlers. Preserve what already gives the product character (brand palette, domain illustrations, working interactions).
+5. **Verify against baseline & report honestly:** Re-run `uitools.py audit ... --baseline .uitools-baseline.json` plus `render.py --routes routes.json --check --motion` (or one-shot `verify.py --routes routes.json --motion`), fix every new FAIL/WARN, and output the Mandatory Coverage Report (Section 5) distinguishing `Redesigned`, `Styled to match`, and `Untouched` honestly.

@@ -14,7 +14,7 @@ Works with Claude (claude.ai, Claude Code) and any agent that reads `SKILL.md` f
 - **Color:** 60-30-10, WCAG AA contrast (hex, Tailwind v3/v4, `oklch`/`oklab`/`color-mix`, shadcn tokens), semantic status colors
 - **Layout:** 8pt grid, law of proximity, nested border radius, Z/F patterns, bento grid
 - **Typography & locale:** modular type scale, 45–75ch line length, `text-balance`/`text-pretty`, `tabular-nums`, `Intl` formatting, Turkish `lang="tr"` uppercase safety, dark-mode toggle
-- **UX, 9-state matrix & motion:** Fitts, Hick, Jakob, Miller, single primary CTA, 9-state coverage (Empty, Loading, Long-loading >3s, Error, Partial, Locked, Success, Offline, Stale), `transform`/`opacity`-only micro-moments & `prefers-reduced-motion`
+- **UX, 9-state matrix & motion:** Fitts, Hick, Jakob, Miller, single primary CTA, 9-state coverage (Empty, Loading, Long-loading >3s, Error, Partial, Locked, Success, Offline, Stale), `transform`/`opacity`-led micro-moments (with short paint-only exceptions per `reference/motion.md`) & `prefers-reduced-motion`
 - **Character:** mood profiles (Playful, Trust, Bold, Editorial, Technical), one hero surface per screen, depth over borders, same-hue contrast fixes, categorical chart colors
 
 Rules are selected per page type: landing, dashboard, form, content, mobile, e-commerce, settings, nav and card/modal components.
@@ -26,14 +26,14 @@ classic-ui-design-principles/
 ├── SKILL.md              # core: Component/Page/App modes, mood table, hard rules, tooling (< 11 KB)
 ├── moods/                # per-mood notes: expressive (Playful/Bold), editorial, technical, trust
 ├── reference/
-│   ├── app-flow.md       # multi-screen App mode inventory & coverage report
+│   ├── app-flow.md       # multi-screen App mode inventory, brownfield refactor & coverage report
 │   ├── motion.md         # motion tokens, micro-moments, reduced-motion fallback
 │   ├── page-types.md     # page-type matrix and mood mapping
 │   ├── rules.md          # rule values, anti-patterns, conflict resolution
 │   ├── sample-data.md    # realistic copy & domain-specific seed guidelines
 │   ├── shadcn-baseline.md# shadcn/ui token & component baseline
 │   ├── states.md         # 9-state coverage matrix
-│   ├── tooling.md        # uitools.py & render.py flags, rules, routes.json schema
+│   ├── tooling.md        # verify.py, uitools.py & render.py flags, rules, routes.json schema
 │   ├── typography-locale.md # scale, balance/pretty, tabular-nums, Intl, tr-uppercase
 │   └── visual-quality.md # palette recipe, typography voice, product UI, rhythm
 ├── examples/
@@ -41,6 +41,7 @@ classic-ui-design-principles/
 ├── bench/                # blind A/B benchmark: briefs, pair builder, scorer
 │   └── runs/             # archived benchmark runs (run2–run8; see bench/runs/README.md)
 ├── scripts/
+│   ├── verify.py         # one-shot static audit + rendered --check [--motion] verifier
 │   ├── uitools.py        # contrast, scale, radius, snap, audit (Python 3 stdlib only)
 │   ├── render.py         # screenshot, --url/--routes/--motion/--check (Playwright + Chromium)
 │   ├── uicolor.py        # hex/oklch/oklab/color-mix & Tailwind v4 color engine
@@ -59,15 +60,16 @@ classic-ui-design-principles/
 git clone https://github.com/hamzamalikyildiz/classic-ui-design-principles ~/.claude/skills/classic-ui-design-principles
 ```
 
-**claude.ai:** build the light bundle and upload it in the Skills section of Settings (it leaves out `bench/`, `tests/` and `examples/`, about 150 KB instead of several MB):
+**claude.ai & skill marketplaces:** build the light bundle (`SKILL.md`, `LICENSE`, `moods/`, `reference/`, `scripts/` — leaving out `bench/`, `tests/` and `examples/`, about 150 KB instead of several MB):
 
 ```bash
-python package_skill.py   # writes dist/classic-ui-design-principles.zip
+python package_skill.py          # writes dist/classic-ui-design-principles.zip (wrapped folder for claude.ai)
+python package_skill.py --flat   # writes root-level SKILL.md zip (for marketplaces like Agensi.io)
 ```
 
 Python and browser requirements for the optional tools are listed in `requirements.txt`.
 
-`uitools.py` runs standalone with zero dependencies (Python 3 stdlib only). **Copying scripts into another repo?** Copy the entire `scripts/` folder (`uitools.py`, `render.py`, `uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`, and `checks/*.js`) together — `uitools.py` and `render.py` import those modules and JS payloads directly.
+`uitools.py` runs standalone with zero dependencies (Python 3 stdlib only). When installed in `~/.claude/skills/...` or `~/.gemini/config/skills/...`, invoke scripts relative to `SKILL.md` (`<skill_dir>/scripts/...`), not the target app's CWD. **Copying scripts into another repo?** Copy the entire `scripts/` folder (`verify.py`, `uitools.py`, `render.py`, `uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`, and `checks/*.js`) together — `verify.py`, `uitools.py`, and `render.py` import those modules and JS payloads directly.
 
 For screenshots, `--url`, `--routes`, `--motion`, and `--check`, `render.py` needs Playwright, Chromium/Chrome, and `node`/`npm` (for `axe-core` and offline Tailwind/font fallback):
 
@@ -171,9 +173,12 @@ To run multi-route rendered, state, and motion checks against a built app (see [
 
 ## Script reference
 
-`uitools.py` runs standalone with zero dependencies (Python 3 stdlib only); `render.py` needs Playwright + Chromium.
+`uitools.py` and `verify.py` run with Python 3 stdlib only; `render.py` (and `verify.py`'s rendered pass) needs Playwright + Chromium.
 
 ```bash
+python scripts/verify.py index.html --mood trust --out shot.png --fail-on warn
+python scripts/verify.py --routes examples/app-demo/routes.json --css app/globals.css --motion --format json --fail-on fail
+
 python scripts/uitools.py contrast pink-400 pink-100
 # #f472b6 on #fce7f3: 2.25:1 | AA text(4.5): FAIL | AA large/UI(3.0): FAIL
 #   fix -> pink-700 / #cc1072 (>= 4.5:1, same hue)

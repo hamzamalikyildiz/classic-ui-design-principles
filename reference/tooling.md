@@ -1,6 +1,20 @@
 # Tooling details
 
-`uitools.py` runs with Python 3 stdlib only (`uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`). `render.py` uses Playwright + headless Chromium and `scripts/checks/*.js` (`check.js`, `mobile.js`, `interact.js`, `motion.js`, `sweep.js`).
+When installed as an agent skill (`~/.claude/skills/...` or `~/.gemini/config/skills/...`), resolve `scripts/` relative to `SKILL.md` (`<skill_dir>/scripts/...`), not the target app's working directory. `uitools.py` and `verify.py` run with Python 3 stdlib only (`uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`); `render.py` (and `verify.py`'s rendered pass) uses Playwright + headless Chromium and `scripts/checks/*.js` (`check.js`, `mobile.js`, `interact.js`, `motion.js`, `sweep.js`).
+
+## `verify.py` (one-shot static + rendered verification)
+
+`verify.py` runs static `uitools.py audit` and rendered `render.py --check` (plus optional `--motion`) in one pass and merges findings into a unified exit code and report:
+
+```bash
+python scripts/verify.py --help
+python scripts/verify.py page.html --mood trust --out shot.png
+python scripts/verify.py --routes routes.json --routes-glob "app/**/page.tsx" --css app/globals.css --motion --format json --fail-on fail
+```
+
+- Accepts single HTML/component/route targets or `--url` / `--routes`, forwarding static flags (`--mood`, `--css`, `--route`, `--routes-glob`, `--root`, `--tsconfig`, `--baseline`, `--grid`) to `uitools.py` and render flags (`--out`, `--out-dir`, `--viewports`, `--states`, `--storage-state`, `--wait-for`, `--dark`, `--motion`, `--motion-trigger`, `--require-axe`) to `render.py --check`.
+- `--format text|json`: human-readable summary or structured JSON combining static and rendered findings.
+- `--fail-on none|fail|warn`: exit `1` when combined findings reach the chosen severity threshold (default `fail`). If Playwright/Chromium is unavailable, `verify.py` still completes the static audit and reports the skipped render check explicitly.
 
 ## `uitools.py` commands & flags
 
@@ -102,8 +116,9 @@ Top-level keys:
 - `long_loading_frames_ms` (optional list of ints): filmstrip capture timestamps in ms.
 - `routes` (required non-empty list): each item has `name` (unique, no `/` or `\`), `path` (or `url`), and optional `wait_for`, `states`, `viewports`, `actions`, `api_pattern`, `state_mocks`, `long_loading_frames_ms`.
 
-## CI usage
+## Packaging & CI usage
 
+- `package_skill.py` builds a lightweight distribution zip (`SKILL.md`, `LICENSE`, `moods/`, `reference/`, `scripts/`, excluding `bench/`, `tests/`, `examples/`): `python package_skill.py` writes a `classic-ui-design-principles/`-wrapped archive for `claude.ai`, while `python package_skill.py --flat` writes a root-level `SKILL.md` archive for skill marketplaces such as Agensi.io.
 - `render.py --require-axe`: exit 1 when axe-core is missing or errors. Without it a skipped accessibility check is reported as `axe-not-run` / `axe-error` (INFO, with the text "Accessibility was NOT checked") so it is never mistaken for "no findings"; with it the run fails. `--fail-on none|fail|warn` still sets the severity that fails the run; `--require-axe` implies at least `fail`.
 - `scripts/e2e_gate.py` compares a `--routes ... --format json` report with a spec. `--expect FILE` (example with deliberate defects): every listed rule must still be caught. `--baseline FILE` (clean example): only the listed rules, up to the listed counts, may appear as WARN/FAIL; FAIL is never allowed. Both modes fail when axe did not run. `.github/workflows/app-e2e.yml` runs both against `examples/app-demo` and `examples/app-demo-polished`.
 - Allowed motion properties are listed once, in the property policy table in `reference/motion.md`; `tests/fixtures/motion/pos_allowed_properties.html` checks that the allowed tier passes `--motion`.
