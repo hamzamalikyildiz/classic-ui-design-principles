@@ -76,6 +76,8 @@ class RequireAxeCliTests(unittest.TestCase):
                     rd.main(base + flag)
                     codes[bool(flag)] = 0
                 except SystemExit as exc:
+                    if isinstance(exc.code, str):   # render.py exits with a message when Playwright is not installed (CI without browsers)
+                        raise unittest.SkipTest(f'Playwright/Chromium unavailable: {exc.code}')
                     codes[bool(flag)] = exc.code
                 except Exception as exc:  # Chromium not available on this machine
                     raise unittest.SkipTest(f'Playwright/Chromium unavailable: {exc}')
