@@ -11,8 +11,8 @@
   /* allowed tier: paint-only and grid-rows properties, short and on small areas */
   .reveal { clip-path: inset(0 100% 0 0); transition: clip-path var(--dur-base) var(--ease); background: #e0f2fe; padding: 12px; border-radius: 8px; margin-top: 16px; }
   .reveal.on { clip-path: inset(0 0 0 0); }
-  .chip { display: inline-block; padding: 8px 12px; border-radius: 8px; background: #f1f5f9; color: #0f172a; box-shadow: 0 0 0 rgba(0,0,0,0); transition: box-shadow var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); margin-top: 16px; }
-  .chip.on { box-shadow: 0 4px 12px rgba(0,0,0,.18); background: #dcfce7; color: #14532d; transform: translateY(-2px); }
+  .chip { display: inline-block; padding: 8px 12px; border-radius: 8px; background: #f1f5f9; color: #0f172a; box-shadow: 0 0 0 rgba(0,0,0,0); filter: blur(1px); transition: box-shadow var(--dur-fast) var(--ease), filter var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); margin-top: 16px; }
+  .chip.on { box-shadow: 0 4px 12px rgba(0,0,0,.18); background: #dcfce7; color: #14532d; transform: translateY(-2px); filter: blur(0); }
   .rows { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-base) var(--ease), opacity var(--dur-base) var(--ease); opacity: 0; margin-top: 16px; }
   .rows.on { grid-template-rows: 1fr; opacity: 1; }
   .rows > div { overflow: hidden; }
