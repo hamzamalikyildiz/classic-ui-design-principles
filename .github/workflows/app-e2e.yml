@@ -52,9 +52,10 @@ jobs:
           cd examples/app-demo
           npm ci
           npm run build
+          pkill -f "vite preview" || true
           npx vite preview --port 5173 --strictPort &
           SERVER_PID=$!
-          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          trap 'kill $SERVER_PID 2>/dev/null || true; pkill -f "vite preview" || true' EXIT   # npx leaves the vite child running; free the port for the next step
           cd ../..
           for i in $(seq 1 30); do curl -fsS http://localhost:5173 >/dev/null 2>&1 && break; sleep 1; done
           curl -fsS http://localhost:5173 >/dev/null
@@ -66,9 +67,10 @@ jobs:
           cd examples/app-demo-polished
           npm ci
           npm run build
+          pkill -f "vite preview" || true
           npx vite preview --port 5173 --strictPort &
           SERVER_PID=$!
-          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          trap 'kill $SERVER_PID 2>/dev/null || true; pkill -f "vite preview" || true' EXIT   # npx leaves the vite child running; free the port for the next step
           cd ../..
           for i in $(seq 1 30); do curl -fsS http://localhost:5173 >/dev/null 2>&1 && break; sleep 1; done
           curl -fsS http://localhost:5173 >/dev/null
