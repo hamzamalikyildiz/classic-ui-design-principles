@@ -1,0 +1,4 @@
+{
+  "comment": "Findings the polished example is allowed to produce (highest count per rule, taken from a local run). The 422 network/js errors come from the mocked 'error' state; empty-column and blank-band come from the empty and loading captures. Anything else, or a higher count, fails the regression gate.",
+  "allowed": {"empty-column": 6, "js-errors": 4, "network-errors": 4, "blank-band": 2, "slow-feedback": 2}
+}

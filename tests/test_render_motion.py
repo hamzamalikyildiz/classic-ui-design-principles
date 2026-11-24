@@ -164,6 +164,10 @@ class RenderMotionChromiumTests(unittest.TestCase):
     def test_pos_tab_indicator(self):
         self._assert_positive_fixture('pos_tab_indicator.html')
 
+    def test_pos_allowed_properties(self):
+        """Every property the motion policy (reference/motion.md) allows must pass the motion audit."""
+        self._assert_positive_fixture('pos_allowed_properties.html', trigger='#go')
+
     def test_pos_reduced_motion(self):
         self._assert_positive_fixture('pos_reduced_motion.html')
 

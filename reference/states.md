@@ -34,7 +34,7 @@ Micro-moments turn static templates into a live product:
 - **Score count-up + progress ring fill:** Step metrics over `400–600ms` (e.g., score stepping `69 -> 73` using `tabular-nums` + SVG `stroke-dashoffset` fill) with an `aria-live="polite"` announcement (`prefers-reduced-motion`: instant `73`).
 - **Brief `1.2s` highlight on accepted suggestion row:** Flash a semantic/brand tint (`bg-emerald-500/15`) for `1.2s` on the accepted suggestion row inside the live preview (`prefers-reduced-motion`: instant border accent).
 - **Optimistic UI update + undo toast:** Update UI in-place and show a `4s` toast with an actionable `"Undo"` button, reverting cleanly on click or failure.
-- **Smooth settled insertion of new list items:** Insert new rows with a `180–240ms` height/opacity settle and reserved dimensions without layout jump.
+- **Smooth settled insertion of new list items:** Insert new rows with a `180–240ms` settle: `grid-template-rows: 0fr -> 1fr` plus `opacity` (or a `transform` slide), reserving the row height so nothing below jumps (see the property policy in `reference/motion.md`).
 
 ## 4. Mandatory State Coverage Table Template
 

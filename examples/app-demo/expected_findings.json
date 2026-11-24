@@ -1,0 +1,5 @@
+{
+  "comment": "The demo contains deliberate defects (see IMPROVEMENT_REPORT.md). These render --routes --motion rules must keep firing; if one disappears the checker regressed.",
+  "rules": ["theme-toggle-missing", "long-wait-unexplained", "reduced-motion-ignored", "axe-color-contrast",
+            "motion-layout-property", "desktop-tiny-text", "tr-uppercase-render", "blank-band"]
+}

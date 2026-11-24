@@ -82,7 +82,7 @@ Değişiklikler gerçekten verimi artırıyor mu, tahminle değil ölçümle kar
 
 - **Kollar:** `strict` (bugünkü sürüm, `aac46ae`), `loose` (bu plan uygulanmış hali), `noskill`.
 - **Brief'ler:** yeni bir `bench/briefs_holdout_v3.json`, kodlamadan önce commit edilir: beş mood'dan 2'şer sayfa (10) ve 2 çok ekranlı uygulama akışı. Daha önce hiçbir koşuda kullanılmamış konular.
-- **Üretici ve hakem:** üretici Haiku, hakemler farklı aileden 5 kişilik hakem (Sonnet); mümkünse ikinci tekrar Gemini ile. Ek olarak `bench/human` kitiyle en az 5 gerçek kişi.
+- **Üretici ve hakem:** üretici Haiku, hakemler daha güçlü bir modelden (Sonnet, aynı Claude ailesi) 5 kişilik hakem; mümkünse ikinci tekrar Gemini ile. Ek olarak `bench/human` kitiyle en az 5 gerçek kişi.
 - **Ölçülecekler:**
   - Hakem kazanma oranı: `loose` - `strict` ve her ikisi - `noskill`.
   - Taban metrikleri: ciddi axe ihlali, taban WARN sayısı.

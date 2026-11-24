@@ -52,7 +52,7 @@ High-confidence votes only (conf >= 4): skill wins 21/25.
 | noskill | 6 | 3 | 0.3 |
 ## Run setup and caveats (held-out validation v2)
 
-- **Pre-registered & cross-family:** skill frozen at commit `fc3a31b` (post-Wave 1/2/3 hardening) and the 6 unseen briefs in `bench/briefs_holdout_v2.json` were committed before any page was generated. Generators: **Gemini 4 Hydrogen (Low)** (2 fix rounds, both arms). Judges: 5 **Gemini 4 Neon (Medium)** persona judges evaluating blindly in Turkish; A/B placement alternated across judges (`15/30` A vs B), pair order randomized per judge.
+- **Pre-registered & cross-model:** skill frozen at commit `fc3a31b` (post-Wave 1/2/3 hardening) and the 6 unseen briefs in `bench/briefs_holdout_v2.json` were committed before any page was generated. Generators: **Gemini 4 Hydrogen (Low)** (2 fix rounds, both arms). Judges: 5 **Gemini 4 Neon (Medium)** persona judges evaluating blindly in Turkish; A/B placement alternated across judges (`15/30` A vs B), pair order randomized per judge.
 - **Result:** skill won **25/30 votes (83%)**, **6 of 6 pairs** by majority; exact sign test `p = 0.0312`, pair-cluster bootstrap 95% CI **73% to 93%**. High-confidence votes (`conf >= 4`): **21/25**.
 - **Readability & Editorial validation:**
   - `editorial-a` (*Spruce and Varnish*, quiet profile): **4/5 wins** — skill omitted unrequested decorative SVGs and won Kaan, Murat, Nermin, and Selin on pure serif typography and centered alignment over `noskill`'s crude violin drawing.
@@ -61,3 +61,4 @@ High-confidence votes only (conf >= 4): skill wins 21/25.
 - **Balanced page length:** mean HTML length was nearly matched (**260.8 vs 246.5 lines**, `+5.8%`; **14.9 vs 12.9 KB**), and `content richness` (`+0.47`) was no longer the main driver—`professional look` (`+1.13`) and `hierarchy and readability` (`+0.93`) led instead.
 - **Automatic metrics (strictly non-axe separated):** serious axe violations `0/6` (`skill`) vs `3/6` (`noskill`); mean non-axe layout WARNs `0.0` vs `0.3`.
 - **Caveats:** small sample (`n = 6` pairs, wide generalization error even though `6/6` reaches `p = 0.0312`), LLM persona judges rather than real users, and `skill` arm still runs `--check` while `noskill` runs plain screenshots (`render.py --out`).
+- **Family note:** the generator (Gemini 4 Hydrogen Low) and the judges (Gemini 4 Neon Medium) are different models of the same family, so this run is cross-model, not cross-family. Judging by a different family was only probed in run9, with a single Claude judge.

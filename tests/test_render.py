@@ -242,7 +242,7 @@ class JsPayloads(unittest.TestCase):
         with mock.patch.object(rd, 'find_axe', return_value='/* axe */'):
             res = rd.run_axe(fake_page)
         self.assertEqual(len(res), 1)
-        self.assertEqual(res[0][:2], ('INFO', 'axe'))
+        self.assertEqual(res[0][:2], ('INFO', 'axe-error'))
         self.assertIn('CSP blocked', res[0][2])
 
 

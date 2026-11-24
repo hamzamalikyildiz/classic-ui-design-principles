@@ -18,3 +18,4 @@ bench/runs/*/judge_*/
 bench/runs/*/human_kit/
 dist/
 bench/runs/bold_quick/
+node_modules/

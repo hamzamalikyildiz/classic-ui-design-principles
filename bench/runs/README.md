@@ -19,7 +19,7 @@
 | run4 | Cross-model run by a different tool | Medium: honest, not significant (p = 0.30) |
 | run5, run6 | Targeted tuning of technical and editorial | Low as evidence: tuned on the judges' own reasons |
 | run7 | Held-out validation (v1, n=10) | High: unseen briefs, frozen skill, significant (p = 0.0215) |
-| run8 | Held-out validation (v2, n=6, post-hardening) | High (small sample): unseen briefs, frozen skill (`fc3a31b`), cross-family judges, near-matched line length (`260.8 vs 246.5`), p = 0.0312 |
+| run8 | Held-out validation (v2, n=6, post-hardening) | High (small sample): unseen briefs, frozen skill (`fc3a31b`), cross-model judges (generator Hydrogen and judges Neon are both Gemini 4 models, so not independent of the generator's family), near-matched line length (`260.8 vs 246.5`), p = 0.0312 |
 | reg_v2 | Single-page mini-regression check (n=5, 3 judges) | Low-Medium: quick check confirming `0/5` axe violations and shorter HTML (`205.2 vs 248.2` lines) without regression on `bold/editorial/technical` |
 | run9 | Multi-screen app flow + `noskill_check` ablation (`n=6` × 3 arms) | High methodology / mixed headline (`p = 0.69`): unseen flow briefs, frozen skill (`bffa262`), honest motion/switcher artifact findings (`63%` 5-judge Neon, `6/6` Claude Selin probe, `0.83` vs `8.0` motion WARNs); human rating kit pending real raters |
 

@@ -33,9 +33,9 @@
 
 **UX laws**
 - Fitts: primary CTAs and touch-first UI ≥44×44px (`h-11`+; hero CTA `h-12`–`h-14`). Desktop secondary controls, toolbars, segmented controls and tabs: 32–40px (`h-8`–`h-10`), never below 24px. Destructive actions away from the primary.
-- Hick: ≤7 options per menu; long forms in steps; advanced options behind "More".
+- Hick: more choices cost more time, so group and prioritise them; about 5-7 options per group is a starting size, not a cap. Long forms go in steps and advanced options behind "More".
 - Jakob: logo top-left, profile/actions top-right, left sidebar in apps, search at top, links in footer, standard icons.
-- Miller: 5–7 items per nav, tab or card group; overflow into groups or a "More" menu.
+- Miller: the "seven items" figure is about remembering things, not about menus that stay visible, so it is not a limit for navigation (Nielsen Norman Group calls it a myth in this use). Use about 5-7 per group as a starting size; decide grouping by label clarity, task frequency and scanning speed, and keep rarely used items in a "More" menu.
 - Single primary CTA: one solid button per screen/card/form; the rest outline or ghost.
 - Skeleton & empty states: every dynamic/async list/card gets an `animate-pulse` skeleton matching real content size, an empty state (icon + short text + one action) and an error state (do not invent stub skeleton widgets on static showcase pages).
 - Every interactive element has hover, focus-visible (accent ring), active and disabled states.
@@ -51,7 +51,7 @@ Too sterile: contrast fixed by turning colored text grey, grey-only charts, a fe
 
 | Request | Rule | Resolution |
 |---|---|---|
-| 10+ top-level nav items | Miller (≤7) | Group into categories + `"More"` dropdown |
+| 10+ top-level nav items | Scanning cost (Hick/Miller as a starting size) | Group by task and frequency with clear labels; rarely used items go in a `"More"` dropdown |
 | 3+ action buttons together | Single primary CTA | Keep 1 solid accent CTA, demote others to outline/ghost |
 | Light/pastel/yellow brand hue | WCAG AA | Keep light/brand surface for containers/accents, use dark ink or darken text shade within the same hue |
 | Flat/wireframe aesthetic | Depth over borders | Keep crisp hairlines (`1px`), elevate only interactive hero/popover via background step |

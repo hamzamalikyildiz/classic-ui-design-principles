@@ -196,7 +196,7 @@ The audit works per element, not per file:
 - **Nested radius:** child radius vs. parent radius minus parent padding
 - **Line length:** long paragraphs without `max-w-prose` / `<= 65ch` on themselves or an ancestor (skipping multi-column grids)
 - **Fonts:** more than 2 families across CSS, Google Fonts and `next/font` (relaxed to INFO in Playful/Bold, up to 3 recommended)
-- **Miller / states:** navs with more than 7 links, dynamic lists without skeleton or empty states, `opacity-0` start states (`reveal-needs-js`)
+- **Miller / states:** long navs (reported as INFO: 5-7 per group is a starting size, not a limit), dynamic lists without skeleton or empty states, `opacity-0` start states (`reveal-needs-js`)
 - **Fitts:** solid primary buttons shorter than 40px (guide target >= 44px)
 - **Sterility:** frame wrappers (a box whose only child is another rounded box), borders on most cards with no shadows (skipped for technical/editorial), flat type hierarchy (mostly one size and bold), grey-only charts
 - **Mood (`--mood`):** `stock-look` on default Tailwind accents with neutral fonts; with `playful`/`bold`, fewer than 3 hues, mascot (`no-drawn-mascot`), `card-sameness`, `bold-headline-size`; with `trust`, `low-color`; with `playful`/`bold`/`trust`, `no-hero-surface`; with `editorial`, `headline-measure`, `left-stacked-column`, `edge-align`, `width-funnel`, `editorial-leading`, `no-serif`; with `technical`, soft radii, no mono face, heavy shadows

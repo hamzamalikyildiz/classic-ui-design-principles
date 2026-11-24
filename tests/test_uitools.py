@@ -163,6 +163,7 @@ class Structure(unittest.TestCase):
     def test_miller_nav(self):
         nav = '<nav>' + '<a>x</a>' * 8 + '</nav>'
         self.assertTrue(rules(run(nav, suffix='.html'), 'miller-7'))
+        self.assertEqual(rules(run(nav, suffix='.html'), 'miller-7')[0][0], 'INFO')   # a starting size, never a WARN
         self.assertEqual(rules(run('<nav>' + '<a>x</a>' * 7 + '</nav>', suffix='.html'), 'miller-7'), [])
 
     def test_font_limit(self):

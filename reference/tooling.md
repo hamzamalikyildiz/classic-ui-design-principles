@@ -101,3 +101,9 @@ Top-level keys:
 - `state_mocks` (optional object): custom mock specs keyed by state name.
 - `long_loading_frames_ms` (optional list of ints): filmstrip capture timestamps in ms.
 - `routes` (required non-empty list): each item has `name` (unique, no `/` or `\`), `path` (or `url`), and optional `wait_for`, `states`, `viewports`, `actions`, `api_pattern`, `state_mocks`, `long_loading_frames_ms`.
+
+## CI usage
+
+- `render.py --require-axe`: exit 1 when axe-core is missing or errors. Without it a skipped accessibility check is reported as `axe-not-run` / `axe-error` (INFO, with the text "Accessibility was NOT checked") so it is never mistaken for "no findings"; with it the run fails. `--fail-on none|fail|warn` still sets the severity that fails the run; `--require-axe` implies at least `fail`.
+- `scripts/e2e_gate.py` compares a `--routes ... --format json` report with a spec. `--expect FILE` (example with deliberate defects): every listed rule must still be caught. `--baseline FILE` (clean example): only the listed rules, up to the listed counts, may appear as WARN/FAIL; FAIL is never allowed. Both modes fail when axe did not run. `.github/workflows/app-e2e.yml` runs both against `examples/app-demo` and `examples/app-demo-polished`.
+- Allowed motion properties are listed once, in the property policy table in `reference/motion.md`; `tests/fixtures/motion/pos_allowed_properties.html` checks that the allowed tier passes `--motion`.

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Allowed motion properties</title>
+<style>
+  :root { --dur-fast: 120ms; --dur-base: 200ms; --ease: cubic-bezier(.2,0,0,1); }
+  body { font: 16px/1.5 system-ui, sans-serif; margin: 0; padding: 32px; background: #fff; color: #111; }
+  main { max-width: 640px; }
+  button { height: 44px; padding: 0 16px; border: 1px solid #334; background: #1d4ed8; color: #fff; border-radius: 8px; cursor: pointer; }
+  /* allowed tier: paint-only and grid-rows properties, short and on small areas */
+  .reveal { clip-path: inset(0 100% 0 0); transition: clip-path var(--dur-base) var(--ease); background: #e0f2fe; padding: 12px; border-radius: 8px; margin-top: 16px; }
+  .reveal.on { clip-path: inset(0 0 0 0); }
+  .chip { display: inline-block; padding: 8px 12px; border-radius: 8px; background: #f1f5f9; color: #0f172a; box-shadow: 0 0 0 rgba(0,0,0,0); transition: box-shadow var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); margin-top: 16px; }
+  .chip.on { box-shadow: 0 4px 12px rgba(0,0,0,.18); background: #dcfce7; color: #14532d; transform: translateY(-2px); }
+  .rows { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-base) var(--ease), opacity var(--dur-base) var(--ease); opacity: 0; margin-top: 16px; }
+  .rows.on { grid-template-rows: 1fr; opacity: 1; }
+  .rows > div { overflow: hidden; }
+  svg { display: block; margin-top: 16px; }
+  .draw { stroke-dasharray: 60; stroke-dashoffset: 60; transition: stroke-dashoffset var(--dur-base) var(--ease); }
+  .draw.on { stroke-dashoffset: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .chip, .rows, .draw { transition-duration: 1ms; transform: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Allowed properties</h1>
+  <button id="go" data-motion-trigger type="button">Toggle</button>
+  <div class="reveal" id="reveal">Clip-path reveal</div>
+  <span class="chip" id="chip">Shadow and colour</span>
+  <div class="rows" id="rows"><div><p>Row one</p><p>Row two</p></div></div>
+  <svg width="120" height="24" viewBox="0 0 120 24" aria-hidden="true"><path class="draw" id="draw" d="M4 12 H116" stroke="#1d4ed8" stroke-width="3" fill="none"/></svg>
+</main>
+<script>
+  document.getElementById('go').addEventListener('click', () => {
+    ['reveal', 'chip', 'rows', 'draw'].forEach(id => document.getElementById(id).classList.toggle('on'));
+  });
+</script>
+</body>
+</html>

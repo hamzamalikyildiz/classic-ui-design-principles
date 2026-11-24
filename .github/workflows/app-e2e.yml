@@ -1,17 +1,30 @@
 name: app-e2e
 
+# Two different questions, answered by two different checks (see scripts/e2e_gate.py):
+#   1. app-demo has deliberate defects: the render checks must still CATCH them (expected_findings.json).
+#   2. app-demo-polished is the clean example: it may only produce the findings in baseline_findings.json,
+#      so a new unexpected WARN/FAIL fails the run (regression check).
+# Both renders use --require-axe: if axe-core is missing or errors, the run fails instead of passing
+# with the accessibility check silently skipped.
+
 on:
   workflow_dispatch:
   push:
     paths:
       - "examples/app-demo/**"
+      - "examples/app-demo-polished/**"
       - "scripts/render.py"
+      - "scripts/e2e_gate.py"
       - "scripts/checks/**"
+      - ".github/workflows/app-e2e.yml"
   pull_request:
     paths:
       - "examples/app-demo/**"
+      - "examples/app-demo-polished/**"
       - "scripts/render.py"
+      - "scripts/e2e_gate.py"
       - "scripts/checks/**"
+      - ".github/workflows/app-e2e.yml"
 
 permissions:
   contents: read
@@ -31,29 +44,43 @@ jobs:
         run: |
           pip install playwright pillow
           python -m playwright install --with-deps chromium
-      - name: Install and build app-demo
+      - name: Warm the axe-core cache
+        run: python -c "import sys; sys.path.insert(0, 'scripts'); import render; sys.exit(0 if render.find_axe() else 1)"
+
+      - name: "Demo with deliberate defects: expected findings must be caught"
         run: |
           cd examples/app-demo
           npm ci
           npm run build
-      - name: Run visual & motion e2e checks
-        run: |
-          cd examples/app-demo
           npx vite preview --port 5173 --strictPort &
           SERVER_PID=$!
           trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
           cd ../..
-          for i in $(seq 1 30); do
-            if curl -fsS http://localhost:5173 >/dev/null 2>&1; then
-              break
-            fi
-            sleep 1
-          done
+          for i in $(seq 1 30); do curl -fsS http://localhost:5173 >/dev/null 2>&1 && break; sleep 1; done
           curl -fsS http://localhost:5173 >/dev/null
-          python scripts/render.py --routes examples/app-demo/routes.json --motion --out-dir shots --format json
-      - name: Upload shots artifacts
+          python scripts/render.py --routes examples/app-demo/routes.json --motion --require-axe --out-dir shots/demo --format json > demo-report.json
+          python scripts/e2e_gate.py demo-report.json --expect examples/app-demo/expected_findings.json
+
+      - name: "Polished example: no new findings beyond the baseline"
+        run: |
+          cd examples/app-demo-polished
+          npm ci
+          npm run build
+          npx vite preview --port 5173 --strictPort &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
+          cd ../..
+          for i in $(seq 1 30); do curl -fsS http://localhost:5173 >/dev/null 2>&1 && break; sleep 1; done
+          curl -fsS http://localhost:5173 >/dev/null
+          python scripts/render.py --routes examples/app-demo-polished/routes.json --motion --require-axe --out-dir shots/polished --format json > polished-report.json
+          python scripts/e2e_gate.py polished-report.json --baseline examples/app-demo-polished/baseline_findings.json
+
+      - name: Upload shots and reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-e2e-shots
-          path: shots/
+          path: |
+            shots/
+            demo-report.json
+            polished-report.json

@@ -185,15 +185,25 @@ def find_axe():
     return f.read_text(encoding='utf-8') if f.is_file() else None
 
 
+REQUIRE_AXE = False
+
+
+def _axe_not_run(rule, why):
+    """The accessibility check did not run: say so loudly, and fail when --require-axe is set."""
+    return [('FAIL' if REQUIRE_AXE else 'INFO', rule,
+             f'{why}. Accessibility was NOT checked, so "no findings" does not mean "no problems". '
+             'Install axe-core (npm install axe-core@4.10.2) or pass --require-axe in CI to make this fail.')]
+
+
 def run_axe(page):
     js = find_axe()
     if not js:
-        return [('INFO', 'axe', 'axe-core unavailable (npm install axe-core to enable)')]
+        return _axe_not_run('axe-not-run', 'axe-core is unavailable (not found and npm could not install it)')
     try:
         page.add_script_tag(content=js)
         res = page.evaluate("axe.run().then(r => r.violations.map(v => ({id: v.id, impact: v.impact, n: v.nodes.length, help: v.help, t: (v.nodes[0].target || []).join(' ').slice(0, 70)})))")
     except Exception as exc:
-        return [('INFO', 'axe', f'axe-core error: {str(exc)[:120]}')]
+        return _axe_not_run('axe-error', f'axe-core failed while running ({str(exc)[:120]})')
     out = []
     for v in res:
         sev = 'WARN' if v['impact'] in ('serious', 'critical') else 'INFO'
@@ -301,6 +311,7 @@ class RenderOptions:
     motion_trigger: str | None = None
     format: str = 'text'
     fail_on: str = 'none'
+    require_axe: bool = False
 
 
 def _coerce_options(opts):
@@ -2180,6 +2191,8 @@ def build_parser():
                     help='CSS selector of interactive element to trigger during --motion audit (defaults to first visible [data-motion-trigger], button, [role=tab])')
     ap.add_argument('--format', choices=('text', 'json'), default='text',
                     help='output format for findings and summary (default: text)')
+    ap.add_argument('--require-axe', action='store_true',
+                    help='CI mode: fail (exit 1) when axe-core is missing or errors, so a skipped accessibility check is never read as a pass')
     ap.add_argument('--fail-on', choices=('none', 'fail', 'warn'), default='none',
                     help='exit with code 1 when findings reach this severity (default: none)')
     ap.epilog = (
@@ -2229,6 +2242,7 @@ def parse_options(argv=None):
             motion_trigger=a.motion_trigger,
             format=a.format,
             fail_on=a.fail_on,
+            require_axe=a.require_axe,
         )
 
     if bool(a.html) == bool(a.url):
@@ -2260,6 +2274,7 @@ def parse_options(argv=None):
         motion_trigger=a.motion_trigger,
         format=a.format,
         fail_on=a.fail_on,
+        require_axe=a.require_axe,
     )
 
 
@@ -2301,7 +2316,11 @@ def render(opts):
 
 
 def main(argv=None):
+    global REQUIRE_AXE
     opts = parse_options(argv)
+    REQUIRE_AXE = bool(getattr(opts, 'require_axe', False))
+    if REQUIRE_AXE and opts.fail_on == 'none':
+        opts.fail_on = 'fail'   # --require-axe implies failing on FAIL findings
     if opts.routes:
         summary = render_routes(opts)
         json_report = summary.get('json_report') or _build_json_report(summary['results'])

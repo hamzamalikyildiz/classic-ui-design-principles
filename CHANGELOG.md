@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Issue #2 (omerkurt1): `render.py --require-axe` and explicit `axe-not-run`/`axe-error` findings (a skipped accessibility check can no longer look like a pass); `scripts/e2e_gate.py` with an expected-findings check for the flawed demo and a baseline regression check for the polished example, wired into `app-e2e.yml`; one motion property policy (preferred / allowed with conditions / avoid) with a fixture test; Hick and Miller treated as starting sizes (the `miller-7` audit finding is INFO); run8 wording corrected from cross-family to cross-model.
 - Tried a looser rule set (floor / defaults / ideas, style findings as INFO). The run10 trial did not keep quality against the strict rules and saved no tokens, so `main` keeps the strict rules; the experiment lives on branch `loose-rules` (see `bench/runs/run10`).
 - Pinned npm tool versions, Chromium keeps its sandbox by default (`UITOOLS_NO_SANDBOX=1` or root opts out), `requirements.txt`, light install bundle (`package_skill.py`).
 

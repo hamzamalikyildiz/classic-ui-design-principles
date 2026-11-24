@@ -1235,7 +1235,7 @@ def audit(
             body = re.sub(r'<details\b.*?</details>', '', body, flags=re.S)  # overflow menu items are disclosed on demand
             n = len(re.findall(r'<(?:a|Link|NavLink)\b', body))
             if n > 7:
-                add('WARN', 'miller-7', f"L{line_of(txt, s)} nav has {n} links (>7); group or move to an overflow menu")
+                add('INFO', 'miller-7', f"L{line_of(txt, s)} nav has {n} links; about 5-7 per group is a starting size, not a limit (visible menus are not held in memory). Group by task and label clarity, and keep rarely used items in an overflow menu")
 
     # line length: each long <p> needs a readable max-width on itself or an ancestor (skipping multi-column grids)
     css_for_p = strip_css_comments('\n'.join(styles)) if styles else (

@@ -19,9 +19,15 @@ Motion shows state transitions, cause-and-effect, and spatial continuity—never
 
 ## 2. What moves
 
-- **Composite-only:** ONLY GPU-composited `transform` and `opacity` (+ restrained `filter`, `clip-path`).
-- **Never animate layout properties:** `width`, `height`, `top`, `left`, `margin`, `padding`.
-- **Layout changes:** Use FLIP (`getBoundingClientRect` delta via `transform`), `grid-template-rows: 0fr -> 1fr`, or View Transitions (`document.startViewTransition`).
+**Property policy (the single source for every other file; `SKILL.md` and `states.md` point here):**
+
+| Tier | Properties | When |
+|---|---|---|
+| **Preferred** | `transform`, `opacity` | Default for movement, fades, scale, tab indicators |
+| **Allowed with a condition** | `clip-path`, `filter` (small blur), `box-shadow` (small elements), `stroke-dashoffset` / `stroke-dasharray` (SVG draw-on), `background-color` / `color` / `border-color`, `grid-template-rows: 0fr -> 1fr` (expand and collapse) | Keep them short (<= 300ms), on small areas, never scroll-linked; `--motion` accepts them |
+| **Avoid** | `width`, `height`, `min/max-*`, `top`, `left`, `inset`, `margin`, `padding` on elements that affect surrounding layout | Use FLIP (a `transform` from a `getBoundingClientRect` delta), `grid-template-rows`, or View Transitions instead; the audit reports `motion-layout-property` |
+
+A fixed-size element (an icon, a progress bar fill inside a locked track) may animate its own size if nothing around it moves; say so in a comment.
 
 ## 3. Choreography
 
