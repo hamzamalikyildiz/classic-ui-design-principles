@@ -436,6 +436,224 @@ class ComponentInliningAndRouteTests(unittest.TestCase):
             self.assertIn('inlined=2', s2)
             self.assertIn('inlined=1', s2)
 
+    def test_13_nextjs_app_router_nested_layout_shell_wrapping(self):
+        """13) Next.js App Router composes enclosing app/layout.tsx and app/(dashboard)/layout.tsx around page.tsx."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            comp_dir = root / 'components'
+            root_app = root / 'app'
+            dash_group = root_app / '(dashboard)'
+            analytics_dir = dash_group / 'analytics'
+            comp_dir.mkdir(parents=True)
+            analytics_dir.mkdir(parents=True)
+
+            (comp_dir / 'Navbar.tsx').write_text(
+                'export function Navbar() {\n'
+                '  return <nav className="flex gap-4"><a href="/overview">Genel</a><a href="/reports">Raporlar</a></nav>;\n'
+                '}\n',
+                encoding='utf-8',
+            )
+            (comp_dir / 'ThemeToggle.tsx').write_text(
+                'export function ThemeToggle() {\n'
+                '  return <button aria-label="Tema değiştir" className="rounded-lg p-2">Tema</button>;\n'
+                '}\n',
+                encoding='utf-8',
+            )
+            (root_app / 'layout.tsx').write_text(
+                'import { Fraunces } from "next/font/google";\n'
+                'import { Navbar } from "@/components/Navbar";\n'
+                'import { ThemeToggle } from "@/components/ThemeToggle";\n'
+                'export default function RootLayout({ children }: { children: React.ReactNode }) {\n'
+                '  return (\n'
+                '    <html lang="tr">\n'
+                '      <body className="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">\n'
+                '        <header className="flex items-center justify-between p-4">\n'
+                '          <Navbar />\n'
+                '          <ThemeToggle />\n'
+                '        </header>\n'
+                '        {children}\n'
+                '      </body>\n'
+                '    </html>\n'
+                '  );\n'
+                '}\n',
+                encoding='utf-8',
+            )
+            (dash_group / 'layout.tsx').write_text(
+                'export default function DashboardLayout({ children }: { children: React.ReactNode }) {\n'
+                '  return (\n'
+                '    <div className="mx-auto max-w-6xl p-6">\n'
+                '      <main className="rounded-2xl bg-slate-900 p-8 text-white">\n'
+                '        {children}\n'
+                '      </main>\n'
+                '    </div>\n'
+                '  );\n'
+                '}\n',
+                encoding='utf-8',
+            )
+            page = analytics_dir / 'page.tsx'
+            page.write_text(
+                'export default function AnalyticsPage() {\n'
+                '  return (\n'
+                '    <section className="space-y-4">\n'
+                '      <h1 className="text-2xl font-bold uppercase text-balance">İstatistik Özeti</h1>\n'
+                '      <p className="text-white/80 dark:text-slate-200">Başarı oranı %94</p>\n'
+                '      <div className="p-[13px]">Off-grid box on L6 of page.tsx</div>\n'
+                '    </section>\n'
+                '  );\n'
+                '}\n',
+                encoding='utf-8',
+            )
+
+            composed = ur.compose_route(page, root_dir=root)
+            iss = ut.audit(str(page), 8, {}, txt=composed, route_mode=True, root_dir=root)
+
+            # Enclosing layouts provide <html lang="tr">, <main bg-slate-900>, <Navbar />, and <ThemeToggle />:
+            self.assertEqual(_rules(iss, 'landmark-main'), [], iss)
+            self.assertEqual(_rules(iss, 'tr-uppercase'), [], iss)
+            self.assertEqual(_rules(iss, 'theme-toggle-missing'), [], iss)
+            self.assertEqual(_rules(iss, 'wcag-aa'), [], iss)
+
+            # Exact line number inside page.tsx (L6) is preserved!
+            grid_iss = _rules(iss, 'grid')
+            self.assertEqual(len(grid_iss), 1, iss)
+            self.assertTrue(grid_iss[0][2].startswith('L6 p-[13px]'), grid_iss)
+
+    def test_14_vue_sfc_template_extraction_and_component_inlining(self):
+        """14) .vue SFC extracts top-level <template> preserving lines, resolves ./Child.vue, and supports <slot /> + :class."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            comp_dir = root / 'src' / 'components'
+            pages_dir = root / 'src' / 'pages'
+            views_dir = root / 'src' / 'views'
+            comp_dir.mkdir(parents=True)
+            pages_dir.mkdir(parents=True)
+            views_dir.mkdir(parents=True)
+
+            child_vue = comp_dir / 'Child.vue'
+            child_vue.write_text(
+                '<script setup lang="ts">\n'
+                'defineProps<{ active?: boolean }>()\n'
+                '</script>\n'
+                '\n'
+                '<template>\n'
+                '  <section class="rounded-xl bg-slate-900 p-6 text-white">\n'
+                '    <template v-if="active">\n'
+                '      <span :class="active ? \'bg-indigo-600 text-white\' : \'bg-slate-100 text-slate-800\'">Badge</span>\n'
+                '    </template>\n'
+                '    <div class="p-[13px]">Child L10 spacing</div>\n'
+                '    <slot />\n'
+                '  </section>\n'
+                '</template>\n'
+                '\n'
+                '<style scoped>\n'
+                'section { min-height: 64px; }\n'
+                '</style>\n',
+                encoding='utf-8',
+            )
+            page_vue = pages_dir / 'Dashboard.vue'
+            page_vue.write_text(
+                '<script setup lang="ts">\n'
+                "import './theme.css'\n"
+                "import Child from '../components/Child.vue'\n"
+                '</script>\n'
+                '\n'
+                '<template>\n'
+                '  <main class="p-8">\n'
+                '    <Child :active="true">\n'
+                '      <p class="text-white/80">Slot child inherits dark bg</p>\n'
+                '    </Child>\n'
+                '  </main>\n'
+                '</template>\n',
+                encoding='utf-8',
+            )
+            view_vue = views_dir / 'ReportsView.vue'
+            view_vue.write_text('<template><main class="p-4">Reports</main></template>\n', encoding='utf-8')
+
+            self.assertTrue(ur.is_page_file(page_vue))
+            self.assertTrue(ur.is_page_file(view_vue))
+            self.assertFalse(ur.is_page_file(child_vue))
+            self.assertTrue(ur.is_component_file(child_vue))
+
+            # Both inline_local_components and compose_route inline Child.vue cleanly
+            inlined_local = ur.inline_local_components(page_vue.read_text(encoding='utf-8'), source_path=page_vue, root_dir=root)
+            self.assertEqual(inlined_local.inlined_count, 1)
+
+            composed = ur.compose_route(page_vue, root_dir=root)
+            self.assertEqual(composed.inlined_count, 1)
+            iss = ut.audit(str(page_vue), 8, {}, txt=composed, route_mode=True, root_dir=root)
+            self.assertEqual(_rules(iss, 'wcag-aa'), [], iss)
+            grid_iss = _rules(iss, 'grid')
+            self.assertEqual(len(grid_iss), 1, iss)
+            self.assertTrue(grid_iss[0][2].startswith('L10 p-[13px]'), grid_iss)
+
+    def test_15_svelte_sfc_control_tags_dollar_lib_and_slot_inlining(self):
+        """15) .svelte SFC resolves $lib/ imports, strips {#if}/{:else}/{/if}/{#each}/{/each}, and preserves line offsets."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            lib_comp = root / 'src' / 'lib' / 'components'
+            route_dir = root / 'src' / 'routes' / 'dashboard'
+            lib_comp.mkdir(parents=True)
+            route_dir.mkdir(parents=True)
+
+            card_svelte = lib_comp / 'Card.svelte'
+            card_svelte.write_text(
+                '<script lang="ts">\n'
+                '  export let title = "";\n'
+                '</script>\n'
+                '\n'
+                '<section class="rounded-xl bg-slate-900 p-6 text-white">\n'
+                '  <h2 class="text-lg font-semibold text-balance">{title}</h2>\n'
+                '  <slot />\n'
+                '</section>\n'
+                '\n'
+                '<style>\n'
+                '  section { display: block; }\n'
+                '</style>\n',
+                encoding='utf-8',
+            )
+            page_svelte = route_dir / '+page.svelte'
+            page_svelte.write_text(
+                '<script lang="ts">\n'
+                "  import Card from '$lib/components/Card.svelte';\n"
+                '  export let items: Array<{ id: string; name: string }> = [];\n'
+                '</script>\n'
+                '\n'
+                '<main class="p-8">\n'
+                '  {#if items.length > 0}\n'
+                '    {#each items as { id, name } (id)}\n'
+                '      <Card title={name}>\n'
+                '        <p class="text-white/80">{name}</p>\n'
+                '        <span class="p-[15px]">Svelte L11 off-grid</span>\n'
+                '      </Card>\n'
+                '    {/each}\n'
+                '  {:else}\n'
+                '    <p class="text-slate-700">No items empty state</p>\n'
+                '  {/if}\n'
+                '</main>\n',
+                encoding='utf-8',
+            )
+
+            self.assertTrue(ur.is_page_file(page_svelte))
+            self.assertFalse(ur.is_page_file(card_svelte))
+            self.assertTrue(ur.is_component_file(card_svelte))
+            self.assertEqual(
+                ur.resolve_import('$lib/components/Card.svelte', page_svelte, root_dir=root),
+                card_svelte.resolve(),
+            )
+
+            # Both inline_local_components and compose_route inline Card.svelte and preserve L11
+            inlined_local = ur.inline_local_components(page_svelte.read_text(encoding='utf-8'), source_path=page_svelte, root_dir=root)
+            self.assertEqual(inlined_local.inlined_count, 1)
+
+            composed = ur.compose_route(page_svelte, root_dir=root)
+            self.assertEqual(composed.inlined_count, 1)
+            iss = ut.audit(str(page_svelte), 8, {}, txt=composed, route_mode=True, root_dir=root)
+            self.assertEqual(_rules(iss, 'wcag-aa'), [], iss)
+            self.assertEqual(_rules(iss, 'skeleton-empty'), [], iss)
+            grid_iss = _rules(iss, 'grid')
+            self.assertEqual(len(grid_iss), 1, iss)
+            self.assertTrue(grid_iss[0][2].startswith('L11 p-[15px]'), grid_iss)
+
 
 if __name__ == '__main__':
     unittest.main()
