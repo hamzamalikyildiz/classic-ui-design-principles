@@ -71,7 +71,7 @@ class MakeTasksV2Tests(unittest.TestCase):
             noskill_txt = (work / 'tasks' / 'noskill-trust-cv-opt-1.txt').read_text(encoding='utf-8')
             ablation_txt = (work / 'tasks' / 'noskill_check-trust-cv-opt-1.txt').read_text(encoding='utf-8')
 
-            # Shared technical contract present in all 3 arms
+            # Shared technical contract present in all 3 arms (including no-debug-switcher & repeatable trigger)
             for txt in (skill_txt, noskill_txt, ablation_txt):
                 self.assertIn('CVPulse', txt)
                 self.assertIn('#/login', txt)
@@ -81,6 +81,8 @@ class MakeTasksV2Tests(unittest.TestCase):
                 self.assertIn('?state=', txt)
                 self.assertIn('window.__RENDER_STATE__', txt)
                 self.assertIn('data-motion-trigger', txt)
+                self.assertIn('do NOT render a visible debug state-switcher bar/pills in the product UI', txt)
+                self.assertIn('repeatable/toggleable', txt)
 
             # Skill arm reads SKILL.md + App references + runs audit and render --routes --motion
             for ref in (
@@ -110,16 +112,38 @@ class MakeTasksV2Tests(unittest.TestCase):
             for forbidden in ('SKILL.md', 'app-flow.md', 'states.md', 'motion.md', 'typography-locale.md', 'sample-data.md', 'uitools.py'):
                 self.assertNotIn(forbidden, ablation_txt)
 
-            # Bound routes JSON created for skill and noskill_check with file:/// URI
+            # Bound routes JSON created for skill and noskill_check with file:/// URI and no pre-click state_overrides
             for arm in ('skill', 'noskill_check'):
                 rf = work / 'routes' / f'{arm}-trust-cv-opt-1.json'
                 self.assertTrue(rf.is_file())
                 cfg = json.loads(rf.read_text(encoding='utf-8'))
                 self.assertTrue(cfg['base_url'].startswith('file:///'))
                 R.validate_routes_config(cfg)
+                detail_route = next(r for r in cfg['routes'] if r['name'] == 'detail')
+                self.assertEqual(detail_route.get('motion_trigger'), '[data-motion-trigger]')
+                self.assertNotIn('state_overrides', detail_route)
 
 
 class BuildPairsAppTests(unittest.TestCase):
+    def test_all_routes_app_templates_have_motion_trigger_and_no_preclick_overrides(self):
+        expected_files = {
+            'cicd-board.json',
+            'clinic-appt.json',
+            'cv-opt.json',
+            'invoice-quote.json',
+            'meal-planner.json',
+            'support-inbox.json',
+        }
+        routes_dir = ROOT / 'bench' / 'routes_app'
+        actual_files = {p.name for p in routes_dir.glob('*.json')}
+        self.assertEqual(actual_files, expected_files)
+        for fname in sorted(expected_files):
+            cfg = json.loads((routes_dir / fname).read_text(encoding='utf-8'))
+            validated = R.validate_routes_config(cfg)
+            detail_route = next(r for r in validated['routes'] if r['name'] == 'detail')
+            self.assertEqual(detail_route.get('motion_trigger'), '[data-motion-trigger]', fname)
+            self.assertNotIn('state_overrides', detail_route, f'{fname} should not pre-click [data-motion-trigger]')
+
     def test_prepare_routes_config_all_app_briefs_valid(self):
         briefs = json.loads((ROOT / 'bench' / 'briefs_app.json').read_text(encoding='utf-8'))
         with tempfile.TemporaryDirectory() as td:

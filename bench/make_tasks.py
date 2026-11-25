@@ -40,9 +40,11 @@ COMMON_APP = (
     "Technical contract (required for automated multi-route rendering):\n"
     "- Single-file HTML, Tailwind via the CDN script, Google Fonts links allowed, vanilla JS.\n"
     "- Hash router supporting exactly these 4 routes on load and on hashchange: #/login, #/list, #/detail/1, #/settings.\n"
-    "- State switcher supporting both `?state=default|empty|loading|long-loading|error|partial|locked` in the URL query string "
-    "and `window.__RENDER_STATE__` (if defined) across routes.\n"
-    "- On #/detail/1, include an interactive element with attribute `data-motion-trigger` that triggers the primary result micro-moment, "
+    "- Support `?state=default|empty|loading|long-loading|error|partial|locked` in the URL query string "
+    "and `window.__RENDER_STATE__` (if defined) across routes via URL/JS state only — "
+    "do NOT render a visible debug state-switcher bar/pills in the product UI.\n"
+    "- On #/detail/1, include an interactive element with attribute `data-motion-trigger` that triggers the primary result micro-moment; "
+    "make `[data-motion-trigger]` repeatable/toggleable so clicking it triggers visible state feedback cleanly on demand, "
     "and implement the >3s long-running operation with staged progress feedback and a cancel control.\n"
     "- No external web images (use inline SVG / CSS shapes).\n"
     "Save it to {out} and reply with that path only.\n\nDo NOT use the Skill tool.\n"
@@ -103,9 +105,6 @@ def default_routes_template(brief_key):
                 'path': '#/detail/1',
                 'states': ['default', 'loading', 'long-loading', 'error', 'partial'],
                 'motion_trigger': '[data-motion-trigger]',
-                'state_overrides': {
-                    'default': {'actions': [{'click': '[data-motion-trigger]'}, {'wait': 400}]},
-                },
             },
             {'name': 'settings', 'path': '#/settings', 'states': ['default', 'loading', 'error']},
         ],

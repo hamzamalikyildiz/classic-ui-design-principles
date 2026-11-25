@@ -17,15 +17,7 @@
       "name": "detail",
       "path": "#/detail/1",
       "states": ["default", "loading", "long-loading", "error", "partial"],
-      "motion_trigger": "[data-motion-trigger]",
-      "state_overrides": {
-        "default": {
-          "actions": [
-            {"click": "[data-motion-trigger]"},
-            {"wait": 400}
-          ]
-        }
-      }
+      "motion_trigger": "[data-motion-trigger]"
     },
     {
       "name": "settings",
