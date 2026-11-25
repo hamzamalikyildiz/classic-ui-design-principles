@@ -36,8 +36,11 @@ __all__ = [
     'blend',
     'is_gradient',
     'is_chromatic',
+    'is_tailwind_v4',
     'hsl2hex',
     'parse_color',
+    '_parse_color_rgba',
+    '_extract_css_vars',
     '_parse_solid_bg',
     'inline_bg',
     'css_page_bg',
@@ -285,8 +288,12 @@ def _parse_color_rgba(val, tokens=None, _depth=0):
         parts = _split_top_level(inner, ',')
         m = re.fullmatch(r'--([\w-]+)', parts[0].strip())
         if m:
-            if tokens and m.group(1) in tokens:
-                return _parse_color_rgba(tokens[m.group(1)], tokens, _depth + 1)
+            vname = m.group(1)
+            if tokens:
+                if vname in tokens:
+                    return _parse_color_rgba(tokens[vname], tokens, _depth + 1)
+                if vname.startswith('color-') and vname[6:] in tokens:
+                    return _parse_color_rgba(tokens[vname[6:]], tokens, _depth + 1)
             if len(parts) > 1:
                 return _parse_color_rgba(','.join(parts[1:]), tokens, _depth + 1)
         return None
@@ -296,6 +303,14 @@ def _parse_color_rgba(val, tokens=None, _depth=0):
         return None
     fn, body = m.group(1).lower(), m.group(2).strip()
     try:
+        if fn in ('oklch', 'oklab', 'rgb', 'rgba', 'hsl', 'hsla'):
+            slash_var = _split_top_level(body, '/')
+            if len(slash_var) in (1, 2) and slash_var[0].strip().lower().startswith('var(') and slash_var[0].strip().endswith(')'):
+                resolved = _parse_color_rgba(slash_var[0].strip(), tokens, _depth + 1)
+                if resolved:
+                    a = _parse_alpha(slash_var[1]) if len(slash_var) == 2 else resolved[1]
+                    return (resolved[0], a)
+
         if fn in ('oklch', 'oklab'):
             slash = _split_top_level(body, '/')
             if len(slash) > 2:
@@ -456,6 +471,22 @@ def parse_color(val, tokens=None):
 
 
 _COLOR_FN_RE = re.compile(r'^(?:oklch|oklab|rgba?|hsla?|color-mix)\(', re.I)
+_TW4_DETECT_RE = re.compile(
+    r'@import\s+(?:url\(\s*)?[\'"]tailwindcss(?:/[^\'"]*)?[\'"]'
+    r'|@theme\b'
+    r'|(?<![\w-])(?:[a-z0-9-]+:)*(?:bg|text|border|ring|from|via|to)-(?:olive|mist|taupe)-\d+\b',
+    re.I,
+)
+
+
+def is_tailwind_v4(texts):
+    """True when any CSS/markup text uses Tailwind v4 (@import 'tailwindcss', @theme, or olive/mist/taupe utilities)."""
+    if isinstance(texts, str):
+        texts = [texts]
+    for raw in texts:
+        if raw and _TW4_DETECT_RE.search(strip_css_comments(raw)):
+            return True
+    return False
 
 
 def _strip_tw_alpha(name):
@@ -487,27 +518,33 @@ def tw_hex(name, tokens, v4=False):
         return NAMED[name]
     if tokens and name in tokens:
         return tokens[name]
-    palette = TW4 if v4 else TW
     m = re.fullmatch(r'([a-z]+)-(\d{2,3})', name)
-    if m and m.group(1) in palette and m.group(2) in SHADES:
-        return '#' + palette[m.group(1)].split()[SHADES.index(m.group(2))]
+    if m and m.group(2) in SHADES:
+        hue = m.group(1)
+        palette = TW4 if (v4 or (hue in TW4 and hue not in TW)) else TW
+        if hue in palette:
+            return '#' + palette[hue].split()[SHADES.index(m.group(2))]
     if _COLOR_FN_RE.match(name):
         return parse_color(name, tokens)
     return None
 
 
-def tw_same_hue(name, bg_hex, need):
+def tw_same_hue(name, bg_hex, need, v4=False):
     """Nearest shade of the same Tailwind hue that reaches `need` on bg (e.g. pink-400 -> pink-700)."""
     m = re.fullmatch(r'([a-z]+)-(\d{2,3})', _strip_tw_alpha(name))
-    if not m or m.group(1) not in TW or m.group(2) not in SHADES:
+    if not m or m.group(2) not in SHADES:
         return None
-    hexes = TW[m.group(1)].split()
+    hue = m.group(1)
+    palette = TW4 if (v4 or (hue in TW4 and hue not in TW)) else TW
+    if hue not in palette:
+        return None
+    hexes = palette[hue].split()
     i = SHADES.index(m.group(2))
     step = 1 if lum(bg_hex) > 0.18 else -1
     j = i
     while 0 <= j < len(SHADES):
         if ratio('#' + hexes[j], bg_hex) >= need:
-            return f"{m.group(1)}-{SHADES[j]}"
+            return f"{hue}-{SHADES[j]}"
         j += step
     return None
 
@@ -598,7 +635,7 @@ def css_page_bg(txt, tokens=None):
     return body_bg or html_bg
 
 
-def backdrop(chain, variant, tokens, page_bg, styles=None):
+def backdrop(chain, variant, tokens, page_bg, styles=None, v4=False):
     """Effective background behind an element: (hex, label) or None if unknown.
 
     Walks from the element outward, compositing semi-transparent layers (bg-white/10)
@@ -623,7 +660,7 @@ def backdrop(chain, variant, tokens, page_bg, styles=None):
             return None
         if not b or b in BG_PASSTHROUGH:
             continue
-        h = tw_hex(b, tokens)
+        h = tw_hex(b, tokens, v4=v4)
         if not h:
             return None
         layers.append((h, alpha_of(b), b))
@@ -632,7 +669,7 @@ def backdrop(chain, variant, tokens, page_bg, styles=None):
     else:
         if not page_bg:
             return None
-        h = tw_hex(page_bg, tokens)
+        h = tw_hex(page_bg, tokens, v4=v4)
         if not h:
             return None
         layers.append((h, 1.0, page_bg))
@@ -643,18 +680,22 @@ def backdrop(chain, variant, tokens, page_bg, styles=None):
     return color, name
 
 
-def tw_bg_same_hue(bg_name, fg_hex, need):
+def tw_bg_same_hue(bg_name, fg_hex, need, v4=False):
     """For white/black/neutral text on a colored background: the nearest bg shade of the same hue that passes."""
     m = re.fullmatch(r'([a-z]+)-(\d{2,3})', bg_name.split('/')[0])
-    if not m or m.group(1) not in TW or m.group(1) in NEUTRALS or m.group(2) not in SHADES:
+    if not m or m.group(2) not in SHADES:
         return None
-    hexes = TW[m.group(1)].split()
+    hue = m.group(1)
+    palette = TW4 if (v4 or (hue in TW4 and hue not in TW)) else TW
+    if hue not in palette or hue in NEUTRALS:
+        return None
+    hexes = palette[hue].split()
     i = SHADES.index(m.group(2))
     step = 1 if lum(fg_hex) > 0.18 else -1  # light text -> darker background
     j = i
     while 0 <= j < len(SHADES):
         if ratio(fg_hex, '#' + hexes[j]) >= need:
-            return f"{m.group(1)}-{SHADES[j]}"
+            return f"{hue}-{SHADES[j]}"
         j += step
     return None
 

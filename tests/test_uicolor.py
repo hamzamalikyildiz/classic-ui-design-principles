@@ -331,6 +331,43 @@ class TestTokensAndTailwindV4(unittest.TestCase):
         self.assertIn('#171717 on #ffffff', res.stdout)
         self.assertIn('AA text(4.5): PASS', res.stdout)
 
+    def test_is_tailwind_v4_detection(self):
+        self.assertTrue(uc.is_tailwind_v4(['@import "tailwindcss";']))
+        self.assertTrue(uc.is_tailwind_v4(["@import 'tailwindcss';"]))
+        self.assertTrue(uc.is_tailwind_v4(['@theme { --color-brand: #123456; }']))
+        self.assertTrue(uc.is_tailwind_v4(['<div class="bg-olive-100 text-olive-700">x</div>']))
+        self.assertTrue(uc.is_tailwind_v4(['<span class="dark:text-mist-400 ring-taupe-300">x</span>']))
+        self.assertTrue(uc.is_tailwind_v4('<div class="from-olive-500 via-mist-400 to-taupe-700"></div>'))
+        self.assertFalse(uc.is_tailwind_v4(['/* @import "tailwindcss"; */ .a { color: #111; }']))
+        self.assertFalse(uc.is_tailwind_v4(['<div class="bg-slate-900 text-white">x</div>']))
+        self.assertEqual(uc.NEUTRALS, {'slate', 'gray', 'zinc', 'neutral', 'stone'})
+
+    def test_tw4_same_hue_and_backdrop(self):
+        self.assertEqual(uc.tw_hex('olive-400', {}), '#abab9c')
+        self.assertEqual(uc.tw_hex('mist-400', {}), '#9ca8ab')
+        self.assertEqual(uc.tw_hex('taupe-400', {}), '#aba09c')
+        self.assertEqual(uc.tw_same_hue('olive-400', '#ffffff', 4.5), 'olive-600')
+        self.assertEqual(uc.tw_same_hue('mist-400', '#ffffff', 4.5), 'mist-500')
+        self.assertEqual(uc.tw_same_hue('taupe-400', '#ffffff', 4.5), 'taupe-500')
+        self.assertEqual(uc.tw_same_hue('indigo-400', '#ffffff', 4.5, v4=False), 'indigo-600')
+        self.assertEqual(uc.tw_same_hue('indigo-400', '#ffffff', 4.5, v4=True), 'indigo-500')
+        self.assertEqual(uc.tw_bg_same_hue('olive-400', '#ffffff', 4.5), 'olive-600')
+        self.assertEqual(uc.tw_bg_same_hue('indigo-400', '#ffffff', 4.5, v4=False), 'indigo-600')
+        self.assertEqual(uc.tw_bg_same_hue('indigo-400', '#ffffff', 4.5, v4=True), 'indigo-500')
+        self.assertIsNone(uc.tw_bg_same_hue('slate-400', '#ffffff', 4.5, v4=True))
+        self.assertEqual(uc.backdrop([['bg-slate-500']], '', {}, 'white', v4=False), ('#64748b', 'bg-slate-500'))
+        self.assertEqual(uc.backdrop([['bg-slate-500']], '', {}, 'white', v4=True), ('#62748e', 'bg-slate-500'))
+        self.assertEqual(uc.backdrop([['bg-olive-100']], '', {}, 'white', v4=True), ('#f4f4f0', 'bg-olive-100'))
+
+    def test_uitools_contrast_cli_tw4_olive(self):
+        res = subprocess.run(
+            [sys.executable, str(ROOT / 'scripts' / 'uitools.py'), 'contrast', 'olive-400', 'white'],
+            capture_output=True, text=True, check=True,
+        )
+        self.assertIn('#abab9c on #ffffff', res.stdout)
+        self.assertIn('AA text(4.5): FAIL', res.stdout)
+        self.assertIn('fix -> olive-600 /', res.stdout)
+
 
 if __name__ == '__main__':
     unittest.main()

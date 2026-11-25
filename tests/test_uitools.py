@@ -758,5 +758,114 @@ class VariantAwareAudit(unittest.TestCase):
         self.assertIn('2 solid buttons in one block', iss[0][2])
 
 
+class PlainCssModernContrast(unittest.TestCase):
+    def test_oklch_oklab_and_color_mix_in_css(self):
+        bad_oklch = '.a { color: oklch(0.75 0.04 250); background: oklch(0.98 0.01 250); }'
+        iss_oklch = rules(run(bad_oklch, suffix='.css'), 'wcag-aa')
+        self.assertEqual(len(iss_oklch), 1)
+        self.assertEqual(iss_oklch[0][0], 'FAIL')
+
+        bad_oklab = '.b { color: oklab(0.78 -0.02 0.03); background-color: oklab(0.98 0 0); }'
+        iss_oklab = rules(run(bad_oklab, suffix='.css'), 'wcag-aa')
+        self.assertEqual(len(iss_oklab), 1)
+
+        bad_mix = '.c { color: color-mix(in oklch, oklch(0.2 0 0) 25%, white); background: white; }'
+        iss_mix = rules(run(bad_mix, suffix='.css'), 'wcag-aa')
+        self.assertEqual(len(iss_mix), 1)
+
+        good_oklch = '.ok { color: oklch(0.22 0.02 250); background: oklch(0.98 0.01 250); }'
+        self.assertEqual(rules(run(good_oklch, suffix='.css'), 'wcag-aa'), [])
+
+    def test_var_token_resolution_light_and_dark_selectors(self):
+        html = """
+        <style>
+          :root {
+            --fg: oklch(0.2 0 0);
+            --bg: oklch(0.98 0 0);
+          }
+          .dark {
+            --fg: oklch(0.35 0 0);
+            --bg: oklch(0.2 0 0);
+          }
+          .card { color: var(--fg); background: var(--bg); }
+          .dark .card { color: var(--fg); background: var(--bg); }
+          [data-theme="dark"] .pill { color: var(--fg); background-color: var(--bg); }
+        </style>
+        <main><div class="card"><ThemeToggle /></div></main>
+        """
+        iss = rules(run(html, suffix='.html'), 'wcag-aa')
+        self.assertEqual(len(iss), 2)
+        self.assertTrue(all(i[0] == 'FAIL' for i in iss))
+        self.assertTrue(any('L12 ' in i[2] for i in iss))
+        self.assertTrue(any('L13 ' in i[2] for i in iss))
+
+    def test_large_text_24px_and_18_66px_bold_thresholds(self):
+        # #949494 on #ffffff is 3.03:1 -> passes 3.0:1 large text, warns 4.5:1 normal text
+        css = """
+        .h-24 { font-size: 24px; color: oklch(0.666 0 0); background: oklch(1 0 0); }
+        .h-bold-1866 { font-size: 18.66px; font-weight: bold; color: oklch(0.666 0 0); background: oklch(1 0 0); }
+        .h-semi-19 { font-size: 19px; font-weight: 600; color: oklch(0.666 0 0); background: oklch(1 0 0); }
+        .p-20-regular { font-size: 20px; font-weight: 400; color: oklch(0.666 0 0); background: oklch(1 0 0); }
+        """
+        iss = rules(run(css, suffix='.css'), 'wcag-aa')
+        self.assertEqual(len(iss), 1)
+        self.assertEqual(iss[0][0], 'WARN')
+        self.assertIn('L5 ', iss[0][2])
+
+    def test_semi_transparent_and_gradient_backgrounds_skipped(self):
+        css = """
+        :root { --glass: oklch(1 0 0 / 0.12); }
+        .chip-rgba { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .chip-oklch { background: oklch(0.6 0.2 250 / 15%); color: oklch(0.75 0.15 250); }
+        .chip-var { background: var(--glass); color: #ffffff; }
+        .hero-grad { background: linear-gradient(to right, #fff, #eee); color: #ffffff; }
+        .hero-url { background: url('/bg.jpg') center/cover; color: #ffffff; }
+        .clip-text { background: #ffffff; -webkit-background-clip: text; color: transparent; }
+        """
+        self.assertEqual(rules(run(css, suffix='.css'), 'wcag-aa'), [])
+
+
+class TailwindV4PaletteAudit(unittest.TestCase):
+    def test_v4_only_hues_auto_detected_and_same_hue_fixes(self):
+        src = (
+            '<div className="bg-white"><p className="text-olive-400">a</p><p className="text-mist-400">b</p></div>'
+            '<span className="bg-taupe-400 text-white">tag</span>'
+        )
+        iss = rules(run(src), 'wcag-aa')
+        msgs = [m for _, _, m in iss]
+        self.assertEqual(len(msgs), 3)
+        self.assertTrue(any('text-olive-400 on bg-white' in m and 'fix -> text-olive-600' in m for m in msgs), msgs)
+        self.assertTrue(any('text-mist-400 on bg-white' in m and 'fix -> text-mist-500' in m for m in msgs), msgs)
+        self.assertTrue(any('text-white on bg-taupe-400' in m and 'fix -> bg-taupe-500' in m for m in msgs), msgs)
+
+    def test_v4_css_import_switches_shared_hues_to_tw4(self):
+        # indigo-500 on white is 4.47:1 in v3 (WARN -> bg-indigo-600) vs 4.62:1 in v4 (PASS)
+        btn = '<button className="h-11 px-4 bg-indigo-500 text-white">Save</button>'
+        self.assertTrue(rules(run(btn), 'wcag-aa'))
+        self.assertEqual(rules(run(btn, css='@import "tailwindcss";'), 'wcag-aa'), [])
+
+        # Via CLI --css flag as well
+        with tempfile.TemporaryDirectory() as d:
+            p = pathlib.Path(d) / 'page.tsx'
+            c = pathlib.Path(d) / 'globals.css'
+            p.write_text('<p className="bg-white text-indigo-400">x</p>', encoding='utf-8')
+            c.write_text('@import "tailwindcss";\n', encoding='utf-8')
+            out = io.StringIO()
+            with self.assertRaises(SystemExit) as cm, contextlib.redirect_stdout(out):
+                ut.main(['audit', str(p), '--css', str(c)])
+            self.assertEqual(cm.exception.code, 0)  # 3.15:1 -> WARN (exit 0), fix -> text-indigo-500
+            self.assertIn('fix -> text-indigo-500', out.getvalue())
+
+    def test_olive_mist_taupe_treated_as_neutral_in_mood_and_charts(self):
+        bars = ''.join(
+            f'<div className="h-2 w-{w} bg-{c}-500"></div>'
+            for w, c in (('1/2', 'olive'), ('1/3', 'mist'), ('1/4', 'taupe'))
+        )
+        self.assertTrue(rules(run(bars), 'grey-chart'))
+        band = '<section className="bg-olive-950 py-24"><h1 className="text-7xl text-white">X</h1></section>'
+        self.assertEqual(rules(run(band, mood='bold'), 'no-hero-surface'), [])
+        self.assertTrue(rules(run(band, mood='bold'), 'low-color'))
+
+
 if __name__ == '__main__':
     unittest.main()
