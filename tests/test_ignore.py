@@ -2,6 +2,7 @@
 import contextlib
 import importlib.util
 import io
+import os
 import pathlib
 import tempfile
 import unittest
@@ -197,7 +198,8 @@ class IgnoreTests(unittest.TestCase):
 
             composed = ur.compose_route(page, root_dir=root)
             self.assertIsInstance(composed.raw_txt, ur.RouteSourceText)
-            self.assertIn(str(score_bars), composed.raw_txt.source_files)
+            self.assertIn(os.path.normcase(str(score_bars.resolve())),
+                          {os.path.normcase(str(pathlib.Path(k).resolve())) for k in composed.raw_txt.source_files})
 
             buf = io.StringIO()
             with contextlib.redirect_stdout(buf):
