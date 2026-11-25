@@ -190,6 +190,44 @@ class RenderMotionChromiumTests(unittest.TestCase):
     def test_neg_infinite_motion(self):
         self._assert_negative_fixture('neg_infinite_motion.html', 'INFO', 'infinite-motion')
 
+    def test_reduced_motion_clip_path_policy_alignment(self):
+        page = self._browser.new_page(viewport={'width': 1280, 'height': 800})
+        try:
+            page.emulate_media(reduced_motion='reduce')
+            # 1. clip-path <= 300ms (transition 260ms + @keyframes 300ms) -> allowed
+            ok_html = """<!doctype html>
+            <html><head><style>
+              .reveal { clip-path: inset(0 0 0 0); transition: clip-path 260ms ease; padding: 12px; }
+              .anim { animation: wipe 300ms ease both; padding: 12px; }
+              @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+            </style></head><body>
+              <div class="reveal">Short clip-path transition</div>
+              <div class="anim">Short clip-path animation</div>
+            </body></html>"""
+            page.set_content(ok_html)
+            res_ok = page.evaluate(rd.MOTION_JS, {'mode': 'reduced', 'skipTrigger': True})
+            self.assertEqual([(s, r) for s, r, _ in res_ok], [])
+
+            # 2. clip-path > 300ms (380ms) -> flagged
+            slow_clip_html = """<!doctype html>
+            <html><head><style>
+              .reveal { clip-path: inset(0 0 0 0); transition: clip-path 380ms ease; padding: 12px; }
+            </style></head><body><div class="reveal">Slow clip-path</div></body></html>"""
+            page.set_content(slow_clip_html)
+            res_slow_clip = page.evaluate(rd.MOTION_JS, {'mode': 'reduced', 'skipTrigger': True})
+            self.assertIn(('WARN', 'reduced-motion-ignored'), [(s, r) for s, r, _ in res_slow_clip])
+
+            # 3. transform > 150ms (220ms) -> still strictly flagged
+            transform_html = """<!doctype html>
+            <html><head><style>
+              .slide { transform: translateY(0); transition: transform 220ms ease; padding: 12px; }
+            </style></head><body><div class="slide">Spatial slide</div></body></html>"""
+            page.set_content(transform_html)
+            res_transform = page.evaluate(rd.MOTION_JS, {'mode': 'reduced', 'skipTrigger': True})
+            self.assertIn(('WARN', 'reduced-motion-ignored'), [(s, r) for s, r, _ in res_transform])
+        finally:
+            page.close()
+
     def test_reduced_motion_media_restored_and_routes_and_url_modes(self):
         page = self._browser.new_page(viewport={'width': 1280, 'height': 800})
         try:
