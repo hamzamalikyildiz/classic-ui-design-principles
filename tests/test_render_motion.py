@@ -294,6 +294,38 @@ class RenderMotionChromiumTests(unittest.TestCase):
             srv.shutdown()
             srv.server_close()
 
+    def test_fallback_trigger_skips_theme_toggle_and_destructive_buttons(self):
+        page = self._browser.new_page(viewport={'width': 1280, 'height': 800})
+        try:
+            html = """<!doctype html>
+            <html class="dark"><body>
+              <button id="theme-toggle-btn" data-theme-toggle aria-pressed="true"
+                onclick="document.documentElement.classList.remove('dark'); window.__clicked='theme'">Dark stage</button>
+              <button id="signout-btn" onclick="window.__clicked='signout'">Sign Out</button>
+              <button id="delete-btn" onclick="window.__clicked='delete'">Delete</button>
+              <button id="safe-preview-btn" onclick="window.__clicked='preview'">Preview</button>
+            </body></html>"""
+            page.set_content(html)
+            probe = page.evaluate(rd.MOTION_JS, {'action': 'probe'})
+            self.assertEqual(probe.get('triggered'), True)
+            self.assertIn('safe-preview-btn', probe.get('target', ''))
+            self.assertEqual(page.evaluate("window.__clicked"), 'preview')
+            self.assertTrue(page.evaluate("document.documentElement.classList.contains('dark')"))
+
+            # Explicit [data-motion-trigger] still works directly
+            html_explicit = """<!doctype html>
+            <html><body>
+              <button id="other-btn" onclick="window.__clicked='other'">Other</button>
+              <button id="explicit-btn" data-motion-trigger onclick="window.__clicked='explicit'">Animate</button>
+            </body></html>"""
+            page.set_content(html_explicit)
+            probe_exp = page.evaluate(rd.MOTION_JS, {'action': 'probe'})
+            self.assertEqual(probe_exp.get('triggered'), True)
+            self.assertIn('explicit-btn', probe_exp.get('target', ''))
+            self.assertEqual(page.evaluate("window.__clicked"), 'explicit')
+        finally:
+            page.close()
+
 
 if __name__ == '__main__':
     unittest.main()

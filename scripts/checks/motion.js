@@ -33,6 +33,24 @@ async (opts = {}) => {
     return r.width > 0 && r.height > 0;
   };
 
+  const skipBtnRe = /(?<![\p{L}\p{N}_])(log\s*out|sign\s*out|[cç][ıiİ]k[ıiİ][sş]|delete|s[iıİ]l|remove|revoke|destroy|reset|disconnect|unsubscribe|cancel\s+account)(?![\p{L}\p{N}_])/iu;
+  const themeMetaRe = /(?<![\p{L}\p{N}_])(theme|tema|dark|light|karanl[ıiİ]k|ayd[ıiİ]nl[ıiİ]k|gece|g[üuÜ]nd[üuÜ]z)(?![\p{L}\p{N}_])/iu;
+  const themeExplicitRe = /\b(toggle\s+(?:dark|light|theme)|(?:dark|light|theme)\s+(?:mode|toggle|switcher)|tema\s+de[ğg]i[şs]tir)\b|theme[-_]?toggle/i;
+  const isUnsafeOrThemeBtn = b => {
+    if (b.closest('[data-theme-toggle], [data-destructive]')) return true;
+    const meta = [
+      b.innerText || '',
+      b.getAttribute('aria-label') || '',
+      b.getAttribute('title') || '',
+      b.id || '',
+      b.getAttribute('name') || '',
+      b.getAttribute('data-action') || '',
+    ].join(' ');
+    if (skipBtnRe.test(meta) || themeExplicitRe.test(meta)) return true;
+    if ((b.hasAttribute('aria-pressed') || b.getAttribute('role') === 'switch') && themeMetaRe.test(meta)) return true;
+    return false;
+  };
+
   const findTrigger = sel => {
     const isInteractiveVisible = e => {
       if (!vis(e)) return false;
@@ -45,7 +63,9 @@ async (opts = {}) => {
     }
     const explicit = [...document.querySelectorAll('[data-motion-trigger]')].filter(isInteractiveVisible);
     if (explicit.length) return explicit[0];
-    const candidates = [...document.querySelectorAll('button, [role="tab"]')].filter(isInteractiveVisible);
+    const candidates = [...document.querySelectorAll('button, [role="tab"]')].filter(
+      e => isInteractiveVisible(e) && !isUnsafeOrThemeBtn(e),
+    );
     if (!candidates.length) return null;
     if (candidates[0].getAttribute('role') === 'tab' && candidates[0].getAttribute('aria-selected') === 'true') {
       const unselected = candidates.find(e => e.getAttribute('role') === 'tab' && e.getAttribute('aria-selected') === 'false');
