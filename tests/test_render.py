@@ -40,12 +40,18 @@ class NetworkAndPaths(unittest.TestCase):
         cm = mock.MagicMock()
         cm.__enter__.return_value = cm
         cm.__exit__.return_value = False
-        with mock.patch.object(rd.urllib.request, 'urlopen', return_value=cm) as urlopen:
+        opener = mock.MagicMock()
+        opener.open.return_value = cm
+        with mock.patch.object(rd.urllib.request, 'build_opener', return_value=opener) as build:
             self.assertTrue(rd.reachable('https://example.com'))
-        urlopen.assert_called_once_with('https://example.com', timeout=4)
+        # only http and https handlers: the opener cannot open file: or custom schemes at all
+        build.assert_called_once_with(rd.urllib.request.HTTPHandler, rd.urllib.request.HTTPSHandler)
+        opener.open.assert_called_once_with('https://example.com', timeout=4)
         cm.__exit__.assert_called_once()
 
-        with mock.patch.object(rd.urllib.request, 'urlopen', side_effect=OSError('offline')):
+        failing = mock.MagicMock()
+        failing.open.side_effect = OSError('offline')
+        with mock.patch.object(rd.urllib.request, 'build_opener', return_value=failing):
             self.assertFalse(rd.reachable('https://example.com'))
 
     def test_chrome_path_uses_which_then_platform_fallbacks(self):

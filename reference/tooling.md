@@ -1,6 +1,6 @@
 # Tooling details
 
-When installed as an agent skill (`~/.claude/skills/...` or `~/.gemini/config/skills/...`), resolve `scripts/` relative to `SKILL.md` (`<skill_dir>/scripts/...`), not the target app's working directory. `uitools.py` and `verify.py` run with Python 3 stdlib only (`uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`); `render.py` (and `verify.py`'s rendered pass) uses Playwright + headless Chromium and `scripts/checks/*.js` (`check.js`, `mobile.js`, `interact.js`, `motion.js`, `sweep.js`).
+When installed as an agent skill (`~/.claude/skills/...` or your agent's skills folder), resolve `scripts/` relative to `SKILL.md` (`<skill_dir>/scripts/...`), not the target app's working directory. `uitools.py` and `verify.py` run with Python 3 stdlib only (`uicolor.py`, `uiparse.py`, `uiroute.py`, `uiignore.py`); `render.py` (and `verify.py`'s rendered pass) uses Playwright + headless Chromium and `scripts/checks/*.js` (`check.js`, `mobile.js`, `interact.js`, `motion.js`, `sweep.js`).
 
 ## `verify.py` (one-shot static + rendered verification)
 

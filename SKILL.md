@@ -1,6 +1,9 @@
 ---
 name: classic-ui-design-principles
 description: Use when designing, building, or refactoring UI (components, pages, dashboards, forms, apps). Picks mode (Component/Page/App) & mood, applies classic rules (60-30-10, WCAG AA, 8pt grid, type scale, depth, Fitts/Hick/Jakob/Miller, single primary CTA), 9-state coverage, motion, and typography/locale, then verifies with audit & render checks.
+metadata:
+  author: hamzamalikyildiz
+  tags: [ui-design, accessibility, design-system]
 ---
 
 # Classic UI Design Principles
@@ -42,7 +45,7 @@ Playful and Bold are **expressive**: `audit` enforces only the accessibility flo
 1. **One signature element per primary screen**: custom inline-SVG illustration (product, scene, mascot—never geometric placeholders/emoji) or working interaction (mini demo, configurator, sortable table, pausable log). Dashboards favor interaction, landings illustration/live preview, articles strong type (diagrams/interactions only if helpful, never clip-art).
 2. **Palette from the subject**, not defaults (audio: ember on near-black; kids learning: sun yellow + sky + coral; observability: cyan on ink). Supporting hue 60–150° away. Violet-to-fuchsia gradient only when requested.
 3. **Icons are inline SVG**, one stroke style. Emoji as icons only in Playful.
-4. **Realistic copy & seeded data** (`reference/sample-data.md`): real names, numbers, units; no `"Lorem"` or `"Feature one"`. Seed realistic data before `render.py` — never judge screenshots against an empty database.
+4. **Realistic copy & seeded data** (`reference/sample-data.md`): real names, numbers, units; no `"Lorem"` or `"Feature one"`. Seed realistic data before `render.py` — do not judge screenshots taken against an empty database.
 5. **Visual polish** (`reference/visual-quality.md`): subject-derived palette, display/serif voice, one hero entrance + dealt moment, real product UI over boxes, one atmosphere treatment, varied section rhythm. `audit` flags stock blue/violet accents without custom palette as `stock-look`.
 6. **No half-empty stubs or filler widgets:** fill panels with real rows/copy; never invent extra panels/sidebars to fill space; keep content visible without JS (no static `opacity-0`).
 
@@ -53,8 +56,8 @@ Details in `reference/rules.md`, `reference/states.md`, `reference/motion.md`, `
 - **Color & depth:** 60-30-10 by area; one hero surface per screen (except pure typographic Editorial); AA contrast (4.5:1 body, 3:1 large/UI) incl. gradients & `oklch`; fix failing colored pairs by shade in the same hue, never grey. Depth over borders (except Technical/Editorial hairlines); no frame wrappers; nested radius = outer - padding.
 - **Layout:** 8pt grid (4px fine-tuning), proximity inside groups < between groups, Z-pattern for landings, F-pattern for dashboards/content, bento with one featured card when fitting.
 - **Type & locale** (`reference/typography-locale.md`): modular scale, `xs` ≥ 12px for short kickers/tags only, ≥ 14px (`sm`) for table/caption/sidebar text, body 16px, leading 1.5–1.6, paragraphs ≤ 65ch, ≤ 2 families (3 in expressive). Use `text-balance` on headings, `text-pretty` on paragraphs, `opsz`, `tabular-nums`, `Intl` formatting, `lang="tr"` with `uppercase` (no `İ/I` corruption), reachable dark-mode toggle if `.dark` tokens exist.
-- **UX & 9-State Matrix** (`reference/states.md`): single solid primary CTA per screen/card/form (≥ 44px; `audit` warns < 40px), Hick/Miller as starting sizes (~5–7 per group, grouped by task and clarity), hover/focus-visible/active/disabled, `aria-hidden` on decoration, `<main>`/`<header>`/`<nav>` landmarks. 9-state coverage: **Empty** (first-use vs filtered), **Loading** (`<1s` none / `1–3s` matching skeleton), **Long-loading (>3s)** (named stages, elapsed + honest estimate, productive fill, Cancel + Notify), **Error** (preserve user input + specific recovery), **Partial**, **Locked**, **Success** (micro-moment), **Offline**, **Stale**.
-- **Motion & Micro-Moments** (`reference/motion.md`): tokens (`80–500ms`), `transform`/`opacity`-led (short paint-only exceptions allowed; avoid layout `width`/`height`/`top`/`left` — policy table in `reference/motion.md`), `exit <= 0.7 * enter`. Add 1–2 result micro-moments (score ring count-up, `1.2s` row highlight flash, Undo toast, sliding tab indicator) with zero-travel `prefers-reduced-motion: reduce` fallback.
+- **UX & 9-State Matrix** (`reference/states.md`): single solid primary CTA per screen/card/form (≥ 44px; `audit` warns < 40px), Hick/Miller as starting sizes (~5–7 per group), hover/focus-visible/active/disabled, `aria-hidden` on decoration, `<main>`/`<header>`/`<nav>` landmarks. 9-state coverage: **Empty** (first-use vs filtered), **Loading** (`<1s` none / `1–3s` matching skeleton), **Long-loading (>3s)** (named stages, honest estimate, Cancel + Notify), **Error** (preserve user input + specific recovery), **Partial**, **Locked**, **Success** (micro-moment), **Offline**, **Stale**.
+- **Motion & Micro-Moments** (`reference/motion.md`, with its property policy table): `80–500ms` tokens, `transform`/`opacity`-led, short paint-only exceptions, avoid layout properties, `exit <= 0.7 * enter`. Add 1–2 result micro-moments (score ring count-up, `1.2s` row highlight flash, Undo toast) with zero-travel `prefers-reduced-motion: reduce` fallback.
 - **Anti-patterns:** rainbow buttons, multiple solid CTAs, `<14px` body/table text, faint grey walls, hollow outlined display text, all-card borders outside Technical/Editorial, bare `"Loading..."` on `>3s` jobs, wiping input on error.
 
 Explicit user requests win; resolve colliding rules via presentation (grouping, "More" menus, ghost variants) and note in the report.

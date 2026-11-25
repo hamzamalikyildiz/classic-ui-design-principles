@@ -77,8 +77,12 @@ def log(msg):
 
 
 def reachable(url):
+    if not str(url).lower().startswith(('http://', 'https://')):   # never open file: or custom schemes
+        return False
     try:
-        with urllib.request.urlopen(url, timeout=4):
+        # an opener with only the http and https handlers cannot open file: or custom schemes at all
+        opener = urllib.request.build_opener(urllib.request.HTTPHandler, urllib.request.HTTPSHandler)
+        with opener.open(url, timeout=4):
             return True
     except Exception:
         return False
@@ -211,20 +215,7 @@ def normalize_tailwind_v4_offline(html):
             cfg_obj = {'theme': {'extend': {'colors': theme_colors}}}
             html = _inject_head(html, f'<script>tailwind.config = {json.dumps(cfg_obj)}</script>')
         else:
-            parsed_cfg = None
-            try:
-                parsed_cfg = json.loads(m.group(1))
-            except Exception:
-                if shutil.which('node'):
-                    r = subprocess.run(
-                        ['node', '-e', f'process.stdout.write(JSON.stringify(({m.group(1)})))'],
-                        capture_output=True, text=True, encoding='utf-8', errors='replace',
-                    )
-                    if r.returncode == 0:
-                        try:
-                            parsed_cfg = json.loads(r.stdout)
-                        except Exception:
-                            parsed_cfg = None
+            parsed_cfg = eval_inline_config(m.group(1))
             if isinstance(parsed_cfg, dict):
                 theme_sec = parsed_cfg.setdefault('theme', {})
                 if isinstance(theme_sec, dict):
@@ -237,6 +228,41 @@ def normalize_tailwind_v4_offline(html):
                 merged_tag = f'<script>tailwind.config = {json.dumps(parsed_cfg)}</script>'
                 html = html[:m.start()] + merged_tag + html[m.end():]
     return html
+
+
+_CFG_STRING = re.compile(r"'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"")
+_CFG_SAFE_REST = re.compile(r'^[\s{}\[\],:\w.+-]*$')
+_CFG_BAD_WORDS = re.compile(r'\b(?:require|process|import|eval|Function|constructor|prototype|__proto__|global|globalThis|this|module|exports)\b')
+_CFG_NODE = ("const vm = require('vm');"
+             "const out = vm.runInNewContext('(' + process.env.UITOOLS_CFG + ')', Object.create(null), {timeout: 1000});"
+             "process.stdout.write(JSON.stringify(out));")
+
+
+def eval_inline_config(src):
+    """Evaluate an inline `tailwind.config = {...}` object WITHOUT running page code.
+
+    The object comes from the page being audited, which may be untrusted. Only object-literal syntax is allowed
+    (strings, numbers, true/false/null, braces, brackets, bare keys): anything with calls, template strings,
+    arrow functions or reserved words is refused, and what remains is parsed in an empty node vm context with a
+    1 s timeout. Returns a dict, or None when the config is not a plain literal (callers fall back to defaults).
+    """
+    try:
+        return json.loads(src)
+    except ValueError:
+        pass
+    rest = _CFG_STRING.sub('0', src)
+    if '`' in rest or '=>' in rest or _CFG_BAD_WORDS.search(rest) or not _CFG_SAFE_REST.match(rest):
+        return None
+    node = shutil.which('node')
+    if not node:
+        return None
+    try:
+        r = subprocess.run([node, '-e', _CFG_NODE], capture_output=True, text=True, encoding='utf-8', errors='replace',
+                           env={**os.environ, 'UITOOLS_CFG': src}, timeout=5)
+        out = json.loads(r.stdout) if r.returncode == 0 else None
+    except (subprocess.SubprocessError, ValueError, OSError):
+        return None
+    return out if isinstance(out, dict) else None
 
 
 def compile_tailwind(html):
@@ -253,12 +279,10 @@ def compile_tailwind(html):
     cfg = {}
     m = INLINE_CFG.search(html)
     if m:
-        r = subprocess.run(['node', '-e', f'process.stdout.write(JSON.stringify(({m.group(1)})))'],
-                           capture_output=True, text=True, encoding='utf-8', errors='replace')
-        if r.returncode == 0:
-            cfg = json.loads(r.stdout)
-        else:
-            log('inline tailwind.config could not be evaluated; using defaults')
+        cfg = eval_inline_config(m.group(1))
+        if cfg is None:
+            cfg = {}
+            log('inline tailwind.config is not a plain object literal (or could not be evaluated); using defaults')
     tw_inline_css = []
 
     def _collect_tw_style(sm):
