@@ -45,7 +45,7 @@ Playful and Bold are **expressive**: `audit` enforces only the accessibility flo
 1. **One signature element per primary screen**: custom inline-SVG illustration (product, scene, mascot—never geometric placeholders/emoji) or working interaction (mini demo, configurator, sortable table, pausable log). Dashboards favor interaction, landings illustration/live preview, articles strong type (diagrams/interactions only if helpful, never clip-art).
 2. **Palette from the subject**, not defaults (audio: ember on near-black; kids learning: sun yellow + sky + coral; observability: cyan on ink). Supporting hue 60–150° away. Violet-to-fuchsia gradient only when requested.
 3. **Icons are inline SVG**, one stroke style. Emoji as icons only in Playful.
-4. **Realistic copy & seeded data** (`reference/sample-data.md`): real names, numbers, units; no `"Lorem"` or `"Feature one"`. Seed realistic data before `render.py` — do not judge screenshots taken against an empty database.
+4. **Realistic copy & seeded data** (`reference/sample-data.md`): real names, numbers, units; no `"Lorem"` or `"Feature one"`. Seed realistic data before `render.py` — screenshots of an empty database prove nothing.
 5. **Visual polish** (`reference/visual-quality.md`): subject-derived palette, display/serif voice, one hero entrance + dealt moment, real product UI over boxes, one atmosphere treatment, varied section rhythm. `audit` flags stock blue/violet accents without custom palette as `stock-look`.
 6. **No half-empty stubs or filler widgets:** fill panels with real rows/copy; never invent extra panels/sidebars to fill space; keep content visible without JS (no static `opacity-0`).
 

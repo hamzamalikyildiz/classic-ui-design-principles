@@ -46,7 +46,7 @@ python scripts/uitools.py snap 13 22 --grid 8
 - **Core:** spacing (`grid`), text/background contrast (`wcag-aa`), single solid primary button per section/card (`single-primary-cta`), primary CTAs `< 40px` (`fitts-primary`), `nested-radius`, `frame-wrapper`, `miller-7`, `line-length`, `max-2-fonts`, `skeleton-empty`, `reveal-needs-js`, `landmark-main`.
 - **Sterility & mood:** `stock-look`, `grey-chart`, `border-heavy`, `flat-hierarchy`; `playful|bold|trust` (`low-color`, `no-hero-surface`); `playful` (`no-drawn-mascot`, `card-sameness`); `bold` (`bold-headline-size`, `bold-font-default`); `editorial` (`headline-measure`, `left-stacked-column`, `edge-align`, `width-funnel`, `editorial-leading`, `no-serif`); `technical` (`radius-too-soft`, `no-mono`, `shadow-heavy`). In `playful`/`bold` (`EXPRESSIVE`), style rules downgrade to `INFO`; accessibility, `line-length`, and `reveal-needs-js` stay at full severity.
 - **Locale, typography, shadcn & complexity rules:**
-  - `tr-uppercase` (`WARN`): uppercase transform with Turkish characters (`ğüşiöçİĞÜŞÖÇ`) without `lang="tr"` on root/ancestor.
+  - `tr-uppercase` (`WARN`): uppercase transform on text with Turkish letters (dotted and dotless i, g-breve, s-cedilla, c-cedilla, o and u umlaut) without `lang="tr"` on root/ancestor.
   - `numeric-columns` (`INFO`): numeric table cells or KPI values without `tabular-nums`.
   - `heading-wrap` (`INFO`): headings without `text-balance` or long paragraphs without `text-pretty`.
   - `theme-toggle-missing` (`INFO`, `WARN` in `--route` mode): `.dark` tokens or `dark:` classes without a visible theme toggle (`ThemeToggle` / `setTheme` / `useTheme`).
