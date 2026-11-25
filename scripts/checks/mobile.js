@@ -7,8 +7,14 @@
   const small = [], tiny = [];
   for (const e of document.querySelectorAll('a, button, input, select, textarea, [role=button]')) {
     if (!vis(e) || (e.tagName === 'INPUT' && (e.type || '').toLowerCase() === 'hidden')) continue;
-    const r = e.getBoundingClientRect();
-    if (r.height < 36 && r.width <= 120 && !e.closest('p, li'))
+    const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+    const cls = typeof e.className === 'string' ? e.className : (e.getAttribute('class') || '');
+    const isControl = e.tagName !== 'A' || e.getAttribute('role') === 'button';
+    const hasBoxBorder = parseFloat(cs.borderTopWidth) > 0 && parseFloat(cs.borderBottomWidth) > 0 && parseFloat(cs.borderLeftWidth) > 0 && parseFloat(cs.borderRightWidth) > 0;
+    const hasBg = cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && cs.backgroundColor !== 'transparent';
+    const isBtnLink = e.tagName === 'A' && (/\b(btn|button|cta)\b/i.test(cls) || (cs.display !== 'inline' && (hasBg || hasBoxBorder)));
+    const isSmallStandaloneLink = e.tagName === 'A' && cs.display !== 'inline' && !e.closest('p, li') && r.width <= 120;
+    if (r.height < 36 && (isControl || isBtnLink || isSmallStandaloneLink))
       small.push((e.innerText || e.getAttribute('aria-label') || e.placeholder || e.tagName).trim().slice(0, 18) + ` (${Math.round(r.width)}x${Math.round(r.height)})`);
   }
   for (const e of document.querySelectorAll('p, li, span, a, button, td')) {

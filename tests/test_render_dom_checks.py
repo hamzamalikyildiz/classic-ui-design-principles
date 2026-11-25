@@ -8,6 +8,8 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CHECK_JS_PATH = ROOT / 'scripts' / 'checks' / 'check.js'
+INTERACT_JS_PATH = ROOT / 'scripts' / 'checks' / 'interact.js'
+MOBILE_JS_PATH = ROOT / 'scripts' / 'checks' / 'mobile.js'
 
 spec = importlib.util.spec_from_file_location('render', ROOT / 'scripts' / 'render.py')
 rd = importlib.util.module_from_spec(spec)
@@ -16,6 +18,14 @@ spec.loader.exec_module(rd)
 
 def _check_js():
     return CHECK_JS_PATH.read_text(encoding='utf-8').strip()
+
+
+def _interact_js():
+    return INTERACT_JS_PATH.read_text(encoding='utf-8').strip()
+
+
+def _mobile_js():
+    return MOBILE_JS_PATH.read_text(encoding='utf-8').strip()
 
 
 class CheckJsSyntaxTests(unittest.TestCase):
@@ -212,6 +222,114 @@ class RenderDomChecksPlaywrightTests(unittest.TestCase):
         </html>"""
         res_normal = self._run_check(html_normal)
         self.assertNotIn(('WARN', 'long-wait-unexplained'), self._codes(res_normal))
+
+    # 5. interact.js safe button probing & state isolation
+    def test_interact_skips_theme_toggle_and_destructive_or_logout_buttons(self):
+        html = """<!doctype html>
+        <html lang="tr" class="light-root">
+        <body>
+          <script>window.__clicked = [];</script>
+          <button type="button" data-theme-toggle onclick="window.__clicked.push('theme'); document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark')">Tema</button>
+          <div data-destructive><button type="button" onclick="window.__clicked.push('data-destructive')">Kalıcı İşlem</button></div>
+          <button type="button" onclick="window.__clicked.push('signout')">Sign Out</button>
+          <button type="button" onclick="window.__clicked.push('logout')">Log out</button>
+          <button type="button" onclick="window.__clicked.push('cikis')">Çıkış Yap</button>
+          <button type="button" onclick="window.__clicked.push('sil')">Hesabı Sil</button>
+          <button type="button" onclick="window.__clicked.push('delete')">Delete Project</button>
+          <button type="button" onclick="window.__clicked.push('remove')">Remove Member</button>
+          <button type="button" onclick="window.__clicked.push('revoke')">Revoke Token</button>
+          <button type="button" onclick="window.__clicked.push('destroy')">Destroy Env</button>
+          <button type="button" onclick="window.__clicked.push('reset')">Reset Data</button>
+          <button type="button" onclick="window.__clicked.push('disconnect')">Disconnect</button>
+          <button type="button" onclick="window.__clicked.push('unsubscribe')">Unsubscribe</button>
+          <div role="button" tabindex="0" onclick="window.__clicked.push('cancel-acct')">Cancel Account</div>
+          <button type="button" aria-pressed="false" aria-label="Dark theme" onclick="window.__clicked.push('switch-theme')">Dark</button>
+          <button type="button" id="safe-dead">Refresh View</button>
+        </body>
+        </html>"""
+        page = self._browser.new_page(viewport={'width': 1280, 'height': 800})
+        try:
+            url = 'http://localhost/interact-safe'
+            page.route(url, lambda route: route.fulfill(status=200, content_type='text/html; charset=utf-8', body=html))
+            page.goto(url)
+            res = page.evaluate(_interact_js())
+            clicked = page.evaluate('window.__clicked')
+            self.assertEqual(clicked, [], f'Unsafe or theme buttons were clicked: {clicked}')
+            self.assertEqual(page.evaluate('document.documentElement.className'), 'light-root')
+            self.assertIsNone(page.evaluate("localStorage.getItem('theme')"))
+            dead = [msg for lvl, code, msg in res if lvl == 'INFO' and code == 'dead-buttons']
+            self.assertEqual(len(dead), 1)
+            self.assertIn('Refresh View', dead[0])
+        finally:
+            page.close()
+
+    def test_interact_restores_root_theme_and_localstorage_after_probing(self):
+        html = """<!doctype html>
+        <html class="app-shell" data-theme="light">
+        <body>
+          <script>window.__leakyClicked = false;</script>
+          <button type="button" id="leaky-btn" onclick="
+            window.__leakyClicked = true;
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            localStorage.removeItem('auth_token');
+          ">Preview Panel</button>
+        </body>
+        </html>"""
+        page = self._browser.new_page(viewport={'width': 1280, 'height': 800})
+        try:
+            url = 'http://localhost/interact-restore'
+            page.route(url, lambda route: route.fulfill(status=200, content_type='text/html; charset=utf-8', body=html))
+            page.goto(url)
+            page.evaluate("localStorage.setItem('auth_token', 'live-session-secret')")
+            res = page.evaluate(_interact_js())
+            self.assertTrue(page.evaluate('window.__leakyClicked'))
+            self.assertNotIn(('INFO', 'dead-buttons'), self._codes(res))
+            self.assertEqual(page.evaluate('document.documentElement.className'), 'app-shell')
+            self.assertEqual(page.evaluate("document.documentElement.getAttribute('data-theme')"), 'light')
+            self.assertEqual(page.evaluate("localStorage.getItem('auth_token')"), 'live-session-secret')
+            self.assertIsNone(page.evaluate("localStorage.getItem('theme')"))
+        finally:
+            page.close()
+
+    # 6. mobile.js full-width tap target detection & prose link exclusion
+    def test_mobile_tap_targets_catches_full_width_320x30_button_and_btn_link(self):
+        html = """<!doctype html>
+        <html>
+        <body style="margin:0;padding:16px">
+          <button style="display:block;width:320px;height:30px;padding:0;border:none;background:#0f172a;color:#fff">Continue</button>
+          <a href="#trial" style="display:flex;align-items:center;justify-content:center;width:320px;height:30px;background:#2563eb;color:#fff;text-decoration:none;margin-top:8px">Start Trial</a>
+        </body>
+        </html>"""
+        page = self._browser.new_page(viewport={'width': 375, 'height': 800})
+        try:
+            page.set_content(html)
+            res = page.evaluate(_mobile_js())
+            tap = [msg for lvl, code, msg in res if lvl == 'INFO' and code == 'mobile-tap-targets']
+            self.assertEqual(len(tap), 1, f'Expected mobile-tap-targets finding, got: {res}')
+            self.assertIn('Continue (320x30)', tap[0])
+            self.assertIn('Start Trial (320x30)', tap[0])
+        finally:
+            page.close()
+
+    def test_mobile_tap_targets_ignores_inline_prose_links_and_tall_buttons(self):
+        html = """<!doctype html>
+        <html>
+        <body style="margin:0;padding:16px;font-size:16px;line-height:1.5">
+          <button style="display:block;width:320px;height:44px">Primary Action</button>
+          <p>Read our <a href="#terms">Terms of Service</a> and <a href="#privacy" style="border-bottom:1px solid #333">Privacy Policy</a>.</p>
+          <ul><li><a href="#guide">Getting Started Guide</a></li></ul>
+          <footer><a href="#status">Status Page</a></footer>
+        </body>
+        </html>"""
+        page = self._browser.new_page(viewport={'width': 375, 'height': 800})
+        try:
+            page.set_content(html)
+            res = page.evaluate(_mobile_js())
+            self.assertNotIn(('INFO', 'mobile-tap-targets'), self._codes(res))
+        finally:
+            page.close()
 
 
 if __name__ == '__main__':

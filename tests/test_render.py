@@ -219,6 +219,9 @@ class JsPayloads(unittest.TestCase):
         self.assertIn('Math.abs(scrollY - y) > 5', interact_js)
         self.assertIn('if (scrollY !== y || scrollX !== x) scrollTo(x, y)', interact_js)
         self.assertIn("b.getAttribute('aria-disabled') !== 'true'", interact_js)
+        self.assertIn('[data-theme-toggle], [data-destructive]', interact_js)
+        self.assertIn('savedStorage', interact_js)
+        self.assertIn('finally', interact_js)
         self.assertNotIn('const focusable =', interact_js)
         focus_re = re.search(r'/(.+)/\.test\(cls\)', interact_js)
         self.assertIsNotNone(focus_re)
@@ -232,7 +235,8 @@ class JsPayloads(unittest.TestCase):
         self.assertIn("behavior: 'instant'", sweep_js)
         self.assertIn('parseFloat(cs.opacity) !== 0', mobile_js)
         self.assertIn("e.tagName === 'INPUT' && (e.type || '').toLowerCase() === 'hidden'", mobile_js)
-        self.assertIn('r.height < 36 && r.width <= 120', mobile_js)
+        self.assertIn("e.tagName !== 'A' || e.getAttribute('role') === 'button'", mobile_js)
+        self.assertIn('r.height < 36 && (isControl || isBtnLink || isSmallStandaloneLink)', mobile_js)
         self.assertIn("e.getAttribute('aria-label') || e.placeholder || e.tagName", mobile_js)
         self.assertIn('nd.nodeType === 3 && nd.textContent.trim().length > 3', mobile_js)
 
@@ -244,6 +248,113 @@ class JsPayloads(unittest.TestCase):
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0][:2], ('INFO', 'axe-error'))
         self.assertIn('CSP blocked', res[0][2])
+
+
+class TailwindV4OfflineTests(unittest.TestCase):
+    def test_linear_gradient_shorthand_rewritten_all_directions(self):
+        for d in ('t', 'tr', 'r', 'br', 'b', 'bl', 'l', 'tl'):
+            src = f'<div class="bg-linear-to-{d} hover:bg-linear-to-{d}/oklch !bg-linear-to-{d}"></div>'
+            out = rd.normalize_tailwind_v4_offline(src)
+            self.assertEqual(
+                out,
+                f'<div class="bg-gradient-to-{d} hover:bg-gradient-to-{d} !bg-gradient-to-{d}"></div>',
+            )
+        untouched = '<a href="bg-linear-to-r/docs" class="custom-bg-linear-to-r-token">Link</a>'
+        self.assertEqual(rd.normalize_tailwind_v4_offline(untouched), untouched)
+
+    def test_non_v3_opacity_steps_rewritten_outside_urls_and_font_sizes(self):
+        html = (
+            '<div class="bg-white/12 bg-black/8 border-white/14 text-white/65 text-white/72 '
+            'ring-indigo-500/24 from-sky-500/18 via-purple-500/7 to-pink-500/99 '
+            'fill-emerald-500/33 stroke-amber-400/42 dark:hover:bg-slate-900/16 '
+            'text-sm/6 text-lg/8 text-2xl/9 bg-white/0 bg-white/100">'
+            '<a href="to-docs/12" src="https://cdn.example.com/bg-white/12" '
+            'style="background-image:url(bg-black/8.png)">Docs</a></div>'
+        )
+        out = rd.normalize_tailwind_v4_offline(html)
+        self.assertIn('bg-white/[0.12]', out)
+        self.assertIn('bg-black/[0.08]', out)
+        self.assertIn('border-white/[0.14]', out)
+        self.assertIn('text-white/65', out)
+        self.assertIn('text-white/[0.72]', out)
+        self.assertIn('ring-indigo-500/[0.24]', out)
+        self.assertIn('from-sky-500/[0.18]', out)
+        self.assertIn('via-purple-500/[0.07]', out)
+        self.assertIn('to-pink-500/[0.99]', out)
+        self.assertIn('fill-emerald-500/[0.33]', out)
+        self.assertIn('stroke-amber-400/[0.42]', out)
+        self.assertIn('dark:hover:bg-slate-900/[0.16]', out)
+        # Preserve v3 font-size/line-height shorthands, multiples of 5, and URLs
+        self.assertIn('text-sm/6', out)
+        self.assertIn('text-lg/8', out)
+        self.assertIn('text-2xl/9', out)
+        self.assertIn('bg-white/0', out)
+        self.assertIn('bg-white/100', out)
+        self.assertIn('href="to-docs/12"', out)
+        self.assertIn('src="https://cdn.example.com/bg-white/12"', out)
+        self.assertIn('url(bg-black/8.png)', out)
+        # Idempotence check
+        self.assertEqual(rd.normalize_tailwind_v4_offline(out), out)
+
+    def test_prepare_html_target_extracts_at_theme_without_mutating_source(self):
+        orig_html = (
+            '<!doctype html><html><head>'
+            '<style type="text/tailwindcss">'
+            '@import "tailwindcss";\n'
+            '@theme {\n'
+            '  --color-brand: #4f46e5;\n'
+            '  --color-surface: oklch(0.97 0.01 250);\n'
+            '  --radius-card: 1rem;\n'
+            '}'
+            '</style></head>'
+            '<body class="bg-surface text-brand">'
+            '<div class="bg-linear-to-br from-brand/12 to-black/8 border border-white/14">Hi</div>'
+            '</body></html>'
+        )
+        with tempfile.TemporaryDirectory() as d:
+            src = pathlib.Path(d) / 'v4_card.html'
+            src.write_text(orig_html, encoding='utf-8')
+            with mock.patch.object(rd, 'reachable', return_value=False), \
+                 mock.patch.object(rd, 'compile_tailwind', side_effect=lambda h: h):
+                temp_file = rd.prepare_html_target(src)
+            try:
+                self.assertEqual(src.read_text(encoding='utf-8'), orig_html)
+                rendered_copy = temp_file.read_text(encoding='utf-8')
+                self.assertNotIn('@import "tailwindcss"', rendered_copy)
+                self.assertNotIn('@theme', rendered_copy)
+                self.assertNotIn('text/tailwindcss', rendered_copy)
+                self.assertIn(':root {', rendered_copy)
+                self.assertIn('--color-brand: #4f46e5;', rendered_copy)
+                self.assertIn('--color-surface: oklch(0.97 0.01 250);', rendered_copy)
+                self.assertIn('bg-gradient-to-br', rendered_copy)
+                self.assertIn('from-brand/[0.12]', rendered_copy)
+                self.assertIn('to-black/[0.08]', rendered_copy)
+                self.assertIn('border-white/[0.14]', rendered_copy)
+                cfg_match = rd.INLINE_CFG.search(rendered_copy)
+                self.assertIsNotNone(cfg_match)
+                cfg_data = json.loads(cfg_match.group(1))
+                colors = cfg_data['theme']['extend']['colors']
+                self.assertEqual(colors['brand'], '#4f46e5')
+                self.assertIn('var(--color-surface)', colors['surface'])
+            finally:
+                temp_file.unlink(missing_ok=True)
+
+    def test_at_theme_merges_with_existing_inline_tailwind_config(self):
+        html = (
+            '<html><head>'
+            '<script>tailwind.config = {"darkMode": "class", "theme": {"extend": {"colors": {"existing": "#111827"}}}}</script>'
+            '<style>@theme { --color-brand: #4f46e5; --color-existing: #999999; }</style>'
+            '</head><body class="bg-brand/12 bg-existing"></body></html>'
+        )
+        out = rd.normalize_tailwind_v4_offline(html)
+        cfg_match = rd.INLINE_CFG.search(out)
+        self.assertIsNotNone(cfg_match)
+        cfg_data = json.loads(cfg_match.group(1))
+        self.assertEqual(cfg_data['darkMode'], 'class')
+        colors = cfg_data['theme']['extend']['colors']
+        self.assertEqual(colors['existing'], '#111827')
+        self.assertEqual(colors['brand'], '#4f46e5')
+        self.assertIn('bg-brand/[0.12]', out)
 
 
 if __name__ == '__main__':

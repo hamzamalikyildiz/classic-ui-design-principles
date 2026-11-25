@@ -372,6 +372,11 @@ async (opts = {}) => {
     if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const kfMap = collectKeyframes();
     const hits = new Set();
+    const exceedsReducedMotionLimit = (prop, dur) => {
+      const p = toKebab(prop);
+      if (!isSpatialProp(p)) return false;
+      return p === 'clip-path' ? dur > 300 : dur > 150;
+    };
 
     for (const el of document.querySelectorAll('body *')) {
       if (!vis(el)) continue;
@@ -382,7 +387,7 @@ async (opts = {}) => {
       const tDurs = parseTimeListMs(cs.transitionDuration);
       tProps.forEach((prop, i) => {
         const dur = tDurs[i % Math.max(1, tDurs.length)] || 0;
-        if (dur > 150 && isSpatialProp(prop)) {
+        if (exceedsReducedMotionLimit(prop, dur)) {
           hits.add(`${label} (transition ${prop} ${Math.round(dur)}ms)`);
         }
       });
@@ -396,7 +401,7 @@ async (opts = {}) => {
         const pState = aStates[i % Math.max(1, aStates.length)] || 'running';
         if (dur > 150 && pState !== 'paused') {
           const kfProps = kfMap.get(name);
-          if (!kfProps || [...kfProps].some(isSpatialProp)) {
+          if (!kfProps || [...kfProps].some(p => exceedsReducedMotionLimit(p, dur))) {
             hits.add(`${label} (animation ${name} ${Math.round(dur)}ms)`);
           }
         }
@@ -412,7 +417,7 @@ async (opts = {}) => {
         const dur = typeof computed.duration === 'number' ? computed.duration : 0;
         if (dur > 150) {
           const props = getKeyframeAnimatedProps(anim);
-          if (!props.size || [...props].some(isSpatialProp)) {
+          if (!props.size || [...props].some(p => exceedsReducedMotionLimit(p, dur))) {
             hits.add(`${where(target)} (${anim.animationName || anim.transitionProperty || 'motion'} ${Math.round(dur)}ms)`);
           }
         }

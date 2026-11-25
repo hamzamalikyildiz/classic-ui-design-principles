@@ -26,8 +26,36 @@ import time
 import urllib.parse
 import urllib.request
 
-CDN = re.compile(r'<script[^>]+src=["\']https://cdn\.tailwindcss\.com[^"\']*["\'][^>]*>\s*</script>')
+CDN = re.compile(
+    r'<script[^>]+src=["\']https://(?:cdn\.tailwindcss\.com|(?:cdn\.jsdelivr\.net/npm|unpkg\.com)/@tailwindcss/browser)[^"\']*["\'][^>]*>\s*</script>'
+)
+TW_V4_IMPORT = re.compile(r'@import\s+["\']tailwindcss["\']\s*;?')
 INLINE_CFG = re.compile(r'<script>\s*tailwind\.config\s*=\s*(\{[\s\S]*?\})\s*;?\s*</script>')
+TW_STYLE_TAG = re.compile(r'<style\b([^>]*)>([\s\S]*?)</style>', re.I)
+_AT_THEME_START_RE = re.compile(
+    r'(?:(?::root\s*,\s*)?@theme(?:\s+inline)?(?:\s*,\s*:root)?)\s*\{',
+    re.I,
+)
+_TW_TEXT_SIZES = frozenset({
+    'xs', 'sm', 'base', 'lg', 'xl',
+    '2xl', '3xl', '4xl', '5xl', '6xl', '7xl', '8xl', '9xl',
+})
+_TW_URL_SPAN_RE = re.compile(
+    r'(?:href|src|action|poster|srcset|data-src)\s*=\s*(?:"[^"]*"|\'[^\']*\')'
+    r'|url\(\s*(?:"[^"]*"|\'[^\']*\'|[^)]*)\)'
+    r'|https?://[^\s"\'<>)]+'
+    r'|file://[^\s"\'<>)]+',
+    re.I,
+)
+_TW_V4_LINEAR_RE = re.compile(
+    r'(?<![A-Za-z0-9_./-])bg-linear-to-(tr|tl|br|bl|t|r|b|l)(?:/(?:srgb|oklch|oklab|hsl|lch|lab))?(?![A-Za-z0-9_./-])'
+)
+_TW_V4_OPACITY_RE = re.compile(
+    r'(?<![A-Za-z0-9_./-])'
+    r'(?P<head>(?P<prefix>bg|text|border|ring|from|via|to|fill|stroke)-'
+    r'(?P<color>[A-Za-z0-9][A-Za-z0-9_-]*|\[(?:#[0-9a-fA-F]{3,8}|(?:rgb|hsl|oklch|oklab|lch|lab|color|var)[^\]]+)\]))'
+    r'/(?P<pct>\d{1,2})(?![A-Za-z0-9_./\[%-])'
+)
 GFONTS = re.compile(r'<link[^>]+fonts\.(?:googleapis|gstatic)\.com[^>]*>')
 CACHE = pathlib.Path(os.environ.get('UITOOLS_CACHE', pathlib.Path.home() / '.cache' / 'uitools-render'))
 OFFLINE_ERRS = (
@@ -73,7 +101,146 @@ def _inject_head(html, tag):
     return out if n else f'{tag}{html}'
 
 
+def _extract_at_theme_blocks(css_text, theme_colors):
+    """Convert @theme {...} blocks into :root {...} and populate theme_colors from --color-* tokens."""
+    out = []
+    pos = 0
+    n = len(css_text)
+    while pos < n:
+        m = _AT_THEME_START_RE.search(css_text, pos)
+        if not m:
+            out.append(css_text[pos:])
+            break
+        out.append(css_text[pos:m.start()])
+        idx = m.end()
+        depth = 1
+        in_str = None
+        while idx < n and depth > 0:
+            ch = css_text[idx]
+            if in_str:
+                if ch == '\\':
+                    idx += 2
+                    continue
+                if ch == in_str:
+                    in_str = None
+            elif ch in ('"', "'"):
+                in_str = ch
+            elif ch == '/' and idx + 1 < n and css_text[idx + 1] == '*':
+                end_c = css_text.find('*/', idx + 2)
+                idx = (end_c + 2) if end_c != -1 else n
+                continue
+            elif ch == '{':
+                depth += 1
+            elif ch == '}':
+                depth -= 1
+                if depth == 0:
+                    break
+            idx += 1
+        if depth != 0:
+            out.append(css_text[m.start():])
+            break
+        inner = css_text[m.end():idx]
+        no_comments = re.sub(r'/\*[\s\S]*?\*/', '', inner)
+        for vm in re.finditer(r'(--([A-Za-z0-9_-]+))\s*:\s*([^;{}]+)', no_comments):
+            full_var, raw_val = vm.group(1), vm.group(3).strip()
+            if full_var.startswith('--color-'):
+                cname = full_var[len('--color-'):]
+                if cname and raw_val.lower() not in ('initial', 'inherit', 'unset'):
+                    if re.match(
+                        r'^(?:#[0-9a-fA-F]{3,8}|rgba?\([^)]+\)|hsla?\([^)]+\)|transparent|currentColor)$',
+                        raw_val,
+                        re.I,
+                    ):
+                        theme_colors[cname] = raw_val
+                    else:
+                        theme_colors[cname] = (
+                            f'color-mix(in srgb, var({full_var}) calc(<alpha-value> * 100%), transparent)'
+                        )
+        out.append(f':root {{{inner}}}')
+        pos = idx + 1
+    return ''.join(out)
+
+
+def _rewrite_tw_v4_utilities(text):
+    """Rewrite Tailwind v4 bg-linear-to-* and non-v3 /N percentage opacities outside URLs."""
+    protected = []
+
+    def _mask_url(m):
+        idx = len(protected)
+        protected.append(m.group(0))
+        return f'\x00TWURL{idx}\x00'
+
+    masked = _TW_URL_SPAN_RE.sub(_mask_url, text)
+    masked = _TW_V4_LINEAR_RE.sub(r'bg-gradient-to-\1', masked)
+
+    def _sub_opacity(m):
+        pct = int(m.group('pct'))
+        if pct < 1 or pct > 99 or pct % 5 == 0:
+            return m.group(0)
+        if m.group('prefix') == 'text' and m.group('color').lower() in _TW_TEXT_SIZES:
+            return m.group(0)
+        return f"{m.group('head')}/[0.{pct:02d}]"
+
+    masked = _TW_V4_OPACITY_RE.sub(_sub_opacity, masked)
+    if protected:
+        masked = re.sub(r'\x00TWURL(\d+)\x00', lambda m: protected[int(m.group(1))], masked)
+    return masked
+
+
+def normalize_tailwind_v4_offline(html):
+    """Normalize Tailwind v4 shorthands, /N color opacities, and @theme tokens for tailwindcss@3."""
+    theme_colors = {}
+
+    def _transform_style(m):
+        attrs, body = m.group(1), m.group(2)
+        had_v4 = bool(TW_V4_IMPORT.search(body) or _AT_THEME_START_RE.search(body))
+        body = TW_V4_IMPORT.sub('', body)
+        body = _extract_at_theme_blocks(body, theme_colors)
+        if (had_v4 or re.search(r'\btype\s*=\s*["\']text/tailwindcss["\']', attrs, re.I)) and not re.search(
+            r'@(?:apply|tailwind|layer)\b', body
+        ):
+            attrs = re.sub(r'\s*\btype\s*=\s*["\']text/tailwindcss["\']', '', attrs, flags=re.I)
+        return f'<style{attrs}>{body}</style>'
+
+    html = TW_STYLE_TAG.sub(_transform_style, html)
+    html = _rewrite_tw_v4_utilities(html)
+
+    if theme_colors:
+        m = INLINE_CFG.search(html)
+        if m is None:
+            cfg_obj = {'theme': {'extend': {'colors': theme_colors}}}
+            html = _inject_head(html, f'<script>tailwind.config = {json.dumps(cfg_obj)}</script>')
+        else:
+            parsed_cfg = None
+            try:
+                parsed_cfg = json.loads(m.group(1))
+            except Exception:
+                if shutil.which('node'):
+                    r = subprocess.run(
+                        ['node', '-e', f'process.stdout.write(JSON.stringify(({m.group(1)})))'],
+                        capture_output=True, text=True, encoding='utf-8', errors='replace',
+                    )
+                    if r.returncode == 0:
+                        try:
+                            parsed_cfg = json.loads(r.stdout)
+                        except Exception:
+                            parsed_cfg = None
+            if isinstance(parsed_cfg, dict):
+                theme_sec = parsed_cfg.setdefault('theme', {})
+                if isinstance(theme_sec, dict):
+                    ext_sec = theme_sec.setdefault('extend', {})
+                    if isinstance(ext_sec, dict):
+                        colors_sec = ext_sec.setdefault('colors', {})
+                        if isinstance(colors_sec, dict):
+                            for k, v in theme_colors.items():
+                                colors_sec.setdefault(k, v)
+                merged_tag = f'<script>tailwind.config = {json.dumps(parsed_cfg)}</script>'
+                html = html[:m.start()] + merged_tag + html[m.end():]
+    return html
+
+
 def compile_tailwind(html):
+    html = normalize_tailwind_v4_offline(html)
     if not shutil.which('npm') or not shutil.which('node'):
         log('npm/node not found; Tailwind classes will be unstyled')
         return html
@@ -92,6 +259,18 @@ def compile_tailwind(html):
             cfg = json.loads(r.stdout)
         else:
             log('inline tailwind.config could not be evaluated; using defaults')
+    tw_inline_css = []
+
+    def _collect_tw_style(sm):
+        if re.search(r'\btype\s*=\s*["\']text/tailwindcss["\']', sm.group(1), re.I):
+            tw_inline_css.append(sm.group(2))
+            return ''
+        return sm.group(0)
+
+    cleaned_html = TW_STYLE_TAG.sub(_collect_tw_style, html)
+    in_css = '@tailwind base;@tailwind components;@tailwind utilities;'
+    if tw_inline_css:
+        in_css = in_css + '\n' + '\n'.join(tw_inline_css)
     with tempfile.TemporaryDirectory() as d:
         d = pathlib.Path(d)
         (d / 'page.html').write_text(html, encoding='utf-8')
@@ -99,7 +278,7 @@ def compile_tailwind(html):
             'module.exports=' + json.dumps({**cfg, 'content': [(d / 'page.html').as_posix()]}),
             encoding='utf-8',
         )
-        (d / 'in.css').write_text('@tailwind base;@tailwind components;@tailwind utilities;', encoding='utf-8')
+        (d / 'in.css').write_text(in_css, encoding='utf-8')
         r = subprocess.run([str(tw_bin), '-c', str(d / 'tailwind.config.js'),
                             '-i', str(d / 'in.css'), '-o', str(d / 'out.css'), '--minify'],
                            capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -107,7 +286,7 @@ def compile_tailwind(html):
             log(f'tailwind build failed: {r.stderr.strip()[:200]}')
             return html
         css = (d / 'out.css').read_text(encoding='utf-8')
-    html = CDN.sub('', html)
+    html = CDN.sub('', cleaned_html)
     html = INLINE_CFG.sub('', html)
     return _inject_head(html, f'<style>{css}</style>')
 
@@ -639,8 +818,9 @@ def prepare_html_target(html_path):
     """Read local HTML, compile Tailwind / inline fonts if offline, and write temp render file."""
     src = pathlib.Path(html_path).resolve()
     html = src.read_text(encoding='utf-8')
-    if CDN.search(html) and not reachable('https://cdn.tailwindcss.com'):
+    if (CDN.search(html) or TW_V4_IMPORT.search(html)) and not reachable('https://cdn.tailwindcss.com'):
         log('Tailwind CDN unreachable; compiling locally')
+        html = normalize_tailwind_v4_offline(html)
         html = compile_tailwind(html)
     if GFONTS.search(html) and not reachable('https://fonts.googleapis.com/css2?family=Inter'):
         log('Google Fonts unreachable; inlining @fontsource fonts')
