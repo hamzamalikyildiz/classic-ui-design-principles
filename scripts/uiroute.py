@@ -25,6 +25,7 @@ __all__ = [
     'COMPONENT_DIRS',
     'SCREEN_RULES',
     'COMPONENT_RULE_NOTE',
+    'RouteSourceText',
     'VirtualMarkup',
     'ComponentDef',
     'find_project_root',
@@ -74,13 +75,42 @@ _TRANSPARENT_FRAMEWORK_TAGS = frozenset({
     'Image',
 })
 
-_TS_EXTS = ('.tsx', '.ts', '.jsx', '.js')
+_TS_EXTS = ('.tsx', '.ts', '.jsx', '.js', '.vue', '.svelte')
 _PAGE_FILENAMES = frozenset({'page.tsx', 'page.ts', 'page.jsx', 'page.js'})
-_JSX_FILE_EXTS = frozenset({'.tsx', '.jsx', '.ts', '.js'})
+_LAYOUT_FILENAMES = ('layout.tsx', 'layout.ts', 'layout.jsx', 'layout.js')
+_JSX_FILE_EXTS = frozenset({'.tsx', '.jsx', '.ts', '.js', '.vue', '.svelte'})
+_SFC_EXTS = frozenset({'.vue', '.svelte'})
+
+_THEME_TOGGLE_HINT_RE = re.compile(
+    r'(?:ThemeToggle|setTheme|next-themes|useTheme|data-theme-toggle|classList\.toggle\s*\(\s*[\'"]dark[\'"]\s*\)|toggleTheme)'
+)
 
 
 def _compute_line_starts(src: str) -> list[int]:
     return [0] + [i + 1 for i, ch in enumerate(src) if ch == '\n']
+
+
+class RouteSourceText(str):
+    """String subclass wrapping entry source text while carrying inlined component source files and active line maps."""
+
+    def __new__(
+        cls,
+        text: str,
+        *,
+        entry_file: str | None = None,
+        source_files: dict[str, str] | list[tuple[str, str]] | None = None,
+        active_lines: dict[str, set[int]] | None = None,
+    ):
+        obj = super().__new__(cls, text)
+        obj.entry_file = entry_file
+        if isinstance(source_files, dict):
+            obj.source_files = dict(source_files)
+        elif source_files is not None:
+            obj.source_files = dict(source_files)
+        else:
+            obj.source_files = {}
+        obj.active_lines = {k: set(v) for k, v in (active_lines or {}).items()}
+        return obj
 
 
 class VirtualMarkup(str):
@@ -222,10 +252,14 @@ def is_page_file(path, txt=None) -> bool:
         if suf in _JSX_FILE_EXTS:
             if 'app' in parts and name_low in _PAGE_FILENAMES:
                 return True
+            if suf == '.svelte' and name_low == '+page.svelte':
+                return True
             parent_parts = parts[:-1]
-            # If a component directory appears inside pages/ or routes/, prefer component classification
+            # If a component directory appears inside pages/, routes/, or views/, prefer component classification
             if not (set(parent_parts) & COMPONENT_DIRS):
                 if 'pages' in parent_parts or 'routes' in parent_parts:
+                    return True
+                if suf == '.vue' and 'views' in parent_parts:
                     return True
     if txt:
         head = txt[:4096]
@@ -260,6 +294,10 @@ def find_project_root(start_path) -> pathlib.Path:
     for anc in (cur, *cur.parents):
         if any((anc / marker).is_file() for marker in ('tsconfig.json', 'jsconfig.json', 'package.json')):
             return anc
+    # Fallback for marker-less layouts (`<root>/src/...` or `<root>/app/...`)
+    for anc in (cur, *list(cur.parents)[:4]):
+        if anc.name.lower() in ('src', 'app') and anc.parent != anc:
+            return anc.parent
     return cur
 
 
@@ -454,7 +492,15 @@ def resolve_import(
                     if resolved_root is not None:
                         return resolved_root
 
-    # 3. Default @/ alias (root_dir/src or root_dir)
+    # 3. SvelteKit $lib/ alias (<root>/src/lib/ or <root>/lib/)
+    if spec.startswith('$lib/') or spec == '$lib':
+        sub = spec[5:] if spec.startswith('$lib/') else ''
+        for base in (eff_root / 'src' / 'lib', eff_root / 'lib'):
+            resolved = _resolve_file_candidate(base / sub if sub else base)
+            if resolved is not None:
+                return resolved
+
+    # 4. Default @/ alias (root_dir/src or root_dir)
     if spec.startswith('@/'):
         sub = spec[2:]
         for base in (eff_root / 'src', eff_root):
@@ -462,8 +508,8 @@ def resolve_import(
             if resolved is not None:
                 return resolved
 
-    # 4. Non-relative baseUrl path (only if explicitly configured via tsconfig_paths tuple and contains '/')
-    if isinstance(tsconfig_paths, tuple) and tsconfig_paths[0] is not None and '/' in spec and not spec.startswith('@'):
+    # 5. Non-relative baseUrl path (only if explicitly configured via tsconfig_paths tuple and contains '/')
+    if isinstance(tsconfig_paths, tuple) and tsconfig_paths[0] is not None and '/' in spec and not spec.startswith(('@', '$')):
         resolved = _resolve_file_candidate(pathlib.Path(tsconfig_paths[0]) / spec)
         if resolved is not None:
             return resolved
@@ -507,12 +553,19 @@ def _strip_js_comments_preserve_strings(src: str) -> str:
 
 
 _IMPORT_RE = re.compile(
-    r"""(?:^|[;\n])\s*import\s+(?!type\b)(?P<clause>[^;]*?)\s+from\s+["'](?P<spec>[^"']+)["']""",
+    r"""(?:^|[;\n])\s*import\s+(?!type\b)(?P<clause>[^;"']*?)\s+from\s+["'](?P<spec>[^"']+)["']""",
     re.S,
 )
 
 
-def parse_imports(txt: str) -> dict[str, tuple[str, str]]:
+def _extract_sfc_script_text(txt: str) -> str:
+    """Extract inner `<script>` block text from `.vue` / `.svelte` SFCs (outside HTML comments)."""
+    no_html_comments = re.sub(r'<!--.*?-->', ' ', txt, flags=re.S)
+    blocks = re.findall(r'<script\b[^>]*>(.*?)</script>', no_html_comments, flags=re.S | re.I)
+    return '\n'.join(blocks)
+
+
+def parse_imports(txt: str, *, _from_sfc: bool = False) -> dict[str, tuple[str, str]]:
     """Parse ES imports into `{local_name: (imported_name, import_spec)}`."""
     cleaned = _strip_js_comments_preserve_strings(txt)
     out: dict[str, tuple[str, str]] = {}
@@ -543,6 +596,11 @@ def parse_imports(txt: str) -> dict[str, tuple[str, str]]:
                 out[ns_m.group(1)] = ('*', spec)
         elif re.fullmatch(r'[A-Za-z_$][\w$]*', clause):
             out[clause] = ('default', spec)
+    if not _from_sfc and '<script' in txt.lower():
+        sfc_scripts = _extract_sfc_script_text(txt)
+        if sfc_scripts:
+            for k, v in parse_imports(sfc_scripts, _from_sfc=True).items():
+                out.setdefault(k, v)
     return out
 
 
@@ -846,8 +904,94 @@ def _find_arrow_after_eq(txt: str, eq_pos: int, limit: int) -> tuple[int, int] |
     return None
 
 
-def extract_components(txt: str) -> dict[str, ComponentDef]:
-    """Extract top-level PascalCase React components and their returned JSX spans from `txt`."""
+def _pascal_from_stem(stem: str) -> str:
+    """Convert a file stem or kebab-case tag (`score-bars`, `+page`, `Card`) into PascalCase."""
+    cleaned = stem.lstrip('+')
+    parts = [p for p in re.split(r'[^A-Za-z0-9]+', cleaned) if p]
+    if not parts:
+        return 'Component'
+    res = ''.join(p[:1].upper() + p[1:] for p in parts)
+    return res if res[0].isalpha() else f'Comp{res}'
+
+
+def _find_vue_template_bounds(txt: str) -> tuple[tuple[int, int], tuple[int, int], tuple[int, int]] | None:
+    """Return `((open_start, open_end), (inner_start, inner_end), (close_start, close_end))` for top-level `<template>`."""
+    masked = mask_non_markup(txt)
+    open_span: tuple[int, int] | None = None
+    depth = 0
+    for m in TAG.finditer(masked):
+        close, tag, _, selfclose = m.groups()
+        if tag.lower() != 'template':
+            continue
+        if open_span is None:
+            if close != '</' and not selfclose:
+                open_span = (m.start(), m.end())
+                depth = 1
+            continue
+        if close == '</':
+            depth -= 1
+            if depth == 0:
+                close_span = (m.start(), m.end())
+                return open_span, (open_span[1], close_span[0]), close_span
+        elif not selfclose:
+            depth += 1
+    if open_span is not None:
+        return open_span, (open_span[1], len(txt)), (len(txt), len(txt))
+    return None
+
+
+def _find_svelte_markup_bounds(txt: str) -> tuple[tuple[int, int], list[tuple[int, int]]]:
+    """Return `((markup_start, markup_end), non_markup_spans)` for a `.svelte` SFC outside `<script>` and `<style>`."""
+    no_comments = re.sub(r'<!--.*?-->', lambda m: re.sub(r'[^\n]', ' ', m.group(0)), txt, flags=re.S)
+    non_markup_spans = [
+        (m.start(), m.end())
+        for m in re.finditer(r'<(?:script|style)\b[^>]*>.*?</(?:script|style)>', no_comments, flags=re.S | re.I)
+    ]
+    buf = list(no_comments)
+    for s, e in non_markup_spans:
+        for k in range(s, e):
+            if buf[k] != '\n':
+                buf[k] = ' '
+    only_markup = ''.join(buf)
+    m_first = re.search(r'\S', only_markup)
+    if not m_first:
+        return (0, 0), non_markup_spans
+    ms = m_first.start()
+    me = len(only_markup.rstrip())
+    return (ms, max(ms, me)), non_markup_spans
+
+
+def extract_components(txt: str, file_path=None) -> dict[str, ComponentDef]:
+    """Extract top-level PascalCase React components (or Vue/Svelte SFC default component) from `txt`."""
+    suf = pathlib.Path(file_path).suffix.lower() if file_path else ''
+    if suf == '.vue':
+        comp_name = _pascal_from_stem(pathlib.Path(file_path).stem)
+        bounds = _find_vue_template_bounds(txt)
+        inner_s, inner_e = bounds[1] if bounds is not None else (0, 0)
+        cdef = ComponentDef(
+            name=comp_name,
+            body_start=0,
+            body_end=len(txt),
+            jsx_start=inner_s,
+            jsx_end=inner_e,
+            is_exported=True,
+            is_default=True,
+        )
+        return {comp_name: cdef, 'default': cdef}
+    if suf == '.svelte':
+        comp_name = _pascal_from_stem(pathlib.Path(file_path).stem)
+        (ms, me), _ = _find_svelte_markup_bounds(txt)
+        cdef = ComponentDef(
+            name=comp_name,
+            body_start=0,
+            body_end=len(txt),
+            jsx_start=ms,
+            jsx_end=me,
+            is_exported=True,
+            is_default=True,
+        )
+        return {comp_name: cdef, 'default': cdef}
+
     masked = mask_non_markup(txt)
     tag_map = {m.start(): m for m in TAG.finditer(masked)}
     comps: dict[str, ComponentDef] = {}
@@ -1022,8 +1166,8 @@ def extract_components(txt: str) -> dict[str, ComponentDef]:
                         i = final_end
                         continue
 
-            # 3. `export default Name;`
-            m_def_ref = re.match(r'export\s+default\s+([A-Z][\w$]*)\s*;', txt[i:])
+            # 3. `export default Name;` (with or without trailing semicolon)
+            m_def_ref = re.match(r'export\s+default\s+([A-Z][\w$]*)\s*(?:;|(?=\r?\n|$))', txt[i:])
             if m_def_ref and (i == 0 or not (txt[i - 1].isalnum() or txt[i - 1] in ('_', '$'))):
                 ref_name = m_def_ref.group(1)
                 if ref_name in comps:
@@ -1044,6 +1188,20 @@ def extract_components(txt: str) -> dict[str, ComponentDef]:
         elif ch == ']':
             bracket = max(0, bracket - 1)
         i += 1
+    if not comps and '<template' in txt.lower():
+        bounds = _find_vue_template_bounds(txt)
+        if bounds is not None:
+            cdef = ComponentDef(
+                name='VueComponent',
+                body_start=0,
+                body_end=len(txt),
+                jsx_start=bounds[1][0],
+                jsx_end=bounds[1][1],
+                is_exported=True,
+                is_default=True,
+            )
+            comps['VueComponent'] = cdef
+            comps['default'] = cdef
     return comps
 
 
@@ -1062,6 +1220,10 @@ class _FileContext:
     route_mode: bool
     root_dir: pathlib.Path | None
     tsconfig_paths: tuple | None
+    sfc_ext: str = ''
+    root_masked_spans: list[tuple[int, int]] = field(default_factory=list)
+    sfc_non_markup_spans: list[tuple[int, int]] = field(default_factory=list)
+    extra_active_lines: set[int] = field(default_factory=set)
     masked_jsx_spans: list[tuple[int, int]] = field(default_factory=list)
     resolved_cache: dict[str, '_FileContext | None'] = field(default_factory=dict)
 
@@ -1085,20 +1247,34 @@ def _build_file_context(
     tsconfig_paths,
     state: _CompositionState,
 ) -> _FileContext:
-    key = str(pathlib.Path(file_path).resolve()) if file_path else None
+    p_obj = pathlib.Path(file_path) if file_path else None
+    key = str(p_obj.resolve()) if p_obj else None
     if key and key in state.file_ctx_cache:
         return state.file_ctx_cache[key]
+    suf = p_obj.suffix.lower() if p_obj else ''
     masked = mask_non_markup(txt)
     tag_map = {m.start(): m for m in TAG.finditer(masked)}
-    components = extract_components(txt)
-    imports = parse_imports(txt)
+    components = extract_components(txt, file_path=p_obj)
+    if suf in _SFC_EXTS:
+        imports = parse_imports(_extract_sfc_script_text(txt), _from_sfc=True)
+    else:
+        imports = parse_imports(txt)
+    root_masked_spans: list[tuple[int, int]] = []
+    sfc_non_markup_spans: list[tuple[int, int]] = []
+    if suf == '.vue':
+        v_bounds = _find_vue_template_bounds(txt)
+        if v_bounds is not None:
+            root_masked_spans = [v_bounds[0], v_bounds[2]]
+    elif suf == '.svelte':
+        _, sfc_non_markup_spans = _find_svelte_markup_bounds(txt)
+
     if route_mode and file_path:
         cva_reg = discover_cva_definitions(file_path, txt)
     else:
         cva_reg = parse_cva_definitions(txt, source_path=file_path) if 'cva' in txt else CvaRegistry()
     state.cva_registry.merge_from(cva_reg)
     ctx = _FileContext(
-        file_path=pathlib.Path(file_path) if file_path else None,
+        file_path=p_obj,
         txt=txt,
         masked=masked,
         line_starts=_compute_line_starts(txt),
@@ -1109,6 +1285,9 @@ def _build_file_context(
         route_mode=route_mode,
         root_dir=root_dir,
         tsconfig_paths=tsconfig_paths,
+        sfc_ext=suf if suf in _SFC_EXTS else '',
+        root_masked_spans=root_masked_spans,
+        sfc_non_markup_spans=sfc_non_markup_spans,
     )
     if key:
         state.file_ctx_cache[key] = ctx
@@ -1117,7 +1296,7 @@ def _build_file_context(
 
 def _extract_caller_classname_expr(attrs: str) -> tuple[str, bool] | None:
     """Extract caller's `className` / `class` value as `(val, is_js_expr)` or None."""
-    m = re.search(r'(?<![\w-])class(?:Name)?\s*=\s*', attrs)
+    m = re.search(r'(?<![:\w-])class(?:Name)?\s*=\s*', attrs)
     if not m:
         return None
     i = m.end()
@@ -1143,25 +1322,43 @@ def _attrs_has_own_bg(attrs: str) -> bool:
     return False
 
 
-def _inject_classname_into_root_tag(tag_text: str, caller_cls: tuple[str, bool]) -> str:
-    """Substitute standalone `className` / `props.className` inside a component's root tag."""
+def _inject_classname_into_root_tag(tag_text: str, caller_cls: tuple[str, bool], *, sfc_ext: str = '') -> str:
+    """Substitute standalone `className` / `props.className` (or Vue fallthrough `class`) inside a component's root tag."""
     val, is_expr = caller_cls
     if not val:
         return tag_text
     replacement = f'({val})' if is_expr else json.dumps(val)
-    if re.search(r'(?<![\w-])class(?:Name)?\s*=', tag_text):
+    if sfc_ext == '.vue' and not is_expr:
+        m_cls = re.search(r'(?<![:\w-])class\s*=\s*"([^"]*)"', tag_text)
+        if m_cls:
+            merged = f'{m_cls.group(1)} {val}'.strip()
+            return tag_text[:m_cls.start()] + f'class={json.dumps(merged)}' + tag_text[m_cls.end():]
+        if not re.search(r'(?<![:\w-])class\s*=', tag_text):
+            if tag_text.endswith('/>'):
+                return tag_text[:-2] + f' class={replacement}/>'
+            return tag_text[:-1] + f' class={replacement}>'
+    if re.search(r'(?<![:\w-])class(?:Name)?\s*=', tag_text):
         return re.sub(
             r'\b(?:props\.)?className\b(?!\s*=)',
             lambda _m: replacement,
             tag_text,
         )
-    if '{...props}' in tag_text or '{...rest}' in tag_text:
+    if '{...props}' in tag_text or '{...rest}' in tag_text or '{...$$restProps}' in tag_text:
+        if tag_text.endswith('/>'):
+            return tag_text[:-2] + f' className={replacement}/>'
         return tag_text[:-1] + f' className={replacement}>'
     return tag_text
 
 
-def _find_children_placeholders(src: str, start: int, end: int) -> list[tuple[int, int]]:
-    """Find `{children}` / `{props.children}` spans in JSX content (outside tag `<...>` headers)."""
+def _find_children_placeholders(
+    src: str,
+    start: int,
+    end: int,
+    *,
+    sfc_mode: bool = False,
+    has_caller_children: bool = False,
+) -> list[tuple[int, int]]:
+    """Find `{children}`, `{props.children}`, Svelte `{@render children?.()}`, and Vue/Svelte `<slot>` spans."""
     spans = []
     i = start
     in_tag = False
@@ -1179,13 +1376,31 @@ def _find_children_placeholders(src: str, start: int, end: int) -> list[tuple[in
             i += 1
             continue
         if ch == '<':
+            if sfc_mode and src[i:i + 5].lower() == '<slot' and (i + 5 < end and (src[i + 5].isspace() or src[i + 5] in ('/', '>'))):
+                m_slot = TAG.match(src, i, end)
+                if m_slot and m_slot.group(1) != '</' and m_slot.group(2).lower() == 'slot':
+                    slot_attrs = m_slot.group(3)
+                    slot_self = bool(m_slot.group(4))
+                    m_nm = re.search(r'\bname\s*=\s*["\']([^"\']+)["\']', slot_attrs)
+                    slot_name = m_nm.group(1) if m_nm else 'default'
+                    if slot_name == 'default':
+                        if slot_self:
+                            spans.append((i, m_slot.end()))
+                            i = m_slot.end()
+                            continue
+                        m_close = re.search(r'</slot\s*>', src[m_slot.end():end], re.I)
+                        if m_close and has_caller_children:
+                            slot_end = m_slot.end() + m_close.end()
+                            spans.append((i, slot_end))
+                            i = slot_end
+                            continue
             in_tag = True
             i += 1
             continue
         if ch == '{':
             b_end = min(end, _skip_balanced_braces(src, i))
             inner = src[i + 1:max(i + 1, b_end - 1)].strip()
-            if inner in ('children', 'props.children'):
+            if inner in ('children', 'props.children') or re.fullmatch(r'@render\s+children(?:\?\.)?\(\s*\)', inner):
                 spans.append((i, b_end))
             i = b_end
             continue
@@ -1262,9 +1477,23 @@ def _expand_span_segments(
     file_id = str(ctx.file_path.resolve()) if ctx.file_path else '<mem>'
 
     # Collect local spans to mask (in root pass) and children placeholders (when expanding component body)
-    masked_spans = sorted(ctx.masked_jsx_spans) if skip_masked_local else []
+    raw_masked = (list(ctx.masked_jsx_spans) if skip_masked_local else []) + (
+        list(ctx.sfc_non_markup_spans) if not skip_masked_local else []
+    )
+    masked_spans = sorted(raw_masked)
     masked_idx = 0
-    child_ph = _find_children_placeholders(src, start, end) if children_segments is not None else []
+    has_caller_children = bool(children_segments and any(seg[0].strip() for seg in children_segments))
+    child_ph = (
+        _find_children_placeholders(
+            src,
+            start,
+            end,
+            sfc_mode=bool(ctx.sfc_ext),
+            has_caller_children=has_caller_children,
+        )
+        if children_segments is not None
+        else []
+    )
     ph_idx = 0
 
     first_root_tag_handled = caller_cls is None
@@ -1277,8 +1506,9 @@ def _expand_span_segments(
             m0 = tag_map[s_idx]
             if m0.end() <= e_idx and m0.group(1) != '</':
                 first_root_tag_handled = True
-                mod_tag = _inject_classname_into_root_tag(src[s_idx:m0.end()], caller_cls)
+                mod_tag = _inject_classname_into_root_tag(src[s_idx:m0.end()], caller_cls, sfc_ext=ctx.sfc_ext)
                 line_no = max(1, bisect.bisect_right(ls, s_idx))
+                ctx.extra_active_lines.add(line_no)
                 segments.append((mod_tag, None, line_no))
                 if m0.end() < e_idx:
                     segments.append((src[m0.end():e_idx], ls, m0.end()))
@@ -1287,7 +1517,7 @@ def _expand_span_segments(
 
     i = start
     while i < end:
-        # 1. Masked local component JSX definition in root file
+        # 1. Masked local component JSX definition in root file (or SFC non-markup spans)
         while masked_idx < len(masked_spans) and masked_spans[masked_idx][1] <= i:
             masked_idx += 1
         if masked_idx < len(masked_spans):
@@ -1299,7 +1529,7 @@ def _expand_span_segments(
                 i = stop
                 continue
 
-        # 2. `{children}` / `{props.children}` placeholder
+        # 2. `{children}` / `{props.children}` / `<slot>` placeholder
         while ph_idx < len(child_ph) and child_ph[ph_idx][1] <= i:
             ph_idx += 1
         if ph_idx < len(child_ph) and child_ph[ph_idx][0] == i:
@@ -1309,30 +1539,38 @@ def _expand_span_segments(
             ph_idx += 1
             continue
 
-        # 3. JSX Tag
+        # 3. JSX / SFC Tag
         if i in tag_map:
             m = tag_map[i]
             close, tag, attrs, selfclose = m.groups()
-            if close != '</' and tag[0].isupper() and m.end() <= end:
-                root_tag_name = tag.split('.', 1)[0]
-                is_cva = (tag in state.cva_registry) or (tag in ctx.cva_registry)
+            kebab_lookup = _pascal_from_stem(tag) if (ctx.sfc_ext == '.vue' and '-' in tag) else ''
+            is_comp_tag = tag[0].isupper() or (bool(kebab_lookup) and kebab_lookup in ctx.imports)
+            if close != '</' and is_comp_tag and m.end() <= end:
+                lookup_tag = kebab_lookup if (not tag[0].isupper() and kebab_lookup) else tag
+                root_tag_name = lookup_tag.split('.', 1)[0]
+                is_cva = (lookup_tag in state.cva_registry) or (lookup_tag in ctx.cva_registry)
 
                 target_comp: ComponentDef | None = None
                 target_ctx: _FileContext | None = None
                 unresolved_import = False
 
                 if not is_cva:
-                    if tag in ctx.components:
-                        target_comp = ctx.components[tag]
+                    if lookup_tag in ctx.components and not ctx.sfc_ext:
+                        target_comp = ctx.components[lookup_tag]
                         target_ctx = ctx
-                    elif tag in ctx.imports:
-                        imp_name, imp_spec = ctx.imports[tag]
-                        if ctx.route_mode:
+                    elif lookup_tag in ctx.imports:
+                        imp_name, imp_spec = ctx.imports[lookup_tag]
+                        allow_cross_file = (
+                            ctx.route_mode
+                            or bool(ctx.sfc_ext)
+                            or imp_spec.lower().endswith(('.vue', '.svelte'))
+                        )
+                        if allow_cross_file:
                             resolved_ctx = _resolve_imported_target(ctx, imp_spec, state)
                             if resolved_ctx is None:
                                 unresolved_import = True
                             else:
-                                c_def = _lookup_imported_component(resolved_ctx, imp_name, tag)
+                                c_def = _lookup_imported_component(resolved_ctx, imp_name, lookup_tag)
                                 if c_def is not None and c_def.name not in state.cva_registry:
                                     target_comp = c_def
                                     target_ctx = resolved_ctx
@@ -1345,7 +1583,7 @@ def _expand_span_segments(
                                 tsconfig_paths=ctx.tsconfig_paths,
                             ) is None:
                                 unresolved_import = True
-                    elif root_tag_name in ctx.imports and '.' in tag:
+                    elif root_tag_name in ctx.imports and '.' in lookup_tag:
                         _, imp_spec = ctx.imports[root_tag_name]
                         if resolve_import(
                             imp_spec,
@@ -1374,6 +1612,7 @@ def _expand_span_segments(
                                     depth=depth,
                                     stack=stack,
                                     state=state,
+                                    children_segments=children_segments,
                                     skip_masked_local=False,
                                 )
                             else:
@@ -1392,6 +1631,14 @@ def _expand_span_segments(
                             skip_masked_local=False,
                         )
                         first_root_tag_handled = True
+                        if (
+                            _THEME_TOGGLE_HINT_RE.search(lookup_tag)
+                            or _THEME_TOGGLE_HINT_RE.search(target_comp.name)
+                            or _THEME_TOGGLE_HINT_RE.search(target_ctx.txt)
+                        ):
+                            joined_comp = ''.join(seg[0] for seg in expanded_comp)
+                            if not _THEME_TOGGLE_HINT_RE.search(joined_comp):
+                                segments.append(('<!-- ThemeToggle -->', None, max(1, bisect.bisect_right(ls, i))))
                         segments.extend(expanded_comp)
                         state.inlined_count += 1
                         if target_ctx.file_path and t_file_id != file_id and t_file_id not in state.inlined_files_set:
@@ -1403,7 +1650,7 @@ def _expand_span_segments(
                 if (
                     unresolved_import
                     and not selfclose
-                    and tag not in _TRANSPARENT_FRAMEWORK_TAGS
+                    and lookup_tag not in _TRANSPARENT_FRAMEWORK_TAGS
                     and root_tag_name not in _TRANSPARENT_FRAMEWORK_TAGS
                     and not _attrs_has_own_bg(attrs)
                     and 'data-uitools-unknown-bg' not in attrs
@@ -1413,8 +1660,9 @@ def _expand_span_segments(
                         orig_tag = src[i:m.end()]
                         if caller_cls is not None and not first_root_tag_handled:
                             first_root_tag_handled = True
-                            orig_tag = _inject_classname_into_root_tag(orig_tag, caller_cls)
+                            orig_tag = _inject_classname_into_root_tag(orig_tag, caller_cls, sfc_ext=ctx.sfc_ext)
                         line_no = max(1, bisect.bisect_right(ls, i))
+                        ctx.extra_active_lines.add(line_no)
                         segments.append((orig_tag[:-1] + ' data-uitools-unknown-bg="true">', None, line_no))
                         i = m.end()
                         continue
@@ -1445,7 +1693,7 @@ def _expand_span_segments(
 
 def _collect_used_local_components(ctx: _FileContext, state: _CompositionState) -> list[tuple[int, int]]:
     """Return JSX spans `(jsx_start, jsx_end)` of local components referenced outside their own bodies."""
-    if not ctx.components:
+    if not ctx.components or ctx.sfc_ext:
         return []
     used_spans: list[tuple[int, int]] = []
     seen_spans: set[tuple[int, int]] = set()
@@ -1467,6 +1715,137 @@ def _collect_used_local_components(ctx: _FileContext, state: _CompositionState) 
                 seen_spans.add(span)
                 used_spans.append(span)
     return used_spans
+
+
+def _discover_app_router_layouts(
+    source_path,
+    eff_root: pathlib.Path,
+    *,
+    explicit_root: bool = False,
+) -> list[pathlib.Path]:
+    """Discover Next.js App Router `layout.{tsx,ts,jsx,js}` files from outermost (`app/layout.tsx`) to innermost."""
+    if not source_path:
+        return []
+    p = pathlib.Path(source_path)
+    if p.name.lower() not in _PAGE_FILENAMES:
+        return []
+    try:
+        p_res = p.resolve()
+    except OSError:
+        p_res = p.absolute()
+    try:
+        r_res = eff_root.resolve()
+    except OSError:
+        r_res = eff_root.absolute()
+
+    chain: list[pathlib.Path] = []
+    cur = p_res.parent
+    reached_root = False
+    while True:
+        chain.append(cur)
+        if cur == r_res:
+            reached_root = True
+            break
+        if cur.parent == cur:
+            break
+        cur = cur.parent
+
+    if not reached_root:
+        return []
+
+    if not explicit_root and not any(d.name.lower() == 'app' for d in chain):
+        extra_cur = r_res.parent
+        extra: list[pathlib.Path] = []
+        for _ in range(4):
+            if extra_cur == extra_cur.parent:
+                break
+            extra.append(extra_cur)
+            if extra_cur.name.lower() == 'app':
+                chain.extend(extra)
+                break
+            extra_cur = extra_cur.parent
+
+    dirs = list(reversed(chain))
+    app_idx = next((idx for idx, d in enumerate(dirs) if d.name.lower() == 'app'), None)
+    if app_idx is None:
+        return []
+
+    layouts: list[pathlib.Path] = []
+    for d in dirs[app_idx:]:
+        for lname in _LAYOUT_FILENAMES:
+            cand = d / lname
+            try:
+                if cand.is_file():
+                    layouts.append(cand.resolve())
+                    break
+            except OSError:
+                continue
+    return layouts
+
+
+def _mask_tags_in_non_jsx_slice(src: str, masked: str, start: int, end: int) -> str:
+    """Return `src[start:end]` with any `<Tag>` spans replaced by spaces so `walk()` sees zero tags."""
+    if end <= start:
+        return ''
+    buf = list(src[start:end])
+    for m in TAG.finditer(masked, start, end):
+        ms = max(start, m.start()) - start
+        me = min(end, m.end()) - start
+        for k in range(ms, me):
+            if buf[k] != '\n':
+                buf[k] = ' '
+    return ''.join(buf)
+
+
+def _build_route_source_text(
+    txt: str,
+    source_path,
+    root_ctx: _FileContext,
+    builder: _VirtualBuilder,
+    state: _CompositionState,
+) -> str:
+    """Wrap `txt` in `RouteSourceText` carrying `.source_files` and `.active_lines` when external files were inlined."""
+    if not state.inlined_files:
+        return txt
+
+    entry_key = str(source_path) if source_path else '<entry>'
+    source_files: dict[str, str] = {entry_key: txt}
+    active_lines: dict[str, set[int]] = {entry_key: set(root_ctx.extra_active_lines)}
+    ls_to_sf_key: dict[int, str] = {id(root_ctx.line_starts): entry_key}
+
+    for fp_str in state.inlined_files:
+        try:
+            res_key = str(pathlib.Path(fp_str).resolve())
+        except OSError:
+            res_key = fp_str
+        f_ctx = state.file_ctx_cache.get(res_key)
+        if f_ctx is not None:
+            source_files[fp_str] = f_ctx.txt
+            active_lines[fp_str] = set(f_ctx.extra_active_lines)
+            ls_to_sf_key[id(f_ctx.line_starts)] = fp_str
+        else:
+            try:
+                source_files[fp_str] = pathlib.Path(fp_str).read_text(encoding='utf-8', errors='ignore')
+            except OSError:
+                continue
+            active_lines[fp_str] = set()
+
+    for chunk_txt, (ls, orig_start) in zip(builder.chunks, builder.seg_meta):
+        if ls is None or not chunk_txt.strip():
+            continue
+        sf_key = ls_to_sf_key.get(id(ls))
+        if sf_key is None:
+            continue
+        l_start = max(1, bisect.bisect_right(ls, orig_start))
+        l_end = max(1, bisect.bisect_right(ls, orig_start + len(chunk_txt) - 1))
+        active_lines[sf_key].update(range(l_start, l_end + 1))
+
+    return RouteSourceText(
+        txt,
+        entry_file=entry_key,
+        source_files=source_files,
+        active_lines=active_lines,
+    )
 
 
 def _run_composition(
@@ -1495,24 +1874,110 @@ def _run_composition(
         tsconfig_paths=tsconfig_paths,
         state=state,
     )
-    root_ctx.masked_jsx_spans = _collect_used_local_components(root_ctx, state)
-
-    segments = _expand_span_segments(
-        root_ctx,
-        0,
-        len(txt),
-        depth=0,
-        stack=frozenset(),
-        state=state,
-        skip_masked_local=True,
+    root_ctx.masked_jsx_spans = sorted(
+        _collect_used_local_components(root_ctx, state) + list(root_ctx.root_masked_spans)
     )
+
+    layouts = (
+        _discover_app_router_layouts(source_path, eff_root, explicit_root=bool(root_dir))
+        if route_mode and source_path
+        else []
+    )
+
+    if layouts:
+        root_file_id = str(root_ctx.file_path.resolve()) if root_ctx.file_path else '<entry>'
+        page_comp = _lookup_imported_component(root_ctx, 'default', 'Page')
+        page_pre: list[tuple[str, list[int] | None, int]] = []
+        page_post: list[tuple[str, list[int] | None, int]] = []
+        if page_comp is not None:
+            cur_segments = _expand_span_segments(
+                root_ctx,
+                page_comp.jsx_start,
+                page_comp.jsx_end,
+                depth=0,
+                stack=frozenset({(root_file_id, page_comp.name)}),
+                state=state,
+                skip_masked_local=False,
+            )
+            pre_txt = _mask_tags_in_non_jsx_slice(txt, root_ctx.masked, 0, page_comp.jsx_start)
+            post_txt = _mask_tags_in_non_jsx_slice(txt, root_ctx.masked, page_comp.jsx_end, len(txt))
+            if pre_txt.strip():
+                page_pre.append((pre_txt, None, 1))
+            if post_txt.strip():
+                page_post.append((post_txt, None, 1))
+        else:
+            cur_segments = _expand_span_segments(
+                root_ctx,
+                0,
+                len(txt),
+                depth=0,
+                stack=frozenset(),
+                state=state,
+                skip_masked_local=True,
+            )
+
+        for layout_path in reversed(layouts):
+            try:
+                layout_txt = layout_path.read_text(encoding='utf-8', errors='ignore')
+            except OSError:
+                continue
+            layout_ctx = _build_file_context(
+                layout_txt,
+                layout_path,
+                route_mode=True,
+                root_dir=eff_root,
+                tsconfig_paths=tsconfig_paths,
+                state=state,
+            )
+            layout_ctx.masked_jsx_spans = _collect_used_local_components(layout_ctx, state)
+            layout_comp = _lookup_imported_component(layout_ctx, 'default', 'Layout')
+            if layout_comp is None:
+                continue
+            layout_id = str(layout_path.resolve())
+            if layout_id not in state.inlined_files_set:
+                state.inlined_files_set.add(layout_id)
+                state.inlined_files.append(str(layout_path))
+            state.inlined_count += 1
+
+            wrapped_segments = _expand_span_segments(
+                layout_ctx,
+                layout_comp.jsx_start,
+                layout_comp.jsx_end,
+                depth=0,
+                stack=frozenset({(layout_id, layout_comp.name)}),
+                state=state,
+                children_segments=cur_segments,
+                skip_masked_local=False,
+            )
+            layout_prefix: list[tuple[str, list[int] | None, int]] = []
+            for m_font in re.finditer(r'import\s*\{[^}]+\}\s*from\s*["\']next/font/google["\']', layout_txt):
+                layout_prefix.append((m_font.group(0) + '\n', None, 1))
+            if _THEME_TOGGLE_HINT_RE.search(layout_txt):
+                joined_layout = ''.join(seg[0] for seg in wrapped_segments)
+                if not _THEME_TOGGLE_HINT_RE.search(joined_layout):
+                    layout_prefix.append(('<!-- ThemeToggle -->', None, 1))
+            cur_segments = layout_prefix + wrapped_segments
+
+        segments = page_pre + cur_segments + page_post
+    else:
+        segments = _expand_span_segments(
+            root_ctx,
+            0,
+            len(txt),
+            depth=0,
+            stack=frozenset(),
+            state=state,
+            skip_masked_local=True,
+        )
+
     builder = _VirtualBuilder()
     builder.append_segments(segments)
+    raw_out = _build_route_source_text(txt, source_path, root_ctx, builder, state)
     return builder.build(
         cva_registry=state.cva_registry,
         inlined_files=state.inlined_files,
         inlined_count=state.inlined_count,
-        raw_txt=txt,
+        raw_txt=raw_out,
     )
 
 

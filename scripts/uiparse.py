@@ -150,9 +150,19 @@ def _strip_all_comments(txt):
     return strip_css_comments(txt)
 
 
+_SVELTE_CONTROL_PAT = (
+    r'(?-i:\{(?:'
+    r'#(?:if|each|await|key|snippet)\b'
+    r'|:(?:else|then|catch)\b'
+    r'|/(?:if|each|await|key|snippet)\b'
+    r'|@(?:html|const|debug|render)\b'
+    r')(?:[^{}"\']|"[^"]*"|\'[^\']*\'|\{(?:[^{}"\']|"[^"]*"|\'[^\']*\'|\{[^{}]*\})*\})*\})'
+)
+
+
 def mask_non_markup(txt):
-    """Replace HTML/JSX comments, <script>, and <style> blocks with spaces while preserving newlines and indices."""
-    pat = r'<!--.*?-->|\{/\*.*?\*/\}|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>'
+    """Replace HTML/JSX comments, <script>, <style>, and Svelte control tags with spaces while preserving newlines and indices."""
+    pat = rf'<!--.*?-->|\{{/\*.*?\*/\}}|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>|{_SVELTE_CONTROL_PAT}'
     res = re.sub(pat, lambda m: re.sub(r'[^\n]', ' ', m.group(0)), txt, flags=re.S | re.I)
     clone_fn = getattr(txt, '_clone_with_text', None)
     if clone_fn is not None:
@@ -161,21 +171,29 @@ def mask_non_markup(txt):
 
 
 def classes(attrs):
-    m = re.search(r"""(?<![\w-])class(?:Name)?\s*=\s*("[^"]*"|'[^']*'|\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\})""", attrs)
-    if not m:
-        return []
-    v = m.group(1)
-    if v.startswith('{'):
-        parts = []
-        for dq, sq, tpl in re.findall(r'"([^"]*)"|\'([^\']*)\'|`([^`]*)`', v):
-            if tpl:
-                def _expr_lits(em):
-                    return ' ' + ' '.join(a or b for a, b in re.findall(r'"([^"]*)"|\'([^\']*)\'', em.group(1))) + ' '
-                parts.append(re.sub(r'\$\{([^{}]*)\}', _expr_lits, tpl))
-            else:
-                parts.append(dq or sq)
-        return ' '.join(parts).split()
-    return v[1:-1].split()
+    out = []
+    m = re.search(r"""(?<![:\w-])class(?:Name)?\s*=\s*("[^"]*"|'[^']*'|\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\})""", attrs)
+    if m:
+        v = m.group(1)
+        if v.startswith('{'):
+            parts = []
+            for dq, sq, tpl in re.findall(r'"([^"]*)"|\'([^\']*)\'|`([^`]*)`', v):
+                if tpl:
+                    def _expr_lits(em):
+                        return ' ' + ' '.join(a or b for a, b in re.findall(r'"([^"]*)"|\'([^\']*)\'', em.group(1))) + ' '
+                    parts.append(re.sub(r'\$\{([^{}]*)\}', _expr_lits, tpl))
+                else:
+                    parts.append(dq or sq)
+            out.extend(' '.join(parts).split())
+        else:
+            out.extend(v[1:-1].split())
+    if ':class' in attrs:
+        vue_expr = _extract_vue_bound_class_expr(attrs)
+        if vue_expr:
+            b = _ClassSetBuilder()
+            b.eval_node(_JsExprParser(_tokenize_js(vue_expr), vue_expr).parse())
+            out.extend(b.build().flat_classes)
+    return out
 
 
 # ---------------- variant class model (İP-A3) ----------------
@@ -352,7 +370,7 @@ def _skip_balanced_braces(src, i):
 
 def _extract_class_attr(attrs):
     """Extract `(value_text, is_js_expr)` for class/className attribute, or `(None, False)`."""
-    m = re.search(r'(?<![\w-])class(?:Name)?\s*=\s*', attrs)
+    m = re.search(r'(?<![:\w-])class(?:Name)?\s*=\s*', attrs)
     if not m:
         return None, False
     i = m.end()
@@ -369,6 +387,21 @@ def _extract_class_attr(attrs):
             return attrs[i + 1:end - 1], True
         return attrs[i + 1:end], True
     return None, False
+
+
+def _extract_vue_bound_class_expr(attrs):
+    """Extract Vue `:class="..."` or `v-bind:class="..."` JS expression string, or `None`."""
+    m = re.search(r'(?:(?<![\w-])v-bind:|:)class\s*=\s*', attrs)
+    if not m:
+        return None
+    i = m.end()
+    if i >= len(attrs):
+        return None
+    ch = attrs[i]
+    if ch in ('"', "'"):
+        end = _skip_quoted(attrs, i, ch)
+        return attrs[i + 1:max(i + 1, end - 1)]
+    return None
 
 
 @dataclass
@@ -1033,16 +1066,26 @@ def _count_combos(cs, limit):
 
 
 def classset(attrs):
-    """Parse HTML/JSX `class` or `className` attributes into a `ClassSet`."""
+    """Parse HTML/JSX/Vue/Svelte `class`, `className`, or `:class` attributes into a `ClassSet`."""
     raw, is_expr = _extract_class_attr(attrs)
-    if raw is None:
+    vue_expr = _extract_vue_bound_class_expr(attrs) if ':class' in attrs else None
+    if raw is None and vue_expr is None:
         return ClassSet()
-    if not is_expr:
-        return ClassSet(base=raw.split())
-    tokens = _tokenize_js(raw)
-    ast = _JsExprParser(tokens, raw).parse()
+    if vue_expr is None:
+        if not is_expr:
+            return ClassSet(base=raw.split())
+        tokens = _tokenize_js(raw)
+        ast = _JsExprParser(tokens, raw).parse()
+        builder = _ClassSetBuilder()
+        builder.eval_node(ast)
+        return builder.build()
     builder = _ClassSetBuilder()
-    builder.eval_node(ast)
+    if raw is not None:
+        if is_expr:
+            builder.eval_node(_JsExprParser(_tokenize_js(raw), raw).parse())
+        else:
+            builder.base.extend(raw.split())
+    builder.eval_node(_JsExprParser(_tokenize_js(vue_expr), vue_expr).parse())
     return builder.build()
 
 
