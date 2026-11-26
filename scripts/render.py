@@ -1084,6 +1084,13 @@ def run_motion_checks(page, out_dir=None, trigger_selector=None, capture_filmstr
         page.screenshot(path=str(frame0), full_page=False)
         frames.append((MOTION_FILMSTRIP_MS[0], frame0))
 
+        # Static scan of the page as loaded: the probe click below can replace the DOM.
+        pre_res = page.evaluate(
+            MOTION_JS,
+            {'mode': 'normal', 'skipTrigger': True, 'triggerSelector': trigger_selector},
+        )
+        if pre_res:
+            found.extend(pre_res)
         t0 = time.monotonic()
         page.evaluate(MOTION_JS, {'action': 'probe', 'triggerSelector': trigger_selector})
         for idx, ms in enumerate(MOTION_FILMSTRIP_MS[1:], start=1):
@@ -2205,12 +2212,16 @@ def render_routes(opts, browser=None):
                                     extra_shots = run_actions(page, actions, out_dir=route_dir) or []
                                 page.screenshot(path=str(shot_path), full_page=True)
                                 scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                                # Read-only DOM checks first: the motion probe clicks a trigger and can change the page.
+                                pre_findings = _run_readonly_viewport_checks(page, vp_w)
                                 motion_found = run_motion_checks(
                                     page,
                                     out_dir=route_dir,
                                     trigger_selector=route_cfg.get('motion_trigger') or opts.motion_trigger,
                                 ) if opts.motion else []
-                                findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
+                                findings = _finalize_viewport_checks(
+                                    page, vp_w, console_errors, network_errors, pre_findings=pre_findings,
+                                )
                                 if motion_found:
                                     findings = [f for f in findings if f[1] != 'dom-check'] + motion_found
 
@@ -2272,12 +2283,16 @@ def render_routes(opts, browser=None):
 
                                 page.screenshot(path=str(shot_path), full_page=True)
                                 scroll_h = page.evaluate('document.documentElement.scrollHeight') or vp_h
+                                # Read-only DOM checks first: the motion probe clicks a trigger and can change the page.
+                                pre_findings = _run_readonly_viewport_checks(page, vp_w)
                                 motion_found = run_motion_checks(
                                     page,
                                     out_dir=route_dir,
                                     trigger_selector=route_cfg.get('motion_trigger') or opts.motion_trigger,
                                 ) if opts.motion else []
-                                findings = _run_viewport_checks(page, vp_w, console_errors, network_errors)
+                                findings = _finalize_viewport_checks(
+                                    page, vp_w, console_errors, network_errors, pre_findings=pre_findings,
+                                )
                                 if motion_found:
                                     findings = [f for f in findings if f[1] != 'dom-check'] + motion_found
 
